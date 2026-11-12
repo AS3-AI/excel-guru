@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(gh pr create *)"
+    ],
+    "deny": [
+      "Read(./.env.local)",
+      "Bash(git push --force *)",
+      "Bash(npx supabase db reset *)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "[ ! -f package.json ] || (pnpm -s typecheck 1>&2 && pnpm -s test 1>&2) || exit 2" }
+        ]
+      }
+    ]
+  }
+}
