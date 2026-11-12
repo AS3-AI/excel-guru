@@ -89,7 +89,8 @@ export function tokenize(src: string): Token[] {
 
     const num = NUMBER_RE.exec(rest);
     if (num) {
-      if (/^[eE][+-]?(?!\d)/.test(rest.slice(num[0].length))) {
+      // Excel has no implicit multiplication: 2A1, 1.2.3 and 1e2e3 are syntax errors.
+      if (/^([eE][+-]?(?!\d)|[A-Za-z0-9_.$])/.test(rest.slice(num[0].length))) {
         throw new TokenizeError("Malformed number", i);
       }
       tokens.push({ type: "NUM", value: num[0], pos: i });
@@ -99,10 +100,15 @@ export function tokenize(src: string): Token[] {
 
     // `$` can only start a reference: $A$1, $A1 or a whole column $B.
     if (ch === "$") {
-      const cell = CELL_RE.exec(rest) ?? COLUMN_RE.exec(rest);
-      if (!cell) throw new TokenizeError("Invalid reference", i);
-      tokens.push({ type: "REF", value: cell[0].toUpperCase(), pos: i });
-      i += cell[0].length;
+      const cell = CELL_RE.exec(rest);
+      const col = cell ? null : COLUMN_RE.exec(rest);
+      const text = cell?.[0] ?? col?.[0];
+      if (!text) throw new TokenizeError("Invalid reference", i);
+      if (col && src[i + text.length] !== ":" && prev()?.type !== "COLON") {
+        throw new TokenizeError("Whole-column reference must be part of a range", i);
+      }
+      tokens.push({ type: "REF", value: text.toUpperCase(), pos: i });
+      i += text.length;
       continue;
     }
 

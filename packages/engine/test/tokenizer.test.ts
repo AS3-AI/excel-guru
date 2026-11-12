@@ -22,6 +22,8 @@ describe("tokenize: numbers", () => {
   it("negative exponent, lowercase e", () => expect(t("=2e-4")).toEqual(["NUM 2e-4"]));
   it("minus is a separate operator", () => expect(t("=-2")).toEqual(["OP -", "NUM 2"]));
   it("malformed exponent throws", () => expect(() => tokenize("=1E+")).toThrow(TokenizeError));
+  it.each(["=2A1", "=1.2.3", "=1e2e3", "=3_x"])("number glued to more text throws: %s", (src) =>
+    expect(() => tokenize(src)).toThrow(TokenizeError));
 });
 
 describe("tokenize: strings", () => {
@@ -51,6 +53,8 @@ describe("tokenize: references", () => {
     expect(t("=$A$1:B$10")).toEqual(["REF $A$1", "COLON", "REF B$10"]));
   it("unknown identifier is a NAME", () => expect(t("=foo")).toEqual(["NAME FOO"]));
   it("bare column letter without colon is a NAME", () => expect(t("=B")).toEqual(["NAME B"]));
+  it("lone $column outside a range throws", () => expect(() => tokenize("=$B+1")).toThrow(TokenizeError));
+  it("$column after a colon is a REF", () => expect(t("=B:$C")).toEqual(["REF B", "COLON", "REF $C"]));
 });
 
 describe("tokenize: functions", () => {
