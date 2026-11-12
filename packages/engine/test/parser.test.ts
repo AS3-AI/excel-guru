@@ -103,6 +103,10 @@ describe("parse: errors", () => {
   it("empty parentheses", () => expect(parseError("=()").message).toMatch(/unexpected/i));
   it("empty formula", () => expect(parseError("=").message).toMatch(/empty formula/i));
   it("dangling operator", () => expect(parseError("=1+").message).toMatch(/unexpected end/i));
+  it("dangling operator inside parens is a missing operand, not a missing paren", () =>
+    expect(parseError("=(1+").message).toMatch(/unexpected end/i));
+  it("trailing comma in an unclosed call is a missing argument", () =>
+    expect(parseError("=SUM(1,").message).toMatch(/unexpected end/i));
   it("two values with no operator", () => expect(parseError("=1 2").pos).toBe(3));
   it("operator with no left side", () => expect(parseError("=*2").pos).toBe(1));
   it("missing comma between arguments", () => expect(parseError("=SUM(1 2)").pos).toBe(7));

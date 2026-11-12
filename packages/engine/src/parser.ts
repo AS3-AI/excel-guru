@@ -52,18 +52,15 @@ export function parse(tokens: Token[]): Ast {
   };
 
   function unexpected(tok: Token | undefined): never {
-    if (!tok) {
-      const opener = open[open.length - 1];
-      if (opener !== undefined) throw new ParseError("Missing closing parenthesis for '('", opener);
-      throw new ParseError("Unexpected end of formula", endPos());
-    }
+    if (!tok) throw new ParseError("Unexpected end of formula", endPos());
     const text = tok.type === "STR" ? `"${tok.value}"` : tok.value || describe(tok);
     throw new ParseError(`Unexpected ${text}`, tok.pos);
   }
 
   function closeParen() {
     const tok = peek();
-    if (tok?.type !== "RPAREN") unexpected(tok);
+    if (!tok) throw new ParseError("Missing closing parenthesis for '('", open[open.length - 1] ?? endPos());
+    if (tok.type !== "RPAREN") unexpected(tok);
     open.pop();
     i++;
   }
