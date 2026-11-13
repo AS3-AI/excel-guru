@@ -4,27 +4,34 @@ import { currencyForCountry, formatPrice, PLANS } from "@/lib/plans";
 import { WaitlistForm } from "./WaitlistForm";
 
 const MODULES = [
-  "Sum",
-  "Count",
+  "SUM",
+  "COUNT",
   "Logical",
   "Lookup",
-  "Index Match",
   "Text Search",
+  "Intro to Shortcuts",
+  "Cell Selection",
   "Text Manipulation",
-  "Dates",
+  "Index Match",
   "Statistical",
-  "Shortcuts: Navigation",
-  "Shortcuts: Editing",
   "Tables",
+  "Dates",
+  "Other Skills",
   "Array Formulas",
-  "Combined Formulas",
-  "Other Functions",
+  "Combined",
+];
+
+const STATS = [
+  { value: "86", label: "lessons" },
+  { value: "15", label: "modules" },
+  { value: "4", label: "real-data projects" },
+  { value: "1", label: "verifiable certificate" },
 ];
 
 const STEPS = [
-  { title: "Pick a lesson", text: "68 short lessons across 15 modules, from SUM to INDEX/MATCH." },
+  { title: "Pick a lesson", text: "86 short lessons across 15 modules, from SUM to INDEX/MATCH." },
   { title: "Type real formulas", text: "A real spreadsheet runs in your browser. No downloads, no setup." },
-  { title: "Get instant feedback", text: "Every answer is checked as you type, with hints when you're stuck." },
+  { title: "Get instant feedback", text: "Every answer is checked instantly, with an AI explanation when you get one wrong." },
 ];
 
 const FAQ = [
@@ -34,7 +41,7 @@ const FAQ = [
   },
   {
     q: "Is any of it free?",
-    a: "Yes. The first 3 lessons are free with no sign-up.",
+    a: "Yes. Try the intro lesson with no sign-up, then create a free account for one more lesson.",
   },
   {
     q: "Does it work for Google Sheets too?",
@@ -62,12 +69,20 @@ export default async function Home() {
         <div className="brand">Excel Guru</div>
 
         <section className="hero">
-          <h1>Learn Excel by typing real formulas.</h1>
+          <h1>Learn Excel by typing <mark>real</mark> formulas.</h1>
           <p className="lead">
             Interactive lessons with a spreadsheet in your browser and instant feedback on every answer.
             Join the waitlist and get early access at launch.
           </p>
           <WaitlistForm source="hero" />
+          <ul className="stats">
+            {STATS.map((s) => (
+              <li key={s.label}>
+                <strong>{s.value}</strong>
+                {s.label}
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section aria-labelledby="how">
