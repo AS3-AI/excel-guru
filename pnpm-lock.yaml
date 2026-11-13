@@ -213,7 +213,11 @@ importers:
         specifier: ^4.6.1
         version: 4.6.1
 
-  packages/grader: {}
+  packages/grader:
+    dependencies:
+      '@excel-guru/engine':
+        specifier: workspace:*
+        version: link:../engine
 
   packages/payments: {}
 
