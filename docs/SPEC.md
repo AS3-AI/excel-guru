@@ -262,6 +262,138 @@ Done when:
 - ≥ 25 tests pass
 ```
 
+### 10. Phase 1 completion cards (added 13 Nov)
+
+Phase 1 ends with one lesson playable end to end on the live URL. Lane A runs T5 → T7 → T8 → T9 → T10 in order (T9 can start right after T5); Lane B runs T2 in parallel. T6 is reserved for dynamic-array spilling (UNIQUE, FILTER, SORT, #SPILL!) and lands before the Array formulas lessons. T7 pulls formula grading forward from Phase 2 because a lesson can only be played end to end if its answers are checked; the Check / Show Answer / Skip / Previous UI stays in Phase 2.
+
+```markdown
+## T5: Evaluator + Sheet
+Goal: AST → value on a small grid, so `=SUM(A1:A3)` on [[1],[2],[3]] gives 6. Read docs/SPEC.md §3 first.
+Time-box: 4 hours. Dynamic arrays (UNIQUE/FILTER/SORT spill, #SPILL!) are out of scope → T6.
+Files: packages/engine/src/address.ts, packages/engine/src/evaluator.ts, packages/engine/src/functions.ts,
+       packages/engine/src/sheet.ts, packages/engine/src/index.ts, packages/engine/package.json (add @formulajs/formulajs),
+       packages/engine/test/address.test.ts, packages/engine/test/evaluator.test.ts, packages/engine/test/sheet.test.ts
+Interface (frozen, SPEC §3):
+  type ExcelError = { error: '#DIV/0!' | '#N/A' | '#VALUE!' | '#REF!' | '#NAME?' | '#NUM!' | '#SPILL!' | '#CIRC!' };
+  type CellValue = number | string | boolean | null | ExcelError;
+  class Sheet { constructor(grid); set(addr, input); get(addr): CellValue; getFormula(addr): string | null; functionsUsed(addr): string[] }
+  index.ts exports Sheet, tokenize, parse and the types above.
+Rules:
+- address.ts: "A1" ↔ {row, col} (0-based); strip `$` (the AST keeps it, e.g. "$A$1"); grid[0][0] is A1.
+  Off-sheet refs (A0, XFE1) → #REF!. Whole columns B:C are clipped to the grid's used rows.
+- Operators: + - * / ^ with Excel coercion ("3"+1 = 4, TRUE+1 = 2, "abc"+1 = #VALUE!, empty cell = 0);
+  & joins as text (TRUE&"" = "TRUE", 1.5&"" = "1.5"); % divides by 100; comparisons are case-insensitive for text,
+  and number < text < boolean when types differ. An error operand propagates (left one first).
+- Functions: name lookup case-insensitive; dispatch to formula.js; map its Error results to ExcelError;
+  unknown function or NAME → #NAME?. Ranges reach functions as 2-D arrays; empty cells as null.
+  Empty arguments (Ast "empty") are passed as undefined — IF(A1,,0) returns 0 when A1 is FALSE.
+- IF, IFERROR, AND, OR are lazy (only evaluate the branch taken), so IF(TRUE,1,1/0) = 1.
+- A formula whose result is a range (=A1:A3) returns #VALUE! until T6 adds spilling.
+- Formula input that fails tokenize/parse: set() throws the TokenizeError/ParseError (the lesson UI shows its
+  message and the grader maps it to 'parse_error'); the cell keeps its previous content.
+- Literal input: "42" → 42, "TRUE" → true, "" → null, anything else → string. A leading "=" means formula.
+- Recalc: dependents: Map<cell, Set<cell>>; on set(), recompute affected cells in topological order.
+  A cycle marks every cell in it #CIRC!; breaking the cycle recomputes them.
+- functionsUsed returns unique uppercase names in first-use order, nested calls included.
+- Pure TypeScript: no DOM, no Node APIs. Write tests first.
+Done when:
+- new Sheet([[1],[2],[3]]) then set("B1","=SUM(A1:A3)") → get("B1") === 6; set("A1","10") → get("B1") === 15
+- =SUMIF(A2:A4,"East",B2:B4) on [["Region","Sales"],["East",120],["West",80],["East",50]] = 170;
+  the SPEC §5 (schema v2) example =COUNT(B2:B6) = 4; COUNTIF with ">100", "E*", "?ast" criteria
+- =-2^2 = 4, =2^3^2 = 64, =1+2*3 = 7, ="a"&"b"="AB" is TRUE, =50% = 0.5
+- every ExcelError except #SPILL! has a test that produces it (#DIV/0! from =1/0, #N/A from VLOOKUP miss,
+  #VALUE! from ="a"+1, #REF! from =A0, #NAME? from =NOPE(1), #NUM! from =SQRT(-1), #CIRC! from A1=B1, B1=A1)
+- functionsUsed("=IF(SUM(A1:A2)>1,ROUND(A1,0),0)") → ["IF","SUM","ROUND"]
+- ≥ 40 tests across the three test files pass; typecheck passes; no other files changed
+```
+
+```markdown
+## T7: Lesson types + formula grading
+Goal: schema v2 as TypeScript types, and gradeFormulaStep so a lesson's formula steps can be checked. Read docs/SPEC.md §4 and Product spec §5 first.
+Files: packages/grader/src/types.ts, packages/grader/src/formula.ts, packages/grader/src/index.ts,
+       packages/grader/package.json (add "@excel-guru/engine": "workspace:*"), packages/grader/test/formula.test.ts,
+       packages/grader/test/placeholder.test.ts (delete)
+Interface (frozen, SPEC §4):
+  type GradeResult = { correct: boolean; reason?: 'not_formula' | 'parse_error' | 'wrong_value' | 'missing_function' };
+  export function gradeFormulaStep(step: FormulaStep, input: string): GradeResult;
+  index.ts exports gradeFormulaStep, GradeResult and every type in types.ts.
+Rules:
+- types.ts: Lesson {id, module, title, difficulty: 1|2|3, requiredCorrect, isIntro, video: string|null, steps: Step[]};
+  Step = FormulaStep | SelectStep | ShortcutStep | McqStep | PictureStep | ProjectStep | InfoStep, discriminated on `type`,
+  with every field in the Product spec §5 example; optional activeCell, highlightCells, postcondition, mobileButtons on every step.
+- Grading order: input not starting with "=" → not_formula; TokenizeError/ParseError from Sheet.set → parse_error;
+  value differs → wrong_value; a mustUse name missing from functionsUsed(targetCell) → missing_function.
+- Value compare: numbers within 1e-9; strings exact; booleans exact; errors by code; any type mismatch is wrong.
+- mustUse comparison is case-insensitive. Pure TypeScript, no DOM or Node APIs. Write tests first.
+Done when:
+- =SUM(B2:B4) and =B2+B3+B4 both pass a step with no mustUse; =B2+B3+B4 fails with missing_function when mustUse is ["SUM"]
+- the Product spec §5 COUNT step (=COUNT(B2:B6) = 4) passes; "SUM(B2:B6)" → not_formula; "=SUM(" → parse_error
+- 0.1+0.2 matches expectedValue 0.3; "=1/0" matches expectedValue {"error":"#DIV/0!"}
+- ≥ 20 tests pass; typecheck passes; no other files changed
+```
+
+```markdown
+## T8: validate-content
+Goal: `pnpm validate-content` checks every lesson file, so LLM-drafted lessons with wrong answers fail CI. Read Product spec §5 first.
+Files: scripts/validate-content.ts, scripts/validate-content.test.ts, scripts/fixtures/** (bad lessons for tests),
+       package.json (root: validate-content script + tsx devDependency + @excel-guru/grader workspace dep), content/order.json
+Interface: validateContent(dir: string): { file: string; errors: string[] }[]; the CLI prints them and exits 1 if any.
+Rules (every check in Product spec §5):
+- each file in content/lessons/<module>/<id>.json has id = file name and module = folder name
+- every formula step: gradeFormulaStep(step, step.solution) is correct (so solution = expectedValue and uses mustUse)
+- every select target ("B2", "B2:C4", "B:B", "3:3") lies inside the step's grid
+- no shortcut key uses a browser-reserved combo (Ctrl/Cmd + W, T, N, Q, Tab), win or mac
+- step ids are unique within a lesson; at least requiredCorrect gradable steps (anything but info)
+- every lesson id appears exactly once in content/order.json, and order.json names no missing lesson
+- content/order.json starts as ["intro"] (the Intro lesson lands with Lane C)
+Done when:
+- one failing fixture per rule above, each reporting a clear message with file and step id
+- `pnpm validate-content` exits 0 once content/lessons/intro/intro.json exists and is valid
+- tests run under `pnpm test`; typecheck passes; no other files changed
+```
+
+```markdown
+## T9: Grid component
+Goal: an Excel-like grid in the browser wired to the engine, so typing =SUM(A1:A3) over 1, 2, 3 shows 6. Read Product spec §4 first.
+Files: apps/web/components/grid/Grid.tsx, apps/web/components/grid/FormulaBar.tsx, apps/web/components/grid/grid.css,
+       apps/web/app/(app)/sandbox/page.tsx, apps/web/next.config.ts (transpilePackages for @excel-guru/engine and @excel-guru/grader),
+       apps/web/package.json (workspace deps)
+Interface: <Grid grid={...} targetCell?="C2" highlightCells?={["B2:B6"]} onCommit?={(addr, input) => void} sheetRef? />
+Scope (Phase 1 only; point mode, coloured references and mobileButtons are Phase 2):
+- name box with the active cell, ✕ ✓ fx buttons, formula bar; columns A.. and rows 1..8 headers; 7–8 columns × 8 rows from `grid`
+- click or arrow keys move a thick selection border; typing starts editing; Enter commits via Sheet.set, Escape cancels, Delete clears
+- cells show Sheet.get (errors as their code, e.g. #DIV/0!); the formula bar shows getFormula for the active cell
+- targetCell and highlightCells are visibly marked
+- a Tokenize/ParseError shows its message inline under the formula bar; never alert()
+- colours from apps/web/lib/tokens.css only; works at 375 px wide
+Done when:
+- on /sandbox, typing 1, 2, 3 in A1:A3 and =SUM(A1:A3) in B1 shows 6; changing A1 to 10 shows 15
+- =1/0 shows #DIV/0!; "=SUM(" shows a parse message and keeps the old value
+- `pnpm typecheck && pnpm test` pass; `pnpm build` succeeds; no other files changed
+```
+
+```markdown
+## T10: Lesson player v0
+Goal: open /lesson/intro and play it start to finish with no account. Read Product spec §3 and §5 first.
+Files: apps/web/lib/lessons.ts, apps/web/lib/lessons.test.ts, apps/web/app/(app)/lesson/[id]/page.tsx,
+       apps/web/app/(app)/lesson/[id]/Player.tsx, apps/web/app/(app)/lesson/[id]/player.css
+Interface: lessons.ts → getLesson(id): Lesson | null; getOrder(): string[]; nextLessonId(id): string | null
+Scope (Phase 1 only; Show Answer, Skip/Previous rules, AI drawer, celebration screen and saving progress are Phase 2+):
+- server page loads content/lessons/**/<id>.json and content/order.json at build time; unknown id → notFound()
+- centre column: title, % bar (correct ÷ requiredCorrect), question card, then the step
+- info step: text + Continue; formula step: prompt + <Grid> with targetCell and highlightCells;
+  Check (or Enter) → gradeFormulaStep; correct → "Correct!", the explain text, result written into the cell, Continue;
+  wrong → "Not quite" with the reason, try again
+- other step types render "Coming soon" + Continue
+- lesson completes after requiredCorrect correct answers; when steps run out, cycle from step 4 (decision 19);
+  then "Lesson complete" with a link to nextLessonId
+- the grid takes keyboard focus on every new step
+Done when:
+- lessons.ts tests: getLesson("intro") loads; unknown id → null; nextLessonId follows order.json; cycling picks step 4 after the last
+- /lesson/intro plays to "Lesson complete" locally and on the Vercel preview, on desktop and a phone
+- `pnpm typecheck && pnpm test && pnpm validate-content` pass; no other files changed
+```
+
 ## Data model and lesson schema
 
 These core tables, plus the ones in Product spec §15, carry the whole product; lessons live as JSON in the repo, not in the database, so content changes ship with a git push.
