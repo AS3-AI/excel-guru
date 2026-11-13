@@ -184,7 +184,30 @@ function count(cells: CellValue[] | ExcelError): CellValue {
   return Array.isArray(cells) ? cells.length : cells;
 }
 
+// ---------------------------------------------------------------------------
+// DATEVALUE. JS parses "2024-01-01" as UTC midnight but "1/1/2024" as local
+// midnight, so formula.js's result drifts by the timezone offset. Take the
+// calendar day each form names and build the serial in UTC.
+
+const ISO_DATE_RE = /^\s*(\d{4})-(\d\d?)-(\d\d?)\s*$/;
+
+function datevalue(text: Arg): CellValue {
+  if (isError(text)) return text;
+  if (typeof text !== "string") return { error: "#VALUE!" };
+  const iso = ISO_DATE_RE.exec(text);
+  let day: number;
+  if (iso) {
+    day = Date.UTC(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+  } else {
+    const local = new Date(text);
+    if (Number.isNaN(local.getTime())) return { error: "#VALUE!" };
+    day = Date.UTC(local.getFullYear(), local.getMonth(), local.getDate());
+  }
+  return Number.isNaN(day) ? { error: "#VALUE!" } : (day - EPOCH) / DAY_MS;
+}
+
 const OWN: Record<string, Impl> = {
+  DATEVALUE: (text) => datevalue(text),
   COUNTIF: (range, crit) => count(selected(range, [range, crit])),
   COUNTIFS: (...pairs) => count(selected(pairs[0], pairs)),
   SUMIF: (range, crit, sumRange) => sum(selected(sumRange ?? range, [range, crit])),

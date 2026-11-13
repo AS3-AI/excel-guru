@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { tokenize } from "../src/tokenizer";
 import { parse } from "../src/parser";
 import { evaluate, functionNames, type CellValue, type ErrorCode, type EvalContext, type ExcelError } from "../src/evaluator";
@@ -109,6 +109,21 @@ describe("evaluate: functions", () => {
   it("nested calls", () => expect(ev("=ROUND(AVERAGE(1,2,2),1)")).toBe(1.7));
   it("dotted names", () => expect(ev("=STDEV.S(2,4,4,4,5,5,7,9)")).toBeCloseTo(2.138, 3));
   it("DATE returns an Excel serial number", () => expect(ev("=DATE(2024,1,1)")).toBe(45292));
+});
+
+describe("evaluate: DATEVALUE is timezone-independent", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  for (const tz of ["UTC", "America/Los_Angeles", "Asia/Kolkata", "Pacific/Kiritimati"]) {
+    it(`gives whole-day serials under ${tz}`, () => {
+      vi.stubEnv("TZ", tz);
+      expect(ev('=DATEVALUE("2024-01-01")')).toBe(45292);
+      expect(ev('=DATEVALUE("1/1/2024")')).toBe(45292);
+      expect(ev('=DATEVALUE("2024-03-15")')).toBe(45366);
+    });
+  }
+
+  it("rejects text that isn't a date", () => expect(ev('=DATEVALUE("hello")')).toEqual(err("#VALUE!")));
 });
 
 describe("evaluate: lazy IF, IFERROR, AND, OR", () => {
