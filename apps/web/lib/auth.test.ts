@@ -145,7 +145,7 @@ describe("authRedirect", () => {
   const noProfile = { signedIn: true, hasProfile: false, search: "" };
   const full = { signedIn: true, hasProfile: true, search: "" };
 
-  it.each(["/dashboard", "/profile", "/review", "/admin", "/admin/groups/1"])(
+  it.each(["/profile", "/review", "/admin", "/admin/groups/1"])(
     "sends signed-out users from %s to login with next",
     (pathname) => {
       expect(authRedirect({ ...anon, pathname })).toBe(`/login?next=${encodeURIComponent(pathname)}`);
@@ -159,14 +159,14 @@ describe("authRedirect", () => {
   });
 
   it("sends signed-in users without a profile to onboarding", () => {
-    expect(authRedirect({ ...noProfile, pathname: "/dashboard" })).toBe("/onboarding?next=%2Fdashboard");
+    expect(authRedirect({ ...noProfile, pathname: "/profile" })).toBe("/onboarding?next=%2Fprofile");
   });
 
   it("lets complete users through protected routes", () => {
-    expect(authRedirect({ ...full, pathname: "/dashboard" })).toBeNull();
+    expect(authRedirect({ ...full, pathname: "/profile" })).toBeNull();
   });
 
-  it.each(["/", "/lesson/intro", "/pricing", "/daily", "/dashboards-are-not-protected"])(
+  it.each(["/", "/dashboard", "/lesson/intro", "/pricing", "/daily", "/profiles-are-not-protected"])(
     "leaves public route %s alone",
     (pathname) => {
       expect(authRedirect({ ...anon, pathname })).toBeNull();
@@ -196,7 +196,8 @@ describe("authRedirect", () => {
 
 describe("needsProfileCheck", () => {
   it("is true only for routes whose decision depends on the profile", () => {
-    expect(needsProfileCheck("/dashboard")).toBe(true);
+    expect(needsProfileCheck("/profile")).toBe(true);
+    expect(needsProfileCheck("/dashboard")).toBe(false);
     expect(needsProfileCheck("/login")).toBe(true);
     expect(needsProfileCheck("/onboarding")).toBe(true);
     expect(needsProfileCheck("/")).toBe(false);

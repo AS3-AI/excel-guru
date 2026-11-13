@@ -3,8 +3,8 @@
 
 export const DEFAULT_AFTER_AUTH = "/dashboard";
 
-/** Routes that need a signed-in learner with a profile row. */
-export const PROTECTED_PREFIXES = ["/dashboard", "/profile", "/review", "/admin"] as const;
+/** Routes that need a signed-in learner with a profile row. /dashboard is public (signed out shows 0 / 85). */
+export const PROTECTED_PREFIXES = ["/profile", "/review", "/admin"] as const;
 /** Pages that make no sense once signed in. */
 export const AUTH_PAGES = ["/login", "/signup"] as const;
 export const ONBOARDING = "/onboarding";
