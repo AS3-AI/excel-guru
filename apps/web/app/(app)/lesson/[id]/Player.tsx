@@ -110,7 +110,23 @@ export function Player({ lesson, next, nextLessonId }: Props) {
     gradeCommitted(s);
   };
 
-  // Enter in the grid commits the edit (Grid's handler runs first), then checks it here.
+  /**
+   * Capture phase, before Grid sees the key. Enter on the grid itself (no editor open) checks the
+   * committed answer instead of moving the selection down. Enter inside an editor is left to Grid,
+   * which commits it; onStageKeyDown then grades it.
+   */
+  const onStageKeyDownCapture = (e: KeyboardEvent<HTMLDivElement>) => {
+    committed.current = false;
+    const plainEnter = e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey;
+    const onGrid = e.target instanceof HTMLElement && e.target.getAttribute("role") === "grid";
+    if (plainEnter && onGrid && step.type === "formula" && !feedback?.correct) {
+      e.preventDefault();
+      e.stopPropagation();
+      gradeCommitted(step);
+    }
+  };
+
+  // Enter in an editor: Grid's handler commits first; grade only if that commit succeeded.
   const onStageKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" && committed.current && step.type === "formula") gradeCommitted(step);
   };
@@ -182,9 +198,7 @@ export function Player({ lesson, next, nextLessonId }: Props) {
           <div
             ref={stageRef}
             className="pl-stage"
-            onKeyDownCapture={() => {
-              committed.current = false;
-            }}
+            onKeyDownCapture={onStageKeyDownCapture}
             onKeyDown={onStageKeyDown}
           >
             {/* Keyed per visit: Grid compares grids by value, so a repeated step would keep the old sheet. */}
