@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { ParseError, Sheet, TokenizeError } from "@excel-guru/engine";
 import {
-  addressOf, colLetter, editOutcome, formatValue, gridSize, inRects, isTypingKey, move, parseRef, rawInput, sameGrid, tabStep,
+  addressOf, colLetter, colMinChars, editOutcome, formatValue, gridColumns, gridSize, inRects, isTypingKey, move, parseRef,
+  rawInput, sameGrid, tabStep,
 } from "./Grid";
 
 describe("colLetter / addressOf", () => {
@@ -164,6 +165,31 @@ describe("sameGrid (when a new grid prop resets the sheet)", () => {
     expect(sameGrid([[null]], [[""]])).toBe(false);
     expect(sameGrid([[1]], [["1"]])).toBe(false);
     expect(sameGrid([[0]], [[false]])).toBe(false);
+  });
+});
+
+describe("colMinChars (columns wide enough for the lesson's own text)", () => {
+  const fruit = [["Fruit", "Price"], ["Apples", 3], ["Bananas", 2], ["Cherries", 4]];
+  it("is the longest shown text per column, 0 for empty columns", () => {
+    expect(colMinChars(new Sheet(fruit), gridSize(fruit))).toEqual([8, 5, 0, 0, 0, 0, 0]);
+    expect(colMinChars(new Sheet([]), gridSize([]))).toEqual([0, 0, 0, 0, 0, 0, 0]);
+  });
+  it("measures what the cell shows, not what was typed", () => {
+    expect(colMinChars(new Sheet([[0.1 + 0.2, true, "=1/0", "=10*10"]]), { rows: 1, cols: 4 })).toEqual([3, 4, 7, 3]);
+  });
+  it("caps very long text so one column can't take over the grid", () => {
+    const long = [["A very long product description indeed"]];
+    expect(colMinChars(new Sheet(long), { rows: 1, cols: 1 })).toEqual([14]);
+    expect(colMinChars(new Sheet(long), { rows: 1, cols: 1 }, 20)).toEqual([20]);
+  });
+});
+
+describe("gridColumns (the grid-template-columns value)", () => {
+  it("keeps empty columns flexible down to 0, as before", () => {
+    expect(gridColumns([0, 0])).toBe("var(--eg-rowhead) minmax(0, 1fr) minmax(0, 1fr)");
+  });
+  it("gives text columns a minimum of their text plus the cell padding, sharing space equally", () => {
+    expect(gridColumns([8, 0])).toBe("var(--eg-rowhead) minmax(calc(8ch + 8px), 1fr) minmax(0, 1fr)");
   });
 });
 

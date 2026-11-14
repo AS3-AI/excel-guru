@@ -17,8 +17,10 @@
 
 .pl-stage { margin-bottom: 12px; }
 
+/* Feedback sits below the actions row, so Check/Continue stay put as it appears and clears (T11). */
+.pl-feedback { margin-top: 16px; }
 .pl-feedback:empty { display: none; }
-.pl-result { border-radius: 12px; padding: 14px 20px; margin-bottom: 12px; }
+.pl-result { border-radius: 12px; padding: 14px 20px; }
 .pl-result p { margin: 0; }
 .pl-result p + p { margin-top: 6px; }
 .pl-result-head { font-weight: 700; font-size: 1.1rem; }
