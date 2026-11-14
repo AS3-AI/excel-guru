@@ -1,37 +1,58 @@
-/* Lesson player v0 (T10). Colours only from lib/tokens.css. */
-.pl { max-width: 760px; margin: 0 auto; padding: 16px 0 48px; }
-.pl-title { font-size: clamp(1.5rem, 5vw, 2rem); margin: 0 0 12px; }
-
-.pl-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-.pl-pct { flex: 0 0 3.5em; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
-.pl-bar { flex: 1 1 auto; height: 10px; border-radius: 999px; background: var(--border); overflow: hidden; }
-.pl-bar-fill { height: 100%; background: var(--primary); border-radius: inherit; transition: width 0.3s ease; }
-@media (prefers-reduced-motion: reduce) { .pl-bar-fill { transition: none; } }
-
-.pl-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-  padding: 16px 20px; margin-bottom: 16px;
-}
-.pl-prompt { margin: 0; color: var(--ink); font-size: 1.05rem; }
-.pl-soon { margin: 12px 0 0; color: var(--muted); }
-
-.pl-stage { margin-bottom: 12px; }
-
-/* Feedback sits below the actions row, so Check/Continue stay put as it appears and clears (T11). */
-.pl-feedback { margin-top: 16px; }
-.pl-feedback:empty { display: none; }
-.pl-result { border-radius: 12px; padding: 14px 20px; }
-.pl-result p { margin: 0; }
-.pl-result p + p { margin-top: 6px; }
-.pl-result-head { font-weight: 700; font-size: 1.1rem; }
-.pl-result.is-correct { background: var(--ink); color: var(--surface-warm); }
-.pl-result.is-wrong { background: var(--surface); border: 1px solid var(--danger); }
-.pl-result.is-wrong .pl-result-head { color: var(--danger); }
-
-.pl-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
-.pl-hint { color: var(--muted); font-size: 0.95rem; }
-.pl-continue { font-size: 1.1rem; padding: 12px 24px; text-decoration: none; display: inline-block; }
-.pl .btn:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
-
-.pl-complete h2 { color: var(--ink); margin: 0 0 8px; }
-.pl-complete p { margin: 0 0 16px; color: var(--muted); }
+/* Player palette is composed only from lib/tokens.css. */
+.pl-page { max-width: none; }
+.pl-breadcrumb { display:flex; align-items:center; gap:10px; min-height:48px; padding:0 16px; margin:0 0 14px; color:var(--surface-warm); background:var(--ink); border-radius:10px; }
+.pl-breadcrumb a { color:inherit; }
+.pl-layout { display:grid; grid-template-columns:minmax(190px, 230px) minmax(0, 1fr) minmax(190px, 230px); gap:20px; align-items:start; }
+.pl { min-width:0; padding:0 0 48px; }
+.pl-title { font-size:clamp(1.5rem, 5vw, 2rem); margin:0 0 12px; }
+.pl-progress { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+.pl-pct { flex:0 0 3.5em; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums; }
+.pl-bar { flex:1 1 auto; height:10px; border-radius:999px; background:var(--border); overflow:hidden; }
+.pl-bar-fill { height:100%; background:var(--primary); border-radius:inherit; transition:width .3s ease; }
+@media (prefers-reduced-motion: reduce) { .pl-bar-fill { transition:none; } }
+.pl-card { background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--primary); border-radius:12px; padding:16px 20px; margin-bottom:16px; }
+.pl-prompt { display:block; margin:0; color:var(--text); font-size:1.05rem; }
+.pl-soon { margin:12px 0 0; color:var(--muted); }
+.pl-stage { min-width:0; margin-bottom:12px; }
+.pl-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin:12px 0; }
+.pl-actions.is-correct { padding:14px; border-radius:10px; color:var(--surface); background:var(--ink); }
+.pl-actions.is-correct .pl-hint { color:var(--surface-warm); }
+.pl-actions.is-correct .pl-correct-label { color:var(--surface); }
+.pl-actions.is-correct .btn { color:var(--ink); }
+.pl-hint { color:var(--muted); font-size:.95rem; }
+.pl-continue { font-size:1.1rem; padding:12px 24px; text-decoration:none; display:inline-block; }
+.pl-skip { background:var(--surface); color:var(--ink); border:1px solid var(--border); }
+.pl .btn:focus-visible,.pl-right .btn:focus-visible { outline:3px solid var(--primary-strong); outline-offset:2px; }
+.pl-correct-label { color:var(--ink); font-size:1.2rem; }
+.pl-feedback { min-height:0; margin-top:8px; }
+.pl-feedback:empty { display:none; }
+.pl-wrong-summary { margin:0; color:var(--danger); }
+.pl-complete h2 { color:var(--ink); margin:0 0 8px; }
+.pl-complete p { margin:0 0 12px; color:var(--text); }
+.pl-lessons,.pl-right section { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px; }
+.pl-lessons h2,.pl-right h2 { margin:0 0 10px; color:var(--ink); font-size:1.05rem; }
+.pl-lessons ol { list-style:none; margin:0; padding:0; }
+.pl-lessons li + li { border-top:1px solid var(--border); }
+.pl-lessons a { display:grid; grid-template-columns:25px 1fr; gap:6px; align-items:center; padding:9px 2px; color:var(--text); text-decoration:none; font-size:.9rem; }
+.pl-lessons b { grid-column:2; color:var(--primary); font-size:.68rem; letter-spacing:.04em; }
+.pl-lessons .is-current a { color:var(--ink); font-weight:700; }
+.pl-lesson-num { color:var(--muted); font-variant-numeric:tabular-nums; }
+.pl-right { display:grid; gap:12px; }
+.pl-right section p { margin:0; color:var(--muted); }
+.pl-share { display:flex; flex-wrap:wrap; gap:8px; }
+.pl-share a { color:var(--primary-strong); }
+.pl-options { margin:0; padding:12px 18px; border:1px solid var(--border); border-radius:12px; background:var(--surface); }
+.pl-options legend { padding:0 4px; }
+.pl-options label { display:flex; align-items:center; gap:10px; min-height:42px; color:var(--text); }
+.pl-free-answer { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+.pl-free-answer input { min-width:0; flex:1; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--surface); color:var(--text); }
+.pl-step-image { display:block; max-width:100%; height:auto; margin:0 auto 14px; }
+.pl-drawer { position:fixed; z-index:5; top:0; right:0; bottom:0; width:min(380px, 92vw); padding:20px; overflow:auto; background:var(--surface); border-left:1px solid var(--border); box-shadow:0 0 24px color-mix(in srgb, var(--ink) 18%, transparent); }
+.pl-drawer header { display:flex; align-items:center; justify-content:space-between; margin:-20px -20px 20px; padding:18px 20px; color:var(--ink); background:var(--warning); }
+@media (prefers-color-scheme:dark) { .pl-drawer header { color:var(--primary-ink); } }
+.pl-drawer header button { border:0; background:transparent; color:inherit; font-size:1.6rem; cursor:pointer; }
+.pl-show-answer { margin-bottom:16px; }
+.pl-solution { padding:12px; border-radius:8px; background:var(--surface-warm); color:var(--text); overflow-wrap:anywhere; }
+.pl-ai-slot { min-height:100px; padding:14px; border:1px dashed var(--border); border-radius:8px; color:var(--muted); }
+@media (max-width:999px) { .pl-layout { grid-template-columns:minmax(0,1fr); } .pl-right { grid-template-columns:repeat(2,minmax(0,1fr)); } .pl-lessons ol { max-height:220px; overflow:auto; } }
+@media (max-width:520px) { .pl-right { grid-template-columns:minmax(0,1fr); } .pl-breadcrumb { gap:6px; padding:0 10px; font-size:.85rem; flex-wrap:wrap; } .pl-card { padding:14px; } }
