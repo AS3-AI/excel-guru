@@ -176,16 +176,106 @@ export function gridColumns(minChars: number[]): string {
   return ["var(--eg-rowhead)", ...tracks].join(" ");
 }
 
+// ---------- spills (T6) ----------
+
+/** Rows and columns a spill may add past the lesson's own size, so a huge array can't hang the page. */
+const MAX_SPILL_ROWS = 500;
+const MAX_SPILL_COLS = 52;
+
+/**
+ * The grid's size grown to include any spill that runs past it (a spill is contiguous and starts
+ * inside, so probing the row and column just past the edge finds it), and the active cell, so a
+ * spill that shrinks doesn't strand the selection.
+ */
+export function sizeWithSpills(sheet: Sheet, base: { rows: number; cols: number }, active: Pos): { rows: number; cols: number } {
+  let rows = Math.max(base.rows, active.row + 1);
+  let cols = Math.max(base.cols, active.col + 1);
+  const rowUsed = (row: number) => Array.from({ length: cols }, (_, col) => col).some((col) => sheet.get(addressOf({ row, col })) !== null);
+  const colUsed = (col: number) => Array.from({ length: rows }, (_, row) => row).some((row) => sheet.get(addressOf({ row, col })) !== null);
+  for (let grew = true; grew; ) {
+    grew = false;
+    while (rows < base.rows + MAX_SPILL_ROWS && rowUsed(rows)) { rows++; grew = true; }
+    while (cols < base.cols + MAX_SPILL_COLS && colUsed(cols)) { cols++; grew = true; }
+  }
+  return { rows, cols };
+}
+
+/**
+ * Which cells hold a spilled value, mapped to their anchor (the cell with the formula). The Sheet API
+ * doesn't say, so it's derived: a cell that shows a value but holds no formula and no literal the
+ * lesson or learner put there (`isLiteral`) was filled by a spill. Spills are rectangles anchored at
+ * their top-left, so a spilled cell's anchor is its left or upper neighbour's (or that neighbour, if
+ * it holds the formula). When both fit, which is ambiguous only where a formula sits right beside
+ * another formula's spill, the reading that leaves every spill a whole rectangle wins.
+ */
+export function findSpills(
+  sheet: Sheet, isLiteral: (addr: string) => boolean, size: { rows: number; cols: number },
+): Map<string, string> {
+  const attempt = (preferUp: boolean) => {
+    const owner = new Map<string, string>();
+    const ownerOf = (row: number, col: number): string | null => {
+      if (row < 0 || col < 0) return null;
+      const a = addressOf({ row, col });
+      return sheet.getFormula(a) !== null ? a : owner.get(a) ?? null;
+    };
+    let orphans = 0;
+    for (let row = 0; row < size.rows; row++) {
+      for (let col = 0; col < size.cols; col++) {
+        const a = addressOf({ row, col });
+        if (sheet.getFormula(a) !== null || isLiteral(a) || sheet.get(a) === null) continue;
+        const fits = (anchor: string | null): anchor is string => {
+          if (anchor === null) return false;
+          const p = parseRef(anchor)!;
+          return (p.r1 === row || ownerOf(row - 1, col) === anchor) && (p.c1 === col || ownerOf(row, col - 1) === anchor);
+        };
+        const left = ownerOf(row, col - 1), up = ownerOf(row - 1, col);
+        const anchor = [preferUp ? up : left, preferUp ? left : up].find(fits);
+        if (anchor) owner.set(a, anchor);
+        else orphans++;
+      }
+    }
+    // Each anchor's cells must fill the rectangle from the anchor to its furthest cell.
+    const boxes = new Map<string, { r2: number; c2: number; n: number }>();
+    for (const [cell, anchor] of owner) {
+      const p = parseRef(cell)!, b = boxes.get(anchor) ?? { r2: 0, c2: 0, n: 0 };
+      boxes.set(anchor, { r2: Math.max(b.r2, p.r1), c2: Math.max(b.c2, p.c1), n: b.n + 1 });
+    }
+    let broken = orphans;
+    for (const [anchor, b] of boxes) {
+      const p = parseRef(anchor)!;
+      if ((b.r2 - p.r1 + 1) * (b.c2 - p.c1 + 1) - 1 !== b.n) broken++;
+    }
+    return { owner, broken };
+  };
+  const up = attempt(true);
+  if (up.broken === 0) return up.owner;
+  const left = attempt(false);
+  return left.broken < up.broken ? left.owner : up.owner;
+}
+
+/** Cells holding a literal in the starting grid (strings starting with "=" are formulas there). */
+export function literalCells(grid: GridLiteral[][]): Set<string> {
+  const out = new Set<string>();
+  grid.forEach((row, r) => row.forEach((v, c) => {
+    if (v !== null && !(typeof v === "string" && v.startsWith("="))) out.add(addressOf({ row: r, col: c }));
+  }));
+  return out;
+}
+
 // ---------- component ----------
 
 type Editing = { draft: string; from: "cell" | "bar" };
-type Loaded = { grid: GridLiteral[][]; sheet: Sheet; size: { rows: number; cols: number }; columns: string };
+type Loaded = {
+  grid: GridLiteral[][]; sheet: Sheet; size: { rows: number; cols: number }; minChars: number[];
+  /** Cells that hold a literal of their own, kept in step with every write, so spilled cells can be told apart. */
+  literals: Set<string>;
+};
 
 const load = (grid: GridLiteral[][]): Loaded => {
   const sheet = new Sheet(grid);
   const size = gridSize(grid);
   // Sized once from the lesson's data, so columns don't jump while the learner types.
-  return { grid, sheet, size, columns: gridColumns(colMinChars(sheet, size)) };
+  return { grid, sheet, size, minChars: colMinChars(sheet, size), literals: literalCells(grid) };
 };
 const ORIGIN: Pos = { row: 0, col: 0 };
 
@@ -220,7 +310,12 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
     setEditingState(null);
     setError(null);
   }
-  const { sheet, size, columns } = loaded;
+  const { sheet, literals } = loaded;
+  // Grows past the lesson's size when a spill runs off the edge; new columns start flexible.
+  const size = sizeWithSpills(sheet, loaded.size, active);
+  const columns = gridColumns([...loaded.minChars, ...Array<number>(size.cols - loaded.size.cols).fill(0)]);
+  const spills = findSpills(sheet, (a) => literals.has(a), size);
+  const anchors = new Set(spills.values());
 
   useEffect(() => {
     if (sheetRef) sheetRef.current = sheet;
@@ -252,8 +347,8 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
   const target = targetCell ? parseRef(targetCell) : null;
   const highlights = (highlightCells ?? []).map(parseRef).filter((r): r is Rect => r !== null);
 
-  /** The formula, or the literal, the active cell holds. */
-  const contentOf = (a: string) => sheet.getFormula(a) ?? rawInput(sheet.get(a));
+  /** The formula, or the literal, the active cell holds. A spilled cell holds nothing of its own. */
+  const contentOf = (a: string) => (spills.has(a) ? "" : sheet.getFormula(a) ?? rawInput(sheet.get(a)));
 
   const startEdit = (draft: string, where: Editing["from"]) => {
     setError(null);
@@ -278,6 +373,8 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
       }
       throw e;
     }
+    if (input === "" || input.startsWith("=")) literals.delete(addr);
+    else literals.add(addr);
     setError(null);
     rerender();
     onCommit?.(addr, input);
@@ -401,14 +498,18 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
     startEdit(sheet.getFormula(addr) ?? "=", "bar");
   };
 
-  const barValue = editing ? editing.draft : contentOf(addr);
+  // A spilled cell shows its anchor's formula, greyed (as Excel does): it can't be edited there.
+  const spillAnchor = spills.get(addr);
+  const barValue = editing ? editing.draft : spillAnchor ? sheet.getFormula(spillAnchor) ?? "" : contentOf(addr);
+  /** The anchor of the spill the active cell is part of, so that spill gets an outline. */
+  const activeSpill = spillAnchor ?? (anchors.has(addr) ? addr : null);
   const cellId = (p: Pos) => `${idBase}-${addressOf(p)}`;
 
   const cols = Array.from({ length: size.cols }, (_, c) => c);
   const rows = Array.from({ length: size.rows }, (_, r) => r);
 
   return (
-    <div className="eg-sheet" ref={sheetEl}>
+    <div className={`eg-sheet${spillAnchor && !editing ? " is-spill-ref" : ""}`} ref={sheetEl}>
       <FormulaBar
         address={addr}
         value={barValue}
@@ -457,6 +558,21 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
                 const cls = ["eg-cell"];
                 if (typeof value === "number") cls.push("is-num");
                 else if (typeof value === "boolean" || isErr(value)) cls.push("is-center");
+                const spillOf = spills.get(a) ?? (anchors.has(a) ? a : null);
+                if (spillOf) {
+                  cls.push("is-spill");
+                  if (spillOf === activeSpill) {
+                    // Outline the selected spill's edges: sides whose neighbour isn't in the same spill.
+                    const same = (row: number, col: number) => {
+                      const n = addressOf({ row, col });
+                      return n === spillOf || spills.get(n) === spillOf;
+                    };
+                    if (!same(r - 1, c)) cls.push("spill-t");
+                    if (!same(r + 1, c)) cls.push("spill-b");
+                    if (!same(r, c - 1)) cls.push("spill-l");
+                    if (!same(r, c + 1)) cls.push("spill-r");
+                  }
+                }
                 if (highlights.length && inRects(highlights, r, c)) cls.push("is-hl");
                 if (target && inRects([target], r, c)) cls.push("is-target");
                 if (isActive) cls.push("is-active");
@@ -467,6 +583,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
                     role="gridcell"
                     aria-selected={isActive}
                     className={cls.join(" ")}
+                    title={spills.has(a) ? `Spilled from ${spills.get(a)}` : undefined}
                     onMouseDown={(e) => onCellMouseDown(e, pos)}
                     onDoubleClick={() => { if (!editing) startEdit(contentOf(a), "cell"); }}
                   >

@@ -22,10 +22,17 @@ const NUMBER_RE = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/;
 export const isError = (v: unknown): v is ExcelError => typeof v === "object" && v !== null && "error" in v;
 const err = (code: ErrorCode): ExcelError => ({ error: code });
 
-/** A formula's value for its cell. Ranges stay #VALUE! until spilling lands (T6). */
-export function evaluate(ast: Ast, ctx: EvalContext): CellValue {
-  const v = single(new Evaluator(ctx).eval(ast));
-  return v === null ? 0 : v; // =A1 on an empty A1 shows 0, as in Excel
+/**
+ * A formula's value for its cell: a single value, or a 2-D array (at least 2 cells) that the
+ * sheet spills from the anchor down and right. A 1×1 array is just its value. Empty cells read
+ * as 0, as in Excel (=A1 on an empty A1 shows 0, and so does an empty cell in a spill).
+ */
+export function evaluate(ast: Ast, ctx: EvalContext): CellValue | Matrix {
+  const v = new Evaluator(ctx).eval(ast);
+  if (!Array.isArray(v)) return v ?? 0;
+  if (v.length === 0 || v[0]!.length === 0) return err("#VALUE!");
+  if (v.length === 1 && v[0]!.length === 1) return v[0]![0] ?? 0;
+  return v.map((row) => row.map((c) => c ?? 0));
 }
 
 /** Unique uppercase function names in first-use order, nested calls included. */
@@ -73,17 +80,23 @@ class Evaluator {
       case "range":
         return this.range(ast.from, ast.to);
       case "unary": {
-        const v = this.scalar(ast.operand);
+        const v = this.eval(ast.operand);
         if (ast.op === "+") return v; // Excel's unary plus leaves the value alone: =+"a" is "a"
-        const n = toNumber(v);
-        return isError(n) ? n : -n;
+        return lift1(v, (x) => {
+          const n = toNumber(x);
+          return isError(n) ? n : -n;
+        });
       }
-      case "percent": {
-        const n = toNumber(this.scalar(ast.operand));
-        return isError(n) ? n : n / 100;
+      case "percent":
+        return lift1(this.eval(ast.operand), (x) => {
+          const n = toNumber(x);
+          return isError(n) ? n : n / 100;
+        });
+      case "binary": {
+        const l = this.eval(ast.left);
+        const r = this.eval(ast.right);
+        return lift2(l, r, (a, b) => binary(ast.op, a, b));
       }
-      case "binary":
-        return binary(ast.op, this.scalar(ast.left), this.scalar(ast.right));
       case "call":
         return this.call(ast.name.toUpperCase(), ast.args);
     }
@@ -168,6 +181,38 @@ class Evaluator {
     }
     return seen ? !stopOn : err("#VALUE!");
   }
+}
+
+// Operators on arrays work element by element (Excel 365): =A1:A3*2, =A1:A3=B1:B3.
+// A side with one row (or column) is repeated along that direction, so a column times a row
+// makes a table; where sizes still differ, the cells one side lacks are #N/A, as in Excel.
+
+function lift1(v: Value, f: (x: CellValue) => CellValue): Value {
+  return Array.isArray(v) ? v.map((row) => row.map(f)) : f(v);
+}
+
+function lift2(l: Value, r: Value, f: (a: CellValue, b: CellValue) => CellValue): Value {
+  if (!Array.isArray(l) && !Array.isArray(r)) return f(l, r);
+  const a: Matrix = Array.isArray(l) ? l : [[l]];
+  const b: Matrix = Array.isArray(r) ? r : [[r]];
+  const rows = Math.max(a.length, b.length);
+  const cols = Math.max(a[0]?.length ?? 0, b[0]?.length ?? 0);
+  const at = (m: Matrix, i: number, j: number): CellValue | undefined => {
+    const row = m.length === 1 ? m[0] : m[i];
+    if (!row) return undefined;
+    return row.length === 1 ? row[0] : row[j];
+  };
+  const out: Matrix = [];
+  for (let i = 0; i < rows; i++) {
+    const row: CellValue[] = [];
+    for (let j = 0; j < cols; j++) {
+      const x = at(a, i, j);
+      const y = at(b, i, j);
+      row.push(x === undefined || y === undefined ? err("#N/A") : f(x, y));
+    }
+    out.push(row);
+  }
+  return out;
 }
 
 /** A 1×1 range reads as its cell; any larger range is #VALUE! in a scalar slot. */
