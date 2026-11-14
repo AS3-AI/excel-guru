@@ -14,7 +14,7 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T15 Grader for every step type | agent | fd7729f, 1165e72 | passed | pushed | |
 | T18 Point mode + coloured refs | agent | f34bfb6, 695f534 | passed | pushed | whole-row refs off; iOS pointing untested on a device |
 | T21 CI | agent | fde79b9 | — | built | needs a real run on GitHub (2 test branches) |
-| T16 Player v1 | codex | — | — | in progress | |
+| T16 Player v1 | codex | 34571cf, 14d0680 | passed (3 rounds) | pushed | grid select mode added; T19 brings real COMPLETE badges |
 | T17 Shortcut steps | — | — | — | queued | after T16 |
 | T19 Progress API | — | — | — | queued | after T16 |
 | T20 Dashboard + access | — | — | — | queued | after T19 |
