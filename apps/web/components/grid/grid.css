@@ -167,6 +167,12 @@
   background: color-mix(in srgb, var(--eg-ref) 8%, transparent);
 }
 
+/* Forced colours (e.g. Windows High Contrast): no colour to show, so drop the mirror and show the input's own text. */
+@media (forced-colors: active) {
+  .eg-mirror { display: none; }
+  .eg-finput.has-mirror, .eg-cell-input.has-mirror { color: inherit; }
+}
+
 @media (max-width: 480px) {
   .eg-sheet { --eg-rowhead: 26px; --eg-row-h: 32px; font-size: 13px; }
   .eg-cell { padding: 0 2px; }

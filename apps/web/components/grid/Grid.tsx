@@ -4,7 +4,7 @@ import { useEffect, useId, useLayoutEffect, useReducer, useRef, useState } from 
 import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { ParseError, Sheet, TokenizeError, type CellValue, type ExcelError } from "@excel-guru/engine";
 import { FormulaBar, RefMirror, RefText, type ColouredRef } from "./FormulaBar";
-import { canPoint, findRefs, insertRef, refColours, wholeLineRef } from "./refs";
+import { arrowPoints, canPoint, findRefs, insertRef, refColours, wholeLineRef } from "./refs";
 import "./grid.css";
 
 /** A starting cell: a literal, or a string starting with "=" for a formula (as Sheet takes it). */
@@ -289,7 +289,11 @@ export function literalCells(grid: GridLiteral[][]): Set<string> {
  * (anchor stays put under Shift; cursor is what the next arrow moves). Typing drops it.
  */
 type Point = { start: number; end: number; anchor: Pos; cursor: Pos };
-type Editing = { draft: string; from: "cell" | "bar"; point?: Point };
+/**
+ * `entering` is Excel's Enter mode: the last change was typed text or a pointed reference, so an
+ * arrow at a trigger points. A click in the editor or a caret move clears it (Edit mode).
+ */
+type Editing = { draft: string; from: "cell" | "bar"; point?: Point; entering?: boolean };
 type Loaded = {
   grid: GridLiteral[][]; sheet: Sheet; size: { rows: number; cols: number }; minChars: number[];
   /** Cells that hold a literal of their own, kept in step with every write, so spilled cells can be told apart. */
@@ -405,10 +409,17 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
   /** The formula, or the literal, the active cell holds. A spilled cell holds nothing of its own. */
   const contentOf = (a: string) => (spills.has(a) ? "" : sheet.getFormula(a) ?? rawInput(sheet.get(a)));
 
-  const startEdit = (draft: string, where: Editing["from"]) => {
+  /** `entering`: the edit began by typing (Excel's Enter mode), so arrows may point; F2 and the like don't. */
+  const startEdit = (draft: string, where: Editing["from"], entering = false) => {
     setError(null);
-    setEditing({ draft, from: where });
+    setEditing({ draft, from: where, entering });
     onEditStart?.();
+  };
+
+  /** A click in an editor or a caret-only move: arrows move the caret from now on (Excel's Edit mode). */
+  const leaveEnterMode = () => {
+    const ed = editingRef.current;
+    if (ed?.entering) setEditing({ ...ed, entering: false });
   };
 
   /**
@@ -426,7 +437,9 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
   const pointTo = (ed: Editing, last: Point | null, caret: number, anchor: Pos, cursor: Pos) => {
     const ins = insertRef(ed.draft, last, caret, rangeRef(anchor, cursor));
     pendingCaret.current = ins.end;
-    setEditing({ draft: ins.draft, from: ed.from, point: { start: ins.start, end: ins.end, anchor, cursor } });
+    setEditing({
+      draft: ins.draft, from: ed.from, entering: true, point: { start: ins.start, end: ins.end, anchor, cursor },
+    });
   };
 
   const cancel = () => {
@@ -505,13 +518,13 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
       write("");
     } else if (key === "Backspace") {
       e.preventDefault();
-      startEdit("", "cell");
+      startEdit("", "cell", true);
     } else if (key === "F2") {
       e.preventDefault();
       startEdit(contentOf(addr), "cell");
     } else if (isTypingKey(e)) {
       e.preventDefault();
-      startEdit(key, "cell");
+      startEdit(key, "cell", true);
     }
   };
 
@@ -542,17 +555,27 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
     } else if (e.key === "Escape") {
       e.preventDefault();
       cancel();
-    } else if (e.key in DELTAS && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      // Point mode: the arrow moves a reference on the grid instead of the caret.
+    } else if (e.nativeEvent.isComposing) {
+      // An IME is composing: its arrows and spaces belong to it.
+    } else if (e.key in DELTAS) {
+      // Enter mode: the arrow moves a reference on the grid instead of the caret.
       const ed = editingRef.current;
-      const pt = ed && pointState(ed, e.currentTarget);
-      if (!ed || !pt) return; // outside point mode the arrow moves the caret
+      const el = e.currentTarget;
+      const caret = el.selectionStart !== null && el.selectionStart === el.selectionEnd ? el.selectionStart : null;
+      const plain = !e.ctrlKey && !e.metaKey && !e.altKey;
+      if (!ed || caret === null || !plain || !arrowPoints(ed.draft, caret, !!ed.entering, ed.point ?? null)) {
+        leaveEnterMode(); // the arrow moves the caret, so further arrows keep doing so
+        return;
+      }
       e.preventDefault();
-      const cursor = move(pt.last?.cursor ?? active, e.key, size);
-      const anchor = e.shiftKey ? pt.last?.anchor ?? active : cursor;
-      pointTo(ed, pt.last, pt.caret, anchor, cursor);
+      const last = ed.point && ed.point.end === caret ? ed.point : null;
+      const cursor = move(last?.cursor ?? active, e.key, size);
+      const anchor = e.shiftKey ? last?.anchor ?? active : cursor;
+      pointTo(ed, last, caret, anchor, cursor);
+    } else if (e.key === "Home" || e.key === "End") {
+      leaveEnterMode();
     } else if (e.key === " ") {
-      // Space right after a column letter or row number typed in point mode: B:B or 3:3.
+      // Space right after a column letter typed in point mode: B:B.
       const ed = editingRef.current;
       const el = e.currentTarget;
       if (!ed || el.selectionStart === null || el.selectionStart !== el.selectionEnd) return;
@@ -560,7 +583,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
       if (!line) return;
       e.preventDefault();
       pendingCaret.current = line.end;
-      setEditing({ draft: line.draft, from: ed.from });
+      setEditing({ draft: line.draft, from: ed.from, entering: true });
     }
   };
 
@@ -606,7 +629,8 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
       barInput.current?.focus();
       return;
     }
-    startEdit(sheet.getFormula(addr) ?? "=", "bar");
+    const formula = sheet.getFormula(addr);
+    startEdit(formula ?? "=", "bar", formula === null); // a fresh "=" is entering; an existing formula is editing
   };
 
   // A spilled cell shows its anchor's formula, greyed (as Excel does): it can't be edited there.
@@ -642,9 +666,10 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
         inputRef={barInput}
         refs={coloured}
         onStartEdit={() => startEdit(contentOf(addr), "bar")}
-        onChange={(draft) => setEditing({ draft, from: editingRef.current?.from ?? "bar" })}
+        onChange={(draft) => setEditing({ draft, from: editingRef.current?.from ?? "bar", entering: true })}
         onKeyDown={onEditorKeyDown}
         onBlur={onEditorBlur}
+        onCaretPlace={leaveEnterMode}
         onConfirm={() => commit()}
         onCancel={cancel}
         onFx={onFx}
@@ -723,9 +748,10 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
                         autoComplete="off"
                         autoCapitalize="off"
                         autoCorrect="off"
-                        onChange={(e) => setEditing({ draft: e.target.value, from: "cell" })}
+                        onChange={(e) => setEditing({ draft: e.target.value, from: "cell", entering: true })}
                         onKeyDown={onEditorKeyDown}
                         onBlur={onEditorBlur}
+                        onMouseUp={leaveEnterMode}
                       />
                       {coloured && (
                         <RefMirror text={editing.draft} refs={coloured} inputRef={cellInput} className="eg-cell-mirror" />

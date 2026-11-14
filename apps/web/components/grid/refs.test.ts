@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canPoint, findRefs, insertRef, REF_COLOURS, refColours, wholeLineRef } from "./refs";
+import { arrowPoints, canPoint, findRefs, insertRef, REF_COLOURS, refColours, wholeLineRef } from "./refs";
 
 const texts = (f: string) => findRefs(f).map((r) => f.slice(r.start, r.end));
 
@@ -96,28 +96,38 @@ describe("insertRef (insert at the caret, or replace the last inserted reference
   });
 });
 
-describe("wholeLineRef (space after a column letter or row number)", () => {
+describe("arrowPoints (Excel's Enter mode: arrows point only while entering)", () => {
+  it("points at a trigger when the last change was typed text or a pointed reference", () => {
+    expect(arrowPoints("=SUM(", 5, true, null)).toBe(true);
+    expect(arrowPoints("=SUM(A1", 7, true, { start: 5, end: 7 })).toBe(true);
+  });
+  it("moves the caret once the learner clicked in the input or moved the caret", () => {
+    expect(arrowPoints("=SUM()", 5, false, null)).toBe(false);
+    expect(arrowPoints("=A1+", 4, false, null)).toBe(false);
+    expect(arrowPoints("=SUM(A1", 7, false, { start: 5, end: 7 })).toBe(false);
+  });
+  it("moves the caret where it can't point", () => {
+    expect(arrowPoints("=A1", 3, true, null)).toBe(false);
+    expect(arrowPoints("=SUM(A1", 6, true, { start: 5, end: 7 })).toBe(false);
+  });
+});
+
+describe("wholeLineRef (space after a column letter)", () => {
   const size = { rows: 8, cols: 7 };
   it("turns a column letter typed in point mode into a whole column", () => {
     expect(wholeLineRef("=SUM(B", 6, size)).toEqual({ draft: "=SUM(B:B", start: 5, end: 8 });
     expect(wholeLineRef("=SUM(b)", 6, size)).toEqual({ draft: "=SUM(B:B)", start: 5, end: 8 });
     expect(wholeLineRef("=A1+C", 5, size)).toEqual({ draft: "=A1+C:C", start: 4, end: 7 });
   });
-  it("turns a row number typed after ( or , into a whole row", () => {
-    expect(wholeLineRef("=SUM(3", 6, size)).toEqual({ draft: "=SUM(3:3", start: 5, end: 8 });
-    expect(wholeLineRef("=SUM(A1,2)", 9, size)).toEqual({ draft: "=SUM(A1,2:2)", start: 8, end: 11 });
-  });
-  it("leaves numbers in arithmetic alone", () => {
+  it("leaves row numbers alone (the engine can't evaluate 3:3 yet)", () => {
+    expect(wholeLineRef("=SUM(3", 6, size)).toBeNull();
     expect(wholeLineRef("=A1+3", 5, size)).toBeNull();
-    expect(wholeLineRef("=3", 2, size)).toBeNull();
   });
-  it("only for columns and rows on the grid", () => {
+  it("only for columns on the grid", () => {
     expect(wholeLineRef("=SUM", 4, size)).toBeNull();
     expect(wholeLineRef("=SUM(H", 6, size)).toBeNull();
-    expect(wholeLineRef("=SUM(9", 6, size)).toBeNull();
-    expect(wholeLineRef("=SUM(0", 6, size)).toBeNull();
   });
-  it("only right after the letter or number, typed in point mode", () => {
+  it("only right after the letter, typed in point mode", () => {
     expect(wholeLineRef("=SUM(B ", 7, size)).toBeNull();
     expect(wholeLineRef("=SUM(A1", 7, size)).toBeNull();
     expect(wholeLineRef("=A1B", 4, size)).toBeNull();

@@ -107,24 +107,28 @@ function colNumber(letters: string): number {
 }
 
 /**
- * Space right after a column letter or row number typed in point mode: "=SUM(B" becomes "=SUM(B:B",
- * "=SUM(3" becomes "=SUM(3:3". Only for columns and rows on the grid, and rows only as a function
- * argument (after "(" or ","), so "=A1+3 " stays arithmetic. Null when the space is just a space.
+ * Whether an arrow key points rather than moving the caret: Excel's Enter mode. Only while the
+ * learner is entering (`entering`: the last change was typed text or a pointed reference, not a
+ * click in the input or a caret move), and only where point mode applies: right after the last
+ * pointed reference, or at a trigger (canPoint).
+ */
+export function arrowPoints(draft: string, caret: number, entering: boolean, last: Span | null): boolean {
+  if (!entering) return false;
+  return (last !== null && last.end === caret) || canPoint(draft, caret);
+}
+
+/**
+ * Space right after a column letter typed in point mode: "=SUM(B" becomes "=SUM(B:B". Only for
+ * columns on the grid. Null when the space is just a space.
+ * Whole rows ("3" → "3:3") are left out until the engine parses row ranges (needs an engine card);
+ * findRefs still colours a 3:3 typed by hand.
  */
 export function wholeLineRef(draft: string, caret: number, size: { rows: number; cols: number }): Inserted | null {
   if (!draft.startsWith("=") || !freeAfter(draft, caret)) return null;
   const toks = tokensBefore(draft, caret);
   const last = toks?.[toks.length - 1];
   if (!toks || !last || endOf(last) !== caret) return null;
-  const before = toks[toks.length - 2];
-  let line: string;
-  if (last.type === "NAME" && /^[A-Z]{1,3}$/.test(last.value) && isTrigger(before)) {
-    if (colNumber(last.value) > size.cols) return null;
-    line = `${last.value}:${last.value}`;
-  } else if (isRowNumber(last) && (before?.type === "LPAREN" || before?.type === "COMMA")) {
-    const row = Number(last.value);
-    if (row < 1 || row > size.rows) return null;
-    line = `${row}:${row}`;
-  } else return null;
-  return insertRef(draft, { start: last.pos, end: caret }, caret, line);
+  if (last.type !== "NAME" || !/^[A-Z]{1,3}$/.test(last.value) || !isTrigger(toks[toks.length - 2])) return null;
+  if (colNumber(last.value) > size.cols) return null;
+  return insertRef(draft, { start: last.pos, end: caret }, caret, `${last.value}:${last.value}`);
 }

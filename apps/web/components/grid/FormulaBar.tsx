@@ -64,6 +64,8 @@ type Props = {
   onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
   /** Focus leaving the editor commits (or drops an unparseable draft), so no edit is left open. */
   onBlur: (e: FocusEvent<HTMLInputElement>) => void;
+  /** A click placed the caret in the input: arrows move the caret from then on (Excel's Edit mode). */
+  onCaretPlace: () => void;
   /** ✓: commit in place. */
   onConfirm: () => void;
   onCancel: () => void;
@@ -72,7 +74,7 @@ type Props = {
 
 /** Name box, ✕ ✓ fx buttons, the formula input and, under it, any parse error. */
 export function FormulaBar({
-  address, value, editing, error, inputRef, refs, onStartEdit, onChange, onKeyDown, onBlur, onConfirm, onCancel, onFx,
+  address, value, editing, error, inputRef, refs, onStartEdit, onChange, onKeyDown, onBlur, onCaretPlace, onConfirm, onCancel, onFx,
 }: Props) {
   const errorId = useId();
   // Keep focus in the editor when a button is pressed, so ✓ commits what was typed.
@@ -112,6 +114,7 @@ export function FormulaBar({
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={onKeyDown}
             onBlur={onBlur}
+            onMouseUp={onCaretPlace}
           />
           {refs && <RefMirror text={value} refs={refs} inputRef={inputRef} className="eg-finput-mirror" />}
         </div>
