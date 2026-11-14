@@ -150,3 +150,30 @@ describe("Sheet: functionsUsed", () => {
   });
   it("literal cells use no functions", () => expect(new Sheet([[1]]).functionsUsed("A1")).toEqual([]));
 });
+
+describe("Sheet: spilled cells through the frozen API (T6)", () => {
+  it("get() of a spilled cell returns its value; getFormula() is null", () => {
+    const s = new Sheet([[1], [2]]);
+    s.set("B1", "=A1:A2");
+    expect(s.get("B2")).toBe(2);
+    expect(s.getFormula("B2")).toBeNull();
+    expect(s.getFormula("B1")).toBe("=A1:A2");
+  });
+  it("functionsUsed belongs to the anchor only", () => {
+    const s = new Sheet([["b"], ["a"]]);
+    s.set("B1", "=SORT(A1:A2)");
+    expect(s.functionsUsed("B1")).toEqual(["SORT"]);
+    expect(s.functionsUsed("B2")).toEqual([]);
+  });
+  it("a starting-grid literal blocks a starting-grid spill", () => {
+    const s = new Sheet([[1, "=A1:A2"], [2, "x"]]);
+    expect(s.get("B1")).toEqual({ error: "#SPILL!" });
+    expect(s.get("B2")).toBe("x");
+  });
+  it("a parse error on the anchor keeps the spill", () => {
+    const s = new Sheet([[1], [2]]);
+    s.set("B1", "=A1:A2");
+    expect(() => s.set("B1", "=SUM(")).toThrow(ParseError);
+    expect([s.get("B1"), s.get("B2")]).toEqual([1, 2]);
+  });
+});

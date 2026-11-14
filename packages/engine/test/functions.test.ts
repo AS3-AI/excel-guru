@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { tokenize } from "../src/tokenizer";
 import { parse } from "../src/parser";
-import { evaluate, type CellValue, type ErrorCode, type EvalContext, type ExcelError } from "../src/evaluator";
+import { evaluate, type CellValue, type ErrorCode, type EvalContext, type ExcelError, type Matrix } from "../src/evaluator";
 import { Sheet } from "../src/index";
 
 // Evaluates a formula against a literal grid (grid[0][0] is A1).
-function ev(src: string, grid: CellValue[][] = []): CellValue {
+function ev(src: string, grid: CellValue[][] = []): CellValue | Matrix {
   const ctx: EvalContext = {
     cell: (row, col) => grid[row]?.[col] ?? null,
     usedRows: () => grid.length,
@@ -102,9 +102,9 @@ describe("XLOOKUP: shapes and errors", () => {
     const grid: CellValue[][] = [["Q1", "Q2", "Q3"], [100, 200, 300]];
     expect(ev('=XLOOKUP("q2",A1:C1,A2:C2)', grid)).toBe(200);
   });
-  it("a multi-column return_array gives the matched row's first value (until T6 spills)", () => {
+  it("a multi-column return_array gives the whole matched row (T6: it spills)", () => {
     const grid: CellValue[][] = [["a", 1, "x"], ["b", 2, "y"]];
-    expect(ev('=XLOOKUP("b",A1:A2,B1:C2)', grid)).toBe(2);
+    expect(ev('=XLOOKUP("b",A1:A2,B1:C2)', grid)).toEqual([[2, "y"]]);
   });
   it("a 2-D lookup_array gives #VALUE!", () => {
     expect(ev('=XLOOKUP("a",A1:B2,C1:C2)', [["a", "b"], ["c", "d"]])).toEqual(err("#VALUE!"));

@@ -91,6 +91,22 @@
 .eg-cell.is-num .eg-val { text-align: right; }
 .eg-cell.is-center .eg-val { text-align: center; }
 
+/*
+ * Spills (T6): the anchor and the cells its array fills get a faint tint; the spill the active cell
+ * belongs to is outlined (top/left as inset shadows, right/bottom by recolouring the cell's own border).
+ */
+.eg-cell.is-spill {
+  --eg-spill-edge: color-mix(in srgb, var(--primary) 70%, var(--surface));
+  background: color-mix(in srgb, var(--primary) 5%, var(--surface));
+  box-shadow: var(--eg-spill-t, 0 0 transparent), var(--eg-spill-l, 0 0 transparent);
+}
+.eg-cell.spill-t { --eg-spill-t: inset 0 1px 0 var(--eg-spill-edge); }
+.eg-cell.spill-l { --eg-spill-l: inset 1px 0 0 var(--eg-spill-edge); }
+.eg-cell.spill-r { border-right-color: var(--eg-spill-edge); }
+.eg-cell.spill-b { border-bottom-color: var(--eg-spill-edge); }
+/* A spilled cell's formula bar shows the anchor's formula, greyed: it is edited at the anchor. */
+.eg-sheet.is-spill-ref .eg-finput { color: var(--muted); }
+
 /* Highlighted inputs and the answer cell. */
 .eg-cell.is-hl { background: color-mix(in srgb, var(--primary) 12%, var(--surface)); }
 .eg-cell.is-target {

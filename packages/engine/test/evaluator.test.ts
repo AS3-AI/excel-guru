@@ -1,10 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { tokenize } from "../src/tokenizer";
 import { parse } from "../src/parser";
-import { evaluate, functionNames, type CellValue, type ErrorCode, type EvalContext, type ExcelError } from "../src/evaluator";
+import {
+  evaluate, functionNames, type CellValue, type ErrorCode, type EvalContext, type ExcelError, type Matrix,
+} from "../src/evaluator";
 
 // Evaluates a formula against a literal grid (grid[0][0] is A1).
-function ev(src: string, grid: CellValue[][] = []): CellValue {
+function ev(src: string, grid: CellValue[][] = []): CellValue | Matrix {
   const ctx: EvalContext = {
     cell: (row, col) => grid[row]?.[col] ?? null,
     usedRows: () => grid.length,
@@ -85,8 +87,71 @@ describe("evaluate: errors", () => {
   it("error literal evaluates to itself", () => expect(ev("=#N/A")).toEqual(err("#N/A")));
   it("left error operand wins", () => expect(ev("=(1/0)+NOPE()")).toEqual(err("#DIV/0!")));
   it("error in a cell propagates", () => expect(ev("=A1*2", [[err("#NUM!")]])).toEqual(err("#NUM!")));
-  it("a range result is #VALUE! until spilling lands", () => {
-    expect(ev("=A1:A3", [[1], [2], [3]])).toEqual(err("#VALUE!"));
+});
+
+describe("evaluate: array results (T6)", () => {
+  it("a range result is a 2-D array", () => expect(ev("=A1:A3", [[1], [2], [3]])).toEqual([[1], [2], [3]]));
+  it("a 1×1 range result is just its value", () => expect(ev("=A1:A1", [[4]])).toBe(4));
+  it("empty cells in an array result read as 0", () => expect(ev("=A1:A2", [[null], [2]])).toEqual([[0], [2]]));
+  it("range op scalar works per element", () => expect(ev("=A1:A3*2", [[1], [2], [3]])).toEqual([[2], [4], [6]]));
+  it("scalar op range works per element", () => expect(ev("=10-A1:B1", [[1, 2]])).toEqual([[9, 8]]));
+  it("two ranges of the same size pair up", () => {
+    expect(ev("=A1:A2+B1:B2", [[1, 10], [2, 20]])).toEqual([[11], [22]]);
+  });
+  it("a column and a row broadcast to a table", () => {
+    expect(ev("=A1:A2*B1:C1", [[1, 10, 100], [2]])).toEqual([[10, 100], [20, 200]]);
+  });
+  it("mismatched sizes give #N/A where one side runs out", () => {
+    expect(ev("=A1:A3+B1:B2", [[1, 1], [2, 2], [3]])).toEqual([[2], [4], [err("#N/A")]]);
+  });
+  it("comparisons on a range give booleans", () => {
+    expect(ev('=A1:A3="b"', [["a"], ["B"], ["c"]])).toEqual([[false], [true], [false]]);
+  });
+  it("& joins per element", () => expect(ev('=A1:A2&"!"', [["a"], [1]])).toEqual([["a!"], ["1!"]]));
+  it("unary minus and % work per element", () => {
+    expect(ev("=-A1:A2", [[1], [2]])).toEqual([[-1], [-2]]);
+    expect(ev("=A1:A2%", [[50], [10]])).toEqual([[0.5], [0.1]]);
+  });
+  it("an error in one element stays in that element", () => {
+    expect(ev("=A1:A2*2", [[err("#NUM!")], [3]])).toEqual([[err("#NUM!")], [6]]);
+  });
+  it("SUM over an array expression", () => expect(ev("=SUM(A1:A3*2)", [[1], [2], [3]])).toBe(12));
+  it("SUMPRODUCT with a condition array", () => {
+    expect(ev("=SUMPRODUCT((A1:A3>1)*B1:B3)", [[1, 10], [2, 20], [3, 30]])).toBe(50);
+  });
+  it("IF passes an array branch through", () => {
+    expect(ev("=IF(TRUE,A1:A2,0)", [[1], [2]])).toEqual([[1], [2]]);
+  });
+  it("IFERROR passes an array through", () => {
+    expect(ev('=IFERROR(A1:A2,"x")', [[1], [2]])).toEqual([[1], [2]]);
+  });
+});
+
+describe("evaluate: IFERROR and IFNA work per element on arrays", () => {
+  it('IFERROR(1/A1:A2,"z") replaces only the error element', () => {
+    expect(ev('=IFERROR(1/A1:A2,"z")', [[1], [0]])).toEqual([[1], ["z"]]);
+  });
+  it("SUM(IFERROR(1/A1:A2,0)) sums what's left", () => {
+    expect(ev("=SUM(IFERROR(1/A1:A2,0))", [[1], [0]])).toBe(1);
+  });
+  it("an array fallback pairs up element by element", () => {
+    expect(ev("=IFERROR(1/A1:A3,B1:B3)", [[0, "a"], [2, "b"], [0, "c"]])).toEqual([["a"], [0.5], ["c"]]);
+  });
+  it("a single-cell fallback broadcasts", () => {
+    expect(ev("=IFERROR(A1:B1/0,C1)", [[1, 2, "none"]])).toEqual([["none", "none"]]);
+  });
+  it("an array with no errors is unchanged and the fallback isn't evaluated", () => {
+    expect(ev("=IFERROR(A1:A2*2,NOPE())", [[1], [2]])).toEqual([[2], [4]]);
+  });
+  it("IFERROR stays lazy for a scalar", () => expect(ev("=IFERROR(5,1/0)")).toBe(5));
+  it("IFNA replaces only #N/A, per element", () => {
+    const na = err("#N/A");
+    expect(ev('=IFNA(A1:A3,"-")', [[na], [err("#DIV/0!")], [3]])).toEqual([["-"], [err("#DIV/0!")], [3]]);
+  });
+  it("IFNA on a scalar", () => {
+    expect(ev('=IFNA(NA(),"x")')).toBe("x");
+    expect(ev('=IFNA(1/0,"x")')).toEqual(err("#DIV/0!"));
+    expect(ev("=IFNA(4,1/0)")).toBe(4);
   });
 });
 

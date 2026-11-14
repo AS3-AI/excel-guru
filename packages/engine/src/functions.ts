@@ -310,7 +310,7 @@ function flag(a: Arg): boolean | ExcelError {
 }
 
 // XLOOKUP(lookup, lookup_array, return_array, [if_not_found], [match_mode], [search_mode])
-function xlookup(args: Arg[]): CellValue {
+function xlookup(args: Arg[]): CellValue | Matrix {
   if (args.length < 3 || args.length > 6) return VALUE;
   const lookup = scalar(args[0]);
   if (isError(lookup)) return lookup;
@@ -323,19 +323,19 @@ function xlookup(args: Arg[]): CellValue {
   if (![0, -1, 1, 2].includes(matchMode) || ![1, -1, 2, -2].includes(searchMode)) return VALUE;
 
   // lookup_array is one column or one row; return_array must be as long in that direction.
-  // Until T6 spills, a return_array several columns wide (or rows tall) gives the first
-  // value of the matched row (or column); T6 should return the whole row/column.
+  // A return_array several columns wide (or rows tall) gives the whole matched row (or
+  // column), which spills (T6).
   let cells: CellValue[];
-  let result: (i: number) => CellValue;
+  let result: (i: number) => CellValue | Matrix;
   if (keys.every((row) => row.length === 1)) {
     cells = keys.map((row) => row[0]!);
     if (ret.length !== cells.length) return VALUE;
-    result = (i) => ret[i]![0] ?? null;
+    result = (i) => (ret[i]!.length === 1 ? ret[i]![0] ?? null : [ret[i]!]);
   } else if (keys.length === 1) {
     const row = keys[0]!;
     cells = row;
     if (ret.some((r) => r.length !== row.length)) return VALUE;
-    result = (i) => ret[0]![i] ?? null;
+    result = (i) => (ret.length === 1 ? ret[0]![i] ?? null : ret.map((r) => [r[i] ?? null]));
   } else {
     return VALUE;
   }
@@ -434,7 +434,128 @@ function toText(v: Scalar): string {
   return v ?? "";
 }
 
+// ---------------------------------------------------------------------------
+// Dynamic-array functions (T6). Their results spill from the formula's cell.
+// Where Excel returns #CALC! (an empty result), we return #VALUE!: #CALC! isn't in ErrorCode.
+
+const CALC: ExcelError = VALUE;
+
+/** The array argument: a range or array, a lone value as 1×1, an error as itself. */
+function arrayArg(a: Arg): Matrix | ExcelError {
+  if (isError(a)) return a;
+  return asMatrix(a);
+}
+
+/** UNIQUE's identity for a value: text ignores case; 1 and "1" differ; blanks are one value. */
+function identity(v: CellValue): string {
+  if (v === null) return "z";
+  if (isError(v)) return `e${v.error}`;
+  if (typeof v === "string") return `s${v.toUpperCase()}`;
+  return `${typeof v === "number" ? "n" : "b"}${String(v)}`;
+}
+
+// UNIQUE(array, [by_col], [exactly_once])
+function unique(args: Arg[]): CellValue | Matrix {
+  if (args.length < 1 || args.length > 3) return VALUE;
+  const m = arrayArg(args[0]);
+  if (isError(m)) return m;
+  const byCol = flag(args[1]);
+  if (isError(byCol)) return byCol;
+  const once = flag(args[2]);
+  if (isError(once)) return once;
+
+  const lines = byCol ? transpose(m) : m;
+  const seen = new Map<string, { line: CellValue[]; count: number }>();
+  for (const line of lines) {
+    const key = line.map(identity).join("\u0000");
+    const entry = seen.get(key);
+    if (entry) entry.count++;
+    else seen.set(key, { line, count: 1 });
+  }
+  const kept = [...seen.values()].filter((e) => !once || e.count === 1).map((e) => e.line);
+  if (kept.length === 0) return CALC;
+  return byCol ? transpose(kept) : kept;
+}
+
+// FILTER(array, include, [if_empty])
+function filter(args: Arg[]): CellValue | Matrix {
+  if (args.length < 2 || args.length > 3) return VALUE;
+  const m = arrayArg(args[0]);
+  if (isError(m)) return m;
+  const inc = arrayArg(args[1]);
+  if (isError(inc)) return inc;
+
+  // include is one column as tall as the array (keep rows) or one row as wide (keep columns).
+  const rows = m.length;
+  const cols = m[0]?.length ?? 0;
+  let flags: CellValue[];
+  let byCol: boolean;
+  if (inc.length === rows && inc.every((r) => r.length === 1)) {
+    flags = inc.map((r) => r[0]!);
+    byCol = false;
+  } else if (inc.length === 1 && inc[0]!.length === cols) {
+    flags = inc[0]!;
+    byCol = true;
+  } else {
+    return VALUE;
+  }
+
+  const keep: boolean[] = [];
+  for (const f of flags) {
+    if (isError(f)) return f; // an error in include propagates
+    if (typeof f === "string") return VALUE;
+    keep.push(Boolean(f)); // non-zero numbers and TRUE keep; 0, FALSE and blanks drop
+  }
+  const out = byCol ? m.map((row) => row.filter((_, c) => keep[c])) : m.filter((_, r) => keep[r]);
+  if (out.length === 0 || out[0]!.length === 0) {
+    return args[2] === undefined ? CALC : args[2];
+  }
+  return out;
+}
+
+// SORT order: numbers < text < booleans < errors, text ignoring case; blanks always last.
+const SORT_RANK = { number: 0, string: 1, boolean: 2 } as const;
+
+function sortCompare(a: CellValue, b: CellValue, order: number): number {
+  if (a === null || b === null) return a === b ? 0 : a === null ? 1 : -1;
+  const ra = isError(a) ? 3 : SORT_RANK[typeof a as keyof typeof SORT_RANK];
+  const rb = isError(b) ? 3 : SORT_RANK[typeof b as keyof typeof SORT_RANK];
+  let d: number;
+  if (ra !== rb) d = ra - rb;
+  else if (isError(a) || isError(b)) d = 0;
+  else if (typeof a === "string") {
+    const x = a.toUpperCase();
+    const y = (b as string).toUpperCase();
+    d = x < y ? -1 : x > y ? 1 : 0;
+  } else d = Number(a) - Number(b);
+  return d * order;
+}
+
+// SORT(array, [sort_index], [sort_order], [by_col])
+function sort(args: Arg[]): CellValue | Matrix {
+  if (args.length < 1 || args.length > 4) return VALUE;
+  const m = arrayArg(args[0]);
+  if (isError(m)) return m;
+  const index = numberArg(args[1], 1);
+  if (isError(index)) return index;
+  const order = numberArg(args[2], 1);
+  if (isError(order)) return order;
+  const byCol = flag(args[3]);
+  if (isError(byCol)) return byCol;
+  if (order !== 1 && order !== -1) return VALUE;
+
+  const lines = byCol ? transpose(m) : m;
+  const width = lines[0]?.length ?? 0;
+  if (index < 1 || index > width) return VALUE;
+  // Array.prototype.sort is stable, so ties keep their order.
+  const sorted = [...lines].sort((x, y) => sortCompare(x[index - 1] ?? null, y[index - 1] ?? null, order));
+  return byCol ? transpose(sorted) : sorted;
+}
+
 const OWN: Record<string, Impl> = {
+  UNIQUE: (...args) => unique(args),
+  FILTER: (...args) => filter(args),
+  SORT: (...args) => sort(args),
   DATEVALUE: (text) => datevalue(text),
   VLOOKUP: (...args) => vlookup(args),
   HLOOKUP: (...args) => vlookup([args[0], transpose(asMatrix(args[1])), ...args.slice(2)]),
