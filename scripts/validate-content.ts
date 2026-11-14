@@ -7,7 +7,10 @@ import {
   gradeFormulaStep,
   type FormulaStep,
   type Lesson,
+  type Postcondition,
   type SelectStep,
+  type ShortcutChordStep,
+  type ShortcutSequenceStep,
   type ShortcutStep,
   type Step,
   type StepType,
@@ -153,6 +156,35 @@ function isCellValue(v: unknown): boolean {
 
 const CELL_RE = /^[A-Z]{1,3}[1-9]\d*$/;
 
+// Allowed field names, one Record per type in the grader's types.ts: a missing or
+// extra key here is a compile error, so these lists can't drift from the schema.
+type Fields<T> = Record<keyof T, true>;
+const LESSON_FIELDS: Fields<Lesson> = {
+  id: true, module: true, title: true, difficulty: true, requiredCorrect: true, isIntro: true, video: true, steps: true,
+};
+const BASE = { id: true, type: true, activeCell: true, highlightCells: true, postcondition: true, mobileButtons: true } as const;
+const STEP_FIELDS: { [T in StepType]: Fields<Extract<Step, { type: T }>> } = {
+  formula: { ...BASE, prompt: true, grid: true, targetCell: true, expectedValue: true, mustUse: true, solution: true, explain: true },
+  select: { ...BASE, prompt: true, grid: true, target: true },
+  shortcut: { ...BASE, mode: true, prompt: true, keys: true, pics: true },
+  mcq: { ...BASE, prompt: true, options: true, answer: true },
+  picture: { ...BASE, prompt: true, image: true, accept: true },
+  project: { ...BASE, prompt: true, file: true, accept: true },
+  info: { ...BASE, text: true },
+};
+const POSTCONDITION_FIELDS: Fields<Postcondition> = { grid: true, selection: true };
+const KEYS_FIELDS: Fields<ShortcutChordStep["keys"]> & Fields<ShortcutSequenceStep["keys"]> = { win: true, mac: true };
+
+/** Reports keys of `obj` outside `allowed`, suggesting a case/underscore/hyphen variant. */
+function checkFields(obj: Obj, allowed: Record<string, true>, prefix: string, fail: Fail) {
+  const squash = (s: string) => s.replace(/[_-]/g, "").toLowerCase();
+  for (const key of Object.keys(obj)) {
+    if (Object.hasOwn(allowed, key)) continue;
+    const near = Object.keys(allowed).find((a) => squash(a) === squash(key));
+    fail(`unknown field "${prefix}${key}"${near ? ` (did you mean "${prefix}${near}"?)` : ""}`);
+  }
+}
+
 // --- lesson ------------------------------------------------------------------
 
 /** Checks one lesson; returns its id if it has a usable one (for uniqueness and order.json). */
@@ -173,6 +205,7 @@ function checkLesson(data: unknown, fileId: string, folder: string, fail: Fail):
   if (!requiredOk) fail(`requiredCorrect must be a positive integer (got ${show(requiredCorrect)})`);
   if (typeof isIntro !== "boolean") fail(`isIntro must be a boolean (got ${show(isIntro)})`);
   if (video !== null && typeof video !== "string") fail(`video must be a string or null (got ${show(video)})`);
+  checkFields(data, LESSON_FIELDS, "", (m) => fail(`lesson: ${m}`));
   if (!Array.isArray(steps) || steps.length === 0) {
     fail("steps must be a non-empty array");
     return isText(id) ? id : null;
@@ -198,6 +231,11 @@ function checkLesson(data: unknown, fileId: string, folder: string, fail: Fail):
       return stepFail(`shortcut mode ${show(step.mode)} must be "chord" or "sequence"`);
     }
     if (step.type !== "info") gradable++;
+
+    // Unknown names don't invalidate the known fields, so they don't block the content checks.
+    checkFields(step, STEP_FIELDS[step.type], "", stepFail);
+    if (isObj(step.postcondition)) checkFields(step.postcondition, POSTCONDITION_FIELDS, "postcondition.", stepFail);
+    if (step.type === "shortcut" && isObj(step.keys)) checkFields(step.keys, KEYS_FIELDS, "keys.", stepFail);
 
     let shapeErrors = 0;
     const shapeFail: Fail = (m) => {

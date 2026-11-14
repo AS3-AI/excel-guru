@@ -321,3 +321,27 @@ describe("validateContent: canonical select targets", () => {
     expectEveryErrorNamesItsFile("select-canonical");
   });
 });
+
+describe("validateContent: unknown field names", () => {
+  it("accepts the SPEC §5 example lesson verbatim", () => {
+    expect(validateContent(fixture("spec-example"))).toEqual([]);
+  });
+
+  it("rejects unknown lesson, step and nested fields, suggesting case/underscore variants", () => {
+    const errors = errorsFor("unknown-fields", lessonFile("unknown-fields", "count/count-1.json"));
+    expect(errors).toEqual([
+      expect.stringMatching(/lesson: unknown field "requiredcorrect" \(did you mean "requiredCorrect"\?\)/),
+      expect.stringMatching(/lesson: unknown field "notes"$/),
+      expect.stringMatching(/step "f1": unknown field "mustuse" \(did you mean "mustUse"\?\)/),
+      expect.stringMatching(/step "f2": unknown field "must_use" \(did you mean "mustUse"\?\)/),
+      expect.stringMatching(/step "f3": unknown field "MustUse" \(did you mean "mustUse"\?\)/),
+      expect.stringMatching(/step "s1": unknown field "highlight_cells" \(did you mean "highlightCells"\?\)/),
+      expect.stringMatching(/step "s1": unknown field "ActiveCell" \(did you mean "activeCell"\?\)/),
+      expect.stringMatching(/step "s1": unknown field "postcondition\.Selection" \(did you mean "postcondition\.selection"\?\)/),
+      expect.stringMatching(/step "k1": unknown field "keys\.linux"$/),
+      expect.stringMatching(/step "m1": unknown field "explain"$/),
+      expect.stringMatching(/step "i1": unknown field "prompt"$/),
+    ]);
+    expectEveryErrorNamesItsFile("unknown-fields");
+  });
+});

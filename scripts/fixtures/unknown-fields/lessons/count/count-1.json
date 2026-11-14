@@ -1,0 +1,177 @@
+{
+  "id": "count-1",
+  "module": "count",
+  "title": "Unknown fields",
+  "difficulty": 1,
+  "requiredCorrect": 1,
+  "isIntro": false,
+  "video": null,
+  "requiredcorrect": 1,
+  "notes": "x",
+  "steps": [
+    {
+      "id": "f1",
+      "type": "formula",
+      "prompt": "Count B2:B4.",
+      "grid": [
+        [
+          "Item",
+          "Qty"
+        ],
+        [
+          "Pens",
+          12
+        ],
+        [
+          "Tape",
+          "n/a"
+        ],
+        [
+          "Clips",
+          40
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 2,
+      "solution": "=COUNT(B2:B4)",
+      "mustuse": [
+        "COUNT"
+      ]
+    },
+    {
+      "id": "f2",
+      "type": "formula",
+      "prompt": "Count B2:B4.",
+      "grid": [
+        [
+          "Item",
+          "Qty"
+        ],
+        [
+          "Pens",
+          12
+        ],
+        [
+          "Tape",
+          "n/a"
+        ],
+        [
+          "Clips",
+          40
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 2,
+      "solution": "=COUNT(B2:B4)",
+      "must_use": [
+        "COUNT"
+      ]
+    },
+    {
+      "id": "f3",
+      "type": "formula",
+      "prompt": "Count B2:B4.",
+      "grid": [
+        [
+          "Item",
+          "Qty"
+        ],
+        [
+          "Pens",
+          12
+        ],
+        [
+          "Tape",
+          "n/a"
+        ],
+        [
+          "Clips",
+          40
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 2,
+      "solution": "=COUNT(B2:B4)",
+      "MustUse": [
+        "COUNT"
+      ]
+    },
+    {
+      "id": "s1",
+      "type": "select",
+      "prompt": "Click B2.",
+      "grid": [
+        [
+          "Item",
+          "Qty"
+        ],
+        [
+          "Pens",
+          12
+        ],
+        [
+          "Tape",
+          "n/a"
+        ],
+        [
+          "Clips",
+          40
+        ]
+      ],
+      "target": "B2",
+      "highlight_cells": [
+        "B2"
+      ],
+      "ActiveCell": "B2",
+      "postcondition": {
+        "grid": [
+          [
+            "Item",
+            "Qty"
+          ],
+          [
+            "Pens",
+            12
+          ],
+          [
+            "Tape",
+            "n/a"
+          ],
+          [
+            "Clips",
+            40
+          ]
+        ],
+        "Selection": "B2"
+      }
+    },
+    {
+      "id": "k1",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Copy.",
+      "keys": {
+        "win": "Ctrl+C",
+        "mac": "Cmd+C",
+        "linux": "Ctrl+C"
+      }
+    },
+    {
+      "id": "m1",
+      "type": "mcq",
+      "prompt": "Pick.",
+      "options": [
+        "A",
+        "B"
+      ],
+      "answer": 0,
+      "explain": "A is right."
+    },
+    {
+      "id": "i1",
+      "type": "info",
+      "text": "Read this.",
+      "prompt": "Not an info field."
+    }
+  ]
+}
