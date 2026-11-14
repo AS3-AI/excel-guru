@@ -1,0 +1,65 @@
+{
+  "id": "nav-1",
+  "module": "nav",
+  "title": "Fixture nav-1",
+  "difficulty": 1,
+  "requiredCorrect": 5,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "k1",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+Shift+ArrowDown",
+        "mac": "Cmd+Shift+ArrowDown"
+      }
+    },
+    {
+      "id": "k2",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+C",
+        "mac": null
+      }
+    },
+    {
+      "id": "k3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Alt+Tab",
+        "mac": "Cmd+ArrowUp"
+      }
+    },
+    {
+      "id": "k4",
+      "type": "shortcut",
+      "mode": "sequence",
+      "prompt": "Press them.",
+      "keys": {
+        "win": [
+          "Alt",
+          "H",
+          "1"
+        ],
+        "mac": null
+      }
+    },
+    {
+      "id": "k5",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Shift+W",
+        "mac": "Shift+T"
+      }
+    }
+  ]
+}

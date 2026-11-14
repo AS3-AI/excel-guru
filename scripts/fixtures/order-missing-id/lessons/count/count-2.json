@@ -1,0 +1,21 @@
+{
+  "id": "count-2",
+  "module": "count",
+  "title": "Fixture count-2",
+  "difficulty": 1,
+  "requiredCorrect": 1,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "mcq",
+      "prompt": "Pick one.",
+      "options": [
+        "A",
+        "B"
+      ],
+      "answer": 1
+    }
+  ]
+}
