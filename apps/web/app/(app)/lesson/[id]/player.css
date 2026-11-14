@@ -1,0 +1,35 @@
+/* Lesson player v0 (T10). Colours only from lib/tokens.css. */
+.pl { max-width: 760px; margin: 0 auto; padding: 16px 0 48px; }
+.pl-title { font-size: clamp(1.5rem, 5vw, 2rem); margin: 0 0 12px; }
+
+.pl-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.pl-pct { flex: 0 0 3.5em; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.pl-bar { flex: 1 1 auto; height: 10px; border-radius: 999px; background: var(--border); overflow: hidden; }
+.pl-bar-fill { height: 100%; background: var(--primary); border-radius: inherit; transition: width 0.3s ease; }
+@media (prefers-reduced-motion: reduce) { .pl-bar-fill { transition: none; } }
+
+.pl-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 20px; margin-bottom: 16px;
+}
+.pl-prompt { margin: 0; color: var(--ink); font-size: 1.05rem; }
+.pl-soon { margin: 12px 0 0; color: var(--muted); }
+
+.pl-stage { margin-bottom: 12px; }
+
+.pl-feedback:empty { display: none; }
+.pl-result { border-radius: 12px; padding: 14px 20px; margin-bottom: 12px; }
+.pl-result p { margin: 0; }
+.pl-result p + p { margin-top: 6px; }
+.pl-result-head { font-weight: 700; font-size: 1.1rem; }
+.pl-result.is-correct { background: var(--ink); color: var(--surface-warm); }
+.pl-result.is-wrong { background: var(--surface); border: 1px solid var(--danger); }
+.pl-result.is-wrong .pl-result-head { color: var(--danger); }
+
+.pl-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.pl-hint { color: var(--muted); font-size: 0.95rem; }
+.pl-continue { font-size: 1.1rem; padding: 12px 24px; text-decoration: none; display: inline-block; }
+.pl .btn:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
+
+.pl-complete h2 { color: var(--ink); margin: 0 0 8px; }
+.pl-complete p { margin: 0 0 16px; color: var(--muted); }
