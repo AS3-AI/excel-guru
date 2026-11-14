@@ -24,6 +24,8 @@ export type GridProps = {
   highlightCells?: string[];
   /** Called after each successful Sheet.set, with the address and the text as typed ("" when cleared). */
   onCommit?: (addr: string, input: string) => void;
+  /** Called when the learner opens an editor (typing, F2, Backspace, double-click, the formula bar or fx). */
+  onEditStart?: () => void;
   /** Receives the live Sheet so the caller can read or grade it. */
   sheetRef?: { current: Sheet | null };
 };
@@ -151,15 +153,43 @@ export function editOutcome(draft: string, current: string): "close" | "commit" 
   return draft === current ? "close" : "commit";
 }
 
+/**
+ * The longest text each column shows in the starting sheet (formatted, as the cell displays it),
+ * capped so one long label can't take over the grid. 0 for an empty column.
+ */
+export function colMinChars(sheet: Sheet, { rows, cols }: { rows: number; cols: number }, cap = 14): number[] {
+  return Array.from({ length: cols }, (_, col) => {
+    let longest = 0;
+    for (let row = 0; row < rows; row++) longest = Math.max(longest, formatValue(sheet.get(addressOf({ row, col }))).length);
+    return Math.min(cap, longest);
+  });
+}
+
+/**
+ * grid-template-columns: every column shares the width equally (1fr), but a column that holds text
+ * never shrinks below that text plus the cell padding (1ch, the width of "0", is wider than an
+ * average letter, so this leaves slack). On a wide screen the equal share wins, so the look is
+ * unchanged; on a phone empty columns give way to the text ones.
+ */
+export function gridColumns(minChars: number[]): string {
+  const tracks = minChars.map((n) => (n > 0 ? `minmax(calc(${n}ch + 8px), 1fr)` : "minmax(0, 1fr)"));
+  return ["var(--eg-rowhead)", ...tracks].join(" ");
+}
+
 // ---------- component ----------
 
 type Editing = { draft: string; from: "cell" | "bar" };
-type Loaded = { grid: GridLiteral[][]; sheet: Sheet; size: { rows: number; cols: number } };
+type Loaded = { grid: GridLiteral[][]; sheet: Sheet; size: { rows: number; cols: number }; columns: string };
 
-const load = (grid: GridLiteral[][]): Loaded => ({ grid, sheet: new Sheet(grid), size: gridSize(grid) });
+const load = (grid: GridLiteral[][]): Loaded => {
+  const sheet = new Sheet(grid);
+  const size = gridSize(grid);
+  // Sized once from the lesson's data, so columns don't jump while the learner types.
+  return { grid, sheet, size, columns: gridColumns(colMinChars(sheet, size)) };
+};
 const ORIGIN: Pos = { row: 0, col: 0 };
 
-export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: GridProps) {
+export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, sheetRef }: GridProps) {
   const [loaded, setLoaded] = useState(() => load(grid));
   const [, rerender] = useReducer((n: number) => n + 1, 0);
   const [active, setActive] = useState<Pos>(ORIGIN);
@@ -168,6 +198,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
 
   const sheetEl = useRef<HTMLDivElement>(null);
   const gridEl = useRef<HTMLDivElement>(null);
+  const scrollEl = useRef<HTMLDivElement>(null);
   const cellInput = useRef<HTMLInputElement>(null);
   const barInput = useRef<HTMLInputElement>(null);
   const lastPointer = useRef<string>("mouse");
@@ -189,7 +220,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
     setEditingState(null);
     setError(null);
   }
-  const { sheet, size } = loaded;
+  const { sheet, size, columns } = loaded;
 
   useEffect(() => {
     if (sheetRef) sheetRef.current = sheet;
@@ -205,6 +236,18 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
     }
   }, [from, active]);
 
+  // When the grid is wider than its box (long text on a phone), keep the active cell in view.
+  // Only the grid's own scroller moves: scrollIntoView could scroll the page too.
+  useEffect(() => {
+    const sc = scrollEl.current;
+    const cell = sc && document.getElementById(`${idBase}-${addressOf(active)}`);
+    if (!sc || !cell || sc.scrollWidth <= sc.clientWidth) return;
+    const box = sc.getBoundingClientRect(), c = cell.getBoundingClientRect();
+    const rowhead = gridEl.current?.querySelector(".eg-rowhead")?.getBoundingClientRect().width ?? 0;
+    if (c.left < box.left + rowhead) sc.scrollLeft -= box.left + rowhead - c.left;
+    else if (c.right > box.right) sc.scrollLeft += c.right - box.right;
+  }, [active, idBase]);
+
   const addr = addressOf(active);
   const target = targetCell ? parseRef(targetCell) : null;
   const highlights = (highlightCells ?? []).map(parseRef).filter((r): r is Rect => r !== null);
@@ -215,6 +258,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
   const startEdit = (draft: string, where: Editing["from"]) => {
     setError(null);
     setEditing({ draft, from: where });
+    onEditStart?.();
   };
 
   const cancel = () => {
@@ -379,73 +423,76 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
         onCancel={cancel}
         onFx={onFx}
       />
-      <div
-        ref={gridEl}
-        className="eg-grid"
-        role="grid"
-        aria-label="Spreadsheet"
-        aria-rowcount={size.rows + 1}
-        aria-colcount={size.cols + 1}
-        aria-activedescendant={cellId(active)}
-        tabIndex={0}
-        style={{ gridTemplateColumns: `var(--eg-rowhead) repeat(${size.cols}, minmax(0, 1fr))` }}
-        onKeyDown={onGridKeyDown}
-        onPointerDown={(e) => { lastPointer.current = e.pointerType; }}
-      >
-        <div className="eg-row" role="row">
-          <div className="eg-corner" aria-hidden="true" />
-          {cols.map((c) => (
-            <div key={c} role="columnheader" className={`eg-head${c === active.col ? " is-on" : ""}`}>
-              {colLetter(c)}
+      {/* If the lesson's text needs more width than a phone has, the grid scrolls here, never the page. */}
+      <div className="eg-scroll" ref={scrollEl}>
+        <div
+          ref={gridEl}
+          className="eg-grid"
+          role="grid"
+          aria-label="Spreadsheet"
+          aria-rowcount={size.rows + 1}
+          aria-colcount={size.cols + 1}
+          aria-activedescendant={cellId(active)}
+          tabIndex={0}
+          style={{ gridTemplateColumns: columns }}
+          onKeyDown={onGridKeyDown}
+          onPointerDown={(e) => { lastPointer.current = e.pointerType; }}
+        >
+          <div className="eg-row" role="row">
+            <div className="eg-corner" aria-hidden="true" />
+            {cols.map((c) => (
+              <div key={c} role="columnheader" className={`eg-head${c === active.col ? " is-on" : ""}`}>
+                {colLetter(c)}
+              </div>
+            ))}
+          </div>
+          {rows.map((r) => (
+            <div key={r} className="eg-row" role="row">
+              <div role="rowheader" className={`eg-head eg-rowhead${r === active.row ? " is-on" : ""}`}>{r + 1}</div>
+              {cols.map((c) => {
+                const pos = { row: r, col: c };
+                const a = addressOf(pos);
+                const isActive = r === active.row && c === active.col;
+                const value = sheet.get(a);
+                const cls = ["eg-cell"];
+                if (typeof value === "number") cls.push("is-num");
+                else if (typeof value === "boolean" || isErr(value)) cls.push("is-center");
+                if (highlights.length && inRects(highlights, r, c)) cls.push("is-hl");
+                if (target && inRects([target], r, c)) cls.push("is-target");
+                if (isActive) cls.push("is-active");
+                return (
+                  <div
+                    key={c}
+                    id={cellId(pos)}
+                    role="gridcell"
+                    aria-selected={isActive}
+                    className={cls.join(" ")}
+                    onMouseDown={(e) => onCellMouseDown(e, pos)}
+                    onDoubleClick={() => { if (!editing) startEdit(contentOf(a), "cell"); }}
+                  >
+                    {isActive && editing?.from === "cell" ? (
+                      <input
+                        ref={cellInput}
+                        className="eg-cell-input"
+                        aria-label={`Edit ${a}`}
+                        value={editing.draft}
+                        spellCheck={false}
+                        autoComplete="off"
+                        autoCapitalize="off"
+                        autoCorrect="off"
+                        onChange={(e) => setEditing({ draft: e.target.value, from: "cell" })}
+                        onKeyDown={onEditorKeyDown}
+                        onBlur={onEditorBlur}
+                      />
+                    ) : (
+                      <span className="eg-val">{isActive && editing ? editing.draft : formatValue(value)}</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
-        {rows.map((r) => (
-          <div key={r} className="eg-row" role="row">
-            <div role="rowheader" className={`eg-head eg-rowhead${r === active.row ? " is-on" : ""}`}>{r + 1}</div>
-            {cols.map((c) => {
-              const pos = { row: r, col: c };
-              const a = addressOf(pos);
-              const isActive = r === active.row && c === active.col;
-              const value = sheet.get(a);
-              const cls = ["eg-cell"];
-              if (typeof value === "number") cls.push("is-num");
-              else if (typeof value === "boolean" || isErr(value)) cls.push("is-center");
-              if (highlights.length && inRects(highlights, r, c)) cls.push("is-hl");
-              if (target && inRects([target], r, c)) cls.push("is-target");
-              if (isActive) cls.push("is-active");
-              return (
-                <div
-                  key={c}
-                  id={cellId(pos)}
-                  role="gridcell"
-                  aria-selected={isActive}
-                  className={cls.join(" ")}
-                  onMouseDown={(e) => onCellMouseDown(e, pos)}
-                  onDoubleClick={() => { if (!editing) startEdit(contentOf(a), "cell"); }}
-                >
-                  {isActive && editing?.from === "cell" ? (
-                    <input
-                      ref={cellInput}
-                      className="eg-cell-input"
-                      aria-label={`Edit ${a}`}
-                      value={editing.draft}
-                      spellCheck={false}
-                      autoComplete="off"
-                      autoCapitalize="off"
-                      autoCorrect="off"
-                      onChange={(e) => setEditing({ draft: e.target.value, from: "cell" })}
-                      onKeyDown={onEditorKeyDown}
-                      onBlur={onEditorBlur}
-                    />
-                  ) : (
-                    <span className="eg-val">{isActive && editing ? editing.draft : formatValue(value)}</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ))}
       </div>
     </div>
   );

@@ -51,6 +51,7 @@ export function Player({ lesson, next, nextLessonId }: Props) {
   const stageRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
   const doneRef = useRef<HTMLAnchorElement>(null);
+  const feedbackRef = useRef<HTMLDivElement>(null);
   // Set by Grid's onCommit; lets Enter and Check tell a committed edit from a dropped one.
   const committed = useRef(false);
 
@@ -72,6 +73,15 @@ export function Player({ lesson, next, nextLessonId }: Props) {
   useEffect(() => {
     if (feedback?.correct) continueRef.current?.focus({ preventScroll: true });
   }, [feedback]);
+
+  // Feedback sits below the actions row; on a short phone screen it can land below the fold.
+  // Bring just that block into view when it appears (not when it clears). Focus stays where it is.
+  useEffect(() => {
+    if (feedback) feedbackRef.current?.scrollIntoView({ block: "nearest" });
+  }, [feedback]);
+
+  /** A wrong-answer message is stale once the learner edits again; "Correct!" stays until Continue. */
+  const clearWrong = () => setFeedback((f) => (f?.correct === false ? null : f));
 
   const grade = (s: FormulaStep, input: string) => {
     if (feedback?.correct) return; // already answered: Continue is next
@@ -209,24 +219,15 @@ export function Player({ lesson, next, nextLessonId }: Props) {
               highlightCells={step.highlightCells}
               onCommit={() => {
                 committed.current = true;
+                // Check and Enter grade right after this commit; their result replaces the cleared one.
+                clearWrong();
               }}
+              onEditStart={clearWrong}
               sheetRef={sheetRef}
             />
           </div>
-          <div className="pl-feedback" aria-live="polite">
-            {feedback?.correct === true && (
-              <div className="pl-result is-correct">
-                <p className="pl-result-head">Correct!</p>
-                {step.explain && <p>{step.explain}</p>}
-              </div>
-            )}
-            {feedback?.correct === false && (
-              <div className="pl-result is-wrong">
-                <p className="pl-result-head">Not quite</p>
-                <p>{feedback.message}</p>
-              </div>
-            )}
-          </div>
+          {/* The actions row sits directly under the grid and feedback goes below it, so Check (and
+              Continue in its place) never moves when a message appears or clears. */}
           {feedback?.correct ? (
             continueButton
           ) : (
@@ -243,6 +244,20 @@ export function Player({ lesson, next, nextLessonId }: Props) {
               <span className="pl-hint">or press Enter</span>
             </div>
           )}
+          <div ref={feedbackRef} className="pl-feedback" aria-live="polite">
+            {feedback?.correct === true && (
+              <div className="pl-result is-correct">
+                <p className="pl-result-head">Correct!</p>
+                {step.explain && <p>{step.explain}</p>}
+              </div>
+            )}
+            {feedback?.correct === false && (
+              <div className="pl-result is-wrong">
+                <p className="pl-result-head">Not quite</p>
+                <p>{feedback.message}</p>
+              </div>
+            )}
+          </div>
         </>
       ) : (
         <>

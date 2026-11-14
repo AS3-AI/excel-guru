@@ -42,7 +42,18 @@
 }
 
 /* ---------- grid ---------- */
+/*
+ * Horizontal scroll for the grid only, when the lesson's text needs more width than the screen has.
+ * The padding (cancelled by the negative margin) leaves room for the focus ring and the selection
+ * handle, which would otherwise be clipped by the scroller; the layout is unchanged.
+ */
+.eg-scroll {
+  overflow-x: auto;
+  padding: 2px 3px 3px 2px;
+  margin: -2px -3px -3px -2px;
+}
 .eg-grid {
+  min-width: min-content; /* never narrower than the text columns' minimums (see gridColumns) */
   display: grid;
   border: 1px solid var(--border);
   background: var(--surface);
