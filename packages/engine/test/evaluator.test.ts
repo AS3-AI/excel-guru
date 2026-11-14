@@ -127,6 +127,34 @@ describe("evaluate: array results (T6)", () => {
   });
 });
 
+describe("evaluate: IFERROR and IFNA work per element on arrays", () => {
+  it('IFERROR(1/A1:A2,"z") replaces only the error element', () => {
+    expect(ev('=IFERROR(1/A1:A2,"z")', [[1], [0]])).toEqual([[1], ["z"]]);
+  });
+  it("SUM(IFERROR(1/A1:A2,0)) sums what's left", () => {
+    expect(ev("=SUM(IFERROR(1/A1:A2,0))", [[1], [0]])).toBe(1);
+  });
+  it("an array fallback pairs up element by element", () => {
+    expect(ev("=IFERROR(1/A1:A3,B1:B3)", [[0, "a"], [2, "b"], [0, "c"]])).toEqual([["a"], [0.5], ["c"]]);
+  });
+  it("a single-cell fallback broadcasts", () => {
+    expect(ev("=IFERROR(A1:B1/0,C1)", [[1, 2, "none"]])).toEqual([["none", "none"]]);
+  });
+  it("an array with no errors is unchanged and the fallback isn't evaluated", () => {
+    expect(ev("=IFERROR(A1:A2*2,NOPE())", [[1], [2]])).toEqual([[2], [4]]);
+  });
+  it("IFERROR stays lazy for a scalar", () => expect(ev("=IFERROR(5,1/0)")).toBe(5));
+  it("IFNA replaces only #N/A, per element", () => {
+    const na = err("#N/A");
+    expect(ev('=IFNA(A1:A3,"-")', [[na], [err("#DIV/0!")], [3]])).toEqual([["-"], [err("#DIV/0!")], [3]]);
+  });
+  it("IFNA on a scalar", () => {
+    expect(ev('=IFNA(NA(),"x")')).toBe("x");
+    expect(ev('=IFNA(1/0,"x")')).toEqual(err("#DIV/0!"));
+    expect(ev("=IFNA(4,1/0)")).toBe(4);
+  });
+});
+
 describe("evaluate: functions", () => {
   it("SUM over a range", () => expect(ev("=SUM(A1:A3)", [[1], [2], [3]])).toBe(6));
   it("name lookup is case-insensitive", () => expect(ev("=sum(1,2)")).toBe(3));

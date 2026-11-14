@@ -125,7 +125,9 @@ class Evaluator {
       case "IF":
         return this.if(args);
       case "IFERROR":
-        return this.iferror(args);
+        return this.iferror(args, () => true);
+      case "IFNA":
+        return this.iferror(args, (e) => e.error === "#N/A");
       case "AND":
         return this.logical(args, false);
       case "OR":
@@ -151,11 +153,19 @@ class Evaluator {
     return branch.type === "empty" ? 0 : this.eval(branch);
   }
 
-  private iferror(args: Ast[]): Value {
+  /**
+   * IFERROR (any error) and IFNA (only #N/A). Lazy: the fallback is evaluated only when some
+   * value needs it. On an array the test is per element, and an array fallback pairs up with
+   * it under the operators' broadcasting rules, so IFERROR(1/A1:A2,"z") spills 1, "z".
+   */
+  private iferror(args: Ast[], catches: (e: ExcelError) => boolean): Value {
     if (args.length !== 2) return err("#VALUE!");
+    const caught = (x: CellValue) => isError(x) && catches(x);
     const v = args[0]!.type === "empty" ? 0 : this.eval(args[0]!);
-    if (!isError(v)) return v;
-    return args[1]!.type === "empty" ? 0 : this.eval(args[1]!);
+    const fallback = () => (args[1]!.type === "empty" ? 0 : this.eval(args[1]!));
+    if (!Array.isArray(v)) return caught(v) ? fallback() : v;
+    if (!v.some((row) => row.some(caught))) return v;
+    return lift2(v, fallback(), (x, y) => (caught(x) ? y : x));
   }
 
   // AND (stopOn = false) and OR (stopOn = true) stop at the first value that decides them.

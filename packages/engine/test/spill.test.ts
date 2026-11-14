@@ -236,6 +236,52 @@ describe("spill: recalculation", () => {
     s.set("A1", "1");
     expect(column(s, "C1", 2)).toEqual([1, 5]);
   });
+  // Each stage spills only once the stage before it has spilled, so the change travels one
+  // spill level per recalc pass: recalc must keep going until nothing changes.
+  const chain = (stages: number) => {
+    const s = new Sheet([[1], [2]]);
+    const col = (i: number) => {
+      let n = i + 1, out = "";
+      for (; n > 0; n = Math.floor((n - 1) / 26)) out = String.fromCharCode(65 + ((n - 1) % 26)) + out;
+      return out;
+    };
+    s.set("B1", "=7");
+    for (let i = 2; i < 2 + stages; i++) s.set(`${col(i)}1`, `=IF(${col(i - 1)}2=0,7,$A$1:$A$2)`);
+    return { s, last: col(1 + stages) };
+  };
+  it("a chain of spills each waiting on the last settles completely (reviewer's repro)", () => {
+    const { s, last } = chain(20); // C1..V1
+    expect(last).toBe("V");
+    expect(s.get("V2")).toBeNull();
+    s.set("B1", "=$A$1:$A$2");
+    for (const c of ["B", "C", "Q", "R", "S", "T", "U", "V"]) expect([s.get(`${c}1`), s.get(`${c}2`)]).toEqual([1, 2]);
+  });
+  it("a 40-stage chain settles completely, and unwinds when the head stops spilling", () => {
+    const { s, last } = chain(40);
+    s.set("B1", "=$A$1:$A$2");
+    expect([s.get(`${last}1`), s.get(`${last}2`)]).toEqual([1, 2]);
+    s.set("B1", "=7");
+    expect([s.get(`${last}1`), s.get(`${last}2`)]).toEqual([7, null]);
+    expect(s.get("C2")).toBeNull();
+  });
+  it("overwriting a #CIRC! anchor recomputes what read its spill area", () => {
+    const s = new Sheet([[null], [5]]);
+    s.set("A1", "=C2");
+    s.set("C1", "=A1:A2");
+    expect(s.get("A1")).toEqual(err("#CIRC!"));
+    s.set("C1", "3");
+    expect(s.get("A1")).toBe(0);
+  });
+  it("two spills that keep switching each other on and off end as #CIRC!, not stale", () => {
+    // C1 spills only while D2 has a value; D1 spills (into D2) only while C2 is empty.
+    const s = new Sheet([[1, 5], [2, 6]]);
+    s.set("C1", "=IF(D2=0,1,A1:A2)");
+    s.set("D1", "=IF(C2=0,B1:B2,1)");
+    const shown = ["C1", "C2", "D1", "D2"].map((a) => s.get(a));
+    expect(shown.filter((v) => typeof v === "object" && v?.error === "#CIRC!").length).toBeGreaterThan(0);
+    s.set("D1", "9"); // breaking the loop settles C1 again
+    expect([s.get("C1"), s.get("C2")]).toEqual([1, null]);
+  });
   it("formulas in the starting grid spill", () => {
     const s = new Sheet([[3, "=SORT(A1:A3)"], [1], [2]]);
     expect(column(s, "B1", 3)).toEqual([1, 2, 3]);

@@ -23,8 +23,6 @@ type Cell = {
 type Spilled = { anchor: string; value: CellValue };
 
 const NUMBER_RE = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/;
-/** Spills changing the shape of other spills settle in a pass or two; this bounds pathological cases. */
-const MAX_PASSES = 16;
 
 export class Sheet {
   /** Cells that hold something of their own: a literal or a formula (spill anchors included). */
@@ -35,6 +33,8 @@ export class Sheet {
   private readonly dependents = new Map<string, Set<string>>();
   /** Formula cell → the ranges it reads; checked by containment, since B:C has no fixed size. */
   private readonly areaReaders = new Map<string, Area[]>();
+  /** During one recalc: anchors whose spills never settled, shown as #CIRC! (see recalc). */
+  private readonly stuck = new Set<string>();
 
   private readonly ctx: EvalContext = {
     cell: (row, col) => this.valueAt(formatAddress({ row, col })),
@@ -70,8 +70,10 @@ export class Sheet {
     const key = keyOf(addr);
     const ast = input.startsWith("=") ? parse(tokenize(input)) : null;
 
-    // If `key` was an anchor, its spilled cells empty now; their readers recompute below.
-    const oldSpill = this.spillCells(key);
+    // If `key` was an anchor, its spilled cells empty now: whatever reads its spill area, or is
+    // blocked by it, recomputes below (also when it was #SPILL! or #CIRC! with nothing spilled).
+    const oldArea = this.cells.get(key)?.spill;
+    const oldSpill = [...this.spillCells(key), ...(oldArea ? this.touching(oldArea) : [])].filter((k) => k !== key);
     this.clearSpill(key);
     this.unlink(key);
     if (ast) {
@@ -181,7 +183,30 @@ export class Sheet {
    */
   private recalc(start: string[]): void {
     let dirty = start;
-    for (let pass = 0; pass < MAX_PASSES && dirty.length > 0; pass++) dirty = this.pass(dirty);
+    while (dirty.length > 0) {
+      // A change travels at most one spill level per pass, and each level is an anchor, so a
+      // sheet that converges does so within (formula cells + 1) passes. Running past that means
+      // spills that keep changing each other's shape: mark them #CIRC! (they stay so until an
+      // edit reaches them) rather than leave stale values, and settle the rest.
+      const limit = this.formulaCount() + 2;
+      for (let pass = 0; pass < limit && dirty.length > 0; pass++) dirty = this.pass(dirty);
+      if (dirty.length === 0) break;
+      const restless = new Set(dirty.map((k) => this.spilled.get(k)?.anchor).filter((a) => a !== undefined));
+      for (const k of dirty) for (const a of this.touching(cellArea(k))) if (this.cells.get(a)?.spill) restless.add(a);
+      const fresh = [...restless].filter((a) => !this.stuck.has(a));
+      // Always make progress: if the cells still moving name no new anchor, stop every spill.
+      if (fresh.length === 0) for (const [k, c] of this.cells) if (c.spill && !this.stuck.has(k)) fresh.push(k);
+      if (fresh.length === 0) break;
+      for (const anchor of fresh) this.stuck.add(anchor);
+      dirty = [...dirty, ...fresh];
+    }
+    this.stuck.clear();
+  }
+
+  private formulaCount(): number {
+    let n = 0;
+    for (const cell of this.cells.values()) if (cell.ast) n++;
+    return n;
   }
 
   /**
@@ -215,7 +240,10 @@ export class Sheet {
         }
         continue;
       }
-      if (this.cells.get(only)?.ast) this.compute(only);
+      if (this.stuck.has(only)) {
+        this.clearSpill(only); // keeps its spill area, like a cycle
+        this.cells.get(only)!.value = { error: "#CIRC!" };
+      } else if (this.cells.get(only)?.ast) this.compute(only);
     }
 
     const after = this.footprint(affected);
@@ -294,6 +322,11 @@ function parseLiteral(input: string): Literal {
 
 const contains = (a: Area, row: number, col: number) =>
   row >= a.top && row <= a.bottom && col >= a.left && col <= a.right;
+
+const cellArea = (key: string): Area => {
+  const { row, col } = parseAddress(key)!;
+  return { top: row, left: col, bottom: row, right: col };
+};
 
 const overlaps = (a: Area, b: Area) =>
   a.top <= b.bottom && b.top <= a.bottom && a.left <= b.right && b.left <= a.right;
