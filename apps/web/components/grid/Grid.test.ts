@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { ParseError, Sheet, TokenizeError } from "@excel-guru/engine";
-import { addressOf, colLetter, formatValue, gridSize, inRects, isTypingKey, move, parseRef, rawInput } from "./Grid";
+import {
+  addressOf, colLetter, formatValue, gridSize, inRects, isTypingKey, move, parseRef, rawInput, sameGrid, tabStep,
+} from "./Grid";
 
 describe("colLetter / addressOf", () => {
   it("names columns like Excel", () => {
@@ -109,6 +111,35 @@ describe("isTypingKey", () => {
     expect(isTypingKey(k("v", { metaKey: true }))).toBe(false);
     expect(isTypingKey(k("Enter"))).toBe(false);
     expect(isTypingKey(k("ArrowUp"))).toBe(false);
+  });
+});
+
+describe("tabStep", () => {
+  const size = { rows: 8, cols: 7 };
+  it("steps right on Tab and left on Shift+Tab", () => {
+    expect(tabStep({ row: 2, col: 3 }, false, size)).toEqual({ row: 2, col: 4 });
+    expect(tabStep({ row: 2, col: 3 }, true, size)).toEqual({ row: 2, col: 2 });
+  });
+  it("returns null at the edge so the browser can move focus out", () => {
+    expect(tabStep({ row: 2, col: 6 }, false, size)).toBeNull();
+    expect(tabStep({ row: 2, col: 0 }, true, size)).toBeNull();
+  });
+});
+
+describe("sameGrid (when a new grid prop resets the sheet)", () => {
+  it("is true for the same reference or an equal copy", () => {
+    const g = [[1, "a", null], [true, "=SUM(A1:A2)"]];
+    expect(sameGrid(g, g)).toBe(true);
+    expect(sameGrid(g, [[1, "a", null], [true, "=SUM(A1:A2)"]])).toBe(true);
+    expect(sameGrid([], [])).toBe(true);
+  });
+  it("is false when any cell, row length or row count differs", () => {
+    expect(sameGrid([[1, 2]], [[1, 3]])).toBe(false);
+    expect(sameGrid([[1, 2]], [[1, 2, 3]])).toBe(false);
+    expect(sameGrid([[1]], [[1], [2]])).toBe(false);
+    expect(sameGrid([[null]], [[""]])).toBe(false);
+    expect(sameGrid([[1]], [["1"]])).toBe(false);
+    expect(sameGrid([[0]], [[false]])).toBe(false);
   });
 });
 

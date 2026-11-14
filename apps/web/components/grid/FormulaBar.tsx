@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, type KeyboardEvent, type Ref } from "react";
+import { useId, type FocusEvent, type KeyboardEvent, type Ref } from "react";
 
 type Props = {
   /** Active cell address, shown in the name box. */
@@ -14,26 +14,21 @@ type Props = {
   /** Focusing the bar starts editing the active cell. */
   onStartEdit: () => void;
   onChange: (value: string) => void;
-  /** Enter commits and steps down (`step`); ✓ commits in place. */
-  onCommit: (step: boolean) => void;
+  /** The grid's editor keys, shared with the in-cell editor: Enter/Tab commit and step, Escape cancels. */
+  onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
+  /** Focus leaving the editor commits (or drops an unparseable draft), so no edit is left open. */
+  onBlur: (e: FocusEvent<HTMLInputElement>) => void;
+  /** ✓: commit in place. */
+  onConfirm: () => void;
   onCancel: () => void;
   onFx: () => void;
 };
 
 /** Name box, ✕ ✓ fx buttons, the formula input and, under it, any parse error. */
 export function FormulaBar({
-  address, value, editing, error, inputRef, onStartEdit, onChange, onCommit, onCancel, onFx,
+  address, value, editing, error, inputRef, onStartEdit, onChange, onKeyDown, onBlur, onConfirm, onCancel, onFx,
 }: Props) {
   const errorId = useId();
-  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      onCommit(true);
-    } else if (e.key === "Escape") {
-      e.preventDefault();
-      onCancel();
-    }
-  };
   // Keep focus in the editor when a button is pressed, so ✓ commits what was typed.
   const keepFocus = (e: { preventDefault: () => void }) => e.preventDefault();
 
@@ -48,7 +43,7 @@ export function FormulaBar({
           >✕</button>
           <button
             type="button" className="eg-fbtn" aria-label="Enter" title="Enter"
-            disabled={!editing} onMouseDown={keepFocus} onClick={() => onCommit(false)}
+            disabled={!editing} onMouseDown={keepFocus} onClick={onConfirm}
           >✓</button>
           <button
             type="button" className="eg-fbtn eg-fx" aria-label="Insert function" title="Start a formula"
@@ -69,6 +64,7 @@ export function FormulaBar({
           onFocus={() => { if (!editing) onStartEdit(); }}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
+          onBlur={onBlur}
         />
       </div>
       <p id={errorId} className="eg-fbar-error" aria-live="polite">{error ?? ""}</p>

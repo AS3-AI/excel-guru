@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useId, useLayoutEffect, useReducer, useRef, useState } from "react";
-import type { KeyboardEvent, MouseEvent } from "react";
+import { useEffect, useId, useLayoutEffect, useReducer, useRef, useState } from "react";
+import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { ParseError, Sheet, TokenizeError, type CellValue, type ExcelError } from "@excel-guru/engine";
 import { FormulaBar } from "./FormulaBar";
 import "./grid.css";
@@ -13,7 +13,10 @@ export type Pos = { row: number; col: number };
 export type Rect = { r1: number; c1: number; r2: number; c2: number };
 
 export type GridProps = {
-  /** grid[0][0] is A1. Read once on mount: remount (e.g. with a `key`) to load another grid. */
+  /**
+   * grid[0][0] is A1. Compared by value on every render: an equal grid (even a new array) keeps the
+   * learner's edits; a different one resets the sheet, selection, editor and error, and refreshes sheetRef.
+   */
   grid: GridLiteral[][];
   /** The cell the learner should answer in, e.g. "C2". */
   targetCell?: string;
@@ -124,23 +127,61 @@ export function isTypingKey(e: { key: string; ctrlKey: boolean; metaKey: boolean
   return e.key.length === 1 && !e.ctrlKey && !e.metaKey;
 }
 
+/** Same cells, by value: a parent re-rendering with an equal copy of `grid` must not wipe the learner's edits. */
+export function sameGrid(a: GridLiteral[][], b: GridLiteral[][]): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  return a.every((row, r) => {
+    const other = b[r]!;
+    return row.length === other.length && row.every((v, c) => Object.is(v, other[c]));
+  });
+}
+
+/** Where Tab (→) or Shift+Tab (←) goes, or null at the edge so the browser can move focus out of the grid. */
+export function tabStep(pos: Pos, shift: boolean, size: { rows: number; cols: number }): Pos | null {
+  const next = move(pos, shift ? "ArrowLeft" : "ArrowRight", size);
+  return next.col === pos.col ? null : next;
+}
+
 // ---------- component ----------
 
 type Editing = { draft: string; from: "cell" | "bar" };
+type Loaded = { grid: GridLiteral[][]; sheet: Sheet; size: { rows: number; cols: number } };
+
+const load = (grid: GridLiteral[][]): Loaded => ({ grid, sheet: new Sheet(grid), size: gridSize(grid) });
+const ORIGIN: Pos = { row: 0, col: 0 };
 
 export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: GridProps) {
-  const [sheet] = useState(() => new Sheet(grid));
-  const [size] = useState(() => gridSize(grid));
+  const [loaded, setLoaded] = useState(() => load(grid));
   const [, rerender] = useReducer((n: number) => n + 1, 0);
-  const [active, setActive] = useState<Pos>({ row: 0, col: 0 });
-  const [editing, setEditing] = useState<Editing | null>(null);
+  const [active, setActive] = useState<Pos>(ORIGIN);
+  const [editing, setEditingState] = useState<Editing | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const sheetEl = useRef<HTMLDivElement>(null);
   const gridEl = useRef<HTMLDivElement>(null);
   const cellInput = useRef<HTMLInputElement>(null);
   const barInput = useRef<HTMLInputElement>(null);
   const lastPointer = useRef<string>("mouse");
+  // Mirrors `editing` synchronously, so a blur fired mid-commit sees the edit as already closed.
+  const editingRef = useRef<Editing | null>(null);
   const idBase = useId();
+
+  const setEditing = (ed: Editing | null) => {
+    editingRef.current = ed;
+    setEditingState(ed);
+  };
+
+  // A different `grid` (by value) is a new exercise: fresh Sheet, size, selection, editor and error.
+  // Adjusting state during render is React's documented pattern for resetting on a prop change.
+  if (!sameGrid(grid, loaded.grid)) {
+    setLoaded(load(grid));
+    setActive(ORIGIN);
+    editingRef.current = null;
+    setEditingState(null);
+    setError(null);
+  }
+  const { sheet, size } = loaded;
 
   useEffect(() => {
     if (sheetRef) sheetRef.current = sheet;
@@ -161,7 +202,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
   const highlights = (highlightCells ?? []).map(parseRef).filter((r): r is Rect => r !== null);
 
   /** The formula, or the literal, the active cell holds. */
-  const contentOf = useCallback((a: string) => sheet.getFormula(a) ?? rawInput(sheet.get(a)), [sheet]);
+  const contentOf = (a: string) => sheet.getFormula(a) ?? rawInput(sheet.get(a));
 
   const startEdit = (draft: string, where: Editing["from"]) => {
     setError(null);
@@ -174,43 +215,69 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
     gridEl.current?.focus();
   };
 
-  /** Writes `input` to the active cell. On a tokenize/parse error, shows it and keeps the old value. */
-  const write = (input: string): boolean => {
+  /** Writes `input` to the active cell. Returns the tokenize/parse message on failure (old value kept). */
+  const write = (input: string): string | null => {
     try {
       sheet.set(addr, input);
     } catch (e) {
       if (e instanceof TokenizeError || e instanceof ParseError) {
         setError(e.message);
-        return false;
+        return e.message;
       }
       throw e;
     }
     setError(null);
     rerender();
     onCommit?.(addr, input);
+    return null;
+  };
+
+  /**
+   * Commit the draft, then optionally step to a neighbour (an arrow key name: Enter ↓, Tab →).
+   * On a parse error the editor stays open with the message and this returns false.
+   */
+  const commit = (step?: string, focusGrid = true): boolean => {
+    const ed = editingRef.current;
+    if (!ed) return true;
+    if (write(ed.draft) !== null) return false;
+    setEditing(null); // before focusing the grid, so the editor's blur finds nothing to commit
+    if (step) setActive((p) => move(p, step, size));
+    if (focusGrid) gridEl.current?.focus();
     return true;
   };
 
-  /** Commit the draft, then optionally step to a neighbour (Enter ↓, Tab →). */
-  const commit = (step?: string): boolean => {
-    if (!editing) return true;
-    if (!write(editing.draft)) return false;
+  /**
+   * Focus left the editors (not to the other editor or a formula-bar button): commit in place.
+   * If the draft doesn't parse, drop it and say so, so `editing` is never left set with focus elsewhere.
+   */
+  const onEditorBlur = (e: FocusEvent<HTMLInputElement>) => {
+    if (!editingRef.current) return;
+    const next = e.relatedTarget;
+    const fbar = sheetEl.current?.querySelector(".eg-fbar");
+    if (next instanceof Node && (next === cellInput.current || fbar?.contains(next))) return;
+    const message = (() => {
+      const ed = editingRef.current;
+      if (!ed) return null;
+      return write(ed.draft);
+    })();
     setEditing(null);
-    if (step) setActive((p) => move(p, step, size));
-    gridEl.current?.focus();
-    return true;
+    if (message !== null) setError(`${message}. Not saved: ${addr} kept its old value.`);
   };
 
   const onGridKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.target !== gridEl.current || editing) return; // keys inside the cell editor are handled there
+    if (e.target !== gridEl.current || editingRef.current) return; // keys inside the editors are handled there
     const { key } = e;
     if (key in DELTAS) {
       e.preventDefault();
       setActive((p) => move(p, key, size));
-    } else if (key === "Enter" || key === "Tab") {
+    } else if (key === "Enter") {
       e.preventDefault();
-      const dir = key === "Enter" ? (e.shiftKey ? "ArrowUp" : "ArrowDown") : e.shiftKey ? "ArrowLeft" : "ArrowRight";
-      setActive((p) => move(p, dir, size));
+      setActive((p) => move(p, e.shiftKey ? "ArrowUp" : "ArrowDown", size));
+    } else if (key === "Tab") {
+      const next = tabStep(active, e.shiftKey, size);
+      if (!next) return; // at the edge: let the browser move focus out of the grid
+      e.preventDefault();
+      setActive(next);
     } else if (key === "Delete") {
       e.preventDefault();
       write("");
@@ -226,12 +293,13 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
     }
   };
 
-  const onCellKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  /** Shared by the in-cell editor and the formula bar: Enter/Tab commit and step, Escape cancels. */
+  const onEditorKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
       commit(e.shiftKey ? "ArrowUp" : "ArrowDown");
     } else if (e.key === "Tab") {
-      e.preventDefault();
+      e.preventDefault(); // on a parse error the editor keeps focus and shows the message
       commit(e.shiftKey ? "ArrowLeft" : "ArrowRight");
     } else if (e.key === "Escape") {
       e.preventDefault();
@@ -272,7 +340,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
   const rows = Array.from({ length: size.rows }, (_, r) => r);
 
   return (
-    <div className="eg-sheet">
+    <div className="eg-sheet" ref={sheetEl}>
       <FormulaBar
         address={addr}
         value={barValue}
@@ -280,8 +348,10 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
         error={error}
         inputRef={barInput}
         onStartEdit={() => startEdit(contentOf(addr), "bar")}
-        onChange={(draft) => setEditing((ed) => ({ draft, from: ed?.from ?? "bar" }))}
-        onCommit={(step) => commit(step ? "ArrowDown" : undefined)}
+        onChange={(draft) => setEditing({ draft, from: editingRef.current?.from ?? "bar" })}
+        onKeyDown={onEditorKeyDown}
+        onBlur={onEditorBlur}
+        onConfirm={() => commit()}
         onCancel={cancel}
         onFx={onFx}
       />
@@ -341,7 +411,8 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
                       autoCapitalize="off"
                       autoCorrect="off"
                       onChange={(e) => setEditing({ draft: e.target.value, from: "cell" })}
-                      onKeyDown={onCellKeyDown}
+                      onKeyDown={onEditorKeyDown}
+                      onBlur={onEditorBlur}
                     />
                   ) : (
                     <span className="eg-val">{isActive && editing ? editing.draft : formatValue(value)}</span>
