@@ -3,7 +3,8 @@
 import { useEffect, useId, useLayoutEffect, useReducer, useRef, useState } from "react";
 import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { ParseError, Sheet, TokenizeError, type CellValue, type ExcelError } from "@excel-guru/engine";
-import { FormulaBar } from "./FormulaBar";
+import { FormulaBar, RefMirror, RefText, type ColouredRef } from "./FormulaBar";
+import { canPoint, findRefs, insertRef, refColours, wholeLineRef } from "./refs";
 import "./grid.css";
 
 /** A starting cell: a literal, or a string starting with "=" for a formula (as Sheet takes it). */
@@ -176,6 +177,25 @@ export function gridColumns(minChars: number[]): string {
   return ["var(--eg-rowhead)", ...tracks].join(" ");
 }
 
+// ---------- point mode and coloured references (T18) ----------
+
+/** The reference point mode inserts for a selection from `anchor` to `cursor`: "A1" or "A1:B3". */
+export function rangeRef(anchor: Pos, cursor: Pos): string {
+  const from = addressOf({ row: Math.min(anchor.row, cursor.row), col: Math.min(anchor.col, cursor.col) });
+  const to = addressOf({ row: Math.max(anchor.row, cursor.row), col: Math.max(anchor.col, cursor.col) });
+  return from === to ? from : `${from}:${to}`;
+}
+
+/**
+ * Where a reference's outline sits, as CSS grid lines (line 1 is the header row/column), clipped to
+ * the grid so whole columns and rows stop at its edge. Null when it is entirely off the grid.
+ */
+export function refArea(r: Rect, size: { rows: number; cols: number }): { gridRow: string; gridColumn: string } | null {
+  if (r.r1 >= size.rows || r.c1 >= size.cols) return null;
+  const r2 = Math.min(r.r2, size.rows - 1), c2 = Math.min(r.c2, size.cols - 1);
+  return { gridRow: `${r.r1 + 2} / ${r2 + 3}`, gridColumn: `${r.c1 + 2} / ${c2 + 3}` };
+}
+
 // ---------- spills (T6) ----------
 
 /** Rows and columns a spill may add past the lesson's own size, so a huge array can't hang the page. */
@@ -264,7 +284,12 @@ export function literalCells(grid: GridLiteral[][]): Set<string> {
 
 // ---------- component ----------
 
-type Editing = { draft: string; from: "cell" | "bar" };
+/**
+ * The reference point mode last inserted: its span in the draft, and the selection it names
+ * (anchor stays put under Shift; cursor is what the next arrow moves). Typing drops it.
+ */
+type Point = { start: number; end: number; anchor: Pos; cursor: Pos };
+type Editing = { draft: string; from: "cell" | "bar"; point?: Point };
 type Loaded = {
   grid: GridLiteral[][]; sheet: Sheet; size: { rows: number; cols: number }; minChars: number[];
   /** Cells that hold a literal of their own, kept in step with every write, so spilled cells can be told apart. */
@@ -294,6 +319,10 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
   const lastPointer = useRef<string>("mouse");
   // Mirrors `editing` synchronously, so a blur fired mid-commit sees the edit as already closed.
   const editingRef = useRef<Editing | null>(null);
+  /** Where to put the caret after the next render (point mode rewrote the draft). */
+  const pendingCaret = useRef<number | null>(null);
+  /** A mouse button went down on a cell in point mode: entering other cells extends the range. */
+  const dragging = useRef(false);
   const idBase = useId();
 
   const setEditing = (ed: Editing | null) => {
@@ -331,6 +360,32 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
     }
   }, [from, active]);
 
+  /** The editor the learner is typing in: the focused one, else the one the edit opened in. */
+  const editorEl = (): HTMLInputElement | null => {
+    const focused = document.activeElement;
+    if (focused && (focused === cellInput.current || focused === barInput.current)) return focused as HTMLInputElement;
+    return editingRef.current?.from === "bar" ? barInput.current : cellInput.current;
+  };
+
+  // After point mode rewrites the draft, put the caret just after the inserted reference.
+  useLayoutEffect(() => {
+    const at = pendingCaret.current;
+    if (at === null) return;
+    pendingCaret.current = null;
+    const el = editorEl();
+    if (!el) return;
+    el.setSelectionRange(at, at);
+    // A value set from code doesn't scroll the input to its caret; at the end, scroll there (the
+    // coloured mirror follows on the scroll event).
+    if (at === el.value.length) el.scrollLeft = el.scrollWidth;
+  });
+
+  useEffect(() => {
+    const up = () => { dragging.current = false; };
+    window.addEventListener("mouseup", up);
+    return () => window.removeEventListener("mouseup", up);
+  }, []);
+
   // When the grid is wider than its box (long text on a phone), keep the active cell in view.
   // Only the grid's own scroller moves: scrollIntoView could scroll the page too.
   useEffect(() => {
@@ -354,6 +409,24 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
     setError(null);
     setEditing({ draft, from: where });
     onEditStart?.();
+  };
+
+  /**
+   * Point mode at the editor's caret: the reference it last inserted (if the caret sits right after
+   * it), whether it may point at all (that, or right after "=", "(", "," or an operator), and the caret.
+   */
+  const pointState = (ed: Editing, el: HTMLInputElement | null) => {
+    const caret = el && el.selectionStart !== null && el.selectionStart === el.selectionEnd ? el.selectionStart : null;
+    if (caret === null) return null;
+    const last = ed.point && ed.point.end === caret ? ed.point : null;
+    return last || canPoint(ed.draft, caret) ? { last, caret } : null;
+  };
+
+  /** Insert (or replace the last pointed) reference to anchor…cursor and keep the caret after it. */
+  const pointTo = (ed: Editing, last: Point | null, caret: number, anchor: Pos, cursor: Pos) => {
+    const ins = insertRef(ed.draft, last, caret, rangeRef(anchor, cursor));
+    pendingCaret.current = ins.end;
+    setEditing({ draft: ins.draft, from: ed.from, point: { start: ins.start, end: ins.end, anchor, cursor } });
   };
 
   const cancel = () => {
@@ -469,13 +542,42 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
     } else if (e.key === "Escape") {
       e.preventDefault();
       cancel();
+    } else if (e.key in DELTAS && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      // Point mode: the arrow moves a reference on the grid instead of the caret.
+      const ed = editingRef.current;
+      const pt = ed && pointState(ed, e.currentTarget);
+      if (!ed || !pt) return; // outside point mode the arrow moves the caret
+      e.preventDefault();
+      const cursor = move(pt.last?.cursor ?? active, e.key, size);
+      const anchor = e.shiftKey ? pt.last?.anchor ?? active : cursor;
+      pointTo(ed, pt.last, pt.caret, anchor, cursor);
+    } else if (e.key === " ") {
+      // Space right after a column letter or row number typed in point mode: B:B or 3:3.
+      const ed = editingRef.current;
+      const el = e.currentTarget;
+      if (!ed || el.selectionStart === null || el.selectionStart !== el.selectionEnd) return;
+      const line = wholeLineRef(ed.draft, el.selectionStart, size);
+      if (!line) return;
+      e.preventDefault();
+      pendingCaret.current = line.end;
+      setEditing({ draft: line.draft, from: ed.from });
     }
   };
 
   const onCellMouseDown = (e: MouseEvent<HTMLDivElement>, pos: Pos) => {
     const same = pos.row === active.row && pos.col === active.col;
-    if (editing) {
-      if (same && editing.from === "cell") return; // clicking inside the open editor
+    const ed = editingRef.current;
+    if (ed) {
+      if (same && ed.from === "cell") return; // clicking inside the open editor
+      const pt = pointState(ed, editorEl());
+      if (pt) {
+        // Point mode: the click names this cell in the formula (Shift extends the last one into a
+        // range), and the editor keeps focus and stays open. Dragging on extends it (onCellEnter).
+        e.preventDefault();
+        pointTo(ed, pt.last, pt.caret, e.shiftKey && pt.last ? pt.last.anchor : pos, pos);
+        dragging.current = e.button === 0;
+        return;
+      }
       if (!commit()) {
         e.preventDefault(); // keep the editor open and focused so the error can be fixed
         return;
@@ -487,6 +589,15 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
       e.preventDefault();
       startEdit(contentOf(addressOf(pos)), "cell");
     }
+  };
+
+  /** Dragging in point mode: the range runs from where the button went down to this cell. */
+  const onCellEnter = (e: MouseEvent<HTMLDivElement>, pos: Pos) => {
+    const ed = editingRef.current;
+    if (!dragging.current || !ed?.point || !(e.buttons & 1)) return;
+    const { point } = ed;
+    if (point.cursor.row === pos.row && point.cursor.col === pos.col) return;
+    pointTo(ed, point, point.end, point.anchor, pos);
   };
 
   const onFx = () => {
@@ -505,6 +616,19 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
   const activeSpill = spillAnchor ?? (anchors.has(addr) ? addr : null);
   const cellId = (p: Pos) => `${idBase}-${addressOf(p)}`;
 
+  // The formula being edited: each reference coloured in the editors and outlined on the grid.
+  const editingFormula = editing !== null && editing.draft.startsWith("=");
+  const refSpans = editingFormula ? findRefs(editing.draft) : [];
+  const colours = refColours(refSpans);
+  const coloured: ColouredRef[] | null = editingFormula
+    ? refSpans.map((r, i) => ({ start: r.start, end: r.end, colour: colours[i]! }))
+    : null;
+  const outlines = refSpans.flatMap((r, i) => {
+    const rect = parseRef(r.text.replace(/\s/g, ""));
+    const area = rect && refArea(rect, size);
+    return area ? [{ area, colour: colours[i]!, key: `${i}-${r.text}` }] : [];
+  });
+
   const cols = Array.from({ length: size.cols }, (_, c) => c);
   const rows = Array.from({ length: size.rows }, (_, r) => r);
 
@@ -516,6 +640,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
         editing={editing !== null}
         error={error}
         inputRef={barInput}
+        refs={coloured}
         onStartEdit={() => startEdit(contentOf(addr), "bar")}
         onChange={(draft) => setEditing({ draft, from: editingRef.current?.from ?? "bar" })}
         onKeyDown={onEditorKeyDown}
@@ -585,12 +710,13 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
                     className={cls.join(" ")}
                     title={spills.has(a) ? `Spilled from ${spills.get(a)}` : undefined}
                     onMouseDown={(e) => onCellMouseDown(e, pos)}
+                    onMouseEnter={(e) => onCellEnter(e, pos)}
                     onDoubleClick={() => { if (!editing) startEdit(contentOf(a), "cell"); }}
                   >
-                    {isActive && editing?.from === "cell" ? (
+                    {isActive && editing?.from === "cell" ? (<>
                       <input
                         ref={cellInput}
-                        className="eg-cell-input"
+                        className={`eg-cell-input${coloured ? " has-mirror" : ""}`}
                         aria-label={`Edit ${a}`}
                         value={editing.draft}
                         spellCheck={false}
@@ -601,13 +727,24 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
                         onKeyDown={onEditorKeyDown}
                         onBlur={onEditorBlur}
                       />
-                    ) : (
-                      <span className="eg-val">{isActive && editing ? editing.draft : formatValue(value)}</span>
+                      {coloured && (
+                        <RefMirror text={editing.draft} refs={coloured} inputRef={cellInput} className="eg-cell-mirror" />
+                      )}
+                    </>) : (
+                      <span className="eg-val">
+                        {isActive && editing
+                          ? coloured ? <RefText text={editing.draft} refs={coloured} /> : editing.draft
+                          : formatValue(value)}
+                      </span>
                     )}
                   </div>
                 );
               })}
             </div>
+          ))}
+          {/* Absolutely placed by grid lines, so they overlay the cells without taking part in the layout. */}
+          {outlines.map(({ area, colour, key }) => (
+            <div key={key} className={`eg-refbox eg-ref-${colour}`} style={area} aria-hidden="true" />
           ))}
         </div>
       </div>

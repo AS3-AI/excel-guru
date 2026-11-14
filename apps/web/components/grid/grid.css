@@ -34,6 +34,7 @@
   color: var(--text); background: var(--surface);
   border: 1px solid var(--border); border-radius: 4px;
 }
+.eg-finput-wrap { position: relative; flex: 1 1 auto; min-width: 0; display: flex; }
 .eg-finput:focus { outline: 2px solid var(--primary); outline-offset: -1px; }
 .eg-finput[aria-invalid="true"] { border-color: var(--danger); }
 .eg-fbar-error {
@@ -53,6 +54,7 @@
   margin: -2px -3px -3px -2px;
 }
 .eg-grid {
+  position: relative; /* the containing block for the reference outlines (.eg-refbox) */
   min-width: min-content; /* never narrower than the text columns' minimums (see gridColumns) */
   display: grid;
   border: 1px solid var(--border);
@@ -130,11 +132,46 @@
   outline: none;
 }
 
+/*
+ * Coloured references (T18): each reference in the formula being edited gets a colour from this
+ * palette (refs.ts REF_COLOURS), mixed from the existing tokens. The editors draw their own text
+ * transparent and a mirror layer on top shows it with the references coloured; the grid outlines
+ * each referenced range in the same colour.
+ */
+.eg-ref-0 { --eg-ref: var(--track-sql); }
+.eg-ref-1 { --eg-ref: var(--danger); }
+.eg-ref-2 { --eg-ref: color-mix(in srgb, var(--track-sql) 55%, var(--danger)); }
+.eg-ref-3 { --eg-ref: color-mix(in srgb, var(--primary) 70%, var(--track-sql)); }
+.eg-ref-4 { --eg-ref: var(--warning); }
+.eg-ref-5 { --eg-ref: color-mix(in srgb, var(--warning) 55%, var(--ink)); }
+.eg-reftext { color: var(--eg-ref); }
+
+.eg-finput.has-mirror, .eg-cell-input.has-mirror { color: transparent; caret-color: var(--text); }
+.eg-finput.has-mirror::selection, .eg-cell-input.has-mirror::selection { color: transparent; }
+.eg-mirror {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  display: flex; align-items: center; white-space: pre; color: var(--text);
+}
+.eg-mirror-text { display: inline-block; }
+/* Same font and inset as .eg-finput (its 1px border plus 4px 8px padding). */
+/* The clip-paths keep scrolled-away text out of the padding, as the input itself does. */
+.eg-finput-mirror {
+  padding: 5px 9px; clip-path: inset(0 9px);
+  font: 14px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.eg-cell-mirror { z-index: 3; padding: 0 4px; clip-path: inset(0 4px); font: inherit; }
+
+.eg-refbox {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  box-shadow: inset 0 0 0 2px var(--eg-ref);
+  background: color-mix(in srgb, var(--eg-ref) 8%, transparent);
+}
+
 @media (max-width: 480px) {
   .eg-sheet { --eg-rowhead: 26px; --eg-row-h: 32px; font-size: 13px; }
   .eg-cell { padding: 0 2px; }
   .eg-fbtn { width: 24px; }
   .eg-namebox { min-width: 2.75em; padding: 0 4px; }
   /* 16px stops iOS zooming into the editor. */
-  .eg-finput, .eg-cell-input { font-size: 16px; }
+  .eg-finput, .eg-cell-input, .eg-finput-mirror, .eg-cell-mirror { font-size: 16px; }
 }
