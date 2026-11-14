@@ -1,0 +1,235 @@
+{
+  "id": "sel-1",
+  "module": "sel",
+  "title": "Fixture sel-1",
+  "difficulty": 1,
+  "requiredCorrect": 1,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "c1",
+      "type": "select",
+      "prompt": "Select D2.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "target": "D2"
+    },
+    {
+      "id": "c2",
+      "type": "select",
+      "prompt": "Select B5.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "target": "B5"
+    },
+    {
+      "id": "r1",
+      "type": "select",
+      "prompt": "Select B2:D4.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "target": "B2:D4"
+    },
+    {
+      "id": "r2",
+      "type": "select",
+      "prompt": "Select A1:C5.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "target": "A1:C5"
+    },
+    {
+      "id": "col",
+      "type": "select",
+      "prompt": "Select D:D.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "target": "D:D"
+    },
+    {
+      "id": "row",
+      "type": "select",
+      "prompt": "Select 5:5.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "target": "5:5"
+    },
+    {
+      "id": "bad",
+      "type": "select",
+      "prompt": "Select B2:.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "target": "B2:"
+    },
+    {
+      "id": "ok",
+      "type": "select",
+      "prompt": "Select C4.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "target": "C4"
+    }
+  ]
+}

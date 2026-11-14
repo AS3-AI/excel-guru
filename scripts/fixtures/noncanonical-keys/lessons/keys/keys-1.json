@@ -1,0 +1,94 @@
+{
+  "id": "keys-1",
+  "module": "keys",
+  "title": "Fixture keys-1",
+  "difficulty": 1,
+  "requiredCorrect": 1,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "order",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Shift+Ctrl+C",
+        "mac": null
+      }
+    },
+    {
+      "id": "case",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "ctrl+C",
+        "mac": null
+      }
+    },
+    {
+      "id": "letter",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+c",
+        "mac": null
+      }
+    },
+    {
+      "id": "dup",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+Ctrl+C",
+        "mac": null
+      }
+    },
+    {
+      "id": "nokey",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+Shift",
+        "mac": null
+      }
+    },
+    {
+      "id": "seq",
+      "type": "shortcut",
+      "mode": "sequence",
+      "prompt": "Press them.",
+      "keys": {
+        "win": [
+          "alt",
+          "H"
+        ],
+        "mac": null
+      }
+    },
+    {
+      "id": "empty",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+",
+        "mac": null
+      }
+    },
+    {
+      "id": "ok",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+Shift+ArrowDown",
+        "mac": "Shift+Cmd+ArrowDown"
+      }
+    }
+  ]
+}

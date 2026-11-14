@@ -1,0 +1,270 @@
+{
+  "id": "count-1",
+  "module": "count",
+  "title": "Fixture count-1",
+  "difficulty": 3,
+  "requiredCorrect": 10,
+  "isIntro": true,
+  "video": "intro.mp4",
+  "steps": [
+    {
+      "id": "f1",
+      "type": "formula",
+      "prompt": "Count the numbers in B2:B4.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 2,
+      "mustUse": [
+        "COUNT"
+      ],
+      "solution": "=COUNT(B2:B4)"
+    },
+    {
+      "id": "f2",
+      "type": "formula",
+      "prompt": "Count the numbers in B2:B4.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": 26,
+      "mustUse": [
+        "sum"
+      ],
+      "solution": "=SUM(B2:B4)/2"
+    },
+    {
+      "id": "c1",
+      "type": "select",
+      "prompt": "Select B2.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "target": "B2"
+    },
+    {
+      "id": "r1",
+      "type": "select",
+      "prompt": "Select B2:C4.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "target": "B2:C4"
+    },
+    {
+      "id": "col",
+      "type": "select",
+      "prompt": "Select B:B.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "target": "B:B"
+    },
+    {
+      "id": "row",
+      "type": "select",
+      "prompt": "Select 3:3.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "target": "3:3"
+    },
+    {
+      "id": "m1",
+      "type": "mcq",
+      "prompt": "Pick one.",
+      "options": [
+        "A",
+        "B"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "i1",
+      "type": "info",
+      "text": "Just reading."
+    },
+    {
+      "id": "f3",
+      "type": "formula",
+      "prompt": "Count the numbers in B2:B4.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "targetCell": "D4",
+      "expectedValue": {
+        "error": "#DIV/0!"
+      },
+      "solution": "=B2/0",
+      "explain": "Dividing by zero is an error.",
+      "highlightCells": [
+        "B2"
+      ],
+      "mobileButtons": [
+        "/"
+      ],
+      "activeCell": "D4",
+      "postcondition": {
+        "grid": [
+          [
+            "x"
+          ]
+        ],
+        "selection": "D4"
+      }
+    },
+    {
+      "id": "p1",
+      "type": "picture",
+      "prompt": "Which function?",
+      "image": "q.png",
+      "accept": [
+        "sumif"
+      ]
+    },
+    {
+      "id": "p2",
+      "type": "project",
+      "prompt": "Total in F20?",
+      "file": "data.xlsx",
+      "accept": [
+        "1840"
+      ]
+    }
+  ]
+}

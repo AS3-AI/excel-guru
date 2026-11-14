@@ -1,0 +1,44 @@
+{
+  "id": "count-1",
+  "module": "count",
+  "title": "Fixture count-1",
+  "difficulty": 1,
+  "requiredCorrect": 1,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "f1",
+      "type": "formula",
+      "prompt": "Count the numbers in B2:B4.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 2,
+      "mustUse": [
+        "COUNT"
+      ],
+      "solution": "=COUNT(B2:B4"
+    }
+  ]
+}

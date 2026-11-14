@@ -1,0 +1,69 @@
+{
+  "id": "count-1",
+  "module": "count",
+  "title": "Fixture count-1",
+  "difficulty": 1,
+  "requiredCorrect": 2,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s0",
+      "type": "mcq",
+      "prompt": "Pick one.",
+      "options": [
+        "A",
+        "B"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "s1",
+      "type": "Formula",
+      "prompt": "Count the numbers in B2:B4.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 2,
+      "mustUse": [
+        "COUNT"
+      ],
+      "solution": "=COUNT(B2:B4)"
+    },
+    {
+      "id": "s2",
+      "type": "bogus",
+      "prompt": "?"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "hold",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+C",
+        "mac": null
+      }
+    }
+  ]
+}

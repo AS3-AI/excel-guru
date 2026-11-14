@@ -1,0 +1,157 @@
+{
+  "id": "count-1",
+  "module": "count",
+  "title": "COUNT Function",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "select",
+      "prompt": "Click cell B2.",
+      "grid": [
+        [
+          "Item",
+          "Qty"
+        ],
+        [
+          "Pens",
+          12
+        ],
+        [
+          "Tape",
+          "n/a"
+        ],
+        [
+          "Clips",
+          40
+        ],
+        [
+          "Glue",
+          7
+        ],
+        [
+          "Ink",
+          3
+        ]
+      ],
+      "target": "B2"
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "prompt": "In C2, count the numbers in B2:B6.",
+      "grid": [
+        [
+          "Item",
+          "Qty"
+        ],
+        [
+          "Pens",
+          12
+        ],
+        [
+          "Tape",
+          "n/a"
+        ],
+        [
+          "Clips",
+          40
+        ],
+        [
+          "Glue",
+          7
+        ],
+        [
+          "Ink",
+          3
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 4,
+      "mustUse": [
+        "COUNT"
+      ],
+      "solution": "=COUNT(B2:B6)",
+      "explain": "COUNT counts cells that hold numbers, so the text in B3 is skipped.",
+      "highlightCells": [
+        "B2:B6"
+      ],
+      "mobileButtons": [
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Extend the selection one cell right.",
+      "keys": {
+        "win": "Shift+ArrowRight",
+        "mac": "Shift+ArrowRight"
+      },
+      "activeCell": "B2",
+      "postcondition": {
+        "selection": "B2:C2"
+      }
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "sequence",
+      "prompt": "Make the text bold with key tips.",
+      "keys": {
+        "win": [
+          "Alt",
+          "H",
+          "1"
+        ],
+        "mac": null
+      },
+      "pics": [
+        "r0.png",
+        "r1.png",
+        "r2.png",
+        "r3.png"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "prompt": "Which function counts only cells that contain numbers?",
+      "options": [
+        "COUNTA",
+        "COUNT",
+        "COUNTBLANK"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "s6",
+      "type": "picture",
+      "prompt": "Which function is shown?",
+      "image": "q.png",
+      "accept": [
+        "sumif"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "project",
+      "prompt": "What is the total in cell F20?",
+      "file": "dataset.xlsx",
+      "accept": [
+        "1840"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "info",
+      "text": "COUNT ignores text and blanks."
+    }
+  ]
+}

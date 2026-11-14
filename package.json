@@ -8,11 +8,14 @@
   "scripts": {
     "dev": "pnpm --filter web dev",
     "build": "pnpm --filter web build",
-    "test": "pnpm -r --if-present test",
-    "typecheck": "pnpm -r --if-present typecheck",
-    "validate-content": "node -e \"console.log('validate-content: no lessons yet (scripts/validate-content.ts lands with the engine)')\""
+    "test": "pnpm -r --if-present test && vitest run --dir scripts",
+    "typecheck": "pnpm -r --if-present typecheck && tsc --noEmit --strict --noUncheckedIndexedAccess --target ES2022 --module ESNext --moduleResolution Bundler --skipLibCheck --isolatedModules --types node scripts/validate-content.ts scripts/validate-content.test.ts",
+    "validate-content": "tsx scripts/validate-content.ts content"
   },
   "devDependencies": {
+    "@excel-guru/grader": "workspace:*",
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^5.1.0"
   }

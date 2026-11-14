@@ -1,0 +1,84 @@
+{
+  "id": "keys-1",
+  "module": "keys",
+  "title": "Fixture keys-1",
+  "difficulty": 1,
+  "requiredCorrect": 1,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "w",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+W",
+        "mac": "Cmd+ArrowUp"
+      }
+    },
+    {
+      "id": "t",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+Shift+T",
+        "mac": null
+      }
+    },
+    {
+      "id": "n",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+n",
+        "mac": null
+      }
+    },
+    {
+      "id": "q",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+Q",
+        "mac": null
+      }
+    },
+    {
+      "id": "tab",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+Tab",
+        "mac": null
+      }
+    },
+    {
+      "id": "sq",
+      "type": "shortcut",
+      "mode": "sequence",
+      "prompt": "Press them.",
+      "keys": {
+        "win": [
+          "Alt",
+          "Ctrl+W"
+        ],
+        "mac": null
+      }
+    },
+    {
+      "id": "ok",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+C",
+        "mac": null
+      }
+    }
+  ]
+}
