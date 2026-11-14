@@ -63,8 +63,11 @@ export function normaliseKeys(e: KeyEventLike): string {
 function keyName({ key, code }: KeyEventLike): string {
   let m = /^Key([A-Z])$/.exec(code);
   if (m) return m[1]!;
-  m = /^(?:Digit|Numpad)(\d)$/.exec(code);
+  m = /^Digit(\d)$/.exec(code);
   if (m) return m[1]!;
+  // With NumLock off a numpad digit key sends End, Home, arrows… in `key`; use that.
+  m = /^Numpad(\d)$/.exec(code);
+  if (m && /^\d$/.test(key)) return m[1]!;
   if (Object.hasOwn(PUNCTUATION_BY_CODE, code)) return PUNCTUATION_BY_CODE[code]!;
   return canonicalKey(KEY_ALIASES[key] ?? key) ?? key;
 }

@@ -37,6 +37,14 @@ describe("normaliseKeys", () => {
     expect(normaliseKeys(ev("1", "Numpad1"))).toBe("1");
   });
 
+  it("reads numpad keys with NumLock off as their navigation key", () => {
+    expect(normaliseKeys(ev("End", "Numpad1", { ctrlKey: true }))).toBe("Ctrl+End");
+    expect(normaliseKeys(ev("Home", "Numpad7"))).toBe("Home");
+    expect(normaliseKeys(ev("ArrowUp", "Numpad8", { shiftKey: true }))).toBe("Shift+ArrowUp");
+    expect(normaliseKeys(ev("PageDown", "Numpad3"))).toBe("PageDown");
+    expect(normaliseKeys(ev("Insert", "Numpad0"))).toBe("Insert");
+  });
+
   it("reads punctuation from code so Shift doesn't change it", () => {
     expect(normaliseKeys(ev(":", "Semicolon", { ctrlKey: true, shiftKey: true }))).toBe("Ctrl+Shift+;");
     expect(normaliseKeys(ev(";", "Semicolon", { ctrlKey: true }))).toBe("Ctrl+;");
