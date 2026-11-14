@@ -2,10 +2,10 @@
   "id": "count-1",
   "module": "count",
   "title": "Fixture count-1",
-  "difficulty": 1,
-  "requiredCorrect": 7,
-  "isIntro": false,
-  "video": null,
+  "difficulty": 3,
+  "requiredCorrect": 10,
+  "isIntro": true,
+  "video": "intro.mp4",
   "steps": [
     {
       "id": "f1",
@@ -199,6 +199,72 @@
       "id": "i1",
       "type": "info",
       "text": "Just reading."
+    },
+    {
+      "id": "f3",
+      "type": "formula",
+      "prompt": "Count the numbers in B2:B4.",
+      "grid": [
+        [
+          "Item",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Pens",
+          12,
+          2
+        ],
+        [
+          "Tape",
+          "n/a",
+          3
+        ],
+        [
+          "Clips",
+          40,
+          1
+        ]
+      ],
+      "targetCell": "D4",
+      "expectedValue": {
+        "error": "#DIV/0!"
+      },
+      "solution": "=B2/0",
+      "explain": "Dividing by zero is an error.",
+      "highlightCells": [
+        "B2"
+      ],
+      "mobileButtons": [
+        "/"
+      ],
+      "activeCell": "D4",
+      "postcondition": {
+        "grid": [
+          [
+            "x"
+          ]
+        ],
+        "selection": "D4"
+      }
+    },
+    {
+      "id": "p1",
+      "type": "picture",
+      "prompt": "Which function?",
+      "image": "q.png",
+      "accept": [
+        "sumif"
+      ]
+    },
+    {
+      "id": "p2",
+      "type": "project",
+      "prompt": "Total in F20?",
+      "file": "data.xlsx",
+      "accept": [
+        "1840"
+      ]
     }
   ]
 }

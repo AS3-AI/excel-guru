@@ -34,7 +34,7 @@
       "prompt": "Press it.",
       "keys": {
         "win": "Ctrl+C",
-        "mac": "Cmd+Shift+N"
+        "mac": "Shift+Cmd+N"
       }
     },
     {

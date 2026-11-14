@@ -110,7 +110,7 @@ describe("validateContent: browser-reserved shortcuts", () => {
         expect.stringMatching(/step "sq": win shortcut "Ctrl\+W" uses a browser-reserved combo/),
       ]),
     );
-    expect(errors).toHaveLength(6);
+    expect(errors.filter((e) => e.includes("browser-reserved"))).toHaveLength(6);
     expect(errors.some((e) => e.includes('step "ok"'))).toBe(false);
     expectEveryErrorNamesItsFile("reserved-win");
   });
@@ -121,7 +121,7 @@ describe("validateContent: browser-reserved shortcuts", () => {
       expect.arrayContaining([
         expect.stringMatching(/step "w": mac shortcut "Cmd\+W" uses a browser-reserved combo/),
         expect.stringMatching(/step "t": mac shortcut "Cmd\+T" uses a browser-reserved combo/),
-        expect.stringMatching(/step "n": mac shortcut "Cmd\+Shift\+N" uses a browser-reserved combo/),
+        expect.stringMatching(/step "n": mac shortcut "Shift\+Cmd\+N" uses a browser-reserved combo/),
         expect.stringMatching(/step "q": mac shortcut "Cmd\+Q" uses a browser-reserved combo/),
         expect.stringMatching(/step "tab": mac shortcut "Cmd\+Tab" uses a browser-reserved combo/),
         expect.stringMatching(/step "sq": mac shortcut "Cmd\+Q" uses a browser-reserved combo/),
@@ -185,5 +185,139 @@ describe("validateContent: order.json", () => {
     expect(results).toHaveLength(1);
     expect(results[0]!.file).toBe(orderFile("no-order"));
     expect(results[0]!.errors[0]).toMatch(/order\.json is missing/);
+  });
+});
+
+describe("validateContent: step types", () => {
+  it("rejects unknown step types and shortcut modes, and does not count them as gradable", () => {
+    const errors = errorsFor("unknown-type", lessonFile("unknown-type", "count/count-1.json"));
+    expect(errors).toEqual([
+      expect.stringMatching(
+        /step "s1": unknown type "Formula" \(expected one of: formula, select, shortcut, mcq, picture, project, info\)/,
+      ),
+      expect.stringMatching(/step "s2": unknown type "bogus"/),
+      expect.stringMatching(/step "s3": shortcut mode "hold" must be "chord" or "sequence"/),
+      expect.stringMatching(/requiredCorrect is 2 but the lesson has only 1 gradable step/),
+    ]);
+    expectEveryErrorNamesItsFile("unknown-type");
+  });
+});
+
+describe("validateContent: lesson and step shape", () => {
+  it("rejects a lesson whose fields have the wrong shape", () => {
+    const errors = errorsFor("lesson-shape", lessonFile("lesson-shape", "count/count-1.json"));
+    expect(errors).toEqual([
+      expect.stringMatching(/title must be a non-empty string/),
+      expect.stringMatching(/difficulty must be 1, 2 or 3 \(got 4\)/),
+      expect.stringMatching(/requiredCorrect must be a positive integer \(got 0\)/),
+      expect.stringMatching(/isIntro must be a boolean \(got "no"\)/),
+      expect.stringMatching(/video must be a string or null \(got 3\)/),
+      expect.stringMatching(/steps must be a non-empty array/),
+    ]);
+    expectEveryErrorNamesItsFile("lesson-shape");
+  });
+
+  it("rejects JSON that is not a lesson object", () => {
+    const errors = errorsFor("not-a-lesson", lessonFile("not-a-lesson", "count/count-1.json"));
+    expect(errors).toEqual([expect.stringMatching(/not a lesson: expected a JSON object/)]);
+  });
+
+  it("rejects steps missing required fields, per step type, and bad optional fields", () => {
+    const errors = errorsFor("step-shape", lessonFile("step-shape", "count/count-1.json"));
+    const expected = [
+      /step #1: missing id \(every step needs a non-empty string id\)/,
+      /step "f1": grid must be an array of rows of strings, numbers, booleans or null/,
+      /step "f1": targetCell "c2" must be an uppercase cell reference like "B2"/,
+      /step "f1": expectedValue must be a number, string, boolean, null or \{ "error": "#DIV\/0!" \| .* \}/,
+      /step "f1": solution must be a string/,
+      /step "sel": prompt must be a non-empty string/,
+      /step "sel": target must be a string/,
+      /step "ch": keys\.win must be a string for a chord/,
+      /step "ch": keys\.mac must be a string or null for a chord/,
+      /step "sq": keys\.win must be a non-empty array of strings for a sequence/,
+      /step "sq": keys\.mac must be a non-empty array of strings or null for a sequence/,
+      /step "mc": answer 3 is not an index into options \(0\.\.1\)/,
+      /step "pic": image must be a non-empty string/,
+      /step "pic": accept must be a non-empty array of strings/,
+      /step "proj": file must be a non-empty string/,
+      /step "inf": text must be a non-empty string/,
+      /step "opt": activeCell must be a string/,
+      /step "opt": highlightCells must be an array of strings/,
+      /step "opt": postcondition\.grid must be an array of rows/,
+      /step "opt": mobileButtons must be an array of strings/,
+      /step "opt": options must be a non-empty array of strings/,
+      /step "opt": answer must be an integer \(got 1\.5\)/,
+    ];
+    expect(errors).toEqual(expected.map((re) => expect.stringMatching(re)));
+    expect(errors.some((e) => e.includes("undefined"))).toBe(false);
+    expectEveryErrorNamesItsFile("step-shape");
+  });
+});
+
+describe("validateContent: stray files", () => {
+  it("reports files and folders that are not lessons/<module>/<id>.json", () => {
+    const results = validateContent(fixture("stray-files"));
+    const files = (rel: string) => results.find((r) => r.file === join(fixture("stray-files"), "lessons", rel))?.errors;
+    expect(files("top.json")).toEqual([expect.stringMatching(/lesson files must live in lessons\/<module>\/<id>\.json/)]);
+    expect(files("m/sub")).toEqual([expect.stringMatching(/unexpected folder: lessons must sit directly in lessons\/<module>\//)]);
+    expect(files("m/y.JSON")).toEqual([expect.stringMatching(/unexpected file: only <id>\.json lesson files belong/)]);
+    expect(files("m/notes.txt")).toEqual([expect.stringMatching(/unexpected file/)]);
+    expect(results).toHaveLength(4);
+    expectEveryErrorNamesItsFile("stray-files");
+  });
+});
+
+describe("validateContent: canonical shortcut keys", () => {
+  it("treats ⌘ and ⌃ as Cmd and Ctrl when checking reserved combos", () => {
+    const errors = errorsFor("reserved-symbols", lessonFile("reserved-symbols", "keys/keys-1.json"));
+    const reserved = errors.filter((e) => e.includes("browser-reserved"));
+    expect(reserved).toEqual([
+      expect.stringMatching(/step "m1": mac shortcut "⌘\+W" uses a browser-reserved combo/),
+      expect.stringMatching(/step "m2": mac shortcut "⌘W" uses a browser-reserved combo/),
+      expect.stringMatching(/step "w1": win shortcut "⌃\+T" uses a browser-reserved combo/),
+    ]);
+    expect(errors).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/step "m1": mac shortcut "⌘\+W" is not canonical; write "Cmd\+W"/),
+        expect.stringMatching(/step "m2": mac shortcut "⌘W" is not canonical; write "Cmd\+W"/),
+        expect.stringMatching(/step "w1": win shortcut "⌃\+T" is not canonical; write "Ctrl\+T"/),
+      ]),
+    );
+    expect(errors).toHaveLength(6);
+    expect(errors.some((e) => e.includes('step "ok"'))).toBe(false);
+  });
+
+  it("requires modifiers Ctrl, Alt, Shift, Cmd in that order, then one key", () => {
+    const errors = errorsFor("noncanonical-keys", lessonFile("noncanonical-keys", "keys/keys-1.json"));
+    expect(errors).toEqual([
+      expect.stringMatching(
+        /step "order": win shortcut "Shift\+Ctrl\+C" is not canonical; write "Ctrl\+Shift\+C" \(modifiers Ctrl, Alt, Shift, Cmd in that order, then one key\)/,
+      ),
+      expect.stringMatching(/step "case": win shortcut "ctrl\+C" is not canonical; write "Ctrl\+C"/),
+      expect.stringMatching(/step "letter": win shortcut "Ctrl\+c" is not canonical; write "Ctrl\+C"/),
+      expect.stringMatching(/step "dup": win shortcut "Ctrl\+Ctrl\+C" is not canonical; write "Ctrl\+C"/),
+      expect.stringMatching(/step "nokey": win shortcut "Ctrl\+Shift" has no key after its modifiers/),
+      expect.stringMatching(/step "seq": win shortcut "alt" is not canonical; write "Alt"/),
+      expect.stringMatching(/step "empty": win shortcut "Ctrl\+" is not canonical \(modifiers/),
+    ]);
+    expectEveryErrorNamesItsFile("noncanonical-keys");
+  });
+});
+
+describe("validateContent: canonical select targets", () => {
+  it("requires uppercase targets with the top-left corner first", () => {
+    const errors = errorsFor("select-canonical", lessonFile("select-canonical", "sel/sel-1.json"));
+    expect(errors).toEqual([
+      expect.stringMatching(
+        /step "lower": target "b2" is not canonical; write "B2" \(uppercase, top-left corner first, a single cell as one reference\)/,
+      ),
+      expect.stringMatching(/step "rev": target "B4:A1" is not canonical; write "A1:B4"/),
+      expect.stringMatching(/step "diag": target "A4:C1" is not canonical; write "A1:C4"/),
+      expect.stringMatching(/step "cols": target "C:A" is not canonical; write "A:C"/),
+      expect.stringMatching(/step "rows": target "3:1" is not canonical; write "1:3"/),
+      expect.stringMatching(/step "lcol": target "b:b" is not canonical; write "B:B"/),
+      expect.stringMatching(/step "same": target "B2:B2" is not canonical; write "B2"/),
+    ]);
+    expectEveryErrorNamesItsFile("select-canonical");
   });
 });

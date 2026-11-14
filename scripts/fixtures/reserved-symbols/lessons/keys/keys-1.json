@@ -1,0 +1,51 @@
+{
+  "id": "keys-1",
+  "module": "keys",
+  "title": "Fixture keys-1",
+  "difficulty": 1,
+  "requiredCorrect": 1,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "m1",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+C",
+        "mac": "⌘+W"
+      }
+    },
+    {
+      "id": "m2",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+C",
+        "mac": "⌘W"
+      }
+    },
+    {
+      "id": "w1",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "⌃+T",
+        "mac": null
+      }
+    },
+    {
+      "id": "ok",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Press it.",
+      "keys": {
+        "win": "Ctrl+C",
+        "mac": "Cmd+C"
+      }
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "id": "count-1",
+  "module": "count",
+  "title": "Fixture count-1",
+  "difficulty": 1,
+  "requiredCorrect": 1,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "type": "mcq",
+      "prompt": "No id.",
+      "options": [
+        "A",
+        "B"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f1",
+      "type": "formula",
+      "prompt": "P",
+      "grid": "A1",
+      "targetCell": "c2",
+      "expectedValue": {
+        "foo": 1
+      }
+    },
+    {
+      "id": "sel",
+      "type": "select",
+      "prompt": "",
+      "grid": [
+        [
+          "a"
+        ]
+      ]
+    },
+    {
+      "id": "ch",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "P",
+      "keys": {
+        "win": [
+          "Ctrl",
+          "C"
+        ]
+      }
+    },
+    {
+      "id": "sq",
+      "type": "shortcut",
+      "mode": "sequence",
+      "prompt": "P",
+      "keys": {
+        "win": "Alt",
+        "mac": []
+      }
+    },
+    {
+      "id": "mc",
+      "type": "mcq",
+      "prompt": "P",
+      "options": [
+        "A",
+        "B"
+      ],
+      "answer": 3
+    },
+    {
+      "id": "pic",
+      "type": "picture",
+      "prompt": "P",
+      "accept": "x"
+    },
+    {
+      "id": "proj",
+      "type": "project",
+      "prompt": "P",
+      "accept": [
+        "1"
+      ]
+    },
+    {
+      "id": "inf",
+      "type": "info"
+    },
+    {
+      "id": "opt",
+      "type": "mcq",
+      "prompt": "P",
+      "options": [
+        "A",
+        2
+      ],
+      "answer": 1.5,
+      "highlightCells": "B2",
+      "mobileButtons": [
+        1
+      ],
+      "postcondition": {
+        "grid": 5
+      },
+      "activeCell": 7
+    }
+  ]
+}

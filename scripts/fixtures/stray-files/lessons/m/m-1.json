@@ -1,0 +1,21 @@
+{
+  "id": "m-1",
+  "module": "m",
+  "title": "Fixture m-1",
+  "difficulty": 1,
+  "requiredCorrect": 1,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "mcq",
+      "prompt": "Pick one.",
+      "options": [
+        "A",
+        "B"
+      ],
+      "answer": 1
+    }
+  ]
+}
