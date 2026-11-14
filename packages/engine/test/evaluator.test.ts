@@ -69,6 +69,13 @@ describe("evaluate: errors", () => {
   it("#N/A from a VLOOKUP miss", () => {
     expect(ev('=VLOOKUP("z",A1:B2,2,FALSE)', [["a", 1], ["b", 2]])).toEqual(err("#N/A"));
   });
+  it("#N/A from a VLOOKUP over an empty table (not 0)", () => {
+    expect(ev("=VLOOKUP(1,A1:B3,2)", [[null, null], [null, null], [null, null]])).toEqual(err("#N/A"));
+  });
+  it("#N/A from an HLOOKUP miss", () => {
+    expect(ev('=HLOOKUP("z",A1:B2,2,FALSE)', [["a", "b"], [1, 2]])).toEqual(err("#N/A"));
+  });
+  it("#N/A from an XLOOKUP miss", () => expect(ev('=XLOOKUP("z",A1:A2,B1:B2)', [["a", 1], ["b", 2]])).toEqual(err("#N/A")));
   it('#VALUE! from ="a"+1', () => expect(ev('="a"+1')).toEqual(err("#VALUE!")));
   it("#REF! from =A0", () => expect(ev("=A0")).toEqual(err("#REF!")));
   it("#REF! from an off-sheet column", () => expect(ev("=XFE1")).toEqual(err("#REF!")));
@@ -100,6 +107,12 @@ describe("evaluate: functions", () => {
   });
   it('COUNTIF "?ast"', () => {
     expect(ev('=COUNTIF(A1:A4,"?ast")', [["East"], ["West"], ["Past"], ["Feast"]])).toBe(2);
+  });
+  it("COUNTIF with a criteria cell that is empty counts zeros", () => {
+    expect(ev("=COUNTIF(A1:A4,B1)", [[0, null], [null], [0], [7]])).toBe(2);
+  });
+  it('COUNTIF "#N/A" counts #N/A cells', () => {
+    expect(ev('=COUNTIF(A1:A3,"#N/A")', [[err("#N/A")], [1], [err("#N/A")]])).toBe(2);
   });
   it("SUMIFS with two criteria", () => {
     const grid = [["East", "Q1", 10], ["East", "Q2", 20], ["West", "Q1", 30], ["East", "Q1", 5]];
