@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ParseError, Sheet, TokenizeError } from "@excel-guru/engine";
 import {
-  addressOf, colLetter, formatValue, gridSize, inRects, isTypingKey, move, parseRef, rawInput, sameGrid, tabStep,
+  addressOf, colLetter, editOutcome, formatValue, gridSize, inRects, isTypingKey, move, parseRef, rawInput, sameGrid, tabStep,
 } from "./Grid";
 
 describe("colLetter / addressOf", () => {
@@ -123,6 +123,30 @@ describe("tabStep", () => {
   it("returns null at the edge so the browser can move focus out", () => {
     expect(tabStep({ row: 2, col: 6 }, false, size)).toBeNull();
     expect(tabStep({ row: 2, col: 0 }, true, size)).toBeNull();
+  });
+});
+
+describe("editOutcome (an unchanged draft is never re-written)", () => {
+  it("closes without writing when the draft equals what the cell holds", () => {
+    expect(editOutcome("007", "007")).toBe("close");
+    expect(editOutcome("=SUM(A1:A3)", "=SUM(A1:A3)")).toBe("close");
+    expect(editOutcome("", "")).toBe("close");
+  });
+  it("commits any change, including whitespace", () => {
+    expect(editOutcome("7", "007")).toBe("commit");
+    expect(editOutcome(" 42", "42")).toBe("commit");
+    expect(editOutcome("", "x")).toBe("commit");
+  });
+  it("keeps text literals intact: the formula bar shows them exactly as stored", () => {
+    const sheet = new Sheet([["007", "1E5", "TRUE", " 42"]]);
+    for (const a of ["A1", "B1", "C1", "D1"]) {
+      const shown = sheet.getFormula(a) ?? rawInput(sheet.get(a));
+      expect(editOutcome(shown, shown)).toBe("close");
+    }
+    expect(rawInput(sheet.get("A1"))).toBe("007");
+    // Re-setting the same text would re-parse it: this is what "close" protects against.
+    sheet.set("A1", "007");
+    expect(sheet.get("A1")).toBe(7);
   });
 });
 

@@ -143,6 +143,14 @@ export function tabStep(pos: Pos, shift: boolean, size: { rows: number; cols: nu
   return next.col === pos.col ? null : next;
 }
 
+/**
+ * What ending an edit does. An unchanged draft just closes: re-setting it would re-parse the
+ * cell (text "007" would become 7) and fire onCommit for a mere focus.
+ */
+export function editOutcome(draft: string, current: string): "close" | "commit" {
+  return draft === current ? "close" : "commit";
+}
+
 // ---------- component ----------
 
 type Editing = { draft: string; from: "cell" | "bar" };
@@ -239,7 +247,8 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
   const commit = (step?: string, focusGrid = true): boolean => {
     const ed = editingRef.current;
     if (!ed) return true;
-    if (write(ed.draft) !== null) return false;
+    if (editOutcome(ed.draft, contentOf(addr)) === "close") setError(null);
+    else if (write(ed.draft) !== null) return false;
     setEditing(null); // before focusing the grid, so the editor's blur finds nothing to commit
     if (step) setActive((p) => move(p, step, size));
     if (focusGrid) gridEl.current?.focus();
@@ -251,17 +260,16 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
    * If the draft doesn't parse, drop it and say so, so `editing` is never left set with focus elsewhere.
    */
   const onEditorBlur = (e: FocusEvent<HTMLInputElement>) => {
-    if (!editingRef.current) return;
+    const ed = editingRef.current;
+    if (!ed) return;
+    // Switching windows or tabs: keep the edit open; focus comes back to this input on return.
+    if (!document.hasFocus()) return;
     const next = e.relatedTarget;
     const fbar = sheetEl.current?.querySelector(".eg-fbar");
     if (next instanceof Node && (next === cellInput.current || fbar?.contains(next))) return;
-    const message = (() => {
-      const ed = editingRef.current;
-      if (!ed) return null;
-      return write(ed.draft);
-    })();
+    const message = editOutcome(ed.draft, contentOf(addr)) === "close" ? null : write(ed.draft);
     setEditing(null);
-    if (message !== null) setError(`${message}. Not saved: ${addr} kept its old value.`);
+    setError(message === null ? null : `${message}. Not saved: ${addr} kept its old value.`);
   };
 
   const onGridKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -299,6 +307,22 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, sheetRef }: G
       e.preventDefault();
       commit(e.shiftKey ? "ArrowUp" : "ArrowDown");
     } else if (e.key === "Tab") {
+      const ed = editingRef.current;
+      if (!ed || editOutcome(ed.draft, contentOf(addr)) === "close") {
+        // Nothing typed: close without writing. From the formula bar, let the browser move focus
+        // (to fx, the grid, or out). From the in-cell editor (which unmounts), act like Tab on the grid.
+        setEditing(null);
+        setError(null);
+        if (ed?.from === "cell") {
+          gridEl.current?.focus();
+          const next = tabStep(active, e.shiftKey, size);
+          if (next) {
+            e.preventDefault();
+            setActive(next);
+          } // at the edge, the default Tab now leaves the grid
+        }
+        return;
+      }
       e.preventDefault(); // on a parse error the editor keeps focus and shows the message
       commit(e.shiftKey ? "ArrowLeft" : "ArrowRight");
     } else if (e.key === "Escape") {
