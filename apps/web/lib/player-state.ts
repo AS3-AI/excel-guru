@@ -35,7 +35,7 @@ export function playerReducer(raw: PlayerState, action: PlayerAction): PlayerSta
     const correctSteps = action.correct && !state.correctSteps.includes(action.stepId) ? [...state.correctSteps, action.stepId] : state.correctSteps;
     const correctVisit = addsCorrect ? { ...state.correctVisit, [action.stepId]: state.visit } : state.correctVisit;
     const correct = state.correct + Number(addsCorrect);
-    return { ...state, attempts, firstTry, correctSteps, correctVisit, correct, previousReturn: false, wrongCount: action.correct ? state.wrongCount : state.wrongCount + 1, complete: correct >= state.requiredCorrect };
+    return { ...state, attempts, firstTry, correctSteps, correctVisit, correct, wrongCount: action.correct ? state.wrongCount : state.wrongCount + 1, complete: correct >= state.requiredCorrect };
   }
   if (action.type === "previous") {
     if (!state.history.length) return state;

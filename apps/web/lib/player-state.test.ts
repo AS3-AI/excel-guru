@@ -76,6 +76,15 @@ describe("player state", () => {
     expect(s.firstTry.s1).toBe(false);
     expect(s.correct).toBe(1);
   });
+  it("does not count a correct answer twice after a wrong answer on a Previous return", () => {
+    let s = act(start(), { type: "skip" });
+    s = act(s, { type: "answer", stepId: "s2", input: "right", correct: true });
+    s = act(s, { type: "continue" });
+    s = act(s, { type: "previous" });
+    s = act(s, { type: "answer", stepId: "s2", input: "wrong", correct: false });
+    s = act(s, { type: "answer", stepId: "s2", input: "right again", correct: true });
+    expect(s.correct).toBe(1);
+  });
   it("does not add a successful Previous revisit twice", () => {
     let s = act(start(), { type: "answer", stepId: "s1", input: "a", correct: true });
     s = act(s, { type: "continue" }); s = act(s, { type: "previous" });
