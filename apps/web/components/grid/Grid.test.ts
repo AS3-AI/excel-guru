@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { ParseError, Sheet, TokenizeError } from "@excel-guru/engine";
 import {
   addressOf, colLetter, colMinChars, editOutcome, formatValue, gridColumns, gridSize, inRects, isTypingKey, move, parseRef,
-  rawInput, rangeRef, refArea, sameGrid, tabStep,
+  rawInput, rangeRef, refArea, sameGrid, selectionRef, tabStep,
 } from "./Grid";
 
 describe("colLetter / addressOf", () => {
@@ -227,6 +227,17 @@ describe("rangeRef (the reference point mode inserts)", () => {
   it("is a top-left to bottom-right range whichever way it was drawn", () => {
     expect(rangeRef({ row: 0, col: 0 }, { row: 2, col: 0 })).toBe("A1:A3");
     expect(rangeRef({ row: 2, col: 1 }, { row: 0, col: 0 })).toBe("A1:B3");
+  });
+});
+
+describe("selectionRef", () => {
+  it("uses canonical cell and range references", () => {
+    expect(selectionRef({ row: 1, col: 1 }, { row: 1, col: 1 })).toBe("B2");
+    expect(selectionRef({ row: 3, col: 3 }, { row: 1, col: 1 })).toBe("B2:D4");
+  });
+  it("uses canonical whole-column and whole-row references", () => {
+    expect(selectionRef({ row: 0, col: 3 }, { row: 0, col: 1 }, "column")).toBe("B:D");
+    expect(selectionRef({ row: 4, col: 0 }, { row: 2, col: 0 }, "row")).toBe("3:5");
   });
 });
 

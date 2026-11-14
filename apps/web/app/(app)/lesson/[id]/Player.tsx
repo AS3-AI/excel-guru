@@ -1,273 +1,151 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
-import Link from "next/link";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import type { FormulaStep, Lesson } from "@excel-guru/grader";
+import { gradeAcceptStep, gradeFormulaStep, gradeMcqStep, gradeSelectStep } from "@excel-guru/grader";
 import { Sheet } from "@excel-guru/engine";
-import { gradeFormulaStep, type FormulaStep, type GradeResult, type Lesson } from "@excel-guru/grader";
 import { Grid, formatValue, rawInput } from "@/components/grid/Grid";
+import { createPlayerState, playerReducer } from "@/lib/player-state";
+import { StepView } from "./steps/StepView";
+import { LessonList, type LessonNavItem } from "./LessonList";
 import "./player.css";
 
-type Props = {
-  lesson: Lesson;
-  /** next[i] is the step after step i, cycling from step 4 (lib/lessons.ts stepSequence). */
-  next: number[];
-  nextLessonId: string | null;
-};
-
-type Feedback = { correct: true } | { correct: false; message: string } | null;
-
-/** A wrong answer's reason in the learner's words. `input` is what the target cell holds. */
-function wrongMessage(step: FormulaStep, reason: GradeResult["reason"], input: string): string {
-  const cell = step.targetCell;
-  if (input.trim() === "") return `${cell} is still empty. Type your formula in ${cell}, then press Enter.`;
-  switch (reason) {
-    case "not_formula":
-      return "That's a value, not a formula. Formulas start with an equals sign (=).";
-    case "parse_error":
-      return "That formula can't be read. Check for a typo, a missing bracket or a stray symbol.";
-    case "wrong_value": {
-      // Recompute on the lesson's own data, as the grader does, so edits elsewhere don't confuse the message.
-      const sheet = new Sheet(step.grid);
-      sheet.set(cell, input);
-      return `Your formula gives ${formatValue(sheet.get(cell)) || "an empty result"}, which isn't the answer. Check which cells it uses.`;
-    }
-    case "missing_function":
-      return `Right answer, but this step asks you to use ${(step.mustUse ?? []).join(", ")}.`;
-    default:
-      return "That isn't quite it. Have another go.";
+type Props = { lesson: Lesson; next: number[]; nextLessonId: string | null; lessons: LessonNavItem[] };
+function formulaWrongMessage(reason: string | undefined, step: FormulaStep, input: string): string {
+  if (input.trim() === "") return `${step.targetCell} is still empty. Type your formula in ${step.targetCell}, then press Enter.`;
+  if (reason === "not_formula") return "That's a value, not a formula. Formulas start with an equals sign (=).";
+  if (reason === "parse_error") return "That formula can't be read. Check for a typo, a missing bracket or a stray symbol.";
+  if (reason === "wrong_value") {
+    const sheet = new Sheet(step.grid);
+    try { sheet.set(step.targetCell, input); } catch { /* the grader supplied the parse reason */ }
+    return `Your formula gives ${formatValue(sheet.get(step.targetCell)) || "an empty result"}, which isn't the answer. Check which cells it uses.`;
   }
+  if (reason === "missing_function") return `Your formula needs to use ${(step.mustUse ?? []).join(", ")}.`;
+  return `Not quite. Your answer was ${input || "blank"}.`;
 }
-
-export function Player({ lesson, next, nextLessonId }: Props) {
-  const [index, setIndex] = useState(0);
-  /** Counts every step shown, so a revisited step (cycling) gets a fresh Grid. */
-  const [visit, setVisit] = useState(0);
-  const [correct, setCorrect] = useState(0);
-  const [feedback, setFeedback] = useState<Feedback>(null);
-  const [done, setDone] = useState(false);
-
-  const sheetRef = useRef<Sheet | null>(null);
+export function Player({ lesson, next: _next, nextLessonId, lessons }: Props) {
+  const router = useRouter();
+  const [state, dispatch] = useReducer(playerReducer, undefined, () => createPlayerState(lesson.steps.length, lesson.requiredCorrect));
+  const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
+  const [formulaReady, setFormulaReady] = useState(false);
+  const [stepReady, setStepReady] = useState<{ input: string } | null>(null);
+  const [selectedRef, setSelectedRef] = useState("");
+  const [wrongText, setWrongText] = useState("");
+  const [showSolution, setShowSolution] = useState(false);
+  const [celebrate, setCelebrate] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
-  const doneRef = useRef<HTMLAnchorElement>(null);
   const feedbackRef = useRef<HTMLDivElement>(null);
-  // Set by Grid's onCommit; lets Enter and Check tell a committed edit from a dropped one.
-  const committed = useRef(false);
+  const sheetRef = useRef<Sheet | null>(null);
+  const commitRef = useRef(false);
+  const step = lesson.steps[state.index]!;
+  const pct = Math.min(100, Math.round(state.correct / lesson.requiredCorrect * 100));
+  const firstTry = useMemo(() => {
+    const results = Object.values(state.firstTry);
+    return results.length ? Math.round(results.filter(Boolean).length / results.length * 100) : 0;
+  }, [state.firstTry]);
 
-  const step = lesson.steps[index]!;
-  const required = lesson.requiredCorrect;
-  const pct = Math.min(100, Math.round((correct / required) * 100));
+  const focusAnswerControl = () => {
+    (stageRef.current?.querySelector<HTMLElement>('[role="grid"]') ?? stageRef.current?.querySelector<HTMLElement>('input, button'))?.focus({ preventScroll: true });
+  };
+  const closeWrong = () => { setFeedback(null); requestAnimationFrame(focusAnswerControl); };
 
-  const focusGrid = () =>
-    stageRef.current?.querySelector<HTMLElement>('[role="grid"]')?.focus({ preventScroll: true });
-
-  // Every new step takes focus: the grid on a formula step, otherwise Continue.
   useEffect(() => {
-    if (done) doneRef.current?.focus({ preventScroll: true });
-    else if (step.type === "formula") focusGrid();
-    else continueRef.current?.focus({ preventScroll: true });
-  }, [visit, done, step.type]);
-
-  // After a correct answer, Enter continues.
-  useEffect(() => {
-    if (feedback?.correct) continueRef.current?.focus({ preventScroll: true });
-  }, [feedback]);
-
-  // Feedback sits below the actions row; on a short phone screen it can land below the fold.
-  // Bring just that block into view when it appears (not when it clears). Focus stays where it is.
-  useEffect(() => {
-    if (feedback) feedbackRef.current?.scrollIntoView({ block: "nearest" });
-  }, [feedback]);
-
-  /** A wrong-answer message is stale once the learner edits again; "Correct!" stays until Continue. */
-  const clearWrong = () => setFeedback((f) => (f?.correct === false ? null : f));
-
-  const grade = (s: FormulaStep, input: string) => {
-    if (feedback?.correct) return; // already answered: Continue is next
-    const result = gradeFormulaStep(s, input);
-    if (result.correct) {
-      setFeedback({ correct: true });
-      setCorrect((c) => c + 1);
-    } else {
-      setFeedback({ correct: false, message: wrongMessage(s, result.reason, input) });
-      focusGrid();
+    if (celebrate) {
+      continueRef.current?.focus({ preventScroll: true });
+      const timer = window.setTimeout(() => router.push(nextLessonId ? `/lesson/${nextLessonId}` : "/"), 2500);
+      return () => window.clearTimeout(timer);
     }
-  };
+  }, [celebrate, nextLessonId, router]);
+  useEffect(() => {
+    if (!celebrate && !state.complete) {
+      setFormulaReady(false);
+      setStepReady(null);
+      const initial = stageRef.current?.querySelector<HTMLElement>('[role="grid"]') ?? stageRef.current?.querySelector<HTMLElement>('input, button');
+      if (initial) initial.focus({ preventScroll: true });
+      else continueRef.current?.focus({ preventScroll: true });
+    }
+  }, [state.visit, state.complete, step.type, celebrate]);
+  useEffect(() => { if (feedback === "correct") continueRef.current?.focus({ preventScroll: true }); }, [feedback]);
+  useEffect(() => { if (feedback === "wrong") focusAnswerControl(); }, [feedback]);
+  useEffect(() => {
+    if (feedback !== "wrong") return;
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") { event.preventDefault(); closeWrong(); } };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [feedback]);
+  useEffect(() => { if (feedback === "wrong") feedbackRef.current?.scrollIntoView({ block: "nearest" }); }, [feedback]);
 
-  /** Grades what the target cell holds in the learner's sheet. */
-  const gradeCommitted = (s: FormulaStep) => {
-    const sheet = sheetRef.current;
-    if (!sheet) return;
-    grade(s, sheet.getFormula(s.targetCell) ?? rawInput(sheet.get(s.targetCell)));
+  const answer = (input: string, correct: boolean, reason?: string) => {
+    if (feedback === "correct" || state.complete) return;
+    dispatch({ type: "answer", stepId: step.id, input, correct });
+    setFeedback(correct ? "correct" : "wrong");
+    if (!correct) setWrongText(reason ?? "Not quite. Try again.");
+    if (correct) setShowSolution(false);
   };
-
-  /**
-   * Check: first commit any open edit (Grid commits on blur), then grade the committed cell.
-   * If Grid dropped the draft because it doesn't parse, say so rather than grading the old value.
-   */
+  const formulaInput = (s: FormulaStep) => sheetRef.current?.getFormula(s.targetCell) ?? rawInput(sheetRef.current?.get(s.targetCell) ?? null);
   const check = (s: FormulaStep) => {
-    const el = document.activeElement;
-    if (el instanceof HTMLInputElement && stageRef.current?.contains(el)) {
-      const draft = el.value;
-      committed.current = false;
-      el.blur();
-      if (!committed.current && gradeFormulaStep(s, draft).reason === "parse_error") {
-        grade(s, draft);
-        return;
-      }
+    const active = document.activeElement;
+    if (active instanceof HTMLInputElement && stageRef.current?.contains(active)) {
+      const draft = active.value;
+      commitRef.current = false;
+      active.blur();
+      if (!commitRef.current) { const result = gradeFormulaStep(s, draft); if (result.reason === "parse_error") return; answer(draft, result.correct, result.correct ? undefined : formulaWrongMessage(result.reason, s, draft)); stageRef.current?.querySelector<HTMLElement>('[role="grid"]')?.focus(); return; }
     }
-    gradeCommitted(s);
+    const input = formulaInput(s);
+    const result = gradeFormulaStep(s, input);
+    answer(input, result.correct, result.correct ? undefined : formulaWrongMessage(result.reason, s, input));
+    if (!result.correct) stageRef.current?.querySelector<HTMLElement>('[role="grid"]')?.focus();
   };
-
-  /**
-   * Capture phase, before Grid sees the key. Enter on the grid itself (no editor open) checks the
-   * committed answer instead of moving the selection down. Enter inside an editor is left to Grid,
-   * which commits it; onStageKeyDown then grades it.
-   */
-  const onStageKeyDownCapture = (e: KeyboardEvent<HTMLDivElement>) => {
-    committed.current = false;
-    const plainEnter = e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey;
-    const onGrid = e.target instanceof HTMLElement && e.target.getAttribute("role") === "grid";
-    if (plainEnter && onGrid && step.type === "formula" && !feedback?.correct) {
-      e.preventDefault();
-      e.stopPropagation();
-      gradeCommitted(step);
+  const nextStep = () => {
+    if (state.complete) { setCelebrate(true); setFeedback(null); return; }
+    dispatch({ type: "continue" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef("");
+  };
+  const checkStep = () => {
+    if (step.type === "select") { const ref = selectedRef; answer(ref, Boolean(ref) && gradeSelectStep(step, ref)); return; }
+    if (step.type === "mcq" && stepReady) answer(stepReady.input, gradeMcqStep(step, Number(stepReady.input)));
+    if ((step.type === "picture" || step.type === "project") && stepReady) answer(stepReady.input, gradeAcceptStep(step, stepReady.input));
+  };
+  const onStageCapture = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    commitRef.current = false;
+    if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+      if (e.target instanceof HTMLElement && e.target.getAttribute("role") === "grid" && step.type === "formula" && feedback !== "correct") { e.preventDefault(); e.stopPropagation(); check(step); }
+      else if (e.target instanceof HTMLElement && e.target.getAttribute("role") === "grid" && step.type === "select" && feedback !== "correct") { e.preventDefault(); e.stopPropagation(); checkStep(); }
+      else if (e.target instanceof HTMLInputElement && step.type === "mcq" && stepReady) { e.preventDefault(); checkStep(); }
+      else if (e.target instanceof HTMLInputElement && (step.type === "picture" || step.type === "project") && stepReady?.input.trim()) { e.preventDefault(); checkStep(); }
+    }
+  };
+  const onStageKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" && step.type === "formula" && e.target instanceof HTMLInputElement && commitRef.current) {
+      const input = formulaInput(step), result = gradeFormulaStep(step, input);
+      commitRef.current = false;
+      if (result.reason !== "parse_error") answer(input, result.correct, result.correct ? undefined : formulaWrongMessage(result.reason, step, input));
     }
   };
 
-  // Enter in an editor: Grid's handler commits first; grade only if that commit succeeded.
-  const onStageKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Enter" && committed.current && step.type === "formula") gradeCommitted(step);
-  };
-
-  const onContinue = () => {
-    if (correct >= required) {
-      setDone(true);
-      return;
-    }
-    setIndex((i) => next[i] ?? 0);
-    setVisit((v) => v + 1);
-    setFeedback(null);
-  };
-
-  const continueButton = (
-    <div className="pl-actions">
-      <button ref={continueRef} type="button" className="btn pl-continue" onClick={onContinue}>
-        Continue →
-      </button>
-      <span className="pl-hint">or press Enter</span>
-    </div>
-  );
-
-  return (
+  return <div className="pl-layout">
+    <LessonList items={lessons} currentId={lesson.id} />
     <main className="pl">
       <h1 className="pl-title">{lesson.title}</h1>
-      <div className="pl-progress">
-        <span className="pl-pct">{pct}%</span>
-        <div
-          className="pl-bar"
-          role="progressbar"
-          aria-label="Lesson progress"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={pct}
-        >
-          <div className="pl-bar-fill" style={{ width: `${pct}%` }} />
+      <div className="pl-progress"><span className="pl-pct">{pct}%</span><div className="pl-bar" role="progressbar" aria-label="Lesson progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><div className="pl-bar-fill" style={{ width: `${pct}%` }} /></div></div>
+      {celebrate ? <section className="pl-card pl-complete"><h2>Lesson complete!</h2><p>First-try accuracy: {firstTry}%</p><p>You answered {state.correct} questions correctly.</p><button ref={continueRef} className="btn pl-continue" onClick={() => router.push(nextLessonId ? `/lesson/${nextLessonId}` : "/")}>Continue →</button></section> : <>
+        {(step.type === "formula" || step.type === "select") && <section className="pl-card"><p className="pl-prompt">{step.prompt}</p></section>}
+        <div ref={stageRef} className="pl-stage" onKeyDownCapture={onStageCapture} onKeyDown={onStageKey}>
+          {step.type === "formula" ? <Grid key={`${step.id}-${state.visit}`} grid={step.grid} targetCell={step.targetCell} highlightCells={step.highlightCells} sheetRef={sheetRef} onEditStart={() => { setFormulaReady(true); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onCommit={() => { commitRef.current = true; setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} /> : <StepView key={`${step.id}-${state.visit}`} step={step} setSelectRef={(ref) => { setSelectedRef(ref); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onReady={(input) => setStepReady({ input })} onEditStart={() => setFeedback((f) => f === "wrong" && !showSolution ? null : f)} />}
         </div>
-      </div>
-
-      {done ? (
-        <section className="pl-card pl-complete">
-          <h2>Lesson complete</h2>
-          <p>
-            You answered {correct} {correct === 1 ? "question" : "questions"} correctly.
-          </p>
-          {nextLessonId ? (
-            <Link ref={doneRef} className="btn pl-continue" href={`/lesson/${nextLessonId}`}>
-              Next lesson →
-            </Link>
-          ) : (
-            <Link ref={doneRef} className="btn pl-continue" href="/">
-              Back to home
-            </Link>
-          )}
-        </section>
-      ) : step.type === "info" ? (
-        <>
-          <section className="pl-card">
-            <p className="pl-prompt">{step.text}</p>
-          </section>
-          {continueButton}
-        </>
-      ) : step.type === "formula" ? (
-        <>
-          <section className="pl-card">
-            <p className="pl-prompt">{step.prompt}</p>
-          </section>
-          <div
-            ref={stageRef}
-            className="pl-stage"
-            onKeyDownCapture={onStageKeyDownCapture}
-            onKeyDown={onStageKeyDown}
-          >
-            {/* Keyed per visit: Grid compares grids by value, so a repeated step would keep the old sheet. */}
-            <Grid
-              key={`${step.id}-${visit}`}
-              grid={step.grid}
-              targetCell={step.targetCell}
-              highlightCells={step.highlightCells}
-              onCommit={() => {
-                committed.current = true;
-                // Check and Enter grade right after this commit; their result replaces the cleared one.
-                clearWrong();
-              }}
-              onEditStart={clearWrong}
-              sheetRef={sheetRef}
-            />
-          </div>
-          {/* The actions row sits directly under the grid and feedback goes below it, so Check (and
-              Continue in its place) never moves when a message appears or clears. */}
-          {feedback?.correct ? (
-            continueButton
-          ) : (
-            <div className="pl-actions">
-              <button
-                type="button"
-                className="btn"
-                // Keep focus in an open editor until check() has read the draft and committed it.
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => check(step)}
-              >
-                Check Answer
-              </button>
-              <span className="pl-hint">or press Enter</span>
-            </div>
-          )}
-          <div ref={feedbackRef} className="pl-feedback" aria-live="polite">
-            {feedback?.correct === true && (
-              <div className="pl-result is-correct">
-                <p className="pl-result-head">Correct!</p>
-                {step.explain && <p>{step.explain}</p>}
-              </div>
-            )}
-            {feedback?.correct === false && (
-              <div className="pl-result is-wrong">
-                <p className="pl-result-head">Not quite</p>
-                <p>{feedback.message}</p>
-              </div>
-            )}
-          </div>
-        </>
-      ) : (
-        <>
-          <section className="pl-card">
-            <p className="pl-prompt">{step.prompt}</p>
-            <p className="pl-soon">Coming soon: this kind of question isn&apos;t playable yet.</p>
-          </section>
-          {continueButton}
-        </>
-      )}
+        <div className={`pl-actions${feedback === "correct" ? " is-correct" : ""}`}>
+          {feedback === "correct" ? <><strong className="pl-correct-label">Correct!</strong>{step.type === "formula" && step.explain ? <span>{step.explain}</span> : null}<button ref={continueRef} className="btn pl-continue" onClick={nextStep}>Continue →</button><span className="pl-hint">or press Enter</span></> : <>
+            {(step.type === "formula" && formulaReady || (step.type === "select" && !!selectedRef) || (step.type === "mcq" && stepReady) || ((step.type === "picture" || step.type === "project") && !!stepReady?.input.trim())) ? <><button className="btn" onMouseDown={(e) => e.preventDefault()} onClick={() => step.type === "formula" ? check(step) : checkStep()}>Check Answer</button><span className="pl-hint">or press Enter</span></> : null}
+            {step.type === "info" || step.type === "shortcut" ? <button ref={continueRef} className="btn pl-skip" onClick={nextStep}>Continue →</button> : null}
+            <button className="btn pl-skip" onClick={() => { dispatch({ type: "skip" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); }}>Skip question</button>
+            {state.history.length > 0 && <button className="btn pl-skip" onClick={() => { dispatch({ type: "previous" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); }}>Previous</button>}
+          </>}
+        </div>
+        <div ref={feedbackRef} className="pl-feedback" aria-live="polite">{feedback === "wrong" && <p className="pl-wrong-summary">{wrongText}</p>}</div>
+        {feedback === "wrong" && <aside className="pl-drawer" aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect ({state.wrongCount})</strong><button aria-label="Close" onClick={closeWrong}>×</button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution">{step.type === "formula" ? step.solution : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : ""}</p>}<div className="pl-ai-slot">AI explanation will appear here.</div></aside>}
+      </>}
     </main>
-  );
+    <aside className="pl-right"><section><h2>Today&apos;s High Scores</h2><p>Coming soon</p></section><section><h2>Today&apos;s High Streaks</h2><p>Coming soon</p></section><section><h2>Share</h2><div className="pl-share"><a href="https://www.linkedin.com/">LinkedIn</a><a href="https://www.facebook.com/">Facebook</a><a href="https://x.com/">X</a><a href="mailto:?subject=Excel%20Guru">Email</a></div></section><button className="btn" disabled={!lesson.video}>▶ Watch lesson video</button></aside>
+  </div>;
 }

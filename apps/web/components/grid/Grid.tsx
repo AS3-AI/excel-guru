@@ -29,6 +29,9 @@ export type GridProps = {
   onEditStart?: () => void;
   /** Receives the live Sheet so the caller can read or grade it. */
   sheetRef?: { current: Sheet | null };
+  /** Read-only worksheet that reports cell or range selections instead of editing cells. */
+  selectMode?: boolean;
+  onSelectionChange?: (ref: string) => void;
 };
 
 const MIN_COLS = 7;
@@ -186,6 +189,13 @@ export function rangeRef(anchor: Pos, cursor: Pos): string {
   return from === to ? from : `${from}:${to}`;
 }
 
+/** Canonical reference from an anchor/cursor, optionally representing a whole row or column. */
+export function selectionRef(anchor: Pos, cursor: Pos, whole?: "row" | "column"): string {
+  if (whole === "column") return `${colLetter(Math.min(anchor.col, cursor.col))}:${colLetter(Math.max(anchor.col, cursor.col))}`;
+  if (whole === "row") return `${Math.min(anchor.row, cursor.row) + 1}:${Math.max(anchor.row, cursor.row) + 1}`;
+  return rangeRef(anchor, cursor);
+}
+
 /**
  * Where a reference's outline sits, as CSS grid lines (line 1 is the header row/column), clipped to
  * the grid so whole columns and rows stop at its edge. Null when it is entirely off the grid.
@@ -308,10 +318,12 @@ const load = (grid: GridLiteral[][]): Loaded => {
 };
 const ORIGIN: Pos = { row: 0, col: 0 };
 
-export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, sheetRef }: GridProps) {
+export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, sheetRef, selectMode = false, onSelectionChange }: GridProps) {
   const [loaded, setLoaded] = useState(() => load(grid));
   const [, rerender] = useReducer((n: number) => n + 1, 0);
   const [active, setActive] = useState<Pos>(ORIGIN);
+  const [selection, setSelection] = useState<{ anchor: Pos; cursor: Pos; whole?: "row" | "column" } | null>(null);
+  const touchHold = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [editing, setEditingState] = useState<Editing | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -353,6 +365,12 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
   useEffect(() => {
     if (sheetRef) sheetRef.current = sheet;
   }, [sheet, sheetRef]);
+  useEffect(() => {
+    if (selectMode && !selection) {
+      setSelection({ anchor: ORIGIN, cursor: ORIGIN });
+      onSelectionChange?.(addressOf(ORIGIN));
+    }
+  }, [selectMode, selection, onSelectionChange]);
 
   // Put the caret at the end of whichever editor just opened.
   const from = editing?.from;
@@ -385,9 +403,11 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
   });
 
   useEffect(() => {
-    const up = () => { dragging.current = false; };
+    const up = () => { dragging.current = false; if (touchHold.current) clearTimeout(touchHold.current); touchHold.current = null; };
     window.addEventListener("mouseup", up);
-    return () => window.removeEventListener("mouseup", up);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+    return () => { window.removeEventListener("mouseup", up); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up); };
   }, []);
 
   // When the grid is wider than its box (long text on a phone), keep the active cell in view.
@@ -411,6 +431,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
 
   /** `entering`: the edit began by typing (Excel's Enter mode), so arrows may point; F2 and the like don't. */
   const startEdit = (draft: string, where: Editing["from"], entering = false) => {
+    if (selectMode) return;
     setError(null);
     setEditing({ draft, from: where, entering });
     onEditStart?.();
@@ -474,7 +495,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
   const commit = (step?: string, focusGrid = true): boolean => {
     const ed = editingRef.current;
     if (!ed) return true;
-    if (editOutcome(ed.draft, contentOf(addr)) === "close") setError(null);
+    if (editOutcome(ed.draft, contentOf(addr)) === "close") { setError(null); onCommit?.(addr, ed.draft); }
     else if (write(ed.draft) !== null) return false;
     setEditing(null); // before focusing the grid, so the editor's blur finds nothing to commit
     if (step) setActive((p) => move(p, step, size));
@@ -502,6 +523,21 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
   const onGridKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.target !== gridEl.current || editingRef.current) return; // keys inside the editors are handled there
     const { key } = e;
+    if (selectMode) {
+      if (key === " " && (e.ctrlKey || e.shiftKey)) {
+        e.preventDefault();
+        const whole = e.ctrlKey ? "column" : "row";
+        const anchor = active;
+        setSelection({ anchor, cursor: active, whole });
+        onSelectionChange?.(selectionRef(anchor, active, whole));
+      } else if (key in DELTAS) {
+        e.preventDefault();
+        const cursor = move(active, key, size);
+        const anchor = e.shiftKey ? selection?.anchor ?? active : cursor;
+        setActive(cursor); setSelection({ anchor, cursor }); onSelectionChange?.(selectionRef(anchor, cursor));
+      }
+      return;
+    }
     if (key in DELTAS) {
       e.preventDefault();
       setActive((p) => move(p, key, size));
@@ -588,6 +624,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
   };
 
   const onCellMouseDown = (e: MouseEvent<HTMLDivElement>, pos: Pos) => {
+    if (selectMode) return;
     const same = pos.row === active.row && pos.col === active.col;
     const ed = editingRef.current;
     if (ed) {
@@ -652,12 +689,13 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
     const area = rect && refArea(rect, size);
     return area ? [{ area, colour: colours[i]!, key: `${i}-${r.text}` }] : [];
   });
+  const selectedRect = selectMode && selection ? parseRef(selectionRef(selection.anchor, selection.cursor, selection.whole)) : null;
 
   const cols = Array.from({ length: size.cols }, (_, c) => c);
   const rows = Array.from({ length: size.rows }, (_, r) => r);
 
   return (
-    <div className={`eg-sheet${spillAnchor && !editing ? " is-spill-ref" : ""}`} ref={sheetEl}>
+    <div className={`eg-sheet${spillAnchor && !editing ? " is-spill-ref" : ""}${selectMode ? " is-select-mode" : ""}`} ref={sheetEl}>
       <FormulaBar
         address={addr}
         value={barValue}
@@ -678,7 +716,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
       <div className="eg-scroll" ref={scrollEl}>
         <div
           ref={gridEl}
-          className="eg-grid"
+          className={`eg-grid${selectMode ? " is-select-mode" : ""}`}
           role="grid"
           aria-label="Spreadsheet"
           aria-rowcount={size.rows + 1}
@@ -687,7 +725,35 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
           tabIndex={0}
           style={{ gridTemplateColumns: columns }}
           onKeyDown={onGridKeyDown}
-          onPointerDown={(e) => { lastPointer.current = e.pointerType; }}
+          onPointerDown={(e) => {
+            lastPointer.current = e.pointerType;
+            if (!selectMode) return;
+            const el = e.target instanceof HTMLElement ? e.target : null;
+            const cell = el?.closest<HTMLElement>("[role=gridcell]");
+            const col = el?.closest<HTMLElement>("[role=columnheader]");
+            const row = el?.closest<HTMLElement>("[role=rowheader]");
+            let pos: Pos | null = null, whole: "row" | "column" | undefined;
+            if (cell) { const m = /-([A-Z]{1,3})([1-9]\d*)$/.exec(cell.id); if (m) pos = { row: Number(m[2]) - 1, col: colIndex(m[1]!) }; }
+            else if (col) { const c = colIndex(col.textContent?.trim() ?? "A"); pos = { row: active.row, col: c }; whole = "column"; }
+            else if (row) { const r = Number(row.textContent?.trim() ?? "1") - 1; pos = { row: r, col: active.col }; whole = "row"; }
+            if (!pos) return;
+            gridEl.current?.focus({ preventScroll: true });
+            const anchor = e.shiftKey ? selection?.anchor ?? active : pos;
+            const cursor = pos;
+            setActive(cursor); setSelection({ anchor, cursor, whole }); onSelectionChange?.(selectionRef(anchor, cursor, whole));
+            if (e.pointerType === "touch") {
+              const target = e.currentTarget, pointerId = e.pointerId;
+              touchHold.current = setTimeout(() => { if (target.isConnected) { target.setPointerCapture(pointerId); (gridEl.current as HTMLDivElement & { selectAnchor?: Pos }).selectAnchor = anchor; } }, 300);
+            } else if (e.button === 0) { e.currentTarget.setPointerCapture(e.pointerId); (gridEl.current as HTMLDivElement & { selectAnchor?: Pos }).selectAnchor = anchor; }
+          }}
+          onPointerMove={(e) => {
+            if (!selectMode || !e.currentTarget.hasPointerCapture(e.pointerId)) return;
+            const el = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>("[role=gridcell]");
+            const m = el && /-([A-Z]{1,3})([1-9]\d*)$/.exec(el.id); if (!m) return;
+            const cursor = { row: Number(m[2]) - 1, col: colIndex(m[1]!) };
+            const anchor = (gridEl.current as (HTMLDivElement & { selectAnchor?: Pos }) | null)?.selectAnchor ?? active;
+            setActive(cursor); setSelection({ anchor, cursor }); onSelectionChange?.(selectionRef(anchor, cursor));
+          }}
         >
           <div className="eg-row" role="row">
             <div className="eg-corner" aria-hidden="true" />
@@ -726,17 +792,19 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
                 if (highlights.length && inRects(highlights, r, c)) cls.push("is-hl");
                 if (target && inRects([target], r, c)) cls.push("is-target");
                 if (isActive) cls.push("is-active");
+                const isSelected = selectedRect ? inRects([selectedRect], r, c) : isActive;
+                if (selectMode && isSelected) cls.push("is-selection");
                 return (
                   <div
                     key={c}
                     id={cellId(pos)}
                     role="gridcell"
-                    aria-selected={isActive}
+                    aria-selected={selectMode ? isSelected : isActive}
                     className={cls.join(" ")}
                     title={spills.has(a) ? `Spilled from ${spills.get(a)}` : undefined}
                     onMouseDown={(e) => onCellMouseDown(e, pos)}
                     onMouseEnter={(e) => onCellEnter(e, pos)}
-                    onDoubleClick={() => { if (!editing) startEdit(contentOf(a), "cell"); }}
+                    onDoubleClick={() => { if (!selectMode && !editing) startEdit(contentOf(a), "cell"); }}
                   >
                     {isActive && editing?.from === "cell" ? (<>
                       <input
