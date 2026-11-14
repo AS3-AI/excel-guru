@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { ParseError, Sheet, TokenizeError } from "@excel-guru/engine";
 import {
   addressOf, colLetter, colMinChars, editOutcome, formatValue, gridColumns, gridSize, inRects, isTypingKey, move, parseRef,
-  rawInput, sameGrid, tabStep,
+  rawInput, rangeRef, refArea, sameGrid, tabStep,
 } from "./Grid";
 
 describe("colLetter / addressOf", () => {
@@ -217,5 +217,30 @@ describe("what the grid relies on from the engine (T9 done-when)", () => {
     expect((caught as Error).message).toMatch(/position/);
     expect(formatValue(sheet.get("B1"))).toBe("15");
     expect(sheet.getFormula("B1")).toBe("=SUM(A1:A3)");
+  });
+});
+
+describe("rangeRef (the reference point mode inserts)", () => {
+  it("is a cell when anchor and cursor match", () => {
+    expect(rangeRef({ row: 0, col: 0 }, { row: 0, col: 0 })).toBe("A1");
+  });
+  it("is a top-left to bottom-right range whichever way it was drawn", () => {
+    expect(rangeRef({ row: 0, col: 0 }, { row: 2, col: 0 })).toBe("A1:A3");
+    expect(rangeRef({ row: 2, col: 1 }, { row: 0, col: 0 })).toBe("A1:B3");
+  });
+});
+
+describe("refArea (where a coloured reference is outlined)", () => {
+  const size = { rows: 8, cols: 7 };
+  it("places a range by CSS grid lines (line 1 is the headers)", () => {
+    expect(refArea(parseRef("A1:B3")!, size)).toEqual({ gridRow: "2 / 5", gridColumn: "2 / 4" });
+  });
+  it("clips whole columns and rows to the grid", () => {
+    expect(refArea(parseRef("B:B")!, size)).toEqual({ gridRow: "2 / 10", gridColumn: "3 / 4" });
+    expect(refArea(parseRef("3:3")!, size)).toEqual({ gridRow: "4 / 5", gridColumn: "2 / 9" });
+    expect(refArea(parseRef("F7:Z99")!, size)).toEqual({ gridRow: "8 / 10", gridColumn: "7 / 9" });
+  });
+  it("is null for a reference entirely off the grid", () => {
+    expect(refArea(parseRef("Z99")!, size)).toBeNull();
   });
 });
