@@ -51,6 +51,7 @@ export function Player({ lesson, next, nextLessonId }: Props) {
   const stageRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
   const doneRef = useRef<HTMLAnchorElement>(null);
+  const feedbackRef = useRef<HTMLDivElement>(null);
   // Set by Grid's onCommit; lets Enter and Check tell a committed edit from a dropped one.
   const committed = useRef(false);
 
@@ -71,6 +72,12 @@ export function Player({ lesson, next, nextLessonId }: Props) {
   // After a correct answer, Enter continues.
   useEffect(() => {
     if (feedback?.correct) continueRef.current?.focus({ preventScroll: true });
+  }, [feedback]);
+
+  // Feedback sits below the actions row; on a short phone screen it can land below the fold.
+  // Bring just that block into view when it appears (not when it clears). Focus stays where it is.
+  useEffect(() => {
+    if (feedback) feedbackRef.current?.scrollIntoView({ block: "nearest" });
   }, [feedback]);
 
   /** A wrong-answer message is stale once the learner edits again; "Correct!" stays until Continue. */
@@ -237,7 +244,7 @@ export function Player({ lesson, next, nextLessonId }: Props) {
               <span className="pl-hint">or press Enter</span>
             </div>
           )}
-          <div className="pl-feedback" aria-live="polite">
+          <div ref={feedbackRef} className="pl-feedback" aria-live="polite">
             {feedback?.correct === true && (
               <div className="pl-result is-correct">
                 <p className="pl-result-head">Correct!</p>
