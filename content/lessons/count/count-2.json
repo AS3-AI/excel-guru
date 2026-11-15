@@ -1,0 +1,366 @@
+{
+  "id": "count-2",
+  "module": "count",
+  "title": "COUNTIF: count matching cells",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**COUNTIF** counts cells that meet one condition. Use a quoted rule like `\">100\"` for numbers or `\"Tea\"` for exact text; a cell reference can hold the condition too. Text matching ignores case."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A shop logs units sold. Select the unit counts in `B2:B7`.",
+      "grid": [
+        [
+          "Item",
+          "Units"
+        ],
+        [
+          "Notebook",
+          120
+        ],
+        [
+          "Tea",
+          4
+        ],
+        [
+          "Tea",
+          7
+        ],
+        [
+          "Marker",
+          100
+        ],
+        [
+          "Tea",
+          5
+        ],
+        [
+          "Folder",
+          120
+        ],
+        [
+          "Result",
+          null
+        ]
+      ],
+      "target": "B2:B7"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `B8`, type `=COUNTIF(B2:B7,\">100\")` to count entries above 100.",
+      "grid": [
+        [
+          "Item",
+          "Units"
+        ],
+        [
+          "Notebook",
+          120
+        ],
+        [
+          "Tea",
+          4
+        ],
+        [
+          "Tea",
+          7
+        ],
+        [
+          "Marker",
+          100
+        ],
+        [
+          "Tea",
+          5
+        ],
+        [
+          "Folder",
+          120
+        ],
+        [
+          "Result",
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 2,
+      "mustUse": [
+        "COUNTIF"
+      ],
+      "solution": "=COUNTIF(B2:B7,\">100\")",
+      "explain": "Only the two stock values 120 are greater than 100; the value 100 itself does not qualify.",
+      "highlightCells": [
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `B8`, count entries of 5 or less using `=COUNTIF(B2:B7,\"<=5\")`.",
+      "grid": [
+        [
+          "Item",
+          "Units"
+        ],
+        [
+          "Notebook",
+          120
+        ],
+        [
+          "Tea",
+          4
+        ],
+        [
+          "Tea",
+          7
+        ],
+        [
+          "Marker",
+          105
+        ],
+        [
+          "Tea",
+          5
+        ],
+        [
+          "Folder",
+          4
+        ],
+        [
+          "Result",
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 3,
+      "mustUse": [
+        "COUNTIF"
+      ],
+      "solution": "=COUNTIF(B2:B7,\"<=5\")",
+      "explain": "The values 4, 4 and 5 are the three entries at or below 5.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        "<",
+        "="
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "In `B8`, count the exact text Tea with `=COUNTIF(A2:A7,\"Tea\")`.",
+      "grid": [
+        [
+          "Item",
+          "Units"
+        ],
+        [
+          "Notebook",
+          120
+        ],
+        [
+          "Tea",
+          4
+        ],
+        [
+          "Tea",
+          7
+        ],
+        [
+          "Marker",
+          105
+        ],
+        [
+          "Tea",
+          5
+        ],
+        [
+          "Tea",
+          80
+        ],
+        [
+          "Result",
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 4,
+      "mustUse": [
+        "COUNTIF"
+      ],
+      "solution": "=COUNTIF(A2:A7,\"Tea\")",
+      "explain": "Tea appears in four item cells, including the final row.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "Cell `E2` contains `Tea`. In `B8`, count matching items with `=COUNTIF(A2:A7,E2)`.",
+      "grid": [
+        [
+          "Item",
+          "Units",
+          null,
+          null,
+          "Rule"
+        ],
+        [
+          "Notebook",
+          120,
+          null,
+          null,
+          "Tea"
+        ],
+        [
+          "Tea",
+          4,
+          null,
+          null,
+          null
+        ],
+        [
+          "Tea",
+          7,
+          null,
+          null,
+          null
+        ],
+        [
+          "Marker",
+          105,
+          null,
+          null,
+          null
+        ],
+        [
+          "Tea",
+          5,
+          null,
+          null,
+          null
+        ],
+        [
+          "Tea",
+          80,
+          null,
+          null,
+          null
+        ],
+        [
+          "Result",
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 4,
+      "mustUse": [
+        "COUNTIF"
+      ],
+      "solution": "=COUNTIF(A2:A7,E2)",
+      "explain": "The rule cell E2 contains Tea, which appears in four cells in A2:A7.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "You need a rule for values greater than 100. Which formula keeps the comparison as a criterion?",
+      "options": [
+        "=COUNTIF(B2:B7,>100)",
+        "=COUNTIF(B2:B7,\">100\")",
+        "=COUNTIF(>100,B2:B7)"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A shop packed 6 orders: Tea, Soap, tea, Bread, Tea and Tea. How many were Tea? Put the count in `B8`.",
+      "grid": [
+        [
+          "Order",
+          "Item"
+        ],
+        [
+          1,
+          "Tea"
+        ],
+        [
+          2,
+          "Soap"
+        ],
+        [
+          3,
+          "tea"
+        ],
+        [
+          4,
+          "Bread"
+        ],
+        [
+          5,
+          "Tea"
+        ],
+        [
+          6,
+          "Tea"
+        ],
+        [
+          "Tea orders",
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 4,
+      "mustUse": [
+        "COUNTIF"
+      ],
+      "solution": "=COUNTIF(B2:B7,\"Tea\")",
+      "explain": "Three cells say Tea and one says tea; COUNTIF ignores the case difference.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    }
+  ]
+}

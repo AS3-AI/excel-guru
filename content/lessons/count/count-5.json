@@ -1,0 +1,462 @@
+{
+  "id": "count-5",
+  "module": "count",
+  "title": "Choose the right counting tool",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "A good counting formula starts with your question: numbers only, one condition, or several conditions. **COUNT**, **COUNTIF** and **COUNTIFS** each fit one of those jobs. You can also use **COUNTA** for filled cells and wildcards for text patterns."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A shop tracks items and stock. Select the stock values: `B2:B7`.",
+      "grid": [
+        [
+          "Item",
+          "Stock",
+          "Shelf"
+        ],
+        [
+          "Tea",
+          4,
+          "A"
+        ],
+        [
+          "Rice",
+          12,
+          "B"
+        ],
+        [
+          "Tea",
+          0,
+          "A"
+        ],
+        [
+          "Soap",
+          "out",
+          "C"
+        ],
+        [
+          "Rice",
+          7,
+          "A"
+        ],
+        [
+          "Flour",
+          3,
+          "B"
+        ],
+        [
+          "Result",
+          null,
+          null
+        ]
+      ],
+      "target": "B2:B7"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `B8`, how many stock entries are numbers?",
+      "grid": [
+        [
+          "Item",
+          "Stock",
+          "Shelf"
+        ],
+        [
+          "Tea",
+          4,
+          "A"
+        ],
+        [
+          "Rice",
+          12,
+          "B"
+        ],
+        [
+          "Tea",
+          0,
+          "A"
+        ],
+        [
+          "Soap",
+          "out",
+          "C"
+        ],
+        [
+          "Rice",
+          7,
+          "A"
+        ],
+        [
+          "Flour",
+          3,
+          "B"
+        ],
+        [
+          "Result",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 5,
+      "mustUse": [
+        "COUNT"
+      ],
+      "solution": "=COUNT(B2:B7)",
+      "explain": "Five stock cells contain numbers; Soap’s “out” entry is text.",
+      "highlightCells": [
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `B8`, how many items are Tea?",
+      "grid": [
+        [
+          "Item",
+          "Stock",
+          "Shelf"
+        ],
+        [
+          "Tea",
+          4,
+          "A"
+        ],
+        [
+          "Rice",
+          12,
+          "B"
+        ],
+        [
+          "Tea",
+          0,
+          "A"
+        ],
+        [
+          "Soap",
+          "out",
+          "C"
+        ],
+        [
+          "Rice",
+          7,
+          "A"
+        ],
+        [
+          "Tea",
+          3,
+          "B"
+        ],
+        [
+          "Result",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 3,
+      "mustUse": [
+        "COUNTIF"
+      ],
+      "solution": "=COUNTIF(A2:A7,\"Tea\")",
+      "explain": "Tea appears in three item cells.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "In `B8`, how many rows have item Rice and stock above 8?",
+      "grid": [
+        [
+          "Item",
+          "Stock",
+          "Shelf"
+        ],
+        [
+          "Tea",
+          4,
+          "A"
+        ],
+        [
+          "Rice",
+          12,
+          "B"
+        ],
+        [
+          "Tea",
+          15,
+          "A"
+        ],
+        [
+          "Soap",
+          "out",
+          "C"
+        ],
+        [
+          "Rice",
+          8,
+          "A"
+        ],
+        [
+          "Rice",
+          8,
+          "B"
+        ],
+        [
+          "Result",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 1,
+      "mustUse": [
+        "COUNTIFS"
+      ],
+      "solution": "=COUNTIFS(A2:A7,\"Rice\",B2:B7,\">8\")",
+      "explain": "Only the Rice row with 12 stock meets both tests; the Tea row with 15 stock meets just the number test.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A sports club has scores 11, \"injured\", 7, 15 and 9. In `B7`, how many entries are numbers?",
+      "grid": [
+        [
+          "Player",
+          "Score"
+        ],
+        [
+          "Uma",
+          11
+        ],
+        [
+          "Vik",
+          "injured"
+        ],
+        [
+          "Wen",
+          7
+        ],
+        [
+          "Xiu",
+          15
+        ],
+        [
+          "Yash",
+          9
+        ],
+        [
+          "Count",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 4,
+      "mustUse": [
+        "COUNT"
+      ],
+      "solution": "=COUNT(B2:B6)",
+      "explain": "Four score cells contain numbers; Vik’s “injured” entry is text.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A library list has novels, comics, novels, maps and novels. How many entries say Novels? Put the count in `B7`.",
+      "grid": [
+        [
+          "Shelf",
+          "Type"
+        ],
+        [
+          "1",
+          "Novels"
+        ],
+        [
+          "2",
+          "Comics"
+        ],
+        [
+          "3",
+          "Novels"
+        ],
+        [
+          "4",
+          "Maps"
+        ],
+        [
+          "5",
+          "Novels"
+        ],
+        [
+          "Count",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 3,
+      "mustUse": [
+        "COUNTIF"
+      ],
+      "solution": "=COUNTIF(B2:B6,\"Novels\")",
+      "explain": "Novels appears in three Type cells.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A sign-up sheet has names in five rows and two cells are empty. How many cells contain names? Put the count in `B7`.",
+      "grid": [
+        [
+          "Name",
+          null
+        ],
+        [
+          "Isha",
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          "Kabir",
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          "Mina",
+          null
+        ],
+        [
+          "Count",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 3,
+      "mustUse": [
+        "COUNTA"
+      ],
+      "solution": "=COUNTA(A2:A6)",
+      "explain": "Isha, Kabir and Mina are the three non-empty cells in the list.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "A teammate uses `=COUNTIF(A2:A7,\"Rice\",B2:B7,\">8\")` to count Rice with stock above 8. What is the mistake?",
+      "options": [
+        "COUNTIF takes one condition; use COUNTIFS for both.",
+        "The criteria need to be reversed.",
+        "COUNT cannot count text items."
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "prompt": "A product list contains Tea*, Coffee, Star*, Cake* and Sugar*. How many names contain an asterisk? Put the count in `B7`.",
+      "grid": [
+        [
+          "Product",
+          null
+        ],
+        [
+          "Tea*",
+          null
+        ],
+        [
+          "Coffee",
+          null
+        ],
+        [
+          "Star*",
+          null
+        ],
+        [
+          "Cake*",
+          null
+        ],
+        [
+          "Sugar*",
+          null
+        ],
+        [
+          "Count",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 4,
+      "mustUse": [
+        "COUNTIF"
+      ],
+      "solution": "=COUNTIF(A2:A6,\"*~**\")",
+      "explain": "Four product names contain an asterisk; the pattern treats the final asterisk as a literal character.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        "*",
+        "~"
+      ]
+    }
+  ]
+}

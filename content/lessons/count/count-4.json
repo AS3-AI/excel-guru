@@ -1,0 +1,344 @@
+{
+  "id": "count-4",
+  "module": "count",
+  "title": "COUNT practice",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**COUNT**, **COUNTIF** and **COUNTIFS** answer different counting questions. COUNT counts numbers, COUNTIF checks one condition, and COUNTIFS checks every condition in a row."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A reading group tracks pages and ratings. Select the page entries: `B2:B6`.",
+      "grid": [
+        [
+          "Book",
+          "Pages",
+          "Stars"
+        ],
+        [
+          "Aster",
+          90,
+          4
+        ],
+        [
+          "Birch",
+          "not read",
+          5
+        ],
+        [
+          "Cedar",
+          125,
+          3
+        ],
+        [
+          "Dune",
+          70,
+          5
+        ],
+        [
+          "Elm",
+          110,
+          "pending"
+        ],
+        [
+          "Total",
+          null,
+          null
+        ]
+      ],
+      "target": "B2:B6"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `B7`, count the numeric page totals.",
+      "grid": [
+        [
+          "Book",
+          "Pages",
+          "Stars"
+        ],
+        [
+          "Aster",
+          90,
+          4
+        ],
+        [
+          "Birch",
+          "not read",
+          5
+        ],
+        [
+          "Cedar",
+          125,
+          3
+        ],
+        [
+          "Dune",
+          70,
+          5
+        ],
+        [
+          "Elm",
+          110,
+          "pending"
+        ],
+        [
+          "Total",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 4,
+      "mustUse": [
+        "COUNT"
+      ],
+      "solution": "=COUNT(B2:B6)",
+      "explain": "Four page cells contain numbers; “not read” is text.",
+      "highlightCells": [
+        "B2:B6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `C7`, count books rated 5 stars.",
+      "grid": [
+        [
+          "Book",
+          "Pages",
+          "Stars"
+        ],
+        [
+          "Aster",
+          90,
+          4
+        ],
+        [
+          "Birch",
+          "not read",
+          5
+        ],
+        [
+          "Cedar",
+          125,
+          3
+        ],
+        [
+          "Dune",
+          70,
+          5
+        ],
+        [
+          "Elm",
+          110,
+          5
+        ],
+        [
+          "Total",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C7",
+      "expectedValue": 3,
+      "mustUse": [
+        "COUNTIF"
+      ],
+      "solution": "=COUNTIF(C2:C6,5)",
+      "explain": "Birch, Dune and Elm each have a 5 in the Stars column.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "In `C7`, count books with more than 100 pages and at least 4 stars.",
+      "grid": [
+        [
+          "Book",
+          "Pages",
+          "Stars"
+        ],
+        [
+          "Aster",
+          100,
+          4
+        ],
+        [
+          "Birch",
+          "not read",
+          5
+        ],
+        [
+          "Cedar",
+          125,
+          4
+        ],
+        [
+          "Dune",
+          101,
+          3
+        ],
+        [
+          "Elm",
+          110,
+          4
+        ],
+        [
+          "Total",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C7",
+      "expectedValue": 2,
+      "mustUse": [
+        "COUNTIFS"
+      ],
+      "solution": "=COUNTIFS(B2:B6,\">100\",C2:C6,\">=4\")",
+      "explain": "Cedar and Elm each have over 100 pages and at least 4 stars.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">",
+        "<"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A snack stall records quantities. In `B7`, count how many numeric entries are present.",
+      "grid": [
+        [
+          "Snack",
+          "Qty"
+        ],
+        [
+          "Idli",
+          24
+        ],
+        [
+          "Dosa",
+          "sold out"
+        ],
+        [
+          "Poha",
+          18
+        ],
+        [
+          "Vada",
+          null
+        ],
+        [
+          "Upma",
+          31
+        ],
+        [
+          "Count",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 3,
+      "mustUse": [
+        "COUNT"
+      ],
+      "solution": "=COUNT(B2:B6)",
+      "explain": "Idli, Poha and Upma have numeric quantities; the other two cells are text or blank.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "A formula counts only rows where City is Pune and Status is Ready. What mistake would make it count too many rows?",
+      "options": [
+        "Checking only the City condition",
+        "Using one range and two conditions in COUNTIF",
+        "Keeping both matching tests in COUNTIFS"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A class log has marks 8, \"absent\", 6, 10 and 8. How many marks are at least 8? Put the count in `B7`.",
+      "grid": [
+        [
+          "Student",
+          "Mark"
+        ],
+        [
+          "Ira",
+          8
+        ],
+        [
+          "Jay",
+          "absent"
+        ],
+        [
+          "Kavi",
+          6
+        ],
+        [
+          "Lina",
+          10
+        ],
+        [
+          "Mohan",
+          8
+        ],
+        [
+          "Count",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 3,
+      "mustUse": [
+        "COUNTIF"
+      ],
+      "solution": "=COUNTIF(B2:B6,\">=8\")",
+      "explain": "Ira, Lina and Mohan have marks of at least 8.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">"
+      ]
+    }
+  ]
+}
