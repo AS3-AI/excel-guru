@@ -16,6 +16,73 @@ function ev(src: string, grid: CellValue[][] = []): CellValue | Matrix {
 
 const err = (code: ErrorCode): ExcelError => ({ error: code });
 
+describe("ISERROR, ISERR, ISNA and ERROR.TYPE", () => {
+  it("recognizes direct and computed errors", () => {
+    expect(ev("=ISERROR(#N/A)")).toBe(true);
+    expect(ev("=ISERR(#N/A)")).toBe(false);
+    expect(ev("=ISNA(#N/A)")).toBe(true);
+    expect(ev("=ISERROR(1/0)")).toBe(true);
+    expect(ev("=ISERR(1/0)")).toBe(true);
+    expect(ev("=ISNA(1/0)")).toBe(false);
+  });
+  it("recognizes errors read from cells", () => {
+    expect(ev("=ISERROR(A1)", [[err("#NUM!")]])).toBe(true);
+    expect(ev("=ISERR(A1)", [[err("#N/A")]])).toBe(false);
+    expect(ev("=ISNA(A1)", [[err("#N/A")]])).toBe(true);
+  });
+  it("spills error predicates over ranges", () => {
+    const grid = [[err("#N/A")], [err("#DIV/0!")], [3]];
+    expect(ev("=ISERROR(A1:A3)", grid)).toEqual([[true], [true], [false]]);
+    expect(ev("=ISERR(A1:A3)", grid)).toEqual([[false], [true], [false]]);
+    expect(ev("=ISNA(A1:A3)", grid)).toEqual([[true], [false], [false]]);
+  });
+  it("maps ERROR.TYPE codes and returns #N/A for unlisted errors", () => {
+    const cases: [string, number][] = [["#DIV/0!", 2], ["#VALUE!", 3], ["#REF!", 4], ["#NAME?", 5], ["#NUM!", 6], ["#N/A", 7]];
+    for (const [code, number] of cases) expect(ev(`=ERROR.TYPE(${code})`)).toBe(number);
+    expect(ev("=ERROR.TYPE(A1)", [[err("#CIRC!")]])).toEqual(err("#N/A"));
+    expect(ev("=ERROR.TYPE(4)")).toEqual(err("#N/A"));
+  });
+  it("other IS predicates return FALSE for errors, except parity predicates", () => {
+    expect(ev("=ISNUMBER(1/0)")).toBe(false);
+    expect(ev("=ISTEXT(1/0)")).toBe(false);
+    expect(ev("=ISBLANK(1/0)")).toBe(false);
+    expect(ev("=ISLOGICAL(1/0)")).toBe(false);
+    expect(ev("=ISNONTEXT(1/0)")).toBe(false);
+    expect(ev("=ISEVEN(1/0)")).toEqual(err("#DIV/0!"));
+    expect(ev("=ISODD(1/0)")).toEqual(err("#DIV/0!"));
+  });
+  it("parity predicates propagate errors from cells", () => {
+    expect(ev("=ISEVEN(A1)", [[err("#N/A")]])).toEqual(err("#N/A"));
+    expect(ev("=ISODD(A1)", [[err("#NUM!")]])).toEqual(err("#NUM!"));
+  });
+  it("parity predicates propagate range errors element by element", () => {
+    expect(ev("=ISEVEN(A1:A2)", [[err("#DIV/0!")], [2]])).toEqual([[err("#DIV/0!")], [true]]);
+  });
+  it("ISERROR is false for non-errors", () => {
+    expect(ev("=ISERROR(42)")).toBe(false);
+    expect(ev('=ISERROR("#N/A")')).toBe(false);
+  });
+  it("ISERR recognizes non-NA errors", () => {
+    expect(ev("=ISERR(#VALUE!)")).toBe(true);
+    expect(ev("=ISERR(A1)", [[err("#CIRC!")]])).toBe(true);
+  });
+  it("ISNA is false for other errors and ordinary values", () => {
+    expect(ev("=ISNA(#REF!)")).toBe(false);
+    expect(ev("=ISNA(0)")).toBe(false);
+  });
+  it("ERROR.TYPE spills across a range", () => {
+    expect(ev("=ERROR.TYPE(A1:A2)", [[err("#DIV/0!")], [err("#N/A")]])).toEqual([[2], [7]]);
+  });
+  it("other IS predicates return false for errors in ranges", () => {
+    const grid = [[err("#VALUE!")], [2]];
+    expect(ev("=ISNUMBER(A1:A2)", grid)).toEqual([[false], [true]]);
+    expect(ev("=ISTEXT(A1:A2)", grid)).toEqual([[false], [false]]);
+    expect(ev("=ISBLANK(A1:A2)", grid)).toEqual([[false], [false]]);
+    expect(ev("=ISLOGICAL(A1:A2)", grid)).toEqual([[false], [false]]);
+    expect(ev("=ISNONTEXT(A1:A2)", grid)).toEqual([[false], [true]]);
+  });
+});
+
 // A1:A4 fruit names, B1:B4 their numbers.
 const FRUIT: CellValue[][] = [["Apple", 1], ["Banana", 2], ["Cherry", 3], ["banana", 4]];
 // A1:A4 sorted numbers, B1:B4 letters.
