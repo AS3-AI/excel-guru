@@ -80,6 +80,7 @@ never spends tokens finding a grid that's too wide or a test that fails.
   `lesson-digest.ts <dir> lookup-3 lookup-7`) and the numbered list of what was asked; "report only what is
   still wrong". Don't resume a long-context reviewer just to re-check a few items.
 - One reviewer per module (not per lesson); never two reviewers on the same files.
+- In Codex prompts write `node --import tsx <script>`, never `npx tsx` (its IPC pipe is blocked in the sandbox).
 
 ## 5. Finish (Claude)
 Commit on the card branch with attribution and "Built with Codex CLI from a Claude-written prompt";
