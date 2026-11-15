@@ -7,12 +7,12 @@ import { gradeAcceptStep, gradeFormulaStep, gradeMcqStep, gradeSelectStep } from
 import { Sheet } from "@excel-guru/engine";
 import { Grid, formatValue, rawInput } from "@/components/grid/Grid";
 import { createPlayerState, playerReducer } from "@/lib/player-state";
-import { writeLocalProgress } from "@/lib/local-progress";
+import { mergeLocalProgress, writeLocalProgress } from "@/lib/local-progress";
 import { StepView } from "./steps/StepView";
 import { LessonList, type LessonNavItem } from "./LessonList";
 import "./player.css";
 
-type Props = { lesson: Lesson; next: number[]; nextLessonId: string | null; lessons: LessonNavItem[] };
+type Props = { lesson: Lesson; next: number[]; nextLessonId: string | null; lessons: LessonNavItem[]; signedOutIntro?: boolean; signedIn?: boolean };
 function formulaWrongMessage(reason: string | undefined, step: FormulaStep, input: string): string {
   if (input.trim() === "") return `${step.targetCell} is still empty. Type your formula in ${step.targetCell}, then press Enter.`;
   if (reason === "not_formula") return "That's a value, not a formula. Formulas start with an equals sign (=).";
@@ -25,8 +25,10 @@ function formulaWrongMessage(reason: string | undefined, step: FormulaStep, inpu
   if (reason === "missing_function") return `Your formula needs to use ${(step.mustUse ?? []).join(", ")}.`;
   return `Not quite. Your answer was ${input || "blank"}.`;
 }
-export function Player({ lesson, next: _next, nextLessonId, lessons }: Props) {
+export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIntro = false, signedIn = false }: Props) {
   const router = useRouter();
+  const completionDestination = signedOutIntro ? "/signup?completed=intro" : nextLessonId ? `/lesson/${nextLessonId}` : "/";
+  useEffect(() => { if (signedIn) void mergeLocalProgress(); }, [signedIn]);
   const [state, dispatch] = useReducer(playerReducer, undefined, () => createPlayerState(lesson.steps.length, lesson.requiredCorrect));
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
   const [formulaReady, setFormulaReady] = useState(false);
@@ -84,10 +86,10 @@ export function Player({ lesson, next: _next, nextLessonId, lessons }: Props) {
   useEffect(() => {
     if (celebrate) {
       continueRef.current?.focus({ preventScroll: true });
-      const timer = window.setTimeout(() => router.push(nextLessonId ? `/lesson/${nextLessonId}` : "/"), 2500);
+      const timer = window.setTimeout(() => router.push(completionDestination), 2500);
       return () => window.clearTimeout(timer);
     }
-  }, [celebrate, nextLessonId, router]);
+  }, [celebrate, completionDestination, router]);
   useEffect(() => {
     if (!celebrate && !state.complete) {
       setFormulaReady(false);
@@ -159,7 +161,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons }: Props) {
     <main className="pl">
       <h1 className="pl-title">{lesson.title}</h1>
       <div className="pl-progress"><span className="pl-pct">{pct}%</span><div className="pl-bar" role="progressbar" aria-label="Lesson progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><div className="pl-bar-fill" style={{ width: `${pct}%` }} /></div></div>
-      {celebrate ? <section className="pl-card pl-complete"><h2>Lesson complete!</h2><p>First-try accuracy: {firstTry}%</p><p>You answered {state.correct} questions correctly.</p>{savedStats && <p>+{savedStats.points} points · {savedStats.streak}-day streak</p>}{saveNote && <p role="status">{saveNote}</p>}<button ref={continueRef} className="btn pl-continue" onClick={() => router.push(nextLessonId ? `/lesson/${nextLessonId}` : "/")}>Continue →</button></section> : <>
+      {celebrate ? <section className="pl-card pl-complete"><h2>Lesson complete!</h2><p>First-try accuracy: {firstTry}%</p><p>You answered {state.correct} questions correctly.</p>{savedStats && <p>+{savedStats.points} points · {savedStats.streak}-day streak</p>}{saveNote && <p role="status">{saveNote}</p>}<button ref={continueRef} className="btn pl-continue" onClick={() => router.push(completionDestination)}>Continue →</button></section> : <>
         {(step.type === "formula" || step.type === "select") && <section className="pl-card"><p className="pl-prompt">{step.prompt}</p></section>}
         <div ref={stageRef} className="pl-stage" onKeyDownCapture={onStageCapture} onKeyDown={onStageKey}>
           {step.type === "formula" ? <Grid key={`${step.id}-${state.visit}`} grid={step.grid} targetCell={step.targetCell} highlightCells={step.highlightCells} sheetRef={sheetRef} onEditStart={() => { setFormulaReady(true); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onCommit={() => { commitRef.current = true; setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} /> : <StepView key={`${step.id}-${state.visit}`} step={step} setSelectRef={(ref) => { setSelectedRef(ref); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onReady={(input) => setStepReady({ input })} onEditStart={() => setFeedback((f) => f === "wrong" && !showSolution ? null : f)} />}

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getLesson } from "@/lib/lessons";
+import { loadLessonAccess } from "@/lib/access";
 import { calculateProgress, getIstDayUtcBounds, getStreak, pointsAllowedForCompletion, progressAttemptRows, readBodyAfterAuthentication, type ProgressAttempt, type StreakRow } from "@/lib/progress";
 
 export async function POST(request: Request) {
@@ -19,10 +20,14 @@ export async function POST(request: Request) {
   const { lessonId, attempts } = body as { lessonId: string; attempts: ProgressAttempt[] };
   const lesson = getLesson(lessonId);
   if (!lesson) return NextResponse.json({ error: "Unknown lesson" }, { status: 400 });
-  let score;
-  try { score = calculateProgress(lesson, attempts); } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Invalid attempts" }, { status: 400 }); }
   const admin = createAdminClient();
   if (!admin) return NextResponse.json({ error: "Progress unavailable" }, { status: 503 });
+  try {
+    const { decision } = await loadLessonAccess(admin, user.id, lessonId);
+    if (!decision.allowed) return NextResponse.json({ error: "paywall" }, { status: 403 });
+  } catch { return NextResponse.json({ error: "Progress unavailable" }, { status: 500 }); }
+  let score;
+  try { score = calculateProgress(lesson, attempts); } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Invalid attempts" }, { status: 400 }); }
   const now = new Date();
   const endedAt = now.toISOString();
   const profileResult = await admin.from("profiles").select("group_id,cohort").eq("user_id", user.id).maybeSingle();
