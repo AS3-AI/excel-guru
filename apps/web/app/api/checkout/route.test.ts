@@ -26,6 +26,7 @@ function mockAdmin() {
 
 describe("checkout premium guard", () => {
   beforeEach(() => {
+    vi.stubEnv("PAYMENTS_ENABLED", "true");
     state.active = false;
     state.groupPremium = false;
     createClient.mockResolvedValue({ auth: { getUser: async () => ({ data: { user: { id: "user_1", email: "learner@example.com" } } }) } });

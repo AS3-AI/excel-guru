@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { currencyForCountry } from "@/lib/plans";
+import { paymentsEnabled } from "@/lib/payments-config";
 import { PricingClient } from "./pricing-client";
 import "./pricing.css";
 
@@ -24,5 +25,5 @@ export default async function PricingPage() {
       endsAt = active?.period_end ?? null;
     }
   }
-  return <PricingClient currency={currency} signedIn={!!user} premium={premium} canCancel={canCancel} endsAt={endsAt} />;
+  return <PricingClient currency={currency} paymentsEnabled={paymentsEnabled(process.env.PAYMENTS_ENABLED)} signedIn={!!user} premium={premium} canCancel={canCancel} endsAt={endsAt} />;
 }

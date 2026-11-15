@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { paymentsEnabled } from "@/lib/payments-config";
 
 export async function POST() {
+  if (!paymentsEnabled(process.env.PAYMENTS_ENABLED)) return NextResponse.json({ error: "payments_disabled" }, { status: 503 });
   const session = await createClient();
   const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });

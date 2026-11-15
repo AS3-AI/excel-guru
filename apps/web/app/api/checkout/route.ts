@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { isEntitled, providerFor, validateCheckoutInput } from "@excel-guru/payments";
 import { createClient } from "../../../lib/supabase/server";
 import { createAdminClient } from "../../../lib/supabase/admin";
+import { paymentsEnabled } from "../../../lib/payments-config";
 
 export async function GET() {
   const session = await createClient();
@@ -21,6 +22,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (!paymentsEnabled(process.env.PAYMENTS_ENABLED)) return NextResponse.json({ error: "payments_disabled" }, { status: 503 });
   const session = await createClient();
   const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
