@@ -12,6 +12,7 @@
   "dependencies": {
     "@excel-guru/engine": "workspace:*",
     "@excel-guru/grader": "workspace:*",
+    "@excel-guru/payments": "workspace:*",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.0",
     "@vercel/analytics": "^2.0.1",
