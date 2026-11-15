@@ -1,0 +1,94 @@
+{
+  "id": "count-1",
+  "module": "count",
+  "title": "COUNT: how many numbers?",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**COUNT** tells you how many cells in a range hold numbers. Text and empty cells are skipped, so `=COUNT(B2:B7)` counts only the numbers in `B2:B7`."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A tuition centre records test scores. Some students were absent, and one result is still missing. Select the scores: `B2:B7`.",
+      "grid": [["Student", "Score", "Homework"], ["Aarav", 18, 5], ["Bea", "Absent", 4], ["Chen", 15, "Late"], ["Diya", null, 5], ["Eli", 20, 3], ["Farah", 12, 2], ["Count", null, null]],
+      "target": "B2:B7"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "How many students have a score? In `B8`, type `=COUNT(B2:B7)` and press Enter.",
+      "grid": [["Student", "Score", "Homework"], ["Aarav", 18, 5], ["Bea", "Absent", 4], ["Chen", 15, "Late"], ["Diya", null, 5], ["Eli", 20, 3], ["Farah", 12, 2], ["Count", null, null]],
+      "targetCell": "B8",
+      "expectedValue": 4,
+      "mustUse": ["COUNT"],
+      "solution": "=COUNT(B2:B7)",
+      "explain": "Six cells, but \"Absent\" is text and Diya's cell is empty, so only the 4 numbers count.",
+      "highlightCells": ["B2:B7"],
+      "mobileButtons": ["=", "(", ")", ":"]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "Your turn. In `C8`, count how many homework marks were given in `C2:C7`.",
+      "grid": [["Student", "Score", "Homework"], ["Aarav", 18, 5], ["Bea", "Absent", 4], ["Chen", 15, "Late"], ["Diya", null, 5], ["Eli", 20, 3], ["Farah", 12, 2], ["Count", 4, null]],
+      "targetCell": "C8",
+      "expectedValue": 5,
+      "mustUse": ["COUNT"],
+      "solution": "=COUNT(C2:C7)",
+      "explain": "\"Late\" is text, so COUNT skips it and counts the other 5 marks.",
+      "highlightCells": ["C2:C7"],
+      "mobileButtons": ["=", "(", ")", ":"]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "Like SUM, COUNT can take more than one range, separated by a comma. In `D8`, count every number in both columns with `=COUNT(B2:B7,C2:C7)`.",
+      "grid": [["Student", "Score", "Homework", "All marks"], ["Aarav", 18, 5, null], ["Bea", "Absent", 4, null], ["Chen", 15, "Late", null], ["Diya", null, 5, null], ["Eli", 20, 3, null], ["Farah", 12, 2, null], ["Count", 4, 5, null]],
+      "targetCell": "D8",
+      "expectedValue": 9,
+      "mustUse": ["COUNT"],
+      "solution": "=COUNT(B2:B7,C2:C7)",
+      "explain": "COUNT adds up the numbers it finds in each range: 4 scores plus 5 homework marks.",
+      "highlightCells": ["B2:B7", "C2:C7"],
+      "mobileButtons": ["=", "(", ")", ":", ","]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A runner logs steps each day, but writes \"rest\" on rest days and skipped Thursday. In `B7`, count the days with steps logged.",
+      "grid": [["Day", "Steps"], ["Mon", 4200], ["Tue", "rest"], ["Wed", 5100], ["Thu", null], ["Fri", 3900], ["Days logged", null]],
+      "targetCell": "B7",
+      "expectedValue": 3,
+      "mustUse": ["COUNT"],
+      "solution": "=COUNT(B2:B6)",
+      "explain": "Only Monday, Wednesday and Friday hold numbers; \"rest\" and the empty Thursday are skipped.",
+      "highlightCells": ["B2:B6"],
+      "mobileButtons": ["=", "(", ")", ":"]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "`B2:B6` holds 12, \"n/a\", 7, an empty cell and 3. What does `=COUNT(B2:B6)` give?",
+      "options": ["5", "3", "4"],
+      "answer": 1
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A delivery team marks sick drivers with \"sick\" instead of a parcel count. How many drivers delivered parcels today? Put your answer in `B7`.",
+      "grid": [["Driver", "Parcels"], ["Ravi", 14], ["Meena", "sick"], ["Tom", 9], ["Li", "sick"], ["Asha", 11], ["Drivers out", null]],
+      "targetCell": "B7",
+      "expectedValue": 3,
+      "mustUse": ["COUNT"],
+      "solution": "=COUNT(B2:B6)",
+      "explain": "Counting only the numbers gives exactly the drivers who delivered, without counting the sick ones.",
+      "mobileButtons": ["=", "(", ")", ":"]
+    }
+  ]
+}
