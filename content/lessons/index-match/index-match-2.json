@@ -17,12 +17,48 @@
       "type": "select",
       "prompt": "A school ranks prize winners by points. Select the winner list, without the header: `C2:C6`.",
       "grid": [
-        ["Ticket", "Points", "Winner", "Find", "Winner"],
-        ["T-14", 98, "Mina", 3, null],
-        ["T-08", 94, "Dev", null, null],
-        ["T-23", 91, "Isha", null, null],
-        ["T-05", 87, "Noah", null, null],
-        ["T-31", 82, "Leah", null, null]
+        [
+          "Ticket",
+          "Points",
+          "Winner",
+          "Find",
+          "Winner"
+        ],
+        [
+          "T-14",
+          98,
+          "Mina",
+          3,
+          null
+        ],
+        [
+          "T-08",
+          94,
+          "Dev",
+          null,
+          null
+        ],
+        [
+          "T-23",
+          91,
+          "Isha",
+          null,
+          null
+        ],
+        [
+          "T-05",
+          87,
+          "Noah",
+          null,
+          null
+        ],
+        [
+          "T-31",
+          82,
+          "Leah",
+          null,
+          null
+        ]
       ],
       "target": "C2:C6"
     },
@@ -31,102 +67,330 @@
       "type": "formula",
       "prompt": "Who is the 3rd prize winner in the ranked list? In `E2`, type `=INDEX(C2:C6,3)` and press Enter.",
       "grid": [
-        ["Ticket", "Points", "Winner", "Find", "Winner"],
-        ["T-14", 98, "Mina", 3, null],
-        ["T-08", 94, "Dev", null, null],
-        ["T-23", 91, "Isha", null, null],
-        ["T-05", 87, "Noah", null, null],
-        ["T-31", 82, "Leah", null, null]
+        [
+          "Ticket",
+          "Points",
+          "Winner",
+          "Find",
+          "Winner"
+        ],
+        [
+          "T-14",
+          98,
+          "Mina",
+          3,
+          null
+        ],
+        [
+          "T-08",
+          94,
+          "Dev",
+          null,
+          null
+        ],
+        [
+          "T-23",
+          91,
+          "Isha",
+          null,
+          null
+        ],
+        [
+          "T-05",
+          87,
+          "Noah",
+          null,
+          null
+        ],
+        [
+          "T-31",
+          82,
+          "Leah",
+          null,
+          null
+        ]
       ],
       "targetCell": "E2",
       "expectedValue": "Isha",
-      "mustUse": ["INDEX"],
+      "mustUse": [
+        "INDEX"
+      ],
       "solution": "=INDEX(C2:C6,3)",
       "explain": "Isha is the third name in C2:C6, even though she is on row 4 of the sheet.",
-      "highlightCells": ["C2:C6"],
-      "mobileButtons": ["=", "(", ")", ",", ":"]
+      "highlightCells": [
+        "C2:C6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
     },
     {
       "id": "s4",
       "type": "formula",
       "prompt": "The position to return can come from a cell. In `E2`, find the winner at the position shown in `D2` from `C2:C6`.",
       "grid": [
-        ["Ticket", "Points", "Winner", "Find", "Winner"],
-        ["T-14", 98, "Mina", 4, null],
-        ["T-08", 94, "Dev", null, null],
-        ["T-23", 91, "Isha", null, null],
-        ["T-05", 87, "Noah", null, null],
-        ["T-31", 82, "Leah", null, null]
+        [
+          "Ticket",
+          "Points",
+          "Winner",
+          "Find",
+          "Winner"
+        ],
+        [
+          "T-14",
+          98,
+          "Mina",
+          4,
+          null
+        ],
+        [
+          "T-08",
+          94,
+          "Dev",
+          null,
+          null
+        ],
+        [
+          "T-23",
+          91,
+          "Isha",
+          null,
+          null
+        ],
+        [
+          "T-05",
+          87,
+          "Noah",
+          null,
+          null
+        ],
+        [
+          "T-31",
+          82,
+          "Leah",
+          null,
+          null
+        ]
       ],
       "targetCell": "E2",
       "expectedValue": "Noah",
-      "mustUse": ["INDEX"],
+      "mustUse": [
+        "INDEX"
+      ],
       "solution": "=INDEX(C2:C6,D2)",
       "explain": "D2 contains 4, and Noah is the fourth winner in C2:C6.",
-      "highlightCells": ["D2", "C2:C6"],
-      "mobileButtons": ["=", "(", ")", ",", ":"]
+      "highlightCells": [
+        "D2",
+        "C2:C6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
     },
     {
       "id": "s5",
       "type": "formula",
       "prompt": "A theatre lists show times across the row `B1:F1`. In `G2`, find the 4th show time.",
       "grid": [
-        ["Show times", "10:00", "12:30", "15:00", "17:30", "20:00", "Result"],
-        ["Position", 4, null, null, null, null, null]
+        [
+          "Show times",
+          "10:00",
+          "12:30",
+          "15:00",
+          "17:30",
+          "20:00",
+          "Result"
+        ],
+        [
+          "Position",
+          4,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
       ],
       "targetCell": "G2",
       "expectedValue": "17:30",
-      "mustUse": ["INDEX"],
+      "mustUse": [
+        "INDEX"
+      ],
       "solution": "=INDEX(B1:F1,4)",
       "explain": "Counting across B1:F1 makes 17:30 the fourth show time.",
-      "highlightCells": ["B1:F1"],
-      "mobileButtons": ["=", "(", ")", ",", ":"]
+      "highlightCells": [
+        "B1:F1"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
     },
     {
       "id": "s6",
       "type": "formula",
       "prompt": "A garden centre tracks plants and their prices. In `F2`, find the price in row 3 and column 2 of table `A2:D6`.",
       "grid": [
-        ["Plant", "Price", "Pot", "Light", null, "Result"],
-        ["Fern", 12, "Small", "Shade", null, null],
-        ["Basil", 7, "Medium", "Sun", null, null],
-        ["Orchid", 25, "Small", "Shade", null, null],
-        ["Mint", 5, "Large", "Sun", null, null],
-        ["Aloe", 18, "Medium", "Sun", null, null]
+        [
+          "Plant",
+          "Price",
+          "Pot",
+          "Light",
+          null,
+          "Result"
+        ],
+        [
+          "Fern",
+          12,
+          "Small",
+          "Shade",
+          null,
+          null
+        ],
+        [
+          "Basil",
+          7,
+          "Medium",
+          "Sun",
+          null,
+          null
+        ],
+        [
+          "Orchid",
+          25,
+          "Small",
+          "Shade",
+          null,
+          null
+        ],
+        [
+          "Mint",
+          5,
+          "Large",
+          "Sun",
+          null,
+          null
+        ],
+        [
+          "Aloe",
+          18,
+          "Medium",
+          "Sun",
+          null,
+          null
+        ]
       ],
       "targetCell": "F2",
       "expectedValue": 25,
-      "mustUse": ["INDEX"],
+      "mustUse": [
+        "INDEX"
+      ],
       "solution": "=INDEX(A2:D6,3,2)",
       "explain": "Within A2:D6, row 3 is Orchid's row and column 2 is Price, which is 25.",
-      "highlightCells": ["A2:D6"],
-      "mobileButtons": ["=", "(", ")", ",", ":"]
+      "highlightCells": [
+        "A2:D6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
     },
     {
       "id": "s7",
       "type": "formula",
       "prompt": "A library keeps each book's details in a table. Cell `E2` holds the row number 2. Which value is in that row and column 3 of `A2:D6`? In `F2`, type `=INDEX(A2:D6,E2,3)`.",
       "grid": [
-        ["Book", "Author", "Shelf", "Copies", "Find row", "Result"],
-        ["River Road", "Anil", "A3", 4, 2, null],
-        ["Cloud Atlas", "Mira", "B1", 2, null, null],
-        ["Night Train", "Omar", "C4", 5, null, null],
-        ["Wild Garden", "Leah", "A2", 3, null, null],
-        ["Blue Kite", "Ravi", "B3", 1, null, null]
+        [
+          "Book",
+          "Author",
+          "Shelf",
+          "Copies",
+          "Find row",
+          "Result"
+        ],
+        [
+          "River Road",
+          "Anil",
+          "A3",
+          4,
+          2,
+          null
+        ],
+        [
+          "Cloud Atlas",
+          "Mira",
+          "B1",
+          2,
+          null,
+          null
+        ],
+        [
+          "Night Train",
+          "Omar",
+          "C4",
+          5,
+          null,
+          null
+        ],
+        [
+          "Wild Garden",
+          "Leah",
+          "A2",
+          3,
+          null,
+          null
+        ],
+        [
+          "Blue Kite",
+          "Ravi",
+          "B3",
+          1,
+          null,
+          null
+        ]
       ],
       "targetCell": "F2",
       "expectedValue": "B1",
-      "mustUse": ["INDEX"],
+      "mustUse": [
+        "INDEX"
+      ],
       "solution": "=INDEX(A2:D6,E2,3)",
       "explain": "The second row in the table is Cloud Atlas, and its third column is shelf B1.",
-      "highlightCells": ["A2:D6", "E2"],
-      "mobileButtons": ["=", "(", ")", ",", ":"]
+      "highlightCells": [
+        "A2:D6",
+        "E2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
     },
     {
       "id": "s8",
       "type": "mcq",
       "prompt": "In the garden table, `=INDEX(A2:D6,3,2)` returns the Orchid's price, 25. What would `=INDEX(A2:D6,2,3)` return?",
-      "options": ["Basil's pot size, Medium", "Orchid's pot size, Small", "Basil's price, 7"],
+      "options": [
+        "Basil's pot size, Medium",
+        "Orchid's pot size, Small",
+        "Basil's price, 7"
+      ],
       "answer": 0
     },
     {
@@ -134,19 +398,69 @@
       "type": "formula",
       "prompt": "A music shop records each instrument, its maker, its type, and its stock. What is the type of the instrument in the 4th row of `A2:D6`? Put it in `F2`.",
       "grid": [
-        ["Instrument", "Maker", "Type", "Stock", null, "Result"],
-        ["Violin", "Sena", "Strings", 3, null, null],
-        ["Flute", "Arun", "Woodwind", 6, null, null],
-        ["Drum", "Kavi", "Percussion", 2, null, null],
-        ["Piano", "Mira", "Keyboard", 5, null, null],
-        ["Harp", "Noor", "Strings", 1, null, null]
+        [
+          "Instrument",
+          "Maker",
+          "Type",
+          "Stock",
+          null,
+          "Result"
+        ],
+        [
+          "Violin",
+          "Sena",
+          "Strings",
+          3,
+          null,
+          null
+        ],
+        [
+          "Flute",
+          "Arun",
+          "Woodwind",
+          6,
+          null,
+          null
+        ],
+        [
+          "Drum",
+          "Kavi",
+          "Percussion",
+          2,
+          null,
+          null
+        ],
+        [
+          "Piano",
+          "Mira",
+          "Keyboard",
+          5,
+          null,
+          null
+        ],
+        [
+          "Harp",
+          "Noor",
+          "Strings",
+          1,
+          null,
+          null
+        ]
       ],
       "targetCell": "F2",
       "expectedValue": "Keyboard",
-      "mustUse": ["INDEX"],
+      "mustUse": [
+        "INDEX"
+      ],
       "solution": "=INDEX(A2:D6,4,3)",
-      "explain": "The fourth data row is Guitar, and its third table column gives the type Keyboard.",
-      "mobileButtons": ["=", "(", ")", ",", ":"]
+      "explain": "The fourth data row is Piano, and its third table column gives the type Keyboard.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
     }
   ]
 }

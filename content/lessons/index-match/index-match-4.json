@@ -250,7 +250,7 @@
     {
       "id": "s6",
       "type": "formula",
-      "prompt": "In `G3`, find the number of Herbs jars made on the day named in `G2`, using the day headings `B1:E1`.",
+      "prompt": "In `G3`, find the number of Chilli jars made on the day named in `G2`, using the day headings `B1:E1`.",
       "grid": [
         [
           "Crop",
@@ -268,7 +268,7 @@
           10,
           5,
           null,
-          "Sat"
+          "Sun"
         ],
         [
           "Chilli",
@@ -299,17 +299,17 @@
         ]
       ],
       "targetCell": "G3",
-      "expectedValue": 10,
+      "expectedValue": 11,
       "mustUse": [
         "INDEX",
         "MATCH"
       ],
-      "solution": "=INDEX(B2:E2,MATCH(G2,B1:E1,0))",
-      "explain": "Sat is the third heading, and the third Herbs count in B2:E2 is 10.",
+      "solution": "=INDEX(B3:E3,MATCH(G2,B1:E1,0))",
+      "explain": "Sun is the fourth heading, and the fourth Chilli count in B3:E3 is 11.",
       "highlightCells": [
         "G2",
         "B1:E1",
-        "B2:E2"
+        "B3:E3"
       ],
       "mobileButtons": [
         "=",
@@ -348,14 +348,14 @@
           5,
           2,
           null,
-          "Evening",
+          "Late",
           null
         ],
         [
           "Summit",
           6,
           3,
-          2,
+          4,
           null,
           null,
           null
@@ -371,13 +371,13 @@
         ]
       ],
       "targetCell": "G2",
-      "expectedValue": 5,
+      "expectedValue": 2,
       "mustUse": [
         "INDEX",
         "MATCH"
       ],
       "solution": "=INDEX(B2:D5,MATCH(F2,A2:A5,0),MATCH(F3,B1:D1,0))",
-      "explain": "Hill is the second show and Evening is the second heading, so their intersection contains 5 seats.",
+      "explain": "Hill is the second show and Late is the third heading, so their intersection contains 2 seats.",
       "highlightCells": [
         "F2:F3",
         "A2:A5",
