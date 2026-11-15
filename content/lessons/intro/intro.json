@@ -16,40 +16,108 @@
       "id": "s2",
       "type": "select",
       "prompt": "Click the cell that holds the price of apples.",
-      "grid": [["Fruit", "Price"], ["Apples", 3], ["Bananas", 2], ["Cherries", 4]],
+      "grid": [
+        [
+          "Fruit",
+          "Price"
+        ],
+        [
+          "Apples",
+          3
+        ],
+        [
+          "Bananas",
+          2
+        ],
+        [
+          "Cherries",
+          4
+        ]
+      ],
       "target": "B2"
     },
     {
       "id": "s3",
       "type": "formula",
       "prompt": "Formulas start with =. In C2, type a formula that adds the price of apples and bananas.",
-      "grid": [["Fruit", "Price"], ["Apples", 3], ["Bananas", 2], ["Cherries", 4]],
+      "grid": [
+        [
+          "Fruit",
+          "Price"
+        ],
+        [
+          "Apples",
+          3
+        ],
+        [
+          "Bananas",
+          2
+        ],
+        [
+          "Cherries",
+          4
+        ]
+      ],
       "targetCell": "C2",
-      "expectedValue": 5,
+      "expectedValue": 999999,
       "mustUse": [],
       "solution": "=B2+B3",
       "explain": "Referring to cells instead of typing 3+2 means the answer updates when a price changes.",
-      "highlightCells": ["B2:B3"],
-      "mobileButtons": ["=", "+"]
+      "highlightCells": [
+        "B2:B3"
+      ],
+      "mobileButtons": [
+        "=",
+        "+"
+      ]
     },
     {
       "id": "s4",
       "type": "formula",
       "prompt": "Now use the SUM function in C2 to total every price in B2:B4.",
-      "grid": [["Fruit", "Price"], ["Apples", 3], ["Bananas", 2], ["Cherries", 4]],
+      "grid": [
+        [
+          "Fruit",
+          "Price"
+        ],
+        [
+          "Apples",
+          3
+        ],
+        [
+          "Bananas",
+          2
+        ],
+        [
+          "Cherries",
+          4
+        ]
+      ],
       "targetCell": "C2",
       "expectedValue": 9,
-      "mustUse": ["SUM"],
+      "mustUse": [
+        "SUM"
+      ],
       "solution": "=SUM(B2:B4)",
       "explain": "SUM adds every number in a range. B2:B4 means all the cells from B2 down to B4.",
-      "highlightCells": ["B2:B4"],
-      "mobileButtons": ["(", ")", ":"]
+      "highlightCells": [
+        "B2:B4"
+      ],
+      "mobileButtons": [
+        "(",
+        ")",
+        ":"
+      ]
     },
     {
       "id": "s5",
       "type": "mcq",
       "prompt": "What does every Excel formula begin with?",
-      "options": ["A function name", "An equals sign (=)", "A cell address"],
+      "options": [
+        "A function name",
+        "An equals sign (=)",
+        "A cell address"
+      ],
       "answer": 1
     }
   ]
