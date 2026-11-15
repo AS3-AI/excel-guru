@@ -17,7 +17,8 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T16 Player v1 | codex | 34571cf, 14d0680 | passed (3 rounds) | pushed | grid select mode added; T19 brings real COMPLETE badges |
 | T17 Shortcut steps | codex | cb47bc0 | passed (2 rounds), Mac browser-tested | pushed | attempt cap max(200, 25×steps); `[shortcut, shortcut, info]` on touch can't finish |
 | T19 Progress API | codex | a9f9205 | passed (3 rounds), live-tested on Supabase | pushed | replay rule A; race + A/B cycle farming bounded (~2–4×/day) |
+| T22 Merge race fix | codex | 25c2445 | passed; migration tested on scratch Postgres | pushed | migration 0002 run in Supabase 15 Nov |
 | T20 Dashboard + access | codex | bf568cf | passed (2 rounds) | pushed | progress routes paywall-gated; free users can still *open* extra lessons (migration later); live free-tier flow verified 15 Nov (sign-up → merge → 2nd lesson → 3rd = /pricing, 403 on save) |
 
 ## Open bugs
-- Merge race: two concurrent `/api/progress/merge` calls for the same lesson both award points (seen: 90 instead of 45 after sign-up; React StrictMode double-runs the merge effect in dev, and dashboard + player both call it). Fix: single-flight `mergeLocalProgress()` on the client + a DB unique index on (user, lesson, IST day) where points > 0.
+- ~~Merge race~~ fixed by T22 (single-flight + unique index). Was: two concurrent `/api/progress/merge` calls for the same lesson both award points (seen: 90 instead of 45 after sign-up; React StrictMode double-runs the merge effect in dev, and dashboard + player both call it). Fix: single-flight `mergeLocalProgress()` on the client + a DB unique index on (user, lesson, IST day) where points > 0.
