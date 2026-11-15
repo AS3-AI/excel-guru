@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getLesson } from "./lessons";
-import { calculateProgress, getIstDate, getIstDayUtcBounds, getStreak, getStatusTag, pointsAllowedForCompletion, progressAttemptRows, readBodyAfterAuthentication, type ProgressAttempt } from "./progress";
+import { calculateProgress, getIstDate, getIstDayUtcBounds, getStreak, getStatusTag, pointsAllowedForCompletion, progressAttemptRows, readBodyAfterAuthentication, shouldRetryCompletionWithZeroPoints, type ProgressAttempt } from "./progress";
 import type { Lesson, ShortcutChordStep, ShortcutSequenceStep } from "@excel-guru/grader";
 
 const lesson = getLesson("intro")!;
@@ -54,6 +54,11 @@ describe("progress scoring, dates, and persistence rows", () => {
   it("converts 18:29Z to the same IST date", () => { expect(getIstDate(new Date("2026-11-14T18:29:00Z"))).toBe("2026-11-14"); });
   it("converts 18:31Z to the next IST date", () => { expect(getIstDate(new Date("2026-11-14T18:31:00Z"))).toBe("2026-11-15"); });
   it("awards points on the first completion today", () => { expect(pointsAllowedForCompletion([], new Date("2026-11-15T12:00:00Z"))).toBe(true); });
+  it("retries a completion insert without points only for unique violations", () => {
+    expect(shouldRetryCompletionWithZeroPoints({ code: "23505" })).toBe(true);
+    expect(shouldRetryCompletionWithZeroPoints({ code: "23503" })).toBe(false);
+    expect(shouldRetryCompletionWithZeroPoints(null)).toBe(false);
+  });
   it("does not award points for a second completion on the same IST day", () => { expect(pointsAllowedForCompletion([{ completed_at: "2026-11-15T10:00:00Z", points: 15 }], new Date("2026-11-15T12:00:00Z"))).toBe(false); });
   it("awards points when the prior completion was yesterday in IST", () => { expect(pointsAllowedForCompletion([{ completed_at: "2026-11-14T18:29:00Z", points: 15 }], new Date("2026-11-14T18:31:00Z"))).toBe(true); });
   it("treats 18:29Z and 18:31Z on one UTC date as different IST days", () => {

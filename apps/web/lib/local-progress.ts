@@ -26,13 +26,21 @@ export function clearLocalProgress(): void {
   try { localStorage.removeItem(LOCAL_PROGRESS_KEY); } catch { /* Storage may be disabled. */ }
 }
 
-export async function mergeLocalProgress(): Promise<boolean> {
+let mergeInFlight: Promise<boolean> | null = null;
+
+export function mergeLocalProgress(): Promise<boolean> {
+  if (mergeInFlight) return mergeInFlight;
   const lessons = readLocalProgress();
-  if (!lessons.length) return true;
-  try {
-    const response = await fetch("/api/progress/merge", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ lessons }) });
-    if (!response.ok) return false;
-    clearLocalProgress();
-    return true;
-  } catch { return false; }
+  if (!lessons.length) return Promise.resolve(true);
+  const request = (async () => {
+    try {
+      const response = await fetch("/api/progress/merge", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ lessons }) });
+      if (!response.ok) return false;
+      clearLocalProgress();
+      return true;
+    } catch { return false; }
+  })();
+  mergeInFlight = request;
+  void request.finally(() => { if (mergeInFlight === request) mergeInFlight = null; });
+  return request;
 }

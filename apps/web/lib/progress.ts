@@ -9,6 +9,11 @@ export type StreakRow = { current: number; longest: number; last_active_date: st
 export type ScoredProgress = { points: number; firstTryAccuracy: number; correctCount: number; nextLessonId: string | null };
 export type EarlierLessonCompletion = { completed_at: string | Date; points: number };
 
+/** Only a duplicate points-per-day row is recoverable by retrying at zero points. */
+export function shouldRetryCompletionWithZeroPoints(error: unknown): boolean {
+  return !!error && typeof error === "object" && "code" in error && (error as { code?: unknown }).code === "23505";
+}
+
 /** A lesson earns points once per IST calendar day. */
 export function pointsAllowedForCompletion(earlierCompletions: readonly EarlierLessonCompletion[], now: Date): boolean {
   const today = getIstDate(now);

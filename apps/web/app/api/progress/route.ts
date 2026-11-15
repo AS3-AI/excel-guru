@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getLesson } from "@/lib/lessons";
 import { loadLessonAccess } from "@/lib/access";
-import { calculateProgress, getIstDayUtcBounds, getStreak, pointsAllowedForCompletion, progressAttemptRows, readBodyAfterAuthentication, type ProgressAttempt, type StreakRow } from "@/lib/progress";
+import { calculateProgress, getIstDate, getIstDayUtcBounds, getStreak, pointsAllowedForCompletion, progressAttemptRows, readBodyAfterAuthentication, shouldRetryCompletionWithZeroPoints, type ProgressAttempt, type StreakRow } from "@/lib/progress";
 
 export async function POST(request: Request) {
   const session = await createClient();
@@ -40,9 +40,14 @@ export async function POST(request: Request) {
   const earlierCompletions = await admin.from("lesson_completions").select("completed_at,points").eq("user_id", user.id).eq("lesson_id", lessonId).gt("points", 0).gte("completed_at", bounds.start).lt("completed_at", bounds.end);
   if (earlierCompletions.error) return NextResponse.json({ error: "Progress unavailable" }, { status: 500 });
   const inserts = progressAttemptRows(user.id, lessonId, attempts, lesson, now);
-  const points = pointsAllowedForCompletion(earlierCompletions.data ?? [], now) ? score.points : 0;
+  let points = pointsAllowedForCompletion(earlierCompletions.data ?? [], now) ? score.points : 0;
   const partialFailure = () => NextResponse.json({ error: "partial_progress_save", partial: true }, { status: 500 });
-  const completionWrite = await admin.from("lesson_completions").insert({ user_id: user.id, lesson_id: lessonId, completed_at: endedAt, first_try_accuracy: score.firstTryAccuracy, points, group_id: profileResult.data?.group_id ?? null, cohort: profileResult.data?.cohort ?? null });
+  const completionData = { user_id: user.id, lesson_id: lessonId, completed_at: endedAt, ist_day: getIstDate(now), first_try_accuracy: score.firstTryAccuracy, points, group_id: profileResult.data?.group_id ?? null, cohort: profileResult.data?.cohort ?? null };
+  let completionWrite = await admin.from("lesson_completions").insert(completionData);
+  if (completionWrite.error && shouldRetryCompletionWithZeroPoints(completionWrite.error)) {
+    points = 0;
+    completionWrite = await admin.from("lesson_completions").insert({ ...completionData, points: 0 });
+  }
   if (completionWrite.error) return partialFailure();
   const progressWrite = await admin.from("lesson_progress").upsert({ user_id: user.id, lesson_id: lessonId, completed_at: endedAt, first_try_accuracy: score.firstTryAccuracy, times_completed: (prevProgress.data?.times_completed ?? 0) + 1 });
   if (progressWrite.error) return partialFailure();
