@@ -145,6 +145,34 @@ function toNumber(v: CellValue): number | null {
 
 const isError = (v: unknown): v is ExcelError => typeof v === "object" && v !== null && "error" in v;
 
+function errorPredicate(arg: Arg, test: (value: CellValue) => boolean): CellValue | Matrix {
+  if (Array.isArray(arg)) return arg.map((row) => row.map((value) => test(value)));
+  return test(arg ?? null);
+}
+
+function errorType(arg: Arg): CellValue | Matrix {
+  const types: Partial<Record<ErrorCode, number>> = {
+    "#DIV/0!": 2, "#VALUE!": 3, "#REF!": 4, "#NAME?": 5, "#NUM!": 6, "#N/A": 7,
+  };
+  const typeOf = (value: CellValue): CellValue => {
+    if (!isError(value)) return NA;
+    const type = types[value.error];
+    return type ?? NA;
+  };
+  if (Array.isArray(arg)) return arg.map((row) => row.map(typeOf));
+  return typeOf(arg ?? null);
+}
+
+function parityPredicate(arg: Arg, name: "ISEVEN" | "ISODD"): CellValue | Matrix {
+  const test = (value: CellValue): CellValue => {
+    if (isError(value)) return value;
+    const fn = libraryFunction(name);
+    return fn ? fromLibrary(fn(value)) as CellValue : VALUE;
+  };
+  if (Array.isArray(arg)) return arg.map((row) => row.map(test));
+  return test(arg ?? null);
+}
+
 const asMatrix = (a: Arg): Matrix => (Array.isArray(a) ? a : [[a ?? null]]);
 
 /**
@@ -553,6 +581,17 @@ function sort(args: Arg[]): CellValue | Matrix {
 }
 
 const OWN: Record<string, Impl> = {
+  ISERROR: (arg) => errorPredicate(arg, isError),
+  ISERR: (arg) => errorPredicate(arg, (value) => isError(value) && value.error !== "#N/A"),
+  ISNA: (arg) => errorPredicate(arg, (value) => isError(value) && value.error === "#N/A"),
+  "ERROR.TYPE": (arg) => errorType(arg),
+  ISNUMBER: (arg) => errorPredicate(arg, (value) => !isError(value) && typeof value === "number"),
+  ISTEXT: (arg) => errorPredicate(arg, (value) => !isError(value) && typeof value === "string"),
+  ISBLANK: (arg) => errorPredicate(arg, (value) => !isError(value) && value === null),
+  ISLOGICAL: (arg) => errorPredicate(arg, (value) => !isError(value) && typeof value === "boolean"),
+  ISNONTEXT: (arg) => errorPredicate(arg, (value) => !isError(value) && typeof value !== "string"),
+  ISEVEN: (arg) => parityPredicate(arg, "ISEVEN"),
+  ISODD: (arg) => parityPredicate(arg, "ISODD"),
   UNIQUE: (...args) => unique(args),
   FILTER: (...args) => filter(args),
   SORT: (...args) => sort(args),
