@@ -20,6 +20,12 @@ import { answerPointsVisible, celebrationStats } from "@/lib/leaderboard";
 import "./player.css";
 
 type Props = { lesson: Lesson; next: number[]; nextLessonId: string | null; lessons: LessonNavItem[]; signedOutIntro?: boolean; signedIn?: boolean };
+// Only formula, select and shortcut mistakes get an AI explanation; a value without "=" already has a fixed message.
+function explainable(step: Lesson["steps"][number], input: string): boolean {
+  if (step.type === "formula") return gradeFormulaStep(step, input).reason !== "not_formula";
+  return step.type === "select" || step.type === "shortcut";
+}
+
 function formulaWrongMessage(reason: string | undefined, step: FormulaStep, input: string): string {
   if (input.trim() === "") return `${step.targetCell} is still empty. Type your formula in ${step.targetCell}, then press Enter.`;
   if (reason === "not_formula") return "That's a value, not a formula. Formulas start with an equals sign (=).";
@@ -43,6 +49,11 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   const [stepReady, setStepReady] = useState<{ input: string } | null>(null);
   const [selectedRef, setSelectedRef] = useState("");
   const [wrongText, setWrongText] = useState("");
+  const [aiExplanation, setAiExplanation] = useState<{ id: string; text: string; cached: boolean } | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiShown, setAiShown] = useState(false);
+  const [aiThanks, setAiThanks] = useState(false);
+  const [aiRated, setAiRated] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
   const [savedStats, setSavedStats] = useState<{ points: number; streak: number } | null>(null);
@@ -54,6 +65,8 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   const [mobileSkippedShortcutIds, setMobileSkippedShortcutIds] = useState<Set<string>>(() => new Set());
   const [keyboardUnavailable, setKeyboardUnavailable] = useState(false);
   const saveStarted = useRef(false);
+  const explainRequest = useRef<{ id: number; controller: AbortController } | null>(null);
+  const explainRequestId = useRef(0);
   const stageRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
   const feedbackRef = useRef<HTMLDivElement>(null);
@@ -70,7 +83,9 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   const focusAnswerControl = () => {
     (stageRef.current?.querySelector<HTMLElement>(".shortcut-practice") ?? stageRef.current?.querySelector<HTMLElement>('[role="grid"]') ?? stageRef.current?.querySelector<HTMLElement>('input, button'))?.focus({ preventScroll: true });
   };
-  const closeWrong = () => { setFeedback(null); requestAnimationFrame(focusAnswerControl); };
+  const invalidateExplain = () => { const current = explainRequest.current; if (current) { current.controller.abort(); explainRequest.current = null; } };
+  const closeWrong = () => { invalidateExplain(); setAiLoading(false); setFeedback(null); requestAnimationFrame(focusAnswerControl); };
+  useEffect(() => () => { invalidateExplain(); }, []);
 
   useEffect(() => {
     setPlatform(getPlatform());
@@ -166,14 +181,46 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
 
   const answer = (input: string, correct: boolean, reason?: string) => {
     if (feedback === "correct" || state.complete) return;
+    invalidateExplain();
     dispatch({ type: "answer", stepId: step.id, input, correct });
     setFeedback(correct ? "correct" : "wrong");
-    if (!correct) setWrongText(reason ?? "Not quite. Try again.");
+    if (!correct) {
+      setWrongText(reason ?? "Not quite. Try again.");
+      setAiExplanation(null); setAiThanks(false); setAiRated(false);
+      const canExplain = explainable(step, input);
+      setAiShown(canExplain); setAiLoading(canExplain);
+    }
+    if (!correct && explainable(step, input)) {
+      const controller = new AbortController();
+      const requestId = ++explainRequestId.current;
+      explainRequest.current = { id: requestId, controller };
+      const isCurrent = () => explainRequest.current?.id === requestId;
+      void fetch("/api/explain", { method: "POST", headers: { "content-type": "application/json" }, signal: controller.signal, body: JSON.stringify({ lessonId: lesson.id, stepId: step.id, input, os: platform.os }) })
+        .then(async (response) => {
+          if (!response.ok) throw new Error("unavailable");
+          const result = await response.json() as { id: string; text: string; cached: boolean };
+          if (typeof result.id !== "string" || typeof result.text !== "string") throw new Error("unavailable");
+          if (!isCurrent()) return;
+          setAiExplanation(result);
+          try { setAiRated(window.localStorage.getItem(`eg_explain_rated:${result.id}`) === "1"); } catch { setAiRated(false); }
+        })
+        .catch(() => { if (isCurrent()) setAiExplanation({ id: "", text: "An explanation isn't available right now. Please try again in a moment.", cached: false }); })
+        .finally(() => { if (isCurrent()) { explainRequest.current = null; setAiLoading(false); } });
+    }
     if (correct) setShowSolution(false);
     if (correct) {
       const points = showSolution ? 0 : Math.round(10 * lesson.difficulty * (state.firstTry[step.id] === undefined ? 1.5 : 1));
       setAnswerPoints(points);
     }
+  };
+  const rateExplanation = async (helpful: boolean) => {
+    if (!aiExplanation?.id || aiRated || aiThanks) return;
+    try {
+      const response = await fetch(`/api/explain/${encodeURIComponent(aiExplanation.id)}/rate`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ helpful }) });
+      if (!response.ok) return;
+    } catch { return; }
+    try { window.localStorage.setItem(`eg_explain_rated:${aiExplanation.id}`, "1"); } catch { /* storage may be disabled */ }
+    setAiRated(true); setAiThanks(true);
   };
   const formulaInput = (s: FormulaStep) => sheetRef.current?.getFormula(s.targetCell) ?? rawInput(sheetRef.current?.get(s.targetCell) ?? null);
   const check = (s: FormulaStep) => {
@@ -191,7 +238,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   };
   const nextStep = () => {
     if (state.complete) { setCelebrate(true); setFeedback(null); return; }
-    dispatch({ type: "continue" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef("");
+    invalidateExplain(); setAiLoading(false); dispatch({ type: "continue" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef("");
   };
   const checkStep = () => {
     if (step.type === "select") { const ref = selectedRef; answer(ref, Boolean(ref) && gradeSelectStep(step, ref)); return; }
@@ -203,7 +250,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     const correct = step.mode === "chord" ? gradeShortcutStep(step, input, platform.os) : gradeSequenceStep(step, input.split(" ⟶ "), platform.os);
     answer(input, correct);
   };
-  const skipShortcutStep = () => { dispatch({ type: "skip" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); };
+  const skipShortcutStep = () => { invalidateExplain(); setAiLoading(false); dispatch({ type: "skip" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); };
   const skipShortcutSection = () => {
     const remaining = lesson.steps.slice(state.index);
     const ids = remaining.filter((candidate) => candidate.type === "shortcut").map((candidate) => candidate.id);
@@ -248,12 +295,12 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
           {feedback === "correct" ? <><strong className="pl-correct-label">Correct!</strong>{answerPointsVisible(signedIn) && <span className="pl-points-earned" aria-live="polite">+{shownPoints} pts</span>}{step.type === "formula" && step.explain ? <span><RichText text={step.explain} /></span> : null}<button ref={continueRef} className="btn pl-continue" onClick={nextStep}>Continue →</button><span className="pl-hint">or press Enter</span></> : <>
             {(step.type === "formula" && formulaReady || (step.type === "select" && !!selectedRef) || (step.type === "mcq" && stepReady) || ((step.type === "picture" || step.type === "project") && !!stepReady?.input.trim())) ? <><button className="btn" onMouseDown={(e) => e.preventDefault()} onClick={() => step.type === "formula" ? check(step) : checkStep()}>Check Answer</button><span className="pl-hint">or press Enter</span></> : null}
             {step.type === "info" ? <button ref={continueRef} className="btn pl-skip" onClick={nextStep}>Continue →</button> : null}
-            <button className="btn pl-skip" onClick={() => { dispatch({ type: "skip" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); }}>Skip question</button>
-            {state.history.length > 0 && <button className="btn pl-skip" onClick={() => { dispatch({ type: "previous" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); }}>Previous</button>}
+            <button className="btn pl-skip" onClick={() => { invalidateExplain(); setAiLoading(false); dispatch({ type: "skip" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); }}>Skip question</button>
+            {state.history.length > 0 && <button className="btn pl-skip" onClick={() => { invalidateExplain(); setAiLoading(false); dispatch({ type: "previous" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); }}>Previous</button>}
           </>}
         </div>
         <div ref={feedbackRef} className="pl-feedback" aria-live="polite">{feedback === "wrong" && <p className="pl-wrong-summary">{wrongText}</p>}</div>
-        {feedback === "wrong" && <aside className="pl-drawer" aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect ({state.wrongCount})</strong><button aria-label="Close" onClick={closeWrong}>×</button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution">{step.type === "formula" ? <code className="chip">{step.solution}</code> : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : step.type === "shortcut" ? step.mode === "sequence" ? step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac" : step.keys[platform.os] ?? "Unavailable on Mac" : ""}</p>}<div className="pl-ai-slot">AI explanation will appear here.</div></aside>}
+        {feedback === "wrong" && <aside className="pl-drawer" aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect ({state.wrongCount})</strong><button aria-label="Close" onClick={closeWrong}>×</button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution">{step.type === "formula" ? <code className="chip">{step.solution}</code> : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : step.type === "shortcut" ? step.mode === "sequence" ? step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac" : step.keys[platform.os] ?? "Unavailable on Mac" : ""}</p>}{aiShown && <div className="pl-ai-slot">{aiLoading ? <span className="pl-ai-loading" role="status" aria-label="Loading explanation"><i /><i /><i /></span> : <><p>{aiExplanation?.text ?? "An explanation isn't available right now. Please try again in a moment."}</p>{signedIn && aiExplanation?.id && (aiThanks ? <p role="status">Thanks for your feedback!</p> : <div className="pl-ai-rating"><button type="button" aria-label="Helpful" disabled={aiRated} onClick={() => void rateExplanation(true)}>👍</button><button type="button" aria-label="Not helpful" disabled={aiRated} onClick={() => void rateExplanation(false)}>👎</button></div>)}<small>AI can be wrong. Check the answer before relying on it.</small></>}</div>}</aside>}
       </>}
     </main>
     <aside className="pl-right">{boardsReady && <><Leaderboards type="points" /><Leaderboards type="streak" /><ShareBonus signedIn={signedIn} /></>}<section><h2>Share</h2><div className="pl-share"><a href="https://www.linkedin.com/">LinkedIn</a><a href="https://www.facebook.com/">Facebook</a><a href="https://x.com/">X</a><a href="mailto:?subject=Excel%20Guru">Email</a></div></section><VideoModal videoId={lesson.video} /><a className="btn pl-workbook-link" href={`/api/lessons/${encodeURIComponent(lesson.id)}/workbook`}>Download practice workbook</a></aside>
