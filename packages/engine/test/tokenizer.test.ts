@@ -49,6 +49,11 @@ describe("tokenize: references", () => {
   it("multi-letter column", () => expect(t("=XFD1048576")).toEqual(["REF XFD1048576"]));
   it("whole columns B:C", () => expect(t("=B:C")).toEqual(["REF B", "COLON", "REF C"]));
   it("absolute whole columns $B:$C", () => expect(t("=$B:$C")).toEqual(["REF $B", "COLON", "REF $C"]));
+  it.each(["3:3", "2:5", "$3:$3", "3:$4", "$3:3", "3:$3"])("whole row range %s", (src) => {
+    const [a, b] = src.split(":");
+    const token = (x: string) => x.startsWith("$") ? `REF ${x}` : `NUM ${x}`;
+    expect(t(`=${src}`)).toEqual([token(a!), "COLON", token(b!)]);
+  });
   it("range with absolute ends", () =>
     expect(t("=$A$1:B$10")).toEqual(["REF $A$1", "COLON", "REF B$10"]));
   it("unknown identifier is a NAME", () => expect(t("=foo")).toEqual(["NAME FOO"]));

@@ -44,6 +44,12 @@ export class Sheet {
       for (const key of this.spilled.keys()) rows = Math.max(rows, parseAddress(key)!.row + 1);
       return rows;
     },
+    usedCols: () => {
+      let cols = 0;
+      for (const key of this.cells.keys()) cols = Math.max(cols, parseAddress(key)!.col + 1);
+      for (const key of this.spilled.keys()) cols = Math.max(cols, parseAddress(key)!.col + 1);
+      return cols;
+    },
   };
 
   /** grid[0][0] is A1. Values are literal, except strings starting with "=", which are formulas. */

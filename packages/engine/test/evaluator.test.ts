@@ -10,6 +10,7 @@ function ev(src: string, grid: CellValue[][] = []): CellValue | Matrix {
   const ctx: EvalContext = {
     cell: (row, col) => grid[row]?.[col] ?? null,
     usedRows: () => grid.length,
+    usedCols: () => Math.max(0, ...grid.map((row) => row.length)),
   };
   return evaluate(parse(tokenize(src)), ctx);
 }
@@ -179,11 +180,21 @@ describe("evaluate: functions", () => {
   it('COUNTIF "#N/A" counts #N/A cells', () => {
     expect(ev('=COUNTIF(A1:A3,"#N/A")', [[err("#N/A")], [1], [err("#N/A")]])).toBe(2);
   });
+  it("error-valued criteria match error cells", () =>
+    expect(ev("=COUNTIF(A1:A3,NA())", [[err("#N/A")], [1], [err("#N/A")]])).toBe(2));
+  it("multi-cell criteria retain T12 array behavior", () =>
+    expect(ev("=COUNTIF(A1:A3,A1:A2)", [[1], [1], [2]])).toBe(2));
   it("SUMIFS with two criteria", () => {
     const grid = [["East", "Q1", 10], ["East", "Q2", 20], ["West", "Q1", 30], ["East", "Q1", 5]];
     expect(ev('=SUMIFS(C1:C4,A1:A4,"East",B1:B4,"Q1")', grid)).toBe(15);
   });
   it("whole column clipped to the used rows", () => expect(ev("=SUM(A:A)", [[1], [2], [4]])).toBe(7));
+  it("a lone integer remains a number", () => expect(ev("=3")).toBe(3));
+  it("whole rows clip to used columns", () => {
+    expect(ev("=SUM(2:2)", [[1, 10, null], [2, 20, 200]])).toBe(222);
+    expect(ev("=COUNT(2:2)", [[1, 10, null], [2, 20, "x"]])).toBe(2);
+  });
+  it("COUNTIF works on whole rows", () => expect(ev('=COUNTIF(2:2,">10")', [[1, 10, null], [2, 20, 200]])).toBe(2));
   it("nested calls", () => expect(ev("=ROUND(AVERAGE(1,2,2),1)")).toBe(1.7));
   it("dotted names", () => expect(ev("=STDEV.S(2,4,4,4,5,5,7,9)")).toBeCloseTo(2.138, 3));
   it("DATE returns an Excel serial number", () => expect(ev("=DATE(2024,1,1)")).toBe(45292));

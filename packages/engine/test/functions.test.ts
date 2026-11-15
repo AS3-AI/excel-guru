@@ -9,6 +9,7 @@ function ev(src: string, grid: CellValue[][] = []): CellValue | Matrix {
   const ctx: EvalContext = {
     cell: (row, col) => grid[row]?.[col] ?? null,
     usedRows: () => grid.length,
+    usedCols: () => Math.max(0, ...grid.map((row) => row.length)),
   };
   return evaluate(parse(tokenize(src)), ctx);
 }

@@ -39,6 +39,7 @@ const PERCENT_BP = 60;
 const PREFIX_BP = 70; // unary minus binds tighter than ^, so -2^2 = 4
 
 const isColumn = (ref: string) => /^\$?[A-Z]+$/.test(ref);
+const isRow = (ref: string) => /^\$?\d+$/.test(ref);
 
 export function parse(tokens: Token[]): Ast {
   let i = 0;
@@ -90,6 +91,7 @@ export function parse(tokens: Token[]): Ast {
     i++;
     switch (tok.type) {
       case "NUM":
+        if (peek()?.type === "COLON") return rowRange(tok);
         return { type: "num", value: Number(tok.value) };
       case "STR":
         return { type: "str", value: tok.value };
@@ -128,14 +130,42 @@ export function parse(tokens: Token[]): Ast {
     i++;
     const end = peek();
     if (end?.type !== "REF") {
+      if (end?.type === "NUM" && /^\d+$/.test(end.value)) {
+        if (isRow(tok.value) && validRow(tok.value) && Number(end.value) > 0) {
+          i++;
+          return { type: "range", from: tok.value, to: end.value };
+        }
+        i++;
+        throw new ParseError("Range must join two rows", tok.pos);
+      }
       throw new ParseError("Range must end in a cell or column reference", end?.pos ?? colon.pos);
     }
     i++;
-    if (isColumn(tok.value) !== isColumn(end.value)) {
-      throw new ParseError("Range must join two cells or two columns", tok.pos);
+    const isCell = (ref: string) => !isColumn(ref) && !isRow(ref);
+    const sameKind = (isColumn(tok.value) && isColumn(end.value)) ||
+      (isRow(tok.value) && isRow(end.value)) ||
+      (isCell(tok.value) && isCell(end.value));
+    if (!sameKind) {
+      throw new ParseError("Range endpoints must have the same kind", tok.pos);
     }
+    if (isRow(tok.value) && (!validRow(tok.value) || !validRow(end.value))) throw new ParseError("Row numbers must be positive integers", tok.pos);
     return { type: "range", from: tok.value, to: end.value };
   }
+
+  function rowRange(tok: Token): Ast {
+    const colon = peek()!;
+    i++;
+    const end = peek();
+    if (!end || !((end.type === "NUM" && /^\d+$/.test(end.value)) || (end.type === "REF" && isRow(end.value)))) {
+      throw new ParseError("Range must join two rows", end?.pos ?? colon.pos);
+    }
+    if (!/^\d+$/.test(tok.value) || Number(tok.value) < 1 || (end.type === "NUM" ? Number(end.value) < 1 : !validRow(end.value)))
+      throw new ParseError("Row numbers must be positive integers", tok.pos);
+    i++;
+    return { type: "range", from: tok.value, to: end.value };
+  }
+
+  function validRow(ref: string): boolean { return /^\$?[1-9]\d*$/.test(ref); }
 
   function call(tok: Token): Ast {
     const paren = peek();

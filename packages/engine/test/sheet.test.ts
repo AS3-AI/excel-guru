@@ -177,3 +177,24 @@ describe("Sheet: spilled cells through the frozen API (T6)", () => {
     expect([s.get("B1"), s.get("B2")]).toEqual([1, 2]);
   });
 });
+
+describe("Sheet: whole-row ranges", () => {
+  it("updates a formula when a cell in its whole row changes", () => {
+    const s = new Sheet([[1, 2], [3, 4]]);
+    s.set("D1", "=SUM(2:2)");
+    expect(s.get("D1")).toBe(7);
+    s.set("B2", "20");
+    expect(s.get("D1")).toBe(23);
+  });
+  it("detects cycles through a whole row", () => {
+    const s = new Sheet([[null, null]]);
+    s.set("A1", "=SUM(1:1)");
+    expect(s.get("A1")).toEqual({ error: "#CIRC!" });
+  });
+  it("reads a spill into a whole row", () => {
+    const s = new Sheet([[1], [2]]);
+    s.set("C1", "=A1:A2");
+    s.set("E3", "=SUM(1:2)");
+    expect(s.get("E3")).toBe(6);
+  });
+});

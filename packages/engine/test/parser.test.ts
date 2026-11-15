@@ -46,6 +46,9 @@ describe("parse: literals and references", () => {
   it("cell ref", () => expect(p("=$A$1")).toBe("$A$1"));
   it("cell range", () => expect(p("=A1:B10")).toBe("A1:B10"));
   it("whole-column range", () => expect(p("=B:C")).toBe("B:C"));
+  it.each(["3:3", "2:5", "$3:$3", "3:$4", "$3:3", "3:$3"])("whole-row range %s", (src) => {
+    expect(p(`=${src}`)).toBe(src);
+  });
   it("unknown name", () => expect(p("=foo")).toBe("name:FOO"));
 });
 
@@ -113,6 +116,8 @@ describe("parse: errors", () => {
   it("range mixing a cell and a column", () => expect(parseError("=A1:C").message).toMatch(/range/i));
   it("range mixing a column and a cell", () => expect(parseError("=B:C3").message).toMatch(/range/i));
   it("range end must be a reference", () => expect(parseError("=A1:5").message).toMatch(/range/i));
+  it("cell and row mix is a parse error", () => expect(() => parse(tokenize("=A1:3"))).toThrow(ParseError));
+  it.each(["=SUM(0:0)", "=SUM(1.5:2)"])("invalid whole row %s", (src) => expect(() => parse(tokenize(src))).toThrow(ParseError));
   it("chained range", () => expect(parseError("=A1:B2:C3").pos).toBe(6));
   it("lone colon", () => expect(parseError("=:").pos).toBe(1));
 });
