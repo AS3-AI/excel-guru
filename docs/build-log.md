@@ -15,6 +15,6 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T18 Point mode + coloured refs | agent | f34bfb6, 695f534 | passed | pushed | whole-row refs off; iOS pointing untested on a device |
 | T21 CI | agent | fde79b9 | — | built | needs a real run on GitHub (2 test branches) |
 | T16 Player v1 | codex | 34571cf, 14d0680 | passed (3 rounds) | pushed | grid select mode added; T19 brings real COMPLETE badges |
-| T17 Shortcut steps | — | — | — | queued | after T16 |
+| T17 Shortcut steps | codex | cb47bc0 | passed (2 rounds), Mac browser-tested | pushed | attempt cap max(200, 25×steps); `[shortcut, shortcut, info]` on touch can't finish |
 | T19 Progress API | codex | a9f9205 | passed (3 rounds), live-tested on Supabase | pushed | replay rule A; race + A/B cycle farming bounded (~2–4×/day) |
-| T20 Dashboard + access | — | — | — | queued | after T19 |
+| T20 Dashboard + access | codex | bf568cf | passed (2 rounds) | pushed | progress routes paywall-gated; free users can still *open* extra lessons (migration later); live sign-up flow untested |
