@@ -26,6 +26,7 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T30 Payments switch | codex | 9fa43d2 | self-review (small diff) + prod-build check | merged | PAYMENTS_ENABLED unset = off; set "true" after live Razorpay test |
 | T26 AI explanations | codex | 46400a7 | passed (2 rounds + Claude fixes) | merged | 20-a-day limit + per-user ratings pending schema approval; keep GEMINI_API_KEY unset in prod
 | Content: Logical (logical-1..7) | claude gold + codex drafts | 749ae67 | pedagogy review 2 rounds + coincidence audit (9 accepted TRUE/FALSE trade-offs) | merged | |
+| Content: Lookup (lookup-1..10) | claude gold + codex (per-lesson runs) | a4ba6e2 | pedagogy review 2 rounds + lint + lookup audit (accepted: not-found-message steps, one band edge) | merged | |
 | T28 Engine: whole rows | codex | a454a6c | passed (2 rounds) | merged | error-criteria change reverted pending Excel check |
 | Content: COUNT module | codex + Claude | count-1 (Claude), c881e5f | 2 pedagogy rounds, ready | merged | |
 | T20 Dashboard + access | codex | bf568cf | passed (2 rounds) | pushed | progress routes paywall-gated; free users can still *open* extra lessons (migration later); live free-tier flow verified 15 Nov (sign-up → merge → 2nd lesson → 3rd = /pricing, 403 on save) |
