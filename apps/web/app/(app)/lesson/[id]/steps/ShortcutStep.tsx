@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { ShortcutStep as ShortcutStepType, Os } from "@excel-guru/grader";
 import { normaliseKeys } from "@excel-guru/grader";
 import type { KeyEventLike } from "@excel-guru/grader";
+import { RichText } from "../../../../../components/RichText";
 import "./shortcut.css";
 
 type Mode = "chord" | "sequence";
@@ -73,7 +74,7 @@ export function ShortcutStep({ step, os, touch, showPostcondition, onAttempt, on
 
   return <section className="shortcut-practice" tabIndex={0} aria-label="Shortcut practice area" onKeyDown={onKeyDown} ref={onPracticeReady}>
     {touch && <div className="shortcut-banner" role="status">Mobile device detected — <button type="button" onClick={onSkipSection}>Skip section</button></div>}
-    <p className="shortcut-prompt">{step.prompt}</p>
+    <p className="shortcut-prompt"><RichText text={step.prompt} /></p>
     {isMissingMac ? <div className="shortcut-skip" role="status">This shortcut is not available on Mac. <button type="button" onClick={onSkip}>Skip this step</button></div> : <>
       {step.pics?.length ? <div className="shortcut-picture" aria-live="polite"><img src={step.pics[Math.min(sequenceIndex, step.pics.length - 1)]} alt={`Shortcut step ${sequenceIndex + 1}`} /></div> : <div className="shortcut-grid" aria-hidden="true"><span>{showPostcondition ? step.postcondition?.selection ?? "A1" : "A1"}</span><span>{showPostcondition ? step.postcondition?.grid?.[0]?.[0] ?? "Excel" : "Excel"}</span></div>}
       <p className="shortcut-hint" aria-live="polite">{step.mode === "sequence" && sequenceIndex > 0 ? `${sequenceIndex} of ${expected.length}: ` : ""}{hint}</p>

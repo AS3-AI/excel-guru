@@ -21,7 +21,7 @@ export type ModuleProgress = ModuleDefinition & { done: number; lessons: ModuleL
 export function getModuleProgress(input: { lessons: readonly ModuleLesson[]; completedIds: readonly string[] }): ModuleProgress[] {
   const completed = new Set(input.completedIds);
   return MODULES.map((module) => {
-    const lessons = input.lessons.filter((lesson) => lesson.module.toLowerCase() === module.title.toLowerCase());
+    const lessons = input.lessons.filter((lesson) => lesson.module === module.slug);
     return { ...module, lessons, done: lessons.filter((lesson) => completed.has(lesson.id)).length };
   });
 }

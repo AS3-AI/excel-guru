@@ -12,6 +12,7 @@
 @media (prefers-reduced-motion: reduce) { .pl-bar-fill { transition:none; } }
 .pl-card { background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--primary); border-radius:12px; padding:16px 20px; margin-bottom:16px; }
 .pl-prompt { display:block; margin:0; color:var(--text); font-size:1.05rem; }
+.chip { display:inline-block; max-width:100%; padding:.12em .42em; border:1px solid var(--border); border-radius:5px; background:var(--surface-warm); color:var(--ink); font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:.92em; white-space:nowrap; vertical-align:baseline; }
 .pl-soon { margin:12px 0 0; color:var(--muted); }
 .pl-stage { min-width:0; margin-bottom:12px; }
 .pl-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin:12px 0; }
