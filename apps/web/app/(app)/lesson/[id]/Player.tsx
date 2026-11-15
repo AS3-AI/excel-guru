@@ -7,6 +7,7 @@ import { gradeAcceptStep, gradeFormulaStep, gradeMcqStep, gradeSelectStep } from
 import { Sheet } from "@excel-guru/engine";
 import { Grid, formatValue, rawInput } from "@/components/grid/Grid";
 import { createPlayerState, playerReducer } from "@/lib/player-state";
+import { writeLocalProgress } from "@/lib/local-progress";
 import { StepView } from "./steps/StepView";
 import { LessonList, type LessonNavItem } from "./LessonList";
 import "./player.css";
@@ -34,6 +35,9 @@ export function Player({ lesson, next: _next, nextLessonId, lessons }: Props) {
   const [wrongText, setWrongText] = useState("");
   const [showSolution, setShowSolution] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
+  const [savedStats, setSavedStats] = useState<{ points: number; streak: number } | null>(null);
+  const [saveNote, setSaveNote] = useState("");
+  const saveStarted = useRef(false);
   const stageRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
   const feedbackRef = useRef<HTMLDivElement>(null);
@@ -51,6 +55,32 @@ export function Player({ lesson, next: _next, nextLessonId, lessons }: Props) {
   };
   const closeWrong = () => { setFeedback(null); requestAnimationFrame(focusAnswerControl); };
 
+  useEffect(() => {
+    if (!state.complete || saveStarted.current) return;
+    saveStarted.current = true;
+    void (async () => {
+      try {
+        const response = await fetch("/api/progress", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ lessonId: lesson.id, attempts: state.attempts }) });
+        if (response.ok) {
+          const data = await response.json() as { points?: unknown; streak?: unknown };
+          if (typeof data.points === "number" && typeof data.streak === "number") setSavedStats({ points: data.points, streak: data.streak });
+          return;
+        }
+        if (response.status >= 500) {
+          writeLocalProgress(lesson.id, state.attempts);
+          setSaveNote("Progress could not sync yet; it is saved on this device.");
+        } else if (response.status === 401) {
+          writeLocalProgress(lesson.id, state.attempts);
+          setSaveNote("Saved on this device. Sign in to keep your progress.");
+        } else {
+          setSaveNote("Progress could not be saved.");
+        }
+      } catch {
+        writeLocalProgress(lesson.id, state.attempts);
+        setSaveNote("Progress could not sync yet; it is saved on this device.");
+      }
+    })();
+  }, [state.complete, state.attempts, lesson.id]);
   useEffect(() => {
     if (celebrate) {
       continueRef.current?.focus({ preventScroll: true });
@@ -129,7 +159,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons }: Props) {
     <main className="pl">
       <h1 className="pl-title">{lesson.title}</h1>
       <div className="pl-progress"><span className="pl-pct">{pct}%</span><div className="pl-bar" role="progressbar" aria-label="Lesson progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><div className="pl-bar-fill" style={{ width: `${pct}%` }} /></div></div>
-      {celebrate ? <section className="pl-card pl-complete"><h2>Lesson complete!</h2><p>First-try accuracy: {firstTry}%</p><p>You answered {state.correct} questions correctly.</p><button ref={continueRef} className="btn pl-continue" onClick={() => router.push(nextLessonId ? `/lesson/${nextLessonId}` : "/")}>Continue →</button></section> : <>
+      {celebrate ? <section className="pl-card pl-complete"><h2>Lesson complete!</h2><p>First-try accuracy: {firstTry}%</p><p>You answered {state.correct} questions correctly.</p>{savedStats && <p>+{savedStats.points} points · {savedStats.streak}-day streak</p>}{saveNote && <p role="status">{saveNote}</p>}<button ref={continueRef} className="btn pl-continue" onClick={() => router.push(nextLessonId ? `/lesson/${nextLessonId}` : "/")}>Continue →</button></section> : <>
         {(step.type === "formula" || step.type === "select") && <section className="pl-card"><p className="pl-prompt">{step.prompt}</p></section>}
         <div ref={stageRef} className="pl-stage" onKeyDownCapture={onStageCapture} onKeyDown={onStageKey}>
           {step.type === "formula" ? <Grid key={`${step.id}-${state.visit}`} grid={step.grid} targetCell={step.targetCell} highlightCells={step.highlightCells} sheetRef={sheetRef} onEditStart={() => { setFormulaReady(true); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onCommit={() => { commitRef.current = true; setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} /> : <StepView key={`${step.id}-${state.visit}`} step={step} setSelectRef={(ref) => { setSelectedRef(ref); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onReady={(input) => setStepReady({ input })} onEditStart={() => setFeedback((f) => f === "wrong" && !showSolution ? null : f)} />}
