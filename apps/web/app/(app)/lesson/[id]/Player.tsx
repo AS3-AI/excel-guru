@@ -15,6 +15,7 @@ import { ShortcutStep as ShortcutPractice, shortcutSkipOutcome } from "./steps/S
 import { LessonList, type LessonNavItem } from "./LessonList";
 import { Leaderboards } from "@/components/Leaderboards";
 import { ShareBonus } from "@/components/ShareBonus";
+import { VideoModal } from "@/components/VideoModal";
 import { answerPointsVisible, celebrationStats } from "@/lib/leaderboard";
 import "./player.css";
 
@@ -255,6 +256,6 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
         {feedback === "wrong" && <aside className="pl-drawer" aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect ({state.wrongCount})</strong><button aria-label="Close" onClick={closeWrong}>×</button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution">{step.type === "formula" ? <code className="chip">{step.solution}</code> : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : step.type === "shortcut" ? step.mode === "sequence" ? step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac" : step.keys[platform.os] ?? "Unavailable on Mac" : ""}</p>}<div className="pl-ai-slot">AI explanation will appear here.</div></aside>}
       </>}
     </main>
-    <aside className="pl-right">{boardsReady && <><Leaderboards type="points" /><Leaderboards type="streak" /><ShareBonus signedIn={signedIn} /></>}<section><h2>Share</h2><div className="pl-share"><a href="https://www.linkedin.com/">LinkedIn</a><a href="https://www.facebook.com/">Facebook</a><a href="https://x.com/">X</a><a href="mailto:?subject=Excel%20Guru">Email</a></div></section><button className="btn" disabled={!lesson.video}>▶ Watch lesson video</button></aside>
+    <aside className="pl-right">{boardsReady && <><Leaderboards type="points" /><Leaderboards type="streak" /><ShareBonus signedIn={signedIn} /></>}<section><h2>Share</h2><div className="pl-share"><a href="https://www.linkedin.com/">LinkedIn</a><a href="https://www.facebook.com/">Facebook</a><a href="https://x.com/">X</a><a href="mailto:?subject=Excel%20Guru">Email</a></div></section><VideoModal videoId={lesson.video} /><a className="btn pl-workbook-link" href={`/api/lessons/${encodeURIComponent(lesson.id)}/workbook`}>Download practice workbook</a></aside>
   </div>;
 }
