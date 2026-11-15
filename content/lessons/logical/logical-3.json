@@ -39,7 +39,7 @@
         ],
         [
           "Esha",
-          73,
+          20,
           null
         ]
       ],
@@ -210,7 +210,7 @@
         "IF"
       ],
       "solution": "=IF(B3>=5,0,12)",
-      "explain": "A2 took exactly five days, so the condition is true and the fee is zero.",
+      "explain": "Order #102 took exactly five days, and >= includes five, so the fee is 0.",
       "mobileButtons": [
         "=",
         "(",
@@ -245,7 +245,7 @@
           null
         ],
         [
-          "Jay",
+          "Leo",
           8,
           null
         ]

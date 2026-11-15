@@ -296,7 +296,7 @@
     {
       "id": "s10",
       "type": "formula",
-      "prompt": "In `C3`, check whether record C contains an error.",
+      "prompt": "In `C3`, check whether record B's imported value is an error.",
       "grid": [
         [
           "Record",
@@ -325,7 +325,7 @@
         "ISERROR"
       ],
       "solution": "=ISERROR(B3)",
-      "explain": "Record C contains a division-by-zero error, so ISERROR returns TRUE.",
+      "explain": "Record B holds =10/0, a division-by-zero error, so ISERROR returns TRUE.",
       "mobileButtons": [
         "=",
         "(",

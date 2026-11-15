@@ -21,40 +21,24 @@
           "Ticket",
           "Parts",
           "Approved",
-          "Quote",
-          "Hours",
-          "Note"
+          "Status"
         ],
         [
           "Nila",
-          3,
-          "Yes",
-          null,
           2,
+          "No",
           null
         ],
         [
           "Omar",
           1,
           "No",
-          null,
-          0,
           null
         ],
         [
           "Pia",
-          4,
+          0,
           "Yes",
-          null,
-          5,
-          null
-        ],
-        [
-          "Rey",
-          2,
-          "Yes",
-          null,
-          4,
           null
         ]
       ],
@@ -203,7 +187,7 @@
     {
       "id": "s6",
       "type": "formula",
-      "prompt": "Cost per item is total divided by items. In `D3`, type `=IFERROR(B3/C3,\"Check rate\")` and press Enter for Omar.",
+      "prompt": "Cost per item is total divided by items. In `D3`, type `=IFERROR(B3/C3,\"Check items\")` and press Enter for Omar.",
       "grid": [
         [
           "Name",
@@ -235,7 +219,7 @@
       "mustUse": [
         "IFERROR"
       ],
-      "solution": "=IFERROR(B3/C3,\"Check rate\")",
+      "solution": "=IFERROR(B3/C3,\"Check items\")",
       "explain": "Omar has 20 total across five items, so IFERROR returns the valid cost of 4 per item.",
       "mobileButtons": [
         "=",
@@ -349,40 +333,40 @@
     {
       "id": "s10",
       "type": "formula",
-      "prompt": "Ticket B’s rate may be zero. In `D3`, show a message when dividing its hours by its rate errors.",
+      "prompt": "Cost per hour is cost divided by hours, but ticket B has no hours logged yet. In `D3`, work out ticket B's cost per hour, showing \"Check hours\" if the division gives an error.",
       "grid": [
         [
           "Ticket",
+          "Cost",
           "Hours",
-          "Rate",
-          "Charge"
+          "Per hour"
         ],
         [
           "A",
-          6,
+          600,
           3,
           null
         ],
         [
           "B",
-          4,
+          400,
           0,
           null
         ],
         [
           "C",
-          8,
+          800,
           2,
           null
         ]
       ],
       "targetCell": "D3",
-      "expectedValue": "Check rate",
+      "expectedValue": "Check hours",
       "mustUse": [
         "IFERROR"
       ],
-      "solution": "=IFERROR(B3/C3,\"Check rate\")",
-      "explain": "Ticket B divides by zero, so the friendly message is shown.",
+      "solution": "=IFERROR(B3/C3,\"Check hours\")",
+      "explain": "Ticket B has 0 hours, so 400/0 is #DIV/0! and IFERROR shows Check hours instead.",
       "mobileButtons": [
         "=",
         "(",
