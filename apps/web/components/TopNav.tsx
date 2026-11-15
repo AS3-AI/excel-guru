@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MODULES, nextRecommendedPath, statusCounts, type StatusTag } from "@/lib/modules";
 import { mergeLocalProgress, readLocalProgress } from "@/lib/local-progress";
+import { Leaderboards } from "@/components/Leaderboards";
+import { ShareBonus } from "@/components/ShareBonus";
 
 type DashboardProps = { signedIn: boolean; completedIds: string[]; tags: StatusTag[]; moduleDone: Record<string, number>; order: string[]; lessonModules: Record<string, string> };
 
@@ -15,6 +17,7 @@ export function DashboardContent({ signedIn: initiallySignedIn, completedIds: in
   const [recommendedPath, setRecommendedPath] = useState(nextRecommendedPath(order, initialDone));
   const [confirm, setConfirm] = useState(false);
   const [message, setMessage] = useState("");
+  const [dashboardReady, setDashboardReady] = useState(false);
   const router = useRouter();
   useEffect(() => {
     let active = true;
@@ -23,15 +26,16 @@ export function DashboardContent({ signedIn: initiallySignedIn, completedIds: in
       if (initiallySignedIn && local.length) await mergeLocalProgress();
       try {
         const response = await fetch("/api/dashboard");
-        if (!response.ok) return;
+        if (!response.ok) { if (active) setDashboardReady(true); return; }
         const data = await response.json() as { modules?: { id: string; done: number }[]; nextLessonId?: string | null };
         if (!active) return;
         setSignedIn(true);
         setModuleDone(Object.fromEntries((data.modules ?? []).map((item) => [item.id.toLowerCase(), item.done])));
         setCompletedCount((data.modules ?? []).reduce((sum, item) => sum + item.done, 0));
         setRecommendedPath(data.nextLessonId ? `/lesson/${data.nextLessonId}` : "/review");
+        setDashboardReady(true);
         if (local.length && initiallySignedIn) router.refresh();
-      } catch { /* Keep server-rendered progress visible if the refresh fails. */ }
+      } catch { if (active) setDashboardReady(true); /* Keep server-rendered progress visible if the refresh fails. */ }
     })();
     return () => { active = false; };
   }, [initiallySignedIn, router]);
@@ -45,7 +49,7 @@ export function DashboardContent({ signedIn: initiallySignedIn, completedIds: in
     setMessage(response.ok ? "Progress reset." : "Could not reset progress. Please try again.");
     if (response.ok) window.location.reload();
   };
-  return <main className="dashboard wrap"><h1>Your learning dashboard</h1><section className="dash-total"><h2>Total Lessons Completed</h2><p className="dash-count">{doneCount} / 85</p><div className="status-bar" aria-label={`Low Accuracy ${counts.low}, Needs Practice ${counts.practice}, Good ${counts.good}`}><span style={{ width: `${counts.low / 85 * 100}%`, background: "var(--danger)" }} /><span style={{ width: `${counts.practice / 85 * 100}%`, background: "var(--warning)" }} /><span style={{ width: `${counts.good / 85 * 100}%`, background: "var(--primary)" }} /></div><p>Certificate available when all lessons are done.</p></section><section className="dash-next"><h2>Next Recommended Lesson</h2><Link className="btn" href={signedIn ? recommendedPath : nextRecommendedPath(order, done)}>Continue learning →</Link><p>Today&apos;s scores and streaks: <span>Coming soon</span></p></section><section><h2>Projects <small>Phase 3</small></h2><p>Project practice is coming soon.</p></section><section><h2>Modules</h2><div className="module-grid">{modules.map((module) => <Link className="module-card" href={`/modules/${module.slug}`} key={module.slug}><strong>{module.title}</strong><span>{module.done}/{module.total} Lessons Completed</span><span className="module-track"><i style={{ width: `${Math.min(100, module.done / module.total * 100)}%` }} /></span></Link>)}</div></section><section><h2>Daily challenge <small>Phase 3</small></h2><p>Scores and daily streaks will appear here.</p></section>{signedIn && <p><button className="text-button" onClick={() => setConfirm(true)}>Reset Progress</button></p>}{message && <p role="status">{message}</p>}{confirm && <div className="modal-backdrop" role="presentation"><section className="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="reset-title"><h2 id="reset-title">Reset lesson progress?</h2><p>Your completed lessons will be cleared. Points and streak will stay.</p><div><button className="btn" onClick={() => setConfirm(false)}>Cancel</button><button className="btn danger-button" onClick={() => void reset()}>Reset progress</button></div></section></div>}</main>;
+  return <main className="dashboard wrap"><h1>Your learning dashboard</h1><section className="dash-total"><h2>Total Lessons Completed</h2><p className="dash-count">{doneCount} / 85</p><div className="status-bar" aria-label={`Low Accuracy ${counts.low}, Needs Practice ${counts.practice}, Good ${counts.good}`}><span style={{ width: `${counts.low / 85 * 100}%`, background: "var(--danger)" }} /><span style={{ width: `${counts.practice / 85 * 100}%`, background: "var(--warning)" }} /><span style={{ width: `${counts.good / 85 * 100}%`, background: "var(--primary)" }} /></div><p>Certificate available when all lessons are done.</p></section><section className="dash-next"><h2>Next Recommended Lesson</h2><Link className="btn" href={signedIn ? recommendedPath : nextRecommendedPath(order, done)}>Continue learning →</Link></section>{dashboardReady && <><div className="dash-leaderboards"><Leaderboards type="points" /><Leaderboards type="streak" /></div><ShareBonus signedIn={signedIn} /></>}<section><h2>Projects <small>Phase 3</small></h2><p>Project practice is coming soon.</p></section><section><h2>Modules</h2><div className="module-grid">{modules.map((module) => <Link className="module-card" href={`/modules/${module.slug}`} key={module.slug}><strong>{module.title}</strong><span>{module.done}/{module.total} Lessons Completed</span><span className="module-track"><i style={{ width: `${Math.min(100, module.done / module.total * 100)}%` }} /></span></Link>)}</div></section><section><h2>Daily challenge <small>Phase 3</small></h2><p>Scores and daily streaks will appear here.</p></section>{signedIn && <p><button className="text-button" onClick={() => setConfirm(true)}>Reset Progress</button></p>}{message && <p role="status">{message}</p>}{confirm && <div className="modal-backdrop" role="presentation"><section className="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="reset-title"><h2 id="reset-title">Reset lesson progress?</h2><p>Your completed lessons will be cleared. Points and streak will stay.</p><div><button className="btn" onClick={() => setConfirm(false)}>Cancel</button><button className="btn danger-button" onClick={() => void reset()}>Reset progress</button></div></section></div>}</main>;
 }
 
 export function TopNav({ signedIn = false }: { signedIn?: boolean }) {

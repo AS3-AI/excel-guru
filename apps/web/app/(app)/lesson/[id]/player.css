@@ -39,6 +39,19 @@
 .pl-lessons .is-current a { color:var(--ink); font-weight:700; }
 .pl-lesson-num { color:var(--muted); font-variant-numeric:tabular-nums; }
 .pl-right { display:grid; gap:12px; }
+.pl-right .leaderboard-card,.pl-right .share-bonus-card { min-width:0; padding:14px; background:var(--surface); border:1px solid var(--border); border-radius:12px; }
+.pl-right .leaderboard-card h2,.pl-right .share-bonus-card h2 { margin:0 0 10px; color:var(--ink); font-size:1.05rem; }
+.pl-right .leaderboard-card p,.pl-right .share-bonus-card p { margin:8px 0 0; color:var(--muted); }
+.leaderboard-list { list-style:none; margin:0; padding:0; }
+.leaderboard-list li { display:grid; grid-template-columns:2em minmax(0,1fr) auto; align-items:center; gap:6px; padding:8px 0; border-top:1px solid var(--border); color:var(--text); }
+.leaderboard-rank { color:var(--muted); font-variant-numeric:tabular-nums; }
+.leaderboard-name { min-width:0; overflow-wrap:anywhere; }
+.leaderboard-name small { display:block; color:var(--muted); font-size:.8rem; }
+.leaderboard-list li strong { color:var(--ink); white-space:nowrap; }
+.leaderboard-list a { grid-column:2 / -1; color:var(--primary-strong); font-size:.85rem; }
+.leaderboard-you,.leaderboard-copy { margin:10px 0 0; color:var(--ink); }
+.leaderboard-copy { color:var(--muted); }
+.pl-points-earned { color:var(--primary-ink); font-size:1.05rem; font-weight:800; font-variant-numeric:tabular-nums; }
 .pl-right section p { margin:0; color:var(--muted); }
 .pl-share { display:flex; flex-wrap:wrap; gap:8px; }
 .pl-share a { color:var(--primary-strong); }
