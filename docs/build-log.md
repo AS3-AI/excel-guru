@@ -21,6 +21,8 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T23 Rich text + module slugs | codex | 105cf3a | checked in Chrome | pushed | |
 | Content: SUM module | codex + Claude | sum-1 (Claude), 8c05798 | 3 pedagogy rounds, ready | pushed | style guide docs/content-style.md |
 | T24 Points + leaderboards | codex | t24 branch | passed (2 rounds), live-tested on Supabase | pushed | share bonus once-only verified |
+| T27 Video + workbook | codex | fbd7154 | passed, focus guards added | merged (local) | keyboard check of the modal pending a lesson with a video |
+| T25 Payments (Razorpay) | codex | t25 branch | fix round in progress | built | Stripe deferred (option 2); no lifetime |
 | T20 Dashboard + access | codex | bf568cf | passed (2 rounds) | pushed | progress routes paywall-gated; free users can still *open* extra lessons (migration later); live free-tier flow verified 15 Nov (sign-up → merge → 2nd lesson → 3rd = /pricing, 403 on save) |
 
 ## Open bugs
