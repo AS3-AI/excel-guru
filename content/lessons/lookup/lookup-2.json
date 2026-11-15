@@ -104,7 +104,7 @@
         "HLOOKUP"
       ],
       "solution": "=HLOOKUP(G2,B1:F4,2,FALSE)",
-      "explain": "K-11 is in the third table column, and row 2 of that column contains Cedar.",
+      "explain": "K-11 is the table's second column (sheet column C), and row 2 of that column is Cedar.",
       "highlightCells": [
         "G2",
         "B1:F4"
@@ -120,7 +120,7 @@
     {
       "id": "s4",
       "type": "formula",
-      "prompt": "How many seats does room code `K-24` have? In `G3`, find the value in row 3 of the table `B1:F4`.",
+      "prompt": "How many seats does the room with the code in `G2` (K-24) have? In `G3`, return row 3 of the table `B1:F4`.",
       "grid": [
         [
           "Code",
@@ -181,7 +181,7 @@
     {
       "id": "s5",
       "type": "formula",
-      "prompt": "Is room `K-52` open? In `G3`, find its status in row 4 of the table `B1:F4`.",
+      "prompt": "You can also type the code straight into the formula, in quotes. Is room K-52 open? In `G2`, type `=HLOOKUP(\"K-52\",B1:F4,4,FALSE)`.",
       "grid": [
         [
           "Code",
@@ -190,7 +190,7 @@
           "K-52",
           "K-24",
           null,
-          "Find"
+          "Open?"
         ],
         [
           "Room",
@@ -199,7 +199,7 @@
           "Birch",
           "Maple",
           null,
-          "K-52"
+          null
         ],
         [
           "Seats",
@@ -214,21 +214,20 @@
           "Open?",
           "Yes",
           "Yes",
-          "No",
           "Yes",
+          "No",
           null,
           null
         ]
       ],
-      "targetCell": "G3",
-      "expectedValue": "No",
+      "targetCell": "G2",
+      "expectedValue": "Yes",
       "mustUse": [
         "HLOOKUP"
       ],
-      "solution": "=HLOOKUP(G2,B1:F4,4,FALSE)",
-      "explain": "K-52 is in the fourth table column, where row 4 marks the room No.",
+      "solution": "=HLOOKUP(\"K-52\",B1:F4,4,FALSE)",
+      "explain": "The quoted code K-52 is the table's third column (sheet column D), and row 4 of that column says Yes.",
       "highlightCells": [
-        "G2",
         "B1:F4"
       ],
       "mobileButtons": [
@@ -236,13 +235,14 @@
         "(",
         ")",
         ",",
-        ":"
+        ":",
+        "\""
       ]
     },
     {
       "id": "s6",
       "type": "formula",
-      "prompt": "A club tracks points under numbered teams. What is team 24’s score? In `G3`, find its score across `B1:F2`.",
+      "prompt": "A club tracks points under numbered teams. What is the score of the team number in `G2` (24)? In `G3`, find it across `B1:F2`.",
       "grid": [
         [
           "Team",

@@ -362,11 +362,11 @@
     {
       "id": "s7",
       "type": "mcq",
-      "prompt": "The lookup range `A2:A6` has five rows, but the return range `B2:B5` has four. What happens when XLOOKUP uses these ranges?",
+      "prompt": "`=XLOOKUP(E2,A2:A6,B2:C6)` in `F2` shows `#SPILL!`. Why?",
       "options": [
-        "It returns `#VALUE!` because the ranges have different sizes",
-        "It returns the first value from column B",
-        "It searches column B instead of column A"
+        "`G2` already has something in it, so the second value has nowhere to go",
+        "The return range must be one column",
+        "Match mode is missing"
       ],
       "answer": 0
     },
