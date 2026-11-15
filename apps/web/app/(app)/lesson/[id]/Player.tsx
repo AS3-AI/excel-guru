@@ -13,6 +13,9 @@ import { getPlatform } from "@/lib/platform";
 import { StepView } from "./steps/StepView";
 import { ShortcutStep as ShortcutPractice, shortcutSkipOutcome } from "./steps/ShortcutStep";
 import { LessonList, type LessonNavItem } from "./LessonList";
+import { Leaderboards } from "@/components/Leaderboards";
+import { ShareBonus } from "@/components/ShareBonus";
+import { answerPointsVisible, celebrationStats } from "@/lib/leaderboard";
 import "./player.css";
 
 type Props = { lesson: Lesson; next: number[]; nextLessonId: string | null; lessons: LessonNavItem[]; signedOutIntro?: boolean; signedIn?: boolean };
@@ -31,7 +34,8 @@ function formulaWrongMessage(reason: string | undefined, step: FormulaStep, inpu
 export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIntro = false, signedIn = false }: Props) {
   const router = useRouter();
   const completionDestination = signedOutIntro ? "/signup?completed=intro" : nextLessonId ? `/lesson/${nextLessonId}` : "/";
-  useEffect(() => { if (signedIn) void mergeLocalProgress(); }, [signedIn]);
+  const [boardsReady, setBoardsReady] = useState(!signedIn);
+  useEffect(() => { if (signedIn) void mergeLocalProgress().finally(() => setBoardsReady(true)); }, [signedIn]);
   const [state, dispatch] = useReducer(playerReducer, undefined, () => createPlayerState(lesson.steps.length, lesson.requiredCorrect));
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
   const [formulaReady, setFormulaReady] = useState(false);
@@ -42,6 +46,9 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   const [celebrate, setCelebrate] = useState(false);
   const [savedStats, setSavedStats] = useState<{ points: number; streak: number } | null>(null);
   const [saveNote, setSaveNote] = useState("");
+  const [answerPoints, setAnswerPoints] = useState(0);
+  const [shownPoints, setShownPoints] = useState(0);
+  const [celebrationPoints, setCelebrationPoints] = useState(0);
   const [platform, setPlatform] = useState<{ os: Os; touch: boolean }>({ os: "win", touch: false });
   const [mobileSkippedShortcutIds, setMobileSkippedShortcutIds] = useState<Set<string>>(() => new Set());
   const [keyboardUnavailable, setKeyboardUnavailable] = useState(false);
@@ -53,6 +60,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   const commitRef = useRef(false);
   const step = lesson.steps[state.index]!;
   const pct = Math.min(100, Math.round(state.correct / lesson.requiredCorrect * 100));
+  const savedCelebrationStats = celebrationStats(savedStats);
   const firstTry = useMemo(() => {
     const results = Object.values(state.firstTry);
     return results.length ? Math.round(results.filter(Boolean).length / results.length * 100) : 0;
@@ -76,6 +84,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
         if (response.ok) {
           const data = await response.json() as { points?: unknown; streak?: unknown };
           if (typeof data.points === "number" && typeof data.streak === "number") setSavedStats({ points: data.points, streak: data.streak });
+          window.dispatchEvent(new Event("excelguru:progress-saved"));
           return;
         }
         if (response.status >= 500) {
@@ -126,6 +135,33 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     return () => window.removeEventListener("keydown", onKey);
   }, [feedback]);
   useEffect(() => { if (feedback === "wrong") feedbackRef.current?.scrollIntoView({ block: "nearest" }); }, [feedback]);
+  useEffect(() => {
+    if (feedback !== "correct") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || answerPoints <= 0) { setShownPoints(answerPoints); return; }
+    let frame = 0;
+    const started = performance.now();
+    const animate = (now: number) => {
+      const progress = Math.min(1, (now - started) / 420);
+      setShownPoints(Math.round(answerPoints * progress));
+      if (progress < 1) frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, [feedback, answerPoints]);
+  useEffect(() => {
+    if (!celebrate) return;
+    const total = savedStats?.points ?? 0;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || total <= 0) { setCelebrationPoints(total); return; }
+    let frame = 0;
+    const started = performance.now();
+    const animate = (now: number) => {
+      const progress = Math.min(1, (now - started) / 650);
+      setCelebrationPoints(Math.round(total * progress));
+      if (progress < 1) frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, [celebrate, savedStats?.points]);
 
   const answer = (input: string, correct: boolean, reason?: string) => {
     if (feedback === "correct" || state.complete) return;
@@ -133,6 +169,10 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     setFeedback(correct ? "correct" : "wrong");
     if (!correct) setWrongText(reason ?? "Not quite. Try again.");
     if (correct) setShowSolution(false);
+    if (correct) {
+      const points = showSolution ? 0 : Math.round(10 * lesson.difficulty * (state.firstTry[step.id] === undefined ? 1.5 : 1));
+      setAnswerPoints(points);
+    }
   };
   const formulaInput = (s: FormulaStep) => sheetRef.current?.getFormula(s.targetCell) ?? rawInput(sheetRef.current?.get(s.targetCell) ?? null);
   const check = (s: FormulaStep) => {
@@ -198,13 +238,13 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     <main className="pl">
       <h1 className="pl-title">{lesson.title}</h1>
       <div className="pl-progress"><span className="pl-pct">{pct}%</span><div className="pl-bar" role="progressbar" aria-label="Lesson progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><div className="pl-bar-fill" style={{ width: `${pct}%` }} /></div></div>
-      {celebrate ? <section className="pl-card pl-complete"><h2>Lesson complete!</h2><p>First-try accuracy: {firstTry}%</p><p>You answered {state.correct} questions correctly.</p>{savedStats && <p>+{savedStats.points} points · {savedStats.streak}-day streak</p>}{saveNote && <p role="status">{saveNote}</p>}<button ref={continueRef} className="btn pl-continue" onClick={() => router.push(completionDestination)}>Continue →</button></section> : <>
+      {celebrate ? <section className="pl-card pl-complete"><h2>Lesson complete!</h2><p>First-try accuracy: {firstTry}%</p><p>You answered {state.correct} questions correctly.</p>{savedCelebrationStats && <p>+{celebrationPoints} pts · {savedCelebrationStats.streak}-day streak</p>}{saveNote && <p role="status">{saveNote}</p>}<button ref={continueRef} className="btn pl-continue" onClick={() => router.push(completionDestination)}>Continue →</button></section> : <>
         {(step.type === "formula" || step.type === "select") && <section className="pl-card"><p className="pl-prompt"><RichText text={step.prompt} /></p></section>}
         <div ref={stageRef} className="pl-stage" onKeyDownCapture={onStageCapture} onKeyDown={onStageKey}>
           {step.type === "formula" ? <Grid key={`${step.id}-${state.visit}`} grid={step.grid} targetCell={step.targetCell} highlightCells={step.highlightCells} sheetRef={sheetRef} onEditStart={() => { setFormulaReady(true); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onCommit={() => { commitRef.current = true; setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} /> : step.type === "shortcut" ? <ShortcutPractice key={`${step.id}-${state.visit}`} step={step} os={platform.os} touch={platform.touch} showPostcondition={feedback === "correct"} onAttempt={shortcutAttempt} onSkip={skipShortcutStep} onSkipSection={skipShortcutSection} onPracticeReady={practiceReady} /> : <StepView key={`${step.id}-${state.visit}`} step={step} setSelectRef={(ref) => { setSelectedRef(ref); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onReady={(input) => setStepReady({ input })} onEditStart={() => setFeedback((f) => f === "wrong" && !showSolution ? null : f)} />}
         </div>
         <div className={`pl-actions${feedback === "correct" ? " is-correct" : ""}`}>
-          {feedback === "correct" ? <><strong className="pl-correct-label">Correct!</strong>{step.type === "formula" && step.explain ? <span><RichText text={step.explain} /></span> : null}<button ref={continueRef} className="btn pl-continue" onClick={nextStep}>Continue →</button><span className="pl-hint">or press Enter</span></> : <>
+          {feedback === "correct" ? <><strong className="pl-correct-label">Correct!</strong>{answerPointsVisible(signedIn) && <span className="pl-points-earned" aria-live="polite">+{shownPoints} pts</span>}{step.type === "formula" && step.explain ? <span><RichText text={step.explain} /></span> : null}<button ref={continueRef} className="btn pl-continue" onClick={nextStep}>Continue →</button><span className="pl-hint">or press Enter</span></> : <>
             {(step.type === "formula" && formulaReady || (step.type === "select" && !!selectedRef) || (step.type === "mcq" && stepReady) || ((step.type === "picture" || step.type === "project") && !!stepReady?.input.trim())) ? <><button className="btn" onMouseDown={(e) => e.preventDefault()} onClick={() => step.type === "formula" ? check(step) : checkStep()}>Check Answer</button><span className="pl-hint">or press Enter</span></> : null}
             {step.type === "info" ? <button ref={continueRef} className="btn pl-skip" onClick={nextStep}>Continue →</button> : null}
             <button className="btn pl-skip" onClick={() => { dispatch({ type: "skip" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); }}>Skip question</button>
@@ -215,6 +255,6 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
         {feedback === "wrong" && <aside className="pl-drawer" aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect ({state.wrongCount})</strong><button aria-label="Close" onClick={closeWrong}>×</button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution">{step.type === "formula" ? <code className="chip">{step.solution}</code> : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : step.type === "shortcut" ? step.mode === "sequence" ? step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac" : step.keys[platform.os] ?? "Unavailable on Mac" : ""}</p>}<div className="pl-ai-slot">AI explanation will appear here.</div></aside>}
       </>}
     </main>
-    <aside className="pl-right"><section><h2>Today&apos;s High Scores</h2><p>Coming soon</p></section><section><h2>Today&apos;s High Streaks</h2><p>Coming soon</p></section><section><h2>Share</h2><div className="pl-share"><a href="https://www.linkedin.com/">LinkedIn</a><a href="https://www.facebook.com/">Facebook</a><a href="https://x.com/">X</a><a href="mailto:?subject=Excel%20Guru">Email</a></div></section><button className="btn" disabled={!lesson.video}>▶ Watch lesson video</button></aside>
+    <aside className="pl-right">{boardsReady && <><Leaderboards type="points" /><Leaderboards type="streak" /><ShareBonus signedIn={signedIn} /></>}<section><h2>Share</h2><div className="pl-share"><a href="https://www.linkedin.com/">LinkedIn</a><a href="https://www.facebook.com/">Facebook</a><a href="https://x.com/">X</a><a href="mailto:?subject=Excel%20Guru">Email</a></div></section><button className="btn" disabled={!lesson.video}>▶ Watch lesson video</button></aside>
   </div>;
 }
