@@ -27,7 +27,8 @@ for (const file of readdirSync(root).filter((f) => f.endsWith(".json")).sort()) 
     const run = (x: string) => { try { const sh = new Sheet(s.grid); sh.set(s.targetCell, x); return JSON.stringify(sh.get(s.targetCell)); } catch { return "ERR"; } };
     const want = JSON.stringify(s.expectedValue);
     if (run(f) !== want) console.log(`${lesson.id} ${s.id} SOLUTION MISMATCH ${f} → ${run(f)} want ${want}`);
-    for (const v of variants) if (v !== f && run(v) === want) { n++; console.log(`${lesson.id} ${s.id} ${f}  ≈  ${v}  → ${want}`); }
+    const backwards = (x: string) => [...x.matchAll(/\$?([A-Z]+)\$?(\d+):\$?([A-Z]+)\$?(\d+)/g)].some((m) => m[1] > m[3] || Number(m[2]) > Number(m[4]));
+    for (const v of variants) if (v !== f && !backwards(v) && run(v) === want) { n++; console.log(`${lesson.id} ${s.id} ${f}  ≈  ${v}  → ${want}`); }
   }
 }
 console.log("coincidences:", n);
