@@ -1,0 +1,366 @@
+{
+  "id": "sum-7",
+  "module": "sum",
+  "title": "SUMIF practice",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**SUMIF** adds numbers when one condition matches. Text criteria can use wildcards such as `\"A*\"` for text beginning with A, and number rules such as `\">=\"` or `\"<>\"`."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A book club lists members and pages read. Select the page values: `B2:B6`.",
+      "grid": [
+        [
+          "Member",
+          "Pages"
+        ],
+        [
+          "Asha",
+          24
+        ],
+        [
+          "Arun",
+          30
+        ],
+        [
+          "Bea",
+          18
+        ],
+        [
+          "Ari",
+          42
+        ],
+        [
+          "Bo",
+          27
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "target": "B2:B6"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `B7`, use SUMIF to total pages that are at least 30 with `=SUMIF(B2:B6,\">=30\")`.",
+      "grid": [
+        [
+          "Member",
+          "Pages"
+        ],
+        [
+          "Asha",
+          24
+        ],
+        [
+          "Arun",
+          30
+        ],
+        [
+          "Bea",
+          18
+        ],
+        [
+          "Ari",
+          42
+        ],
+        [
+          "Bo",
+          27
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 72,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(B2:B6,\">=30\")",
+      "explain": "The >=30 rule includes values equal to 30 or greater.",
+      "highlightCells": [
+        "B2:B6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `B7`, type `=SUMIF(A2:A6,\"<>Peas\",B2:B6)` to total quantities for every produce except Peas.",
+      "grid": [
+        [
+          "Produce",
+          "Qty"
+        ],
+        [
+          "Peas",
+          8
+        ],
+        [
+          "Beans",
+          12
+        ],
+        [
+          "Corn",
+          9
+        ],
+        [
+          "Peas",
+          5
+        ],
+        [
+          "Carrots",
+          11
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 32,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A6,\"<>Peas\",B2:B6)",
+      "explain": "The <> condition excludes Peas and adds the other produce quantities.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        "<",
+        ">"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "A gym tracks minutes by activity. In `B7`, use SUMIF to total minutes for activity names beginning with `A` using `=SUMIF(A2:A6,\"A*\",B2:B6)`.",
+      "grid": [
+        [
+          "Activity",
+          "Minutes"
+        ],
+        [
+          "Aerobics",
+          30
+        ],
+        [
+          "Run",
+          25
+        ],
+        [
+          "Aqua",
+          20
+        ],
+        [
+          "Cycle",
+          15
+        ],
+        [
+          "Abs",
+          10
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 60,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A6,\"A*\",B2:B6)",
+      "explain": "The A* wildcard matches each activity name that starts with A.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        "*"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A delivery team records parcels by driver. How many parcels did drivers whose names start with `M` deliver? Put the total in `B7`.",
+      "grid": [
+        [
+          "Driver",
+          "Parcels"
+        ],
+        [
+          "Mina",
+          12
+        ],
+        [
+          "Lee",
+          9
+        ],
+        [
+          "Mo",
+          8
+        ],
+        [
+          "Nia",
+          11
+        ],
+        [
+          "Maya",
+          7
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 27,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A6,\"M*\",B2:B6)",
+      "explain": "The wildcard matches Mina, Mo and Maya, whose parcel counts total 27.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        "*"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "In `B6`, type `=SUMIF(A2:A5,\"B*\",B2:B5)` to total pages for members whose names begin with B.",
+      "grid": [
+        [
+          "Member",
+          "Pages"
+        ],
+        [
+          "Bea",
+          21
+        ],
+        [
+          "Ari",
+          15
+        ],
+        [
+          "Bo",
+          18
+        ],
+        [
+          "Bea",
+          24
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 63,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A5,\"B*\",B2:B5)",
+      "explain": "The B* criterion matches Bea and Bo.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        "*"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "What does the `*` match in the criterion `\"A*\"`?",
+      "options": [
+        "Any number after A",
+        "Any text after A, including no more characters",
+        "Only the exact text A*"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A shop tracks produce quantities. In `B6`, find the total produce that is not Beans.",
+      "grid": [
+        [
+          "Produce",
+          "Qty"
+        ],
+        [
+          "Beans",
+          7
+        ],
+        [
+          "Corn",
+          12
+        ],
+        [
+          "Peas",
+          9
+        ],
+        [
+          "Corn",
+          5
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 26,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A5,\"<>Beans\",B2:B5)",
+      "explain": "The <>Beans condition excludes Beans and adds the other quantities.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">",
+        "<"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,413 @@
+{
+  "id": "sum-4",
+  "module": "sum",
+  "title": "SUMIF: choose a sum range",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**SUMIF** can check one column and add numbers from another. Its pattern is `=SUMIF(criteria_range,criteria,sum_range)`. A cell such as `D2` can hold the condition."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A café tracks item sales. Select the item names that SUMIF will check: `A2:A6`.",
+      "grid": [
+        [
+          "Item",
+          "Size",
+          "Sales"
+        ],
+        [
+          "Tea",
+          "S",
+          12
+        ],
+        [
+          "Coffee",
+          "L",
+          25
+        ],
+        [
+          "Tea",
+          "L",
+          18
+        ],
+        [
+          "Cake",
+          "S",
+          14
+        ],
+        [
+          "Tea",
+          "M",
+          10
+        ],
+        [
+          "Total",
+          null,
+          null
+        ]
+      ],
+      "target": "A2:A6"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `C7`, type `=SUMIF(A2:A6,\"Tea\",C2:C6)` to total sales for Tea.",
+      "grid": [
+        [
+          "Item",
+          "Size",
+          "Sales"
+        ],
+        [
+          "Tea",
+          "S",
+          12
+        ],
+        [
+          "Coffee",
+          "L",
+          25
+        ],
+        [
+          "Tea",
+          "L",
+          18
+        ],
+        [
+          "Cake",
+          "S",
+          14
+        ],
+        [
+          "Tea",
+          "M",
+          10
+        ],
+        [
+          "Total",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C7",
+      "expectedValue": 40,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A6,\"Tea\",C2:C6)",
+      "explain": "SUMIF checks item names in column A and adds the matching sales from column C.",
+      "highlightCells": [
+        "A2:A6",
+        "C2:C6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "Cell `D2` contains `Cake`. In `C7`, type `=SUMIF(A2:A6,D2,C2:C6)` to total Cake sales.",
+      "grid": [
+        [
+          "Item",
+          "Size",
+          "Sales",
+          "Criteria"
+        ],
+        [
+          "Tea",
+          "S",
+          12,
+          "Cake"
+        ],
+        [
+          "Coffee",
+          "L",
+          25,
+          null
+        ],
+        [
+          "Tea",
+          "L",
+          18,
+          null
+        ],
+        [
+          "Cake",
+          "S",
+          14,
+          null
+        ],
+        [
+          "Cake",
+          "M",
+          20,
+          null
+        ],
+        [
+          "Total",
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C7",
+      "expectedValue": 34,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A6,D2,C2:C6)",
+      "explain": "Referencing D2 uses its criterion while C2:C6 supplies the amounts to add.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "A gym records activity and minutes. In `C6`, use SUMIF to total minutes for Yoga.",
+      "grid": [
+        [
+          "Activity",
+          "Member",
+          "Minutes"
+        ],
+        [
+          "Yoga",
+          "Ari",
+          30
+        ],
+        [
+          "Run",
+          "Bo",
+          25
+        ],
+        [
+          "Yoga",
+          "Cia",
+          45
+        ],
+        [
+          "Yoga",
+          "Dev",
+          40
+        ],
+        [
+          "Total",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C6",
+      "expectedValue": 115,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A5,\"Yoga\",C2:C5)",
+      "explain": "The matching activity labels pick the corresponding minute values.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "The delivery team logs route fees. Cell `D2` contains `East`. In `C7`, use SUMIF to find the total fee for East routes.",
+      "grid": [
+        [
+          "Route",
+          "Driver",
+          "Fee",
+          "Criteria"
+        ],
+        [
+          "West",
+          "Ari",
+          14,
+          "East"
+        ],
+        [
+          "East",
+          "Bo",
+          21,
+          null
+        ],
+        [
+          "East",
+          "Cia",
+          18,
+          null
+        ],
+        [
+          "North",
+          "Dev",
+          16,
+          null
+        ],
+        [
+          "East",
+          "Eli",
+          12,
+          null
+        ],
+        [
+          "Total",
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C7",
+      "expectedValue": 51,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A6,D2,C2:C6)",
+      "explain": "The criterion in D2 matches the East rows in A2:A6, and their fees in C2:C6 total 51.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "In `C6`, type `=SUMIF(A2:A5,\"Blue\",C2:C5)` to total fees for Blue deliveries.",
+      "grid": [
+        [
+          "Team",
+          "Driver",
+          "Fee"
+        ],
+        [
+          "Blue",
+          "Ari",
+          11
+        ],
+        [
+          "Red",
+          "Bea",
+          17
+        ],
+        [
+          "Blue",
+          "Chen",
+          13
+        ],
+        [
+          "Blue",
+          "Bea",
+          8
+        ],
+        [
+          "Total",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C6",
+      "expectedValue": 32,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A5,\"Blue\",C2:C5)",
+      "explain": "The matching team names select the fees to add.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "In `=SUMIF(A2:A5,\"Tea\",C2:C5)`, which range contains the numbers to add?",
+      "options": [
+        "A2:A5",
+        "C2:C5",
+        "A1:C5"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A library records book type and late fees. In `C6`, find the total fees for Fiction books.",
+      "grid": [
+        [
+          "Type",
+          "Reader",
+          "Fee"
+        ],
+        [
+          "Fiction",
+          "Asha",
+          6
+        ],
+        [
+          "Nonfiction",
+          "Ben",
+          4
+        ],
+        [
+          "Fiction",
+          "Cia",
+          9
+        ],
+        [
+          "Fiction",
+          "Dev",
+          5
+        ],
+        [
+          "Total",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C6",
+      "expectedValue": 20,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A5,\"Fiction\",C2:C5)",
+      "explain": "The Fiction labels identify the matching late fees.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    }
+  ]
+}

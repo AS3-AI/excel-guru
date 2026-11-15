@@ -24,6 +24,21 @@ Every lesson is original (never copy wording, data or examples from docs/teardow
 - MCQ: 3 options, one clearly right, wrong options are real beginner mistakes.
 - Difficulty: 1 for the first lessons of a module, 2 for practice / skill summaries, 3 for combined.
 
+## Lessons learned (SUM module review)
+- Step order is fixed: …variations → mcq → apply-it (last). Never put a guided "type `=…`" step after the mcq.
+- Never prefix prompts with the function name ("**SUMIF**: …"); bold the key term once per lesson. Apply-it and
+  skill-summary steps must not name the function — the learner chooses.
+- No template text: every prompt is a complete sentence ("use **SUMIF** to find…", not "use to find…").
+- The select step and the first guided step use the identical grid.
+- A step that teaches a distinction must have data that tests it (`">="` needs a value exactly equal; a debugging
+  bug must change the result — SUM ignores a text header, so "includes the header" is not a bug).
+- Each step adds one new twist; never repeat a previous step's numbers with renamed labels.
+- New syntax (e.g. `"<>Peas"`, a column used as both criteria and sum range) is shown guided before it's asked
+  unguided.
+- MCQs test a real mistake (missing quotes, wrong argument order), not recall of the formula just shown.
+- mobileButtons include every symbol the answer needs: `"`, `>`, `<`, `=`, `*`, `,`.
+- Shortcut steps show what they act on (postcondition grid or pics), and their grid contains the target cell.
+
 ## Grids
 - Our own small, realistic datasets (a café, a book club, a gym, a school fundraiser, a delivery team…).
   Indian and international names and contexts both welcome; amounts in plain numbers (no currency symbols).

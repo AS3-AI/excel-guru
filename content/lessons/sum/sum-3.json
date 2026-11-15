@@ -1,0 +1,354 @@
+{
+  "id": "sum-3",
+  "module": "sum",
+  "title": "SUMIF: add rows that match",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**SUMIF** adds values from a range only when they match one condition. When the condition range and numbers are the same cells, a rule such as `\">50\"` adds only numbers above 50."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A farm stall records baskets sold. Select the numbers you will check against the condition: `B2:B6`.",
+      "grid": [
+        [
+          "Day",
+          "Baskets"
+        ],
+        [
+          "Mon",
+          35
+        ],
+        [
+          "Tue",
+          62
+        ],
+        [
+          "Wed",
+          48
+        ],
+        [
+          "Thu",
+          75
+        ],
+        [
+          "Fri",
+          53
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "target": "B2:B6"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `B7`, type `=SUMIF(B2:B6,\">50\")` to add basket counts above 50.",
+      "grid": [
+        [
+          "Day",
+          "Baskets"
+        ],
+        [
+          "Mon",
+          35
+        ],
+        [
+          "Tue",
+          62
+        ],
+        [
+          "Wed",
+          48
+        ],
+        [
+          "Thu",
+          75
+        ],
+        [
+          "Fri",
+          53
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 190,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(B2:B6,\">50\")",
+      "explain": "The condition range and values are both B2:B6, so 62, 75 and 53 are added.",
+      "highlightCells": [
+        "B2:B6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `B7`, add only delivery counts below 20 using `=SUMIF(B2:B6,\"<20\")`.",
+      "grid": [
+        [
+          "Day",
+          "Deliveries"
+        ],
+        [
+          "Mon",
+          12
+        ],
+        [
+          "Tue",
+          24
+        ],
+        [
+          "Wed",
+          17
+        ],
+        [
+          "Thu",
+          30
+        ],
+        [
+          "Fri",
+          8
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 37,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(B2:B6,\"<20\")",
+      "explain": "Only entries lower than 20 meet this condition.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        "<"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "The tuition centre totals quiz points for students who scored 10. In `B6`, type `=SUMIF(B2:B5,10)` to find their combined points.",
+      "grid": [
+        [
+          "Student",
+          "Points"
+        ],
+        [
+          "Ari",
+          7
+        ],
+        [
+          "Bo",
+          8
+        ],
+        [
+          "Cia",
+          10
+        ],
+        [
+          "Dev",
+          10
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 20,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(B2:B5,10)",
+      "explain": "Both 10s match the criterion, so SUMIF adds them to get 20.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "At a book club, how many pages were read in total by members who read more than 40 pages? Put the answer in `B6`.",
+      "grid": [
+        [
+          "Member",
+          "Pages"
+        ],
+        [
+          "Asha",
+          35
+        ],
+        [
+          "Ben",
+          52
+        ],
+        [
+          "Chen",
+          41
+        ],
+        [
+          "Diya",
+          52
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 145,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(B2:B5,\">40\")",
+      "explain": "SUMIF checks each page count and adds only those above 40.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "In `B6`, type `=SUMIF(B2:B5,\">=15\")` to total orders of at least 15.",
+      "grid": [
+        [
+          "Day",
+          "Orders"
+        ],
+        [
+          "Mon",
+          12
+        ],
+        [
+          "Tue",
+          18
+        ],
+        [
+          "Wed",
+          15
+        ],
+        [
+          "Thu",
+          21
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 54,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(B2:B5,\">=15\")",
+      "explain": "Only order counts of 15 or more contribute to the total.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "Which is valid for adding values in `B2:B6` that are above 50?",
+      "options": [
+        "=SUMIF(B2:B6,>50)",
+        "=SUMIF(B2:B6,\">50\")",
+        "=SUMIF(\">50\",B2:B6)"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A garden shop records plants sold. In `B6`, find the total plants sold on days with at least 20 sales.",
+      "grid": [
+        [
+          "Day",
+          "Plants"
+        ],
+        [
+          "Mon",
+          22
+        ],
+        [
+          "Tue",
+          14
+        ],
+        [
+          "Wed",
+          25
+        ],
+        [
+          "Thu",
+          20
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 67,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(B2:B5,\">=20\")",
+      "explain": "The condition includes 22, 25 and the value exactly equal to 20.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">"
+      ]
+    }
+  ]
+}
