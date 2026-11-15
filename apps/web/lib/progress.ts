@@ -35,7 +35,7 @@ function grade(step: Step, input: string, os: "win" | "mac"): boolean {
     case "mcq": return /^\d+$/.test(input) && gradeMcqStep(step, Number(input));
     case "picture": case "project": return gradeAcceptStep(step, input);
     case "shortcut": {
-      if (step.mode === "sequence") return gradeSequenceStep(step, input.split(",").map((v) => v.trim()), os);
+      if (step.mode === "sequence") return gradeSequenceStep(step, input.split(" ⟶ "), os);
       return gradeShortcutStep(step, input, os);
     }
     case "info": return false;
@@ -43,7 +43,7 @@ function grade(step: Step, input: string, os: "win" | "mac"): boolean {
 }
 
 export function calculateProgress(lesson: Lesson, attempts: readonly ProgressAttempt[]): ScoredProgress {
-  if (attempts.length > lesson.steps.length * 4) throw new Error("Too many attempts");
+  if (attempts.length > Math.max(200, 25 * lesson.steps.length)) throw new Error("Too many attempts");
   const steps = new Map(lesson.steps.map((step) => [step.id, step]));
   const firstByStep = new Map<string, boolean>();
   const firstCorrect = new Set<string>();

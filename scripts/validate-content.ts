@@ -470,6 +470,7 @@ const NAMED_KEYS = [
 const NAMED_KEY_BY_LOWER = new Map(NAMED_KEYS.map((k) => [k.toLowerCase(), k]));
 const CANONICAL_HINT = "(modifiers Ctrl, Alt, Shift, Cmd in that order, then one key)";
 const RESERVED_KEYS = new Set(["W", "T", "N", "Q", "Tab"]);
+const SHIFTED_US_KEYS: Record<string, string> = { "!": "1", "@": "2", "#": "3", "$": "4", "%": "5", "^": "6", "&": "7", "*": "8", "(": "9", ")": "0", "_": "-", "+": "=", "{": "[", "}": "]", "|": "\\", ":": ";", '"': "'", "<": ",", ">": ".", "?": "/", "~": "`" };
 
 type Combo = { mods: Set<Modifier>; key: string | null };
 
@@ -506,6 +507,11 @@ export function isReservedCombo(combo: string): boolean {
 function checkCombo(combo: string, bareModifierOk: boolean, label: string, fail: Fail) {
   const c = parseCombo(combo);
   if (!c) return fail(`${label} "${combo}" is not canonical ${CANONICAL_HINT}`);
+  if (c.key && Object.hasOwn(SHIFTED_US_KEYS, c.key)) {
+    const mods = new Set(c.mods);
+    mods.add("Shift");
+    fail(`${label} "${combo}" uses shifted US symbol "${c.key}"; write "${formatCombo({ mods, key: SHIFTED_US_KEYS[c.key]! })}" instead`);
+  }
   if (c.key === null && !(bareModifierOk && c.mods.size === 1)) {
     fail(`${label} "${combo}" has no key after its modifiers`);
   } else {

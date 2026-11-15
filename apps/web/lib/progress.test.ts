@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getLesson } from "./lessons";
 import { calculateProgress, getIstDate, getIstDayUtcBounds, getStreak, getStatusTag, pointsAllowedForCompletion, progressAttemptRows, readBodyAfterAuthentication, type ProgressAttempt } from "./progress";
-import type { Lesson, ShortcutChordStep } from "@excel-guru/grader";
+import type { Lesson, ShortcutChordStep, ShortcutSequenceStep } from "@excel-guru/grader";
 
 const lesson = getLesson("intro")!;
 const formulaStep = lesson.steps.find((step) => step.type === "formula")!;
@@ -39,8 +39,14 @@ describe("progress scoring, dates, and persistence rows", () => {
   it("validates the optional OS value", () => { expect(() => calculateProgress(shortcutLesson, [{ stepId: shortcut.id, input: shortcut.keys.win, showedAnswer: false, os: "linux" as "win" }])).toThrow(/os/i); });
   it("uses the default Windows shortcut grading mode", () => { expect(calculateProgress(shortcutLesson, [{ stepId: shortcut.id, input: shortcut.keys.win, showedAnswer: false }]).correctCount).toBe(1); });
   it("accepts Mac shortcut grading mode", () => { expect(calculateProgress(shortcutLesson, [{ stepId: shortcut.id, input: shortcut.keys.mac!, showedAnswer: false, os: "mac" }]).correctCount).toBe(1); });
-  it("rejects attempts beyond four times the lesson step count", () => { expect(() => calculateProgress(lesson, Array.from({ length: lesson.steps.length * 4 + 1 }, () => right(formulaStep)))).toThrow(/too many/i); });
-  it("accepts attempts at the four times step count boundary when complete", () => { const eligible = lesson.steps.filter((s) => s.type !== "info"); const attempts = Array.from({ length: lesson.steps.length * 4 }, (_, i) => right(eligible[i % eligible.length]!)); expect(() => calculateProgress(lesson, attempts)).not.toThrow(); });
+  it("parses the sequence delimiter without colliding with key tokens", () => {
+    const sequence: ShortcutSequenceStep = { id: "sequence", type: "shortcut", mode: "sequence", prompt: "Use key tips", keys: { win: ["Ctrl+A", "Ctrl+C"], mac: ["Cmd+A", "Cmd+C"] } };
+    const sequenceLesson: Lesson = { ...lesson, requiredCorrect: 1, steps: [sequence] };
+    expect(calculateProgress(sequenceLesson, [{ stepId: sequence.id, input: "Ctrl+A ⟶ Ctrl+C", showedAnswer: false }]).correctCount).toBe(1);
+  });
+  it("rejects attempts beyond max(200, 25 times the lesson step count)", () => { const cap = Math.max(200, 25 * lesson.steps.length); expect(() => calculateProgress(lesson, Array.from({ length: cap + 1 }, () => right(formulaStep)))).toThrow(/too many/i); });
+  it("accepts honest retries beyond four times the step count", () => { const attempts = Array.from({ length: 5 }, (_, i) => ({ ...right(formulaStep), input: i < 4 ? "=1+1" : formulaStep.solution })); expect(() => calculateProgress(small(), attempts)).not.toThrow(); });
+  it("accepts attempts at the max(200, 25 times the step count) boundary when complete", () => { const eligible = lesson.steps.filter((s) => s.type !== "info"); const cap = Math.max(200, 25 * lesson.steps.length); const attempts = Array.from({ length: cap }, (_, i) => right(eligible[i % eligible.length]!)); expect(() => calculateProgress(lesson, attempts)).not.toThrow(); });
   it("writes a row for every submitted attempt", () => { const attempts = [right(formulaStep), right(formulaStep)]; expect(progressAttemptRows("u", "intro", attempts, small(), new Date()).map((r) => r.step_id)).toEqual([formulaStep.id, formulaStep.id]); });
   it("marks only the first row for a step first_try", () => { expect(progressAttemptRows("u", "intro", [right(formulaStep), right(formulaStep)], small(), new Date()).map((r) => r.first_try)).toEqual([true, false]); });
   it("returns unauthorized without invoking request validation", async () => { let parsed = false; const result = await readBodyAfterAuthentication(null, async () => { parsed = true; throw new Error("invalid body"); }); expect(result).toEqual({ authenticated: false }); expect(parsed).toBe(false); });

@@ -132,6 +132,16 @@ describe("validateContent: browser-reserved shortcuts", () => {
   });
 });
 
+describe("validateContent: shifted US shortcut symbols", () => {
+  it("rejects a shifted symbol and suggests its unshifted key with Shift", () => {
+    const file = lessonFile("shifted-symbol", "keys/keys-1.json");
+    const errors = errorsFor("shifted-symbol", file);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toMatch(/win shortcut ":" uses shifted US symbol ":"; write "Shift\+;" instead/);
+    expectEveryErrorNamesItsFile("shifted-symbol");
+  });
+});
+
 describe("validateContent: step ids and gradable steps", () => {
   it("rejects duplicate step ids within a lesson", () => {
     const errors = errorsFor("duplicate-step-ids", lessonFile("duplicate-step-ids", "count/count-1.json"));

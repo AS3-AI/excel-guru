@@ -1,0 +1,7 @@
+{
+  "id":"shortcut-test","module":"test","title":"Shortcut test lesson","difficulty":1,"requiredCorrect":2,"isIntro":false,"video":null,
+  "steps":[
+    {"id":"extend","type":"shortcut","mode":"chord","prompt":"Extend the selection down.","keys":{"win":"Ctrl+Shift+ArrowDown","mac":"Shift+Cmd+ArrowDown"},"postcondition":{"selection":"A1:A4"}},
+    {"id":"ribbon","type":"shortcut","mode":"sequence","prompt":"Open the ribbon key tips.","keys":{"win":["Alt","H","1"],"mac":null},"pics":["/test/r0.png","/test/r1.png","/test/r2.png","/test/r3.png"]}
+  ]
+}

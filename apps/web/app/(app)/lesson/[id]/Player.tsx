@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { FormulaStep, Lesson } from "@excel-guru/grader";
-import { gradeAcceptStep, gradeFormulaStep, gradeMcqStep, gradeSelectStep } from "@excel-guru/grader";
+import type { FormulaStep, Lesson, Os } from "@excel-guru/grader";
+import { gradeAcceptStep, gradeFormulaStep, gradeMcqStep, gradeSelectStep, gradeSequenceStep, gradeShortcutStep } from "@excel-guru/grader";
 import { Sheet } from "@excel-guru/engine";
 import { Grid, formatValue, rawInput } from "@/components/grid/Grid";
 import { createPlayerState, playerReducer } from "@/lib/player-state";
 import { mergeLocalProgress, writeLocalProgress } from "@/lib/local-progress";
+import { getPlatform } from "@/lib/platform";
 import { StepView } from "./steps/StepView";
+import { ShortcutStep as ShortcutPractice, shortcutSkipOutcome } from "./steps/ShortcutStep";
 import { LessonList, type LessonNavItem } from "./LessonList";
 import "./player.css";
 
@@ -39,6 +41,9 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   const [celebrate, setCelebrate] = useState(false);
   const [savedStats, setSavedStats] = useState<{ points: number; streak: number } | null>(null);
   const [saveNote, setSaveNote] = useState("");
+  const [platform, setPlatform] = useState<{ os: Os; touch: boolean }>({ os: "win", touch: false });
+  const [mobileSkippedShortcutIds, setMobileSkippedShortcutIds] = useState<Set<string>>(() => new Set());
+  const [keyboardUnavailable, setKeyboardUnavailable] = useState(false);
   const saveStarted = useRef(false);
   const stageRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
@@ -53,36 +58,40 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   }, [state.firstTry]);
 
   const focusAnswerControl = () => {
-    (stageRef.current?.querySelector<HTMLElement>('[role="grid"]') ?? stageRef.current?.querySelector<HTMLElement>('input, button'))?.focus({ preventScroll: true });
+    (stageRef.current?.querySelector<HTMLElement>(".shortcut-practice") ?? stageRef.current?.querySelector<HTMLElement>('[role="grid"]') ?? stageRef.current?.querySelector<HTMLElement>('input, button'))?.focus({ preventScroll: true });
   };
   const closeWrong = () => { setFeedback(null); requestAnimationFrame(focusAnswerControl); };
 
   useEffect(() => {
+    setPlatform(getPlatform());
+  }, []);
+  useEffect(() => {
     if (!state.complete || saveStarted.current) return;
     saveStarted.current = true;
+    const attempts = state.attempts.map((attempt) => lesson.steps.find((item) => item.id === attempt.stepId)?.type === "shortcut" ? { ...attempt, os: platform.os } : attempt);
     void (async () => {
       try {
-        const response = await fetch("/api/progress", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ lessonId: lesson.id, attempts: state.attempts }) });
+        const response = await fetch("/api/progress", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ lessonId: lesson.id, attempts }) });
         if (response.ok) {
           const data = await response.json() as { points?: unknown; streak?: unknown };
           if (typeof data.points === "number" && typeof data.streak === "number") setSavedStats({ points: data.points, streak: data.streak });
           return;
         }
         if (response.status >= 500) {
-          writeLocalProgress(lesson.id, state.attempts);
+          writeLocalProgress(lesson.id, attempts);
           setSaveNote("Progress could not sync yet; it is saved on this device.");
         } else if (response.status === 401) {
-          writeLocalProgress(lesson.id, state.attempts);
+          writeLocalProgress(lesson.id, attempts);
           setSaveNote("Saved on this device. Sign in to keep your progress.");
         } else {
           setSaveNote("Progress could not be saved.");
         }
       } catch {
-        writeLocalProgress(lesson.id, state.attempts);
+        writeLocalProgress(lesson.id, attempts);
         setSaveNote("Progress could not sync yet; it is saved on this device.");
       }
     })();
-  }, [state.complete, state.attempts, lesson.id]);
+  }, [state.complete, state.attempts, lesson.id, lesson.steps, platform.os]);
   useEffect(() => {
     if (celebrate) {
       continueRef.current?.focus({ preventScroll: true });
@@ -94,11 +103,19 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     if (!celebrate && !state.complete) {
       setFormulaReady(false);
       setStepReady(null);
-      const initial = stageRef.current?.querySelector<HTMLElement>('[role="grid"]') ?? stageRef.current?.querySelector<HTMLElement>('input, button');
+      const initial = stageRef.current?.querySelector<HTMLElement>(step.type === "shortcut" ? ".shortcut-practice" : '[role="grid"]') ?? stageRef.current?.querySelector<HTMLElement>('input, button');
       if (initial) initial.focus({ preventScroll: true });
       else continueRef.current?.focus({ preventScroll: true });
     }
   }, [state.visit, state.complete, step.type, celebrate]);
+  useEffect(() => {
+    if (step.type !== "shortcut" || !mobileSkippedShortcutIds.has(step.id) || state.complete) return;
+    if (shortcutSkipOutcome(lesson.steps, state.index, state.correct, lesson.requiredCorrect) === "keyboard-required") {
+      setKeyboardUnavailable(true);
+      return;
+    }
+    dispatch({ type: "continue" });
+  }, [step, state.index, state.correct, state.complete, mobileSkippedShortcutIds, lesson.steps, lesson.requiredCorrect]);
   useEffect(() => { if (feedback === "correct") continueRef.current?.focus({ preventScroll: true }); }, [feedback]);
   useEffect(() => { if (feedback === "wrong") focusAnswerControl(); }, [feedback]);
   useEffect(() => {
@@ -139,6 +156,24 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     if (step.type === "mcq" && stepReady) answer(stepReady.input, gradeMcqStep(step, Number(stepReady.input)));
     if ((step.type === "picture" || step.type === "project") && stepReady) answer(stepReady.input, gradeAcceptStep(step, stepReady.input));
   };
+  const shortcutAttempt = (input: string, _componentCorrect: boolean) => {
+    if (step.type !== "shortcut") return;
+    const correct = step.mode === "chord" ? gradeShortcutStep(step, input, platform.os) : gradeSequenceStep(step, input.split(" ⟶ "), platform.os);
+    answer(input, correct);
+  };
+  const skipShortcutStep = () => { dispatch({ type: "skip" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); };
+  const skipShortcutSection = () => {
+    const remaining = lesson.steps.slice(state.index);
+    const ids = remaining.filter((candidate) => candidate.type === "shortcut").map((candidate) => candidate.id);
+    if (shortcutSkipOutcome(lesson.steps, state.index, state.correct, lesson.requiredCorrect) === "keyboard-required") {
+      setKeyboardUnavailable(true);
+      setMobileSkippedShortcutIds((current) => new Set([...current, ...ids]));
+      return;
+    }
+    setMobileSkippedShortcutIds((current) => new Set([...current, ...ids]));
+    skipShortcutStep();
+  };
+  const practiceReady = useCallback((node: HTMLElement | null) => { if (node) node.focus({ preventScroll: true }); }, []);
   const onStageCapture = (e: React.KeyboardEvent<HTMLDivElement>) => {
     commitRef.current = false;
     if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
@@ -156,6 +191,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     }
   };
 
+  if (keyboardUnavailable) return <div className="pl-layout"><LessonList items={lessons} currentId={lesson.id} /><main className="pl"><section className="pl-card"><p>This lesson needs a keyboard — continue on a computer.</p><a className="btn pl-continue" href="/">Go to dashboard</a></section></main></div>;
   return <div className="pl-layout">
     <LessonList items={lessons} currentId={lesson.id} />
     <main className="pl">
@@ -164,18 +200,18 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
       {celebrate ? <section className="pl-card pl-complete"><h2>Lesson complete!</h2><p>First-try accuracy: {firstTry}%</p><p>You answered {state.correct} questions correctly.</p>{savedStats && <p>+{savedStats.points} points · {savedStats.streak}-day streak</p>}{saveNote && <p role="status">{saveNote}</p>}<button ref={continueRef} className="btn pl-continue" onClick={() => router.push(completionDestination)}>Continue →</button></section> : <>
         {(step.type === "formula" || step.type === "select") && <section className="pl-card"><p className="pl-prompt">{step.prompt}</p></section>}
         <div ref={stageRef} className="pl-stage" onKeyDownCapture={onStageCapture} onKeyDown={onStageKey}>
-          {step.type === "formula" ? <Grid key={`${step.id}-${state.visit}`} grid={step.grid} targetCell={step.targetCell} highlightCells={step.highlightCells} sheetRef={sheetRef} onEditStart={() => { setFormulaReady(true); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onCommit={() => { commitRef.current = true; setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} /> : <StepView key={`${step.id}-${state.visit}`} step={step} setSelectRef={(ref) => { setSelectedRef(ref); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onReady={(input) => setStepReady({ input })} onEditStart={() => setFeedback((f) => f === "wrong" && !showSolution ? null : f)} />}
+          {step.type === "formula" ? <Grid key={`${step.id}-${state.visit}`} grid={step.grid} targetCell={step.targetCell} highlightCells={step.highlightCells} sheetRef={sheetRef} onEditStart={() => { setFormulaReady(true); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onCommit={() => { commitRef.current = true; setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} /> : step.type === "shortcut" ? <ShortcutPractice key={`${step.id}-${state.visit}`} step={step} os={platform.os} touch={platform.touch} showPostcondition={feedback === "correct"} onAttempt={shortcutAttempt} onSkip={skipShortcutStep} onSkipSection={skipShortcutSection} onPracticeReady={practiceReady} /> : <StepView key={`${step.id}-${state.visit}`} step={step} setSelectRef={(ref) => { setSelectedRef(ref); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onReady={(input) => setStepReady({ input })} onEditStart={() => setFeedback((f) => f === "wrong" && !showSolution ? null : f)} />}
         </div>
         <div className={`pl-actions${feedback === "correct" ? " is-correct" : ""}`}>
           {feedback === "correct" ? <><strong className="pl-correct-label">Correct!</strong>{step.type === "formula" && step.explain ? <span>{step.explain}</span> : null}<button ref={continueRef} className="btn pl-continue" onClick={nextStep}>Continue →</button><span className="pl-hint">or press Enter</span></> : <>
             {(step.type === "formula" && formulaReady || (step.type === "select" && !!selectedRef) || (step.type === "mcq" && stepReady) || ((step.type === "picture" || step.type === "project") && !!stepReady?.input.trim())) ? <><button className="btn" onMouseDown={(e) => e.preventDefault()} onClick={() => step.type === "formula" ? check(step) : checkStep()}>Check Answer</button><span className="pl-hint">or press Enter</span></> : null}
-            {step.type === "info" || step.type === "shortcut" ? <button ref={continueRef} className="btn pl-skip" onClick={nextStep}>Continue →</button> : null}
+            {step.type === "info" ? <button ref={continueRef} className="btn pl-skip" onClick={nextStep}>Continue →</button> : null}
             <button className="btn pl-skip" onClick={() => { dispatch({ type: "skip" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); }}>Skip question</button>
             {state.history.length > 0 && <button className="btn pl-skip" onClick={() => { dispatch({ type: "previous" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); }}>Previous</button>}
           </>}
         </div>
         <div ref={feedbackRef} className="pl-feedback" aria-live="polite">{feedback === "wrong" && <p className="pl-wrong-summary">{wrongText}</p>}</div>
-        {feedback === "wrong" && <aside className="pl-drawer" aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect ({state.wrongCount})</strong><button aria-label="Close" onClick={closeWrong}>×</button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution">{step.type === "formula" ? step.solution : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : ""}</p>}<div className="pl-ai-slot">AI explanation will appear here.</div></aside>}
+        {feedback === "wrong" && <aside className="pl-drawer" aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect ({state.wrongCount})</strong><button aria-label="Close" onClick={closeWrong}>×</button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution">{step.type === "formula" ? step.solution : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : step.type === "shortcut" ? step.mode === "sequence" ? step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac" : step.keys[platform.os] ?? "Unavailable on Mac" : ""}</p>}<div className="pl-ai-slot">AI explanation will appear here.</div></aside>}
       </>}
     </main>
     <aside className="pl-right"><section><h2>Today&apos;s High Scores</h2><p>Coming soon</p></section><section><h2>Today&apos;s High Streaks</h2><p>Coming soon</p></section><section><h2>Share</h2><div className="pl-share"><a href="https://www.linkedin.com/">LinkedIn</a><a href="https://www.facebook.com/">Facebook</a><a href="https://x.com/">X</a><a href="mailto:?subject=Excel%20Guru">Email</a></div></section><button className="btn" disabled={!lesson.video}>▶ Watch lesson video</button></aside>
