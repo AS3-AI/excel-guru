@@ -1,0 +1,383 @@
+{
+  "id": "count-3",
+  "module": "count",
+  "title": "COUNTIFS: match more than one condition",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**COUNTIFS** counts rows where every condition is true. Give it a range and condition for each test; the ranges must be the same size. Use COUNTIF when you have just one condition."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A delivery team tracks orders by area. Select the area entries: `B2:B7`.",
+      "grid": [
+        [
+          "Name",
+          "Area",
+          "Orders"
+        ],
+        [
+          "Asha",
+          "Pune",
+          8
+        ],
+        [
+          "Ben",
+          "Goa",
+          4
+        ],
+        [
+          "Chen",
+          "Pune",
+          3
+        ],
+        [
+          "Diya",
+          "Pune",
+          6
+        ],
+        [
+          "Eli",
+          "Goa",
+          9
+        ],
+        [
+          "Fara",
+          "Pune",
+          5
+        ],
+        [
+          "Result",
+          null,
+          null
+        ]
+      ],
+      "target": "B2:B7"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `C8`, count Pune deliveries with at least 5 orders: `=COUNTIFS(B2:B7,\"Pune\",C2:C7,\">=5\")`.",
+      "grid": [
+        [
+          "Name",
+          "Area",
+          "Orders"
+        ],
+        [
+          "Asha",
+          "Pune",
+          8
+        ],
+        [
+          "Ben",
+          "Goa",
+          4
+        ],
+        [
+          "Chen",
+          "Pune",
+          3
+        ],
+        [
+          "Diya",
+          "Pune",
+          6
+        ],
+        [
+          "Eli",
+          "Goa",
+          9
+        ],
+        [
+          "Fara",
+          "Pune",
+          5
+        ],
+        [
+          "Result",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C8",
+      "expectedValue": 3,
+      "mustUse": [
+        "COUNTIFS"
+      ],
+      "solution": "=COUNTIFS(B2:B7,\"Pune\",C2:C7,\">=5\")",
+      "explain": "Asha, Diya and Fara are in Pune and each has at least 5 orders.",
+      "highlightCells": [
+        "B2:B7",
+        "C2:C7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">",
+        "<"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `C8`, count Goa deliveries with fewer than 6 orders using `=COUNTIFS(B2:B7,\"Goa\",C2:C7,\"<6\")`.",
+      "grid": [
+        [
+          "Name",
+          "Area",
+          "Orders"
+        ],
+        [
+          "Asha",
+          "Pune",
+          8
+        ],
+        [
+          "Ben",
+          "Goa",
+          4
+        ],
+        [
+          "Chen",
+          "Pune",
+          8
+        ],
+        [
+          "Diya",
+          "Pune",
+          5
+        ],
+        [
+          "Eli",
+          "Goa",
+          6
+        ],
+        [
+          "Fara",
+          "Goa",
+          5
+        ],
+        [
+          "Result",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C8",
+      "expectedValue": 2,
+      "mustUse": [
+        "COUNTIFS"
+      ],
+      "solution": "=COUNTIFS(B2:B7,\"Goa\",C2:C7,\"<6\")",
+      "explain": "Ben and Fara are in Goa and each has fewer than 6 orders.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        "<"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "In `C8`, count Pune entries with exactly 3 orders: `=COUNTIFS(B2:B7,\"Pune\",C2:C7,3)`.",
+      "grid": [
+        [
+          "Name",
+          "Area",
+          "Orders"
+        ],
+        [
+          "Asha",
+          "Pune",
+          8
+        ],
+        [
+          "Ben",
+          "Goa",
+          3
+        ],
+        [
+          "Chen",
+          "Pune",
+          3
+        ],
+        [
+          "Diya",
+          "Pune",
+          6
+        ],
+        [
+          "Eli",
+          "Goa",
+          9
+        ],
+        [
+          "Fara",
+          "Pune",
+          3
+        ],
+        [
+          "Result",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C8",
+      "expectedValue": 2,
+      "mustUse": [
+        "COUNTIFS"
+      ],
+      "solution": "=COUNTIFS(B2:B7,\"Pune\",C2:C7,3)",
+      "explain": "Chen and Fara are the Pune rows with exactly 3 orders.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A reading club logs member and pages read. In `C7`, count members from Jaipur who read more than 20 pages.",
+      "grid": [
+        [
+          "Member",
+          "City",
+          "Pages"
+        ],
+        [
+          "Avi",
+          "Jaipur",
+          25
+        ],
+        [
+          "Bela",
+          "Delhi",
+          22
+        ],
+        [
+          "Chirag",
+          "Jaipur",
+          20
+        ],
+        [
+          "Dev",
+          "Jaipur",
+          20
+        ],
+        [
+          "Esha",
+          "Jaipur",
+          21
+        ],
+        [
+          "Count",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C7",
+      "expectedValue": 2,
+      "mustUse": [
+        "COUNTIFS"
+      ],
+      "solution": "=COUNTIFS(B2:B6,\"Jaipur\",C2:C6,\">20\")",
+      "explain": "Avi and Esha are in Jaipur and each read more than 20 pages.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "A formula pairs `A2:A6` with \"Tea\" and `B2:B5` with `\">0\"`. What needs fixing?",
+      "options": [
+        "Make both ranges the same size.",
+        "Swap the two criteria only.",
+        "Use COUNT instead of COUNTIFS."
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A garden team tracks tasks by person and status. How many tasks assigned to Noor are Done? Put the count in `C7`.",
+      "grid": [
+        [
+          "Task",
+          "Person",
+          "Status"
+        ],
+        [
+          "Water",
+          "Noor",
+          "Done"
+        ],
+        [
+          "Weed",
+          "Ari",
+          "Done"
+        ],
+        [
+          "Seed",
+          "Noor",
+          "Waiting"
+        ],
+        [
+          "Prune",
+          "Noor",
+          "Done"
+        ],
+        [
+          "Clean",
+          "Noor",
+          "Done"
+        ],
+        [
+          "Count",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C7",
+      "expectedValue": 3,
+      "mustUse": [
+        "COUNTIFS"
+      ],
+      "solution": "=COUNTIFS(B2:B6,\"Noor\",C2:C6,\"Done\")",
+      "explain": "Noor has three Done tasks; Ari’s Done task belongs to someone else.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    }
+  ]
+}

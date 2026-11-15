@@ -39,6 +39,17 @@ Every lesson is original (never copy wording, data or examples from docs/teardow
 - mobileButtons include every symbol the answer needs: `"`, `>`, `<`, `=`, `*`, `,`.
 - Shortcut steps show what they act on (postcondition grid or pics), and their grid contains the target cell.
 
+## Lessons learned (COUNT module review)
+- Every `explain` is written for its own step (what in THIS data makes the answer); never one generic sentence.
+- Multi-condition steps (COUNTIFS/SUMIFS/AVERAGEIFS): the data must make every single-condition version give a
+  different answer, so the learner can't pass with one condition.
+- Pattern steps (wildcards): include near-misses so a looser pattern (`"*"`, `"*ast"`) gives a different answer;
+  `"~*"` matches a cell that is exactly `*` — to count cells *containing* an asterisk use `"*~**"`.
+- Empty cells are `null`, never `""` (the engine stores `""` as text; Excel treats a typed blank as empty).
+  Rows in one grid have the same length.
+- Skill summaries come last in the module's order and mix every function the module taught.
+- Don't put the search word in another column of the same grid (confusing which column is being checked).
+
 ## Grids
 - Our own small, realistic datasets (a café, a book club, a gym, a school fundraiser, a delivery team…).
   Indian and international names and contexts both welcome; amounts in plain numbers (no currency symbols).
