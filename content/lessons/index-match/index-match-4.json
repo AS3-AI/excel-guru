@@ -250,62 +250,62 @@
     {
       "id": "s6",
       "type": "formula",
-      "prompt": "In `G3`, find the number of jars for the day named in `G2` across the headings `B1:E1`.",
+      "prompt": "In `G3`, find the number of Herbs jars made on the day named in `G2`, using the day headings `B1:E1`.",
       "grid": [
         [
-          "Batch",
-          "Mon",
+          "Crop",
           "Tue",
-          "Wed",
           "Thu",
+          "Sat",
+          "Sun",
           null,
           "Find day"
         ],
         [
           "Herbs",
-          7,
+          13,
+          2,
+          10,
+          5,
+          null,
+          "Sat"
+        ],
+        [
+          "Chilli",
+          8,
+          6,
+          3,
+          11,
+          null,
+          null
+        ],
+        [
+          "Lentils",
           4,
+          12,
+          7,
+          2,
+          null,
+          null
+        ],
+        [
+          "Mango",
           9,
-          6,
-          null,
-          "Wed"
-        ],
-        [
-          "Tea",
-          5,
-          8,
           3,
-          2,
-          null,
-          null
-        ],
-        [
-          "Spice",
+          14,
           6,
-          1,
-          4,
-          7,
-          null,
-          null
-        ],
-        [
-          "Jam",
-          2,
-          5,
-          8,
-          3,
           null,
           null
         ]
       ],
       "targetCell": "G3",
-      "expectedValue": 9,
+      "expectedValue": 10,
       "mustUse": [
         "INDEX",
         "MATCH"
       ],
       "solution": "=INDEX(B2:E2,MATCH(G2,B1:E1,0))",
-      "explain": "Wed is the third heading, and the third Herbs count in B2:E2 is 9.",
+      "explain": "Sat is the third heading, and the third Herbs count in B2:E2 is 10.",
       "highlightCells": [
         "G2",
         "B1:E1",
@@ -395,7 +395,7 @@
     {
       "id": "s8",
       "type": "formula",
-      "prompt": "In `G2`, show TRUE if the item code in `F2` appears in `A2:A5`, or FALSE if it doesn't.",
+      "prompt": "Which item has the code in `F2`? Put its name in `G2`.",
       "grid": [
         [
           "Code",
@@ -404,7 +404,7 @@
           null,
           null,
           "Find",
-          "Exists"
+          "Item"
         ],
         [
           "K-14",
@@ -412,7 +412,7 @@
           null,
           null,
           null,
-          "K-40",
+          "K-22",
           null
         ],
         [
@@ -444,13 +444,13 @@
         ]
       ],
       "targetCell": "G2",
-      "expectedValue": false,
+      "expectedValue": "Bowl",
       "mustUse": [
-        "ISNUMBER",
+        "INDEX",
         "MATCH"
       ],
-      "solution": "=ISNUMBER(MATCH(F2,A2:A5,0))",
-      "explain": "K-40 isn't in the list, so MATCH gives #N/A and ISNUMBER turns that into FALSE.",
+      "solution": "=INDEX(B2:B5,MATCH(F2,A2:A5,0))",
+      "explain": "K-22 is third in A2:A5, so INDEX returns the third item name, Bowl.",
       "highlightCells": [
         "F2",
         "A2:A5"
@@ -466,11 +466,11 @@
     {
       "id": "s9",
       "type": "mcq",
-      "prompt": "A table has products in A2:A5 and prices in B2:B5. Why can `=INDEX(B2:B5,MATCH(F2,A2:A5,0))` return the wrong price if the INDEX range starts at B3?",
+      "prompt": "Why does `=INDEX(B2:D5,MATCH(F3,B1:D1,0),MATCH(F2,A2:A5,0))` return the wrong seats?",
       "options": [
-        "The two ranges no longer start on the same row, so the position points to a different product",
-        "MATCH requires the products to be sorted",
-        "INDEX only returns values to the left of the search list"
+        "The column MATCH is in the row slot and the row MATCH in the column slot; INDEX takes row first, then column.",
+        "MATCH needs the shows sorted",
+        "INDEX can only use one MATCH"
       ],
       "answer": 0
     },
@@ -489,12 +489,12 @@
           "Result"
         ],
         [
-          "Q-12",
+          "Q-30",
           "Cable",
           6,
           null,
           null,
-          "Q-99",
+          "Q-12",
           null
         ],
         [
@@ -507,7 +507,7 @@
           null
         ],
         [
-          "Q-30",
+          "Q-25",
           "Stand",
           8,
           null,
@@ -533,7 +533,7 @@
         "MATCH"
       ],
       "solution": "=IFERROR(INDEX(C2:C5,MATCH(F2,A2:A5,0)),\"Code not found\")",
-      "explain": "Q-99 is absent from A2:A5, so the lookup error is replaced by the requested message.",
+      "explain": "Q-12 isn't in A2:A5, so MATCH gives #N/A and IFERROR shows Code not found instead.",
       "mobileButtons": [
         "=",
         "(",

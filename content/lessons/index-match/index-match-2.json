@@ -105,10 +105,10 @@
     {
       "id": "s7",
       "type": "formula",
-      "prompt": "A library keeps each book's details in a table. Which value is in row 2 and column 3 of `A2:D6`? Put it in `F2`.",
+      "prompt": "A library keeps each book's details in a table. Cell `E2` holds the row number 2. Which value is in that row and column 3 of `A2:D6`? In `F2`, type `=INDEX(A2:D6,E2,3)`.",
       "grid": [
-        ["Book", "Author", "Shelf", "Copies", null, "Result"],
-        ["River Road", "Anil", "A3", 4, null, null],
+        ["Book", "Author", "Shelf", "Copies", "Find row", "Result"],
+        ["River Road", "Anil", "A3", 4, 2, null],
         ["Cloud Atlas", "Mira", "B1", 2, null, null],
         ["Night Train", "Omar", "C4", 5, null, null],
         ["Wild Garden", "Leah", "A2", 3, null, null],
@@ -117,9 +117,9 @@
       "targetCell": "F2",
       "expectedValue": "B1",
       "mustUse": ["INDEX"],
-      "solution": "=INDEX(A2:D6,2,3)",
+      "solution": "=INDEX(A2:D6,E2,3)",
       "explain": "The second row in the table is Cloud Atlas, and its third column is shelf B1.",
-      "highlightCells": ["A2:D6"],
+      "highlightCells": ["A2:D6", "E2"],
       "mobileButtons": ["=", "(", ")", ",", ":"]
     },
     {
@@ -138,7 +138,7 @@
         ["Violin", "Sena", "Strings", 3, null, null],
         ["Flute", "Arun", "Woodwind", 6, null, null],
         ["Drum", "Kavi", "Percussion", 2, null, null],
-        ["Guitar", "Mira", "Keyboard", 5, null, null],
+        ["Piano", "Mira", "Keyboard", 5, null, null],
         ["Harp", "Noor", "Strings", 1, null, null]
       ],
       "targetCell": "F2",

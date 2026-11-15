@@ -41,7 +41,7 @@
       "targetCell": "G2",
       "expectedValue": "River Road",
       "mustUse": ["INDEX", "MATCH"],
-      "solution": "=INDEX(B2:C6,MATCH(F2,A2:A6,0),1)",
+      "solution": "=INDEX(B2:B6,MATCH(F2,A2:A6,0))",
       "explain": "B-17 is second in A2:A6, so INDEX returns the second title, River Road, from B2:B6.",
       "highlightCells": ["F2", "A2:A6", "B2:B6"],
       "mobileButtons": ["=", "(", ")", ",", ":"]
@@ -61,7 +61,7 @@
       "targetCell": "G2",
       "expectedValue": "Blue",
       "mustUse": ["INDEX", "MATCH"],
-      "solution": "=INDEX(A2:B6,MATCH(F2,B2:B6,0),1)",
+      "solution": "=INDEX(A2:A6,MATCH(F2,B2:B6,0))",
       "explain": "C-84 is second in B2:B6, and the second shelf in A2:A6 is Blue; INDEX MATCH can return data to the lookup column's left.",
       "highlightCells": ["F2", "A2:A6", "B2:B6"],
       "mobileButtons": ["=", "(", ")", ",", ":"]
@@ -69,7 +69,7 @@
     {
       "id": "s5",
       "type": "formula",
-      "prompt": "A garden center records plant counts by day. Which count is under the day in `G2`? In `G3`, find it across the headers `B1:E1` and return the matching count from `B2:E2`.",
+      "prompt": "A garden center records plant counts by day. Which Herbs count is under the day in `G2`? In `G3`, find it across the headers `B1:E1` and return the matching count from `B2:E2`.",
       "grid": [
         ["Bed", "Mon", "Tue", "Wed", "Thu", "Notes", "Find day"],
         ["Herbs", 8, 6, 11, 4, "watered", "Wed"],
@@ -132,7 +132,7 @@
       "targetCell": "G2",
       "expectedValue": "Omar",
       "mustUse": ["INDEX", "MATCH"],
-      "solution": "=INDEX(B2:C6,MATCH(F2,A2:A6,0),1)",
+      "solution": "=INDEX(B2:B6,MATCH(F2,A2:A6,0))",
       "explain": "R-3 is second in the route list, and the second driver in B2:B6 is Omar.",
       "mobileButtons": ["=", "(", ")", ",", ":"]
     }

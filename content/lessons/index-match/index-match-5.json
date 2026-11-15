@@ -146,7 +146,7 @@
     {
       "id": "s4",
       "type": "formula",
-      "prompt": "A bus board lists each bus number, route, and departure. In `G2`, find the route served by the bus number in `F2`.",
+      "prompt": "A bus board lists each bus number, route, and departure. In `G2`, find the departure for the bus number in `F2`.",
       "grid": [
         [
           "Bus",
@@ -155,7 +155,7 @@
           null,
           null,
           "Find",
-          "Route"
+          "Leaves"
         ],
         [
           18,
@@ -204,17 +204,17 @@
         ]
       ],
       "targetCell": "G2",
-      "expectedValue": "Lake",
+      "expectedValue": 9,
       "mustUse": [
         "INDEX",
         "MATCH"
       ],
-      "solution": "=INDEX(B2:B6,MATCH(F2,A2:A6,0))",
-      "explain": "Bus 42 is the second number in A2:A6, and the second route in B2:B6 is Lake.",
+      "solution": "=INDEX(C2:C6,MATCH(F2,A2:A6,0))",
+      "explain": "Bus 42 is the second number in A2:A6, so INDEX returns the second departure in C2:C6: 9.",
       "highlightCells": [
         "F2",
         "A2:A6",
-        "B2:B6"
+        "C2:C6"
       ],
       "mobileButtons": [
         "=",
@@ -308,7 +308,7 @@
     {
       "id": "s6",
       "type": "formula",
-      "prompt": "The bus board has departure times across the top row. In `G2`, find the departure for the route named in `F2`.",
+      "prompt": "The bus board lists routes across the top row and their departure times below. In `G2`, find the departure for the route named in `F2`.",
       "grid": [
         [
           "Route",
@@ -436,7 +436,7 @@
     {
       "id": "s8",
       "type": "formula",
-      "prompt": "The warehouse does not stock the SKU in `F2`. In `G2`, show `\"Not found\"` when there is no match; otherwise return its quantity.",
+      "prompt": "The warehouse tracks each SKU in the list. In `G2`, return the quantity for the SKU in `F2`, or show `\"Not found\"` if it is missing.",
       "grid": [
         [
           "Item",
@@ -453,7 +453,7 @@
           8,
           "K-14",
           null,
-          "K-99",
+          "K-32",
           null
         ],
         [
@@ -494,14 +494,14 @@
         ]
       ],
       "targetCell": "G2",
-      "expectedValue": "Not found",
+      "expectedValue": 3,
       "mustUse": [
         "INDEX",
         "MATCH",
         "IFERROR"
       ],
       "solution": "=IFERROR(INDEX(C2:C6,MATCH(F2,D2:D6,0)),\"Not found\")",
-      "explain": "K-99 is absent from D2:D6, so MATCH returns an error and IFERROR displays the requested message.",
+      "explain": "K-32 is in the third row of the SKU list, where the quantity in C2:C6 is 3.",
       "highlightCells": [
         "F2",
         "D2:D6",
@@ -519,11 +519,11 @@
     {
       "id": "s9",
       "type": "mcq",
-      "prompt": "The unsorted roll list is 12, 40, 23, 31. A formula `=MATCH(25,A2:A5)` leaves out the `0`. What can go wrong?",
+      "prompt": "`E2` holds the roll number 44 typed as text. Why does `=INDEX(B2:B6,MATCH(E2,A2:A6,0))` return `#N/A`?",
       "options": [
-        "MATCH uses approximate matching by default, so the unsorted list can give a wrong position",
-        "MATCH treats 25 as text and always returns the first position",
-        "MATCH returns the row number instead of a position"
+        "Text \"44\" doesn't exactly match the number 44",
+        "MATCH is searching the student names in `B2:B6`",
+        "INDEX is returning a value from the roll number list in `A2:A6`"
       ],
       "answer": 0
     },
