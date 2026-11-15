@@ -69,3 +69,6 @@ update the card's line in docs/build-log.md; merge and push only when the user s
   and dropped tests. Always list must-keep behaviours explicitly and demand a test count.
 - T16: "no farming" collided with cycling — spell out how rules interact (cycling counts again; Previous doesn't).
 - Codex works around sandbox limits (validate-content IPC) — always rerun checks yourself.
+- T20: a route that turned dynamic read content/ at request time; it worked locally but 500'd on Vercel because
+  content/ wasn't traced. After every push, curl each changed route on production, not just `/`; before merging,
+  check `.next/server/app/**/page.js.nft.json` includes any file read at runtime.
