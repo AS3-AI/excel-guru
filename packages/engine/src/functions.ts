@@ -326,6 +326,44 @@ function vlookup(args: Arg[]): CellValue {
   return found < 0 ? NA : table[found]![index - 1] ?? null;
 }
 
+// MATCH(lookup_value, lookup_array, [match_type]).
+function match(args: Arg[]): CellValue {
+  if (args.length < 2 || args.length > 3) return VALUE;
+  const lookup = scalar(args[0]);
+  if (isError(lookup)) return lookup;
+  const key: Scalar = lookup ?? 0;
+  const array = asMatrix(args[1]);
+  const rows = array.length;
+  const cols = Math.max(0, ...array.map((row) => row.length));
+  if (rows !== 1 && cols !== 1) return NA;
+  const values = rows === 1
+    ? Array.from({ length: cols }, (_, c) => array[0]?.[c] ?? null)
+    : Array.from({ length: rows }, (_, r) => array[r]?.[0] ?? null);
+  const type = numberArg(args[2], 1);
+  if (isError(type)) return type;
+  const matchType = Math.sign(type);
+
+  if (matchType === 0) {
+    const re = typeof key === "string" ? wildcard(key) : null;
+    const found = values.findIndex((cell) => re
+      ? typeof cell === "string" && re.test(cell)
+      : order(cell, key) === 0);
+    return found < 0 ? NA : found + 1;
+  }
+
+  // Approximate MATCH follows VLOOKUP's ordered scan: skip incomparable values,
+  // stop at the first value past the key in the selected direction, and keep the
+  // last qualifying position before that value.
+  let found = -1;
+  for (let i = 0; i < values.length; i++) {
+    const d = order(values[i]!, key);
+    if (d === null) continue;
+    if ((matchType === 1 && d > 0) || (matchType === -1 && d < 0)) break;
+    found = i;
+  }
+  return found < 0 ? NA : found + 1;
+}
+
 function flag(a: Arg): boolean | ExcelError {
   if (a === undefined) return false;
   const v = scalar(a);
@@ -580,6 +618,47 @@ function sort(args: Arg[]): CellValue | Matrix {
   return byCol ? transpose(sorted) : sorted;
 }
 
+// INDEX(array, row_num, [column_num]) — array form only. A zero index selects
+// the complete corresponding dimension, which the evaluator spills.
+function index(args: Arg[]): CellValue | Matrix {
+  if (args.length < 2 || args.length > 3) return VALUE;
+  const m = arrayArg(args[0]);
+  if (isError(m)) return m;
+  const rows = m.length;
+  const cols = Math.max(0, ...m.map((row) => row.length));
+
+  let rowArg = args[1];
+  let colArg = args[2];
+  // In a one-dimensional array, a sole index addresses its non-singleton axis.
+  const singleRowIndex = args.length === 2 && rows === 1 && cols > 1;
+  if (singleRowIndex) {
+    colArg = rowArg;
+    rowArg = 1;
+  } else if (args.length === 2) {
+    colArg = 0;
+  }
+  const negative = (a: Arg) => {
+    const value = scalar(a);
+    const n = typeof value === "number" ? value : typeof value === "string" && value.trim() !== "" ? Number(value) : NaN;
+    return n < 0;
+  };
+  if (negative(rowArg) || negative(colArg)) return VALUE;
+  const row = numberArg(rowArg, 0);
+  if (isError(row)) return row;
+  const col = numberArg(colArg, 1);
+  if (isError(col)) return col;
+  if (row < 0 || col < 0) return VALUE;
+  if (row > rows || col > cols) return { error: "#REF!" };
+  if (row === 0 && col === 0) return m.map((line) => line.map((v) => v ?? 0));
+  if (row === 0) return m.map((line) => [line[col - 1] ?? 0]);
+  if (col === 0) return [[...Array.from({ length: cols }, (_, c) => m[row - 1]?.[c] ?? 0)]];
+  if (args.length === 2 && !singleRowIndex) {
+    return [[...Array.from({ length: cols }, (_, c) => m[row - 1]?.[c] ?? 0)]];
+  }
+  const value = m[row - 1]?.[col - 1] ?? 0;
+  return value;
+}
+
 const OWN: Record<string, Impl> = {
   ISERROR: (arg) => errorPredicate(arg, isError),
   ISERR: (arg) => errorPredicate(arg, (value) => isError(value) && value.error !== "#N/A"),
@@ -595,6 +674,8 @@ const OWN: Record<string, Impl> = {
   UNIQUE: (...args) => unique(args),
   FILTER: (...args) => filter(args),
   SORT: (...args) => sort(args),
+  INDEX: (...args) => index(args),
+  MATCH: (...args) => match(args),
   DATEVALUE: (text) => datevalue(text),
   VLOOKUP: (...args) => vlookup(args),
   HLOOKUP: (...args) => vlookup([args[0], transpose(asMatrix(args[1])), ...args.slice(2)]),

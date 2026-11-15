@@ -16,6 +16,53 @@ function ev(src: string, grid: CellValue[][] = []): CellValue | Matrix {
 
 const err = (code: ErrorCode): ExcelError => ({ error: code });
 
+describe("MATCH", () => {
+  it("finds exact text case-insensitively and exact numbers", () => {
+    expect(ev('=MATCH("BEN",A1:A3,0)', [["Al"], ["Ben"], ["Cy"]])).toBe(2);
+    expect(ev("=MATCH(30,A1:A3,0)", [[10], [30], [50]])).toBe(2);
+  });
+  it("supports * ? and ~ wildcards in exact mode", () => {
+    expect(ev('=MATCH("ka*",A1:A3,0)', [["Kavya"], ["Ben"], ["Kara"]])).toBe(1);
+    expect(ev('=MATCH("B?n",A1:A3,0)', [["Ben"], ["Bun"], ["Bo"]])).toBe(1);
+    expect(ev('=MATCH("a~~?",A1:A2,0)', [["a~?"], ["a~x"]])).toBe(1);
+  });
+  it("returns #N/A when there is no exact match", () => {
+    expect(ev('=MATCH("Kiwi",A1:A2,0)', [["Apple"], ["Pear"]])).toEqual(err("#N/A"));
+  });
+  it("uses the last value not above the key for type 1 and omitted type", () => {
+    expect(ev("=MATCH(60,A1:A3,1)", [[0], [50], [75]])).toBe(2);
+    expect(ev("=MATCH(60,A1:A3)", [[0], [50], [75]])).toBe(2);
+    expect(ev("=MATCH(40,A1:A3,1)", [[10], [50], [30]])).toBe(1);
+    expect(ev("=MATCH(5,A1:A3,2)", [[1], [10], [20]])).toBe(1);
+  });
+  it("uses approximate type 1 list order even when text is unsorted", () => {
+    expect(ev('=MATCH("Omar",A1:A6,1)', [["Kavya"], ["Ben"], ["Lina"], ["Omar"], ["Jay"], ["Ravi"]])).toBe(5);
+  });
+  it("uses the last value not below the key for type -1", () => {
+    expect(ev("=MATCH(60,A1:A3,-1)", [[90], [75], [50]])).toBe(2);
+    expect(ev("=MATCH(40,A1:A3,-1)", [[50], [10], [45]])).toBe(1);
+    expect(ev("=MATCH(5,A1:A3,-2)", [[10], [1], [0]])).toBe(1);
+  });
+  it("returns #N/A when type -1 has no qualifying value", () => {
+    expect(ev("=MATCH(100,A1:A3,-1)", [[90], [75], [50]])).toEqual(err("#N/A"));
+  });
+  it("rejects a two-dimensional lookup range", () => {
+    expect(ev("=MATCH(2,A1:B2,0)", [[1, 2], [3, 4]])).toEqual(err("#N/A"));
+  });
+  it("accepts a one-row range across columns", () => {
+    expect(ev('=MATCH("Cy",A1:C1,0)', [["Al", "Bo", "Cy"]])).toBe(3);
+  });
+  it("counts positions from the range first cell", () => {
+    expect(ev('=MATCH("Bo",B2:B4,0)', [[0], [0, "Al"], [0, "Bo"], [0, "Cy"]])).toBe(2);
+  });
+  it("skips blanks in approximate mode", () => {
+    expect(ev("=MATCH(60,A1:A4,1)", [[0], [null], [50], [75]])).toBe(3);
+  });
+  it("works inside INDEX", () => {
+    expect(ev('=INDEX(B1:B3,MATCH("Bo",A1:A3,0))', [["Al", 100], ["Bo", 350], ["Cy", 500]])).toBe(350);
+  });
+});
+
 describe("ISERROR, ISERR, ISNA and ERROR.TYPE", () => {
   it("recognizes direct and computed errors", () => {
     expect(ev("=ISERROR(#N/A)")).toBe(true);
@@ -87,6 +134,66 @@ describe("ISERROR, ISERR, ISNA and ERROR.TYPE", () => {
 const FRUIT: CellValue[][] = [["Apple", 1], ["Banana", 2], ["Cherry", 3], ["banana", 4]];
 // A1:A4 sorted numbers, B1:B4 letters.
 const TIERS: CellValue[][] = [[10, "a"], [20, "b"], [30, "c"], [40, "d"]];
+
+describe("INDEX", () => {
+  const G: CellValue[][] = [[10, 20, 30, 40], [50, 60, 70, 80], [90, 100, 110, 120], [130, 140, 150, 160]];
+  it("uses the single index for one-row and one-column arrays", () => {
+    expect(ev("=INDEX(A1:D1,2)", G)).toBe(20);
+    expect(ev("=INDEX(A1:A4,2)", G)).toBe(50);
+  });
+  it("returns a 2-D indexed value", () => expect(ev("=INDEX(A1:D4,3,2)", G)).toBe(100));
+  it("row zero or omitted row spills the selected column", () => {
+    expect(ev("=INDEX(A1:D4,0,2)", G)).toEqual([[20], [60], [100], [140]]);
+    expect(ev("=INDEX(A1:D4,,2)", G)).toEqual([[20], [60], [100], [140]]);
+  });
+  it("a row index without a column spills that row in a 2-D array", () => {
+    expect(ev("=INDEX(A1:D4,2)", G)).toEqual([[50, 60, 70, 80]]);
+  });
+  it("column zero spills the selected row", () => expect(ev("=INDEX(A1:D4,3,0)", G)).toEqual([[90, 100, 110, 120]]));
+  it("both zero returns the whole array", () => expect(ev("=INDEX(A1:D4,0,0)", G)).toEqual(G));
+  it("returns REF for indices beyond either dimension", () => {
+    expect(ev("=INDEX(A1:D4,5,1)", G)).toEqual(err("#REF!"));
+    expect(ev("=INDEX(A1:D4,1,5)", G)).toEqual(err("#REF!"));
+  });
+  it("a second index on a one-column array must be one", () => {
+    expect(ev("=INDEX(A1:A4,2,1)", G)).toBe(50);
+    expect(ev("=INDEX(A1:A4,2,2)", G)).toEqual(err("#REF!"));
+  });
+  it("a column index on a one-row array selects that column", () => {
+    expect(ev("=INDEX(A1:D1,2,1)", G)).toEqual(err("#REF!"));
+    expect(ev("=INDEX(A1:D1,1,2)", G)).toBe(20);
+  });
+  it("negative and non-numeric indices return VALUE", () => {
+    expect(ev("=INDEX(A1:D4,-1,1)", G)).toEqual(err("#VALUE!"));
+    expect(ev("=INDEX(A1:D4,-0.5,1)", G)).toEqual(err("#VALUE!"));
+    expect(ev('=INDEX(A1:D4,"x",1)', G)).toEqual(err("#VALUE!"));
+  });
+  it("truncates fractional indices", () => expect(ev("=INDEX(A1:D4,2.9,1)", G)).toBe(50));
+  it("propagates row and column errors", () => {
+    expect(ev("=INDEX(A1:D4,1/0,1)", G)).toEqual(err("#DIV/0!"));
+    expect(ev("=INDEX(A1:D4,1,NA())", G)).toEqual(err("#N/A"));
+  });
+  it("returns zero for a blank selected cell and for spilled blanks", () => {
+    const grid: CellValue[][] = [[1, null], [null, 4]];
+    expect(ev("=INDEX(A1:B2,1,2)", grid)).toBe(0);
+    expect(ev("=INDEX(A1:B2,0,2)", grid)).toEqual([[0], [4]]);
+  });
+  it("works with MATCH vertically", () => {
+    expect(ev('=INDEX(B1:B4,MATCH("Bo",A1:A4,0))', [["Al", 100], ["Bo", 350], ["Cy", 500], ["De", 700]])).toBe(350);
+  });
+  it("works with MATCH horizontally", () => {
+    expect(ev('=INDEX(A2:D2,MATCH("Bo",A1:D1,0))', [["Al", "Bo", "Cy", "De"], [100, 350, 500, 700]])).toBe(350);
+  });
+  it("works with two MATCH functions in 2-D", () => {
+    expect(ev('=INDEX(B2:D4,MATCH("R3",A2:A4,0),MATCH("Q2",B1:D1,0))', [["", "Q1", "Q2", "Q3"], ["R1", 1, 2, 3], ["R2", 4, 5, 6], ["R3", 7, 8, 9]])).toBe(8);
+  });
+  it("spills through Sheet so cells can read the result", () => {
+    const s = new Sheet([[1, 2], [3, 4]]);
+    s.set("D1", "=INDEX(A1:B2,0,2)");
+    expect(s.get("D1")).toBe(2);
+    expect(s.get("D2")).toBe(4);
+  });
+});
 
 describe("XLOOKUP: exact match", () => {
   it("finds a text value", () => expect(ev('=XLOOKUP("Cherry",A1:A4,B1:B4)', FRUIT)).toBe(3));
