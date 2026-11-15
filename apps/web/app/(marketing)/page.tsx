@@ -74,7 +74,7 @@ export default async function Home() {
             Interactive lessons with a spreadsheet in your browser and instant feedback on every answer.
             Join the waitlist and get early access at launch.
           </p>
-          <WaitlistForm source="hero" />
+          <Link className="btn" href="/lesson/intro">Start free — no sign-up</Link>
           <ul className="stats">
             {STATS.map((s) => (
               <li key={s.label}>
