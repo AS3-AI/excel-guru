@@ -23,6 +23,7 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T24 Points + leaderboards | codex | t24 branch | passed (2 rounds), live-tested on Supabase | pushed | share bonus once-only verified |
 | T27 Video + workbook | codex | fbd7154 | passed, focus guards added | merged (local) | keyboard check of the modal pending a lesson with a video |
 | T25 Payments (Razorpay) | codex | merged | passed (3 rounds) | merged (local) | Stripe deferred (option 2); no lifetime |
+| T30 Payments switch | codex | 9fa43d2 | self-review (small diff) + prod-build check | merged (local) | PAYMENTS_ENABLED unset = off; set "true" after live Razorpay test |
 | T28 Engine: whole rows | codex | a454a6c | passed (2 rounds) | merged (local) | error-criteria change reverted pending Excel check |
 | Content: COUNT module | codex + Claude | count-1 (Claude), c881e5f | 2 pedagogy rounds, ready | merged (local) | |
 | T20 Dashboard + access | codex | bf568cf | passed (2 rounds) | pushed | progress routes paywall-gated; free users can still *open* extra lessons (migration later); live free-tier flow verified 15 Nov (sign-up → merge → 2nd lesson → 3rd = /pricing, 403 on save) |
