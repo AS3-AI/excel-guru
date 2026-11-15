@@ -1,0 +1,449 @@
+{
+  "id": "lookup-7",
+  "module": "lookup",
+  "title": "XLOOKUP 2: return more with one search",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**XLOOKUP** can return several matching columns at once, search in either direction, and show a message when there is no match. The syntax is `=XLOOKUP(what to find, look in, return from, if not found)`."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A garden centre tracks each plant's code, name, and price. Select the code column used to search: `A2:A6`.",
+      "grid": [
+        [
+          "Code",
+          "Plant",
+          "Price",
+          null,
+          "Find",
+          "Plant",
+          "Price"
+        ],
+        [
+          "PL-32",
+          "Fern",
+          180,
+          null,
+          "PL-18",
+          null,
+          null
+        ],
+        [
+          "PL-07",
+          "Basil",
+          90,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "PL-18",
+          "Jasmine",
+          240,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "PL-41",
+          "Mint",
+          70,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "PL-25",
+          "Aloe",
+          150,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "target": "A2:A6"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "What plant and price match the code in `E2`? Type `=XLOOKUP(E2,A2:A6,B2:C6)` in `F2`. Only `F2` is checked; the price spills into `G2`, so leave `G2` empty.",
+      "grid": [
+        [
+          "Code",
+          "Plant",
+          "Price",
+          null,
+          "Find",
+          "Plant",
+          "Price"
+        ],
+        [
+          "PL-32",
+          "Fern",
+          180,
+          null,
+          "PL-18",
+          null,
+          null
+        ],
+        [
+          "PL-07",
+          "Basil",
+          90,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "PL-18",
+          "Jasmine",
+          240,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "PL-41",
+          "Mint",
+          70,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "PL-25",
+          "Aloe",
+          150,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "F2",
+      "expectedValue": "Jasmine",
+      "mustUse": [
+        "XLOOKUP"
+      ],
+      "solution": "=XLOOKUP(E2,A2:A6,B2:C6)",
+      "explain": "PL-18 is on the Jasmine row, so the result spills Jasmine into F2 and its price, 240, into G2.",
+      "highlightCells": [
+        "E2",
+        "A2:A6",
+        "B2:C6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "A book club tracks each title, author, and year. What author and year match the title in `E2`? In `F2`, return both columns at once. Only `F2` is checked; the year spills into `G2`, so leave `G2` empty.",
+      "grid": [
+        [
+          "Title",
+          "Author",
+          "Year",
+          null,
+          "Find",
+          "Author",
+          "Year"
+        ],
+        [
+          "River Birds",
+          "Mira Sen",
+          2018,
+          null,
+          "Quiet Maps",
+          null,
+          null
+        ],
+        [
+          "Quiet Maps",
+          "Dev Shah",
+          2021,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Copper Moon",
+          "Ari Das",
+          2019,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Small Worlds",
+          "Leena Roy",
+          2020,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Night Garden",
+          "Noah Lee",
+          2017,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "F2",
+      "expectedValue": "Dev Shah",
+      "mustUse": [
+        "XLOOKUP"
+      ],
+      "solution": "=XLOOKUP(E2,A2:A6,B2:C6)",
+      "explain": "Quiet Maps is on the second data row, where the author and year are Dev Shah and 2021.",
+      "highlightCells": [
+        "E2",
+        "A2:A6",
+        "B2:C6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "A courier roster has no parcel `Q-900`. What message should appear for the parcel code in `F2`? In `G2`, use the exact message `\"Parcel not listed\"` as the fourth argument.",
+      "grid": [
+        [
+          "Parcel",
+          "Route",
+          null,
+          null,
+          null,
+          "Find",
+          "Result"
+        ],
+        [
+          "Q-214",
+          "North",
+          null,
+          null,
+          null,
+          "Q-900",
+          null
+        ],
+        [
+          "Q-308",
+          "West",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Q-127",
+          "East",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Q-456",
+          "South",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Q-591",
+          "North",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "Parcel not listed",
+      "mustUse": [
+        "XLOOKUP"
+      ],
+      "solution": "=XLOOKUP(F2,A2:A6,B2:B6,\"Parcel not listed\")",
+      "explain": "Q-900 does not appear among the five parcel codes, so XLOOKUP returns the supplied message.",
+      "highlightCells": [
+        "F2",
+        "A2:A6",
+        "B2:B6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\""
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A canteen records daily visitors across row 1. How many came on the day named in `F2`? Put the count in `G2`.",
+      "grid": [
+        [
+          "Day",
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Find",
+          "Visitors"
+        ],
+        [
+          "Visitors",
+          34,
+          28,
+          41,
+          37,
+          "Wed",
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": 41,
+      "mustUse": [
+        "XLOOKUP"
+      ],
+      "solution": "=XLOOKUP(F2,B1:E1,B2:E2)",
+      "explain": "Wed matches the heading in D1, and the visitor count directly below it in D2 is 41.",
+      "highlightCells": [
+        "F2",
+        "B1:E1",
+        "B2:E2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "The lookup range `A2:A6` has five rows, but the return range `B2:B5` has four. What happens when XLOOKUP uses these ranges?",
+      "options": [
+        "It returns `#VALUE!` because the ranges have different sizes",
+        "It returns the first value from column B",
+        "It searches column B instead of column A"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A volunteer coordinator records each person's name, shift, and check-in time. What shift is assigned to the name in `F2`? Put the answer in `G2`.",
+      "grid": [
+        [
+          "Name",
+          "Shift",
+          "Check-in",
+          null,
+          null,
+          "Find",
+          "Shift"
+        ],
+        [
+          "Asha",
+          "Morning",
+          "08:00",
+          null,
+          null,
+          "Kabir",
+          null
+        ],
+        [
+          "Kabir",
+          "Afternoon",
+          "13:00",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Lina",
+          "Evening",
+          "17:00",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Noor",
+          "Morning",
+          "08:30",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Ravi",
+          "Afternoon",
+          "12:45",
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "Afternoon",
+      "mustUse": [
+        "XLOOKUP"
+      ],
+      "solution": "=XLOOKUP(F2,A2:A6,B2:B6)",
+      "explain": "Kabir appears on row 3, and the Shift cell on that row says Afternoon.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    }
+  ]
+}

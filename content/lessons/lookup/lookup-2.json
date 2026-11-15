@@ -1,0 +1,354 @@
+{
+  "id": "lookup-2",
+  "module": "lookup",
+  "title": "HLOOKUP: find a column by its header",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**HLOOKUP** searches across the first row of a table, then returns a value from the same column. Its syntax is `=HLOOKUP(what to find, table, row number, FALSE)`; the row number counts down from the table’s first row."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A meeting planner lists room codes across the top. Select the whole table, including its header row: `B1:F4`.",
+      "grid": [
+        [
+          "Code",
+          "K-37",
+          "K-11",
+          "K-52",
+          "K-24",
+          null,
+          "Find"
+        ],
+        [
+          "Room",
+          "Pine",
+          "Cedar",
+          "Birch",
+          "Maple",
+          null,
+          "K-11"
+        ],
+        [
+          "Seats",
+          10,
+          12,
+          16,
+          18,
+          null,
+          null
+        ],
+        [
+          "Open?",
+          "Yes",
+          "Yes",
+          "Yes",
+          "No",
+          null,
+          null
+        ]
+      ],
+      "target": "B1:F4"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Which room matches the code in `G2`? In `G3`, type `=HLOOKUP(G2,B1:F4,2,FALSE)`.",
+      "grid": [
+        [
+          "Code",
+          "K-37",
+          "K-11",
+          "K-52",
+          "K-24",
+          null,
+          "Find"
+        ],
+        [
+          "Room",
+          "Pine",
+          "Cedar",
+          "Birch",
+          "Maple",
+          null,
+          "K-11"
+        ],
+        [
+          "Seats",
+          10,
+          12,
+          16,
+          18,
+          null,
+          null
+        ],
+        [
+          "Open?",
+          "Yes",
+          "Yes",
+          "Yes",
+          "No",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G3",
+      "expectedValue": "Cedar",
+      "mustUse": [
+        "HLOOKUP"
+      ],
+      "solution": "=HLOOKUP(G2,B1:F4,2,FALSE)",
+      "explain": "K-11 is in the third table column, and row 2 of that column contains Cedar.",
+      "highlightCells": [
+        "G2",
+        "B1:F4"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "How many seats does room code `K-24` have? In `G3`, find the value in row 3 of the table `B1:F4`.",
+      "grid": [
+        [
+          "Code",
+          "K-37",
+          "K-11",
+          "K-52",
+          "K-24",
+          null,
+          "Find"
+        ],
+        [
+          "Room",
+          "Pine",
+          "Cedar",
+          "Birch",
+          "Maple",
+          null,
+          "K-24"
+        ],
+        [
+          "Seats",
+          10,
+          12,
+          16,
+          18,
+          null,
+          null
+        ],
+        [
+          "Open?",
+          "Yes",
+          "Yes",
+          "Yes",
+          "No",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G3",
+      "expectedValue": 18,
+      "mustUse": [
+        "HLOOKUP"
+      ],
+      "solution": "=HLOOKUP(G2,B1:F4,3,FALSE)",
+      "explain": "K-24 is above the final seats value, 18, in row 3 of the table.",
+      "highlightCells": [
+        "G2",
+        "B1:F4"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "Is room `K-52` open? In `G3`, find its status in row 4 of the table `B1:F4`.",
+      "grid": [
+        [
+          "Code",
+          "K-37",
+          "K-11",
+          "K-52",
+          "K-24",
+          null,
+          "Find"
+        ],
+        [
+          "Room",
+          "Pine",
+          "Cedar",
+          "Birch",
+          "Maple",
+          null,
+          "K-52"
+        ],
+        [
+          "Seats",
+          10,
+          12,
+          16,
+          18,
+          null,
+          null
+        ],
+        [
+          "Open?",
+          "Yes",
+          "Yes",
+          "No",
+          "Yes",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G3",
+      "expectedValue": "No",
+      "mustUse": [
+        "HLOOKUP"
+      ],
+      "solution": "=HLOOKUP(G2,B1:F4,4,FALSE)",
+      "explain": "K-52 is in the fourth table column, where row 4 marks the room No.",
+      "highlightCells": [
+        "G2",
+        "B1:F4"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A club tracks points under numbered teams. What is team 24’s score? In `G3`, find its score across `B1:F2`.",
+      "grid": [
+        [
+          "Team",
+          37,
+          11,
+          52,
+          24,
+          null,
+          "Find"
+        ],
+        [
+          "Points",
+          7,
+          13,
+          5,
+          19,
+          null,
+          24
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G3",
+      "expectedValue": 19,
+      "mustUse": [
+        "HLOOKUP"
+      ],
+      "solution": "=HLOOKUP(G2,B1:F2,2,FALSE)",
+      "explain": "Team numbers are numeric headers, and team 24 has 19 points in the second table row.",
+      "highlightCells": [
+        "G2",
+        "B1:F2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "This formula returns `#REF!`: `=HLOOKUP(G2,B1:F4,5,FALSE)`. What went wrong?",
+      "options": [
+        "The row number is past the table’s fourth row",
+        "The lookup code needs quote marks",
+        "HLOOKUP cannot search across a row"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A workshop lists tool kits across row 1. Which kit name belongs to code `W-8`? Put it in `G3`.",
+      "grid": [
+        [
+          "Code",
+          "W-8",
+          "W-12",
+          "W-3",
+          null,
+          null,
+          "Find"
+        ],
+        [
+          "Kit",
+          "Builder",
+          "Maker",
+          "Starter",
+          null,
+          null,
+          "W-8"
+        ],
+        [
+          "Items",
+          7,
+          9,
+          4,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G3",
+      "expectedValue": "Builder",
+      "mustUse": [
+        "HLOOKUP"
+      ],
+      "solution": "=HLOOKUP(G2,B1:E2,2,FALSE)",
+      "explain": "W-8 is above Builder in the workshop’s kit table.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    }
+  ]
+}
