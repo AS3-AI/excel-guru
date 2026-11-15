@@ -13,7 +13,7 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T14 Grade spilled answers | — | — | — | parked | card only |
 | T15 Grader for every step type | agent | fd7729f, 1165e72 | passed | pushed | |
 | T18 Point mode + coloured refs | agent | f34bfb6, 695f534 | passed | pushed | whole-row refs off; iOS pointing untested on a device |
-| T21 CI | agent | fde79b9 | — | built | needs a real run on GitHub (2 test branches) |
+| T21 CI | agent | 6588371 | PR #1 passed, PR #2 (wrong answer) failed as intended | merged | runs on PRs and pushes to main |
 | T16 Player v1 | codex | 34571cf, 14d0680 | passed (3 rounds) | pushed | grid select mode added; T19 brings real COMPLETE badges |
 | T17 Shortcut steps | codex | cb47bc0 | passed (2 rounds), Mac browser-tested | pushed | attempt cap max(200, 25×steps); `[shortcut, shortcut, info]` on touch can't finish |
 | T19 Progress API | codex | a9f9205 | passed (3 rounds), live-tested on Supabase | pushed | replay rule A; race + A/B cycle farming bounded (~2–4×/day) |
