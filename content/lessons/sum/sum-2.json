@@ -1,0 +1,376 @@
+{
+  "id": "sum-2",
+  "module": "sum",
+  "title": "AutoSum: let Excel write SUM",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**AutoSum** adds nearby numbers and writes a `SUM` formula for you. It checks the numbers above first; if there are none, it checks to the left, stopping at a blank cell. Press `Enter` to accept the suggested range."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A café tracks cups sold each day. Select the coffee numbers from Monday to Friday: `B2:B6`.",
+      "grid": [
+        [
+          "Day",
+          "Coffee",
+          "Tea"
+        ],
+        [
+          "Mon",
+          12,
+          8
+        ],
+        [
+          "Tue",
+          15,
+          9
+        ],
+        [
+          "Wed",
+          10,
+          7
+        ],
+        [
+          "Thu",
+          14,
+          11
+        ],
+        [
+          "Fri",
+          16,
+          10
+        ],
+        [
+          "Total",
+          null,
+          null
+        ]
+      ],
+      "target": "B2:B6"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Select `B7` below the coffee numbers and press the AutoSum shortcut. Check the suggested formula, then press `Enter` to accept it.",
+      "keys": {
+        "win": "Alt+=",
+        "mac": null
+      },
+      "activeCell": "B7",
+      "postcondition": {
+        "grid": [
+          [
+            "Day",
+            "Coffee",
+            "Tea"
+          ],
+          [
+            "Mon",
+            12,
+            8
+          ],
+          [
+            "Tue",
+            15,
+            9
+          ],
+          [
+            "Wed",
+            10,
+            7
+          ],
+          [
+            "Thu",
+            14,
+            11
+          ],
+          [
+            "Fri",
+            16,
+            10
+          ],
+          [
+            "Total",
+            "=SUM(B2:B6)",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "s4",
+      "type": "info",
+      "text": "AutoSum suggests `=SUM(B2:B6)` in `B7` because the five coffee entries are directly above it."
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "Type `=SUM(B2:B6)` in `B7` to find the coffee total.",
+      "grid": [
+        [
+          "Day",
+          "Coffee",
+          "Tea"
+        ],
+        [
+          "Mon",
+          12,
+          8
+        ],
+        [
+          "Tue",
+          15,
+          9
+        ],
+        [
+          "Wed",
+          10,
+          7
+        ],
+        [
+          "Thu",
+          14,
+          11
+        ],
+        [
+          "Fri",
+          16,
+          10
+        ],
+        [
+          "Total",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 67,
+      "mustUse": [
+        "SUM"
+      ],
+      "solution": "=SUM(B2:B6)",
+      "explain": "AutoSum uses the nearby coffee values above B7.",
+      "highlightCells": [
+        "B2:B6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "In `C7`, type `=SUM(C2:C6)` to total the cups of tea.",
+      "grid": [
+        [
+          "Day",
+          "Coffee",
+          "Tea"
+        ],
+        [
+          "Mon",
+          12,
+          8
+        ],
+        [
+          "Tue",
+          15,
+          9
+        ],
+        [
+          "Wed",
+          10,
+          7
+        ],
+        [
+          "Thu",
+          14,
+          11
+        ],
+        [
+          "Fri",
+          16,
+          10
+        ],
+        [
+          "Total",
+          67,
+          null
+        ]
+      ],
+      "targetCell": "C7",
+      "expectedValue": 45,
+      "mustUse": [
+        "SUM"
+      ],
+      "solution": "=SUM(C2:C6)",
+      "explain": "The tea values fill C2:C6, so that range gives the weekly total.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A delivery team records AM and PM parcels for three routes. How many parcels did it send across both shifts and all three routes? Put the total in `D5`.",
+      "grid": [
+        [
+          "Route",
+          "AM",
+          "PM",
+          "Total"
+        ],
+        [
+          "North",
+          18,
+          12,
+          null
+        ],
+        [
+          "South",
+          14,
+          16,
+          null
+        ],
+        [
+          "East",
+          20,
+          11,
+          null
+        ],
+        [
+          "Total",
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D5",
+      "expectedValue": 91,
+      "mustUse": [
+        "SUM"
+      ],
+      "solution": "=SUM(B2:C4)",
+      "explain": "The range B2:C4 includes both shifts for all three routes.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "A gym logs minutes exercised. In `B6`, type `=SUM(B2:B5)` to find all minutes.",
+      "grid": [
+        [
+          "Member",
+          "Minutes"
+        ],
+        [
+          "Asha",
+          25
+        ],
+        [
+          "Ben",
+          40
+        ],
+        [
+          "Chen",
+          35
+        ],
+        [
+          "Diya",
+          20
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 120,
+      "mustUse": [
+        "SUM"
+      ],
+      "solution": "=SUM(B2:B5)",
+      "explain": "The four exercise entries are in B2:B5.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "prompt": "AutoSum is adding a column, but there is a blank cell between the data and the total. What can happen to its suggested range?",
+      "options": [
+        "It can stop at the blank and leave out values above it.",
+        "It always skips every number above the blank.",
+        "It includes the blank as a number."
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "prompt": "A garden shop sold 14 pots on Monday, 9 on Tuesday and 17 on Wednesday. What was the total? Put it in `B5`.",
+      "grid": [
+        [
+          "Day",
+          "Pots"
+        ],
+        [
+          "Mon",
+          14
+        ],
+        [
+          "Tue",
+          9
+        ],
+        [
+          "Wed",
+          17
+        ],
+        [
+          "Total",
+          null
+        ]
+      ],
+      "targetCell": "B5",
+      "expectedValue": 40,
+      "mustUse": [
+        "SUM"
+      ],
+      "solution": "=SUM(B2:B4)",
+      "explain": "The three daily counts add to the total.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    }
+  ]
+}

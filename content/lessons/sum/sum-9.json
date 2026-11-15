@@ -1,0 +1,348 @@
+{
+  "id": "sum-9",
+  "module": "sum",
+  "title": "Debugging SUM functions",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "A **formula** can give the wrong total when its range stops too early, points at the wrong column, or has its arguments in the wrong order. Check that each range covers exactly the data you mean, text criteria are in quotes, and SUMIFS starts with the sum range."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A school fundraiser tracks class donations. Select the donation values: `B2:B5`.",
+      "grid": [
+        [
+          "Class",
+          "Donation"
+        ],
+        [
+          "A",
+          12
+        ],
+        [
+          "B",
+          18
+        ],
+        [
+          "C",
+          15
+        ],
+        [
+          "D",
+          10
+        ],
+        [
+          "Total",
+          "=SUM(B2:B4)"
+        ]
+      ],
+      "target": "B2:B5"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "The formula in `B6` misses the last class: `=SUM(B2:B4)`. In `B6`, correct the formula to total all donations.",
+      "grid": [
+        [
+          "Class",
+          "Donation"
+        ],
+        [
+          "A",
+          12
+        ],
+        [
+          "B",
+          18
+        ],
+        [
+          "C",
+          15
+        ],
+        [
+          "D",
+          10
+        ],
+        [
+          "Total",
+          "=SUM(B2:B4)"
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 55,
+      "mustUse": [
+        "SUM"
+      ],
+      "solution": "=SUM(B2:B5)",
+      "explain": "Extending the range through B5 includes class D while excluding the total row.",
+      "highlightCells": [
+        "B2:B5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "The total in `C6` adds the wrong column: `=SUM(B2:B5)` adds pupils, not donations. In `C6`, correct it to total the donations.",
+      "grid": [
+        [
+          "Class",
+          "Pupils",
+          "Donation"
+        ],
+        [
+          "A",
+          30,
+          14
+        ],
+        [
+          "B",
+          28,
+          11
+        ],
+        [
+          "C",
+          32,
+          20
+        ],
+        [
+          "D",
+          25,
+          9
+        ],
+        [
+          "Total",
+          null,
+          "=SUM(B2:B5)"
+        ]
+      ],
+      "targetCell": "C6",
+      "expectedValue": 54,
+      "mustUse": [
+        "SUM"
+      ],
+      "solution": "=SUM(C2:C5)",
+      "explain": "The donations are in column C, so the range must be `C2:C5`.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "This SUMIFS formula has its arguments in SUMIF order: `=SUMIFS(A2:A5,\"North\",C2:C5)`. In `C6`, correct the formula to total North route fees.",
+      "grid": [
+        [
+          "Route",
+          "Driver",
+          "Fee"
+        ],
+        [
+          "North",
+          "Ari",
+          12
+        ],
+        [
+          "South",
+          "Bo",
+          16
+        ],
+        [
+          "North",
+          "Cia",
+          14
+        ],
+        [
+          "North",
+          "Dev",
+          10
+        ],
+        [
+          "Total",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C6",
+      "expectedValue": 36,
+      "mustUse": [
+        "SUMIFS"
+      ],
+      "solution": "=SUMIFS(C2:C5,A2:A5,\"North\")",
+      "explain": "SUMIFS needs the fee sum range first, followed by the route range and its condition.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A book club sheet has a broken formula in `B6`: `=SUMIF(A2:A5,\"Asha\")`. In `B6`, fix it to add pages for Asha.",
+      "grid": [
+        [
+          "Member",
+          "Pages"
+        ],
+        [
+          "Asha",
+          30
+        ],
+        [
+          "Ben",
+          25
+        ],
+        [
+          "Chen",
+          18
+        ],
+        [
+          "Diya",
+          27
+        ],
+        [
+          "Total",
+          "=SUMIF(A2:A5,\"Asha\")"
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 30,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A5,\"Asha\",B2:B5)",
+      "explain": "The corrected sum range adds Asha’s page count.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A route total in `B6` shows zero. The broken formula is `=SUMIF(A2:A5,\"West\")`. What is missing? Fix the formula in `B6`.",
+      "grid": [
+        [
+          "Route",
+          "Fee"
+        ],
+        [
+          "West",
+          11
+        ],
+        [
+          "East",
+          16
+        ],
+        [
+          "West",
+          13
+        ],
+        [
+          "West",
+          9
+        ],
+        [
+          "Total",
+          "=SUMIF(A2:A5,\"West\")"
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 33,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A5,\"West\",B2:B5)",
+      "explain": "The route range provides the condition and the fee range provides the values.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "Which formula correctly adds North route fees?",
+      "options": [
+        "=SUMIFS(C2:C5,A2:A5,\"North\")",
+        "=SUMIFS(C2:C5,A2:A5,North)",
+        "=SUMIFS(A2:A5,\"North\",C2:C5)"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "The club wants the total seats booked for the Hike, but `B6` shows 0. Why? Fix the formula in `B6`.",
+      "grid": [
+        [
+          "Event",
+          "Seats"
+        ],
+        [
+          "Hike",
+          8
+        ],
+        [
+          "Film",
+          12
+        ],
+        [
+          "Talk",
+          9
+        ],
+        [
+          "Hike",
+          7
+        ],
+        [
+          "Hike total",
+          "=SUMIF(B2:B5,\"Hike\",B2:B5)"
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 15,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(A2:A5,\"Hike\",B2:B5)",
+      "explain": "The condition has to check the event names in column A; column B holds numbers, so nothing matched \"Hike\".",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    }
+  ]
+}
