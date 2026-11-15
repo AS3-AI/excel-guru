@@ -8,8 +8,9 @@ const expected = [
 ] as const;
 describe("curriculum modules", () => {
   it("contains all 15 spec modules in order with their expected slugs, titles and sizes", () => expect(MODULES.map(({ slug, title, total }) => [slug, title, total])).toEqual(expected));
-  it("uses a lesson's module field to assign membership", () => expect(getModuleProgress({ lessons: [{ id: "a", module: "SUM" }, { id: "b", module: "COUNT" }], completedIds: ["a"] })[0]).toMatchObject({ done: 1, total: 9 }));
-  it("counts distinct completed lessons in the matching module", () => expect(getModuleProgress({ lessons: [{ id: "a", module: "SUM" }, { id: "b", module: "SUM" }], completedIds: ["a", "a", "b"] })[0]?.done).toBe(2));
+  it("uses the sum slug for lesson membership", () => expect(getModuleProgress({ lessons: [{ id: "a", module: "sum" }, { id: "b", module: "count" }], completedIds: ["a"] })[0]).toMatchObject({ slug: "sum", done: 1, total: 9 }));
+  it("uses the text-search slug for a multi-word module", () => expect(getModuleProgress({ lessons: [{ id: "a", module: "text-search" }, { id: "b", module: "Text Search" }], completedIds: ["a", "b"] })[4]).toMatchObject({ slug: "text-search", done: 1, lessons: [{ id: "a", module: "text-search" }] }));
+  it("counts distinct completed lessons in the matching module", () => expect(getModuleProgress({ lessons: [{ id: "a", module: "sum" }, { id: "b", module: "sum" }], completedIds: ["a", "a", "b"] })[0]?.done).toBe(2));
   it("returns x/N counts for every module", () => expect(getModuleProgress({ lessons: [], completedIds: [] }).map((m) => `${m.done}/${m.total}`)).toEqual(expected.map(([, , total]) => `0/${total}`)));
   it("recommends the first incomplete lesson by global order", () => expect(nextRecommendedPath(["intro", "sum-a", "sum-b"], ["intro", "sum-a"])).toBe("/lesson/sum-b"));
   it("recommends review after the final ordered lesson is complete", () => expect(nextRecommendedPath(["intro", "sum-a"], ["intro", "sum-a"])).toBe("/review"));
