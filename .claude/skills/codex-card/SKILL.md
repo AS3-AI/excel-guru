@@ -56,9 +56,30 @@ Always run it with `run_in_background` and `< /dev/null`: in a foreground shell 
 2. Run all four checks yourself (real `pnpm validate-content`).
 3. Spot-check: test count vs card; grep for DOM reaching, alert(, hex colours; each "must keep" item still wired.
 4. Browser-check the card's Done-when in Chrome (dev server: `cd apps/web && npx next dev -p <port>`).
-5. Reviewer subagent on the diff; give it the must-keep list and the edge-case list.
+5. Reviewer subagent on the diff; give it the must-keep list and the edge-case list. Keep it cheap (below).
 6. Fix rounds: write a numbered fix prompt from the review, run Codex again in the same worktree, repeat 4.
    When review advice conflicts (e.g. "focus the drawer" vs "keep focus on the grid"), decide yourself before prompting.
+
+## 4a. Review with few tokens
+The reviewer's job is judgement. Run every mechanical check first and fix what it finds, so the reviewer
+never spends tokens finding a grid that's too wide or a test that fails.
+- **Code cards:** save the diff to a file (`git diff main > $CLAUDE_JOB_DIR/tmp/<card>.diff`, plus new files),
+  pass its path, and say "typecheck/test/validate/build already pass: don't rerun them unless you change your
+  mind about a failure". Name the 3–6 files and spec sections that matter instead of "read the spec". Ask for
+  "numbered real problems with file:line + fix, then a one-line verdict; no praise, no restating the diff".
+- **Content (lessons):** run from the worktree root and fix every LINT line before the review:
+  ```bash
+  npx tsx .claude/skills/codex-card/lesson-digest.ts content/lessons/<module> > $CLAUDE_JOB_DIR/tmp/<module>-digest.txt
+  npx tsx .claude/skills/codex-card/lookup-audit.mts content/lessons/<module>   # lookup modules; write a sibling for others
+  ```
+  Then give the reviewer the digest path (not the JSON files): "Review from this digest; open a lesson's JSON
+  only to confirm a suspected problem. LINT, validate-content and the wrong-formula audit already ran — accepted
+  audit exceptions: <list>. Don't read docs/content-style.md in full; the checklist is: <the 6–8 items that
+  matter for this module>. Spot-check docs/teardown.md with grep for 3–4 distinctive names only."
+- **Re-reviews:** a fresh reviewer gets only the changed steps (digest with ids:
+  `lesson-digest.ts <dir> lookup-3 lookup-7`) and the numbered list of what was asked; "report only what is
+  still wrong". Don't resume a long-context reviewer just to re-check a few items.
+- One reviewer per module (not per lesson); never two reviewers on the same files.
 
 ## 5. Finish (Claude)
 Commit on the card branch with attribution and "Built with Codex CLI from a Claude-written prompt";
@@ -76,3 +97,7 @@ update the card's line in docs/build-log.md; merge and push only when the user s
   directly; Turbopack then refused to build ("Could not find next/package.json"). Pre-install every dependency
   the card needs before running Codex, tell it never to touch node_modules or symlink stores, and after Codex
   run `ls -la node_modules/.pnpm` in the worktree — reinstall cleanly if it's a link.
+- Lookup content: asked for 9 lessons in one run, Codex generated three with a template script (one formula
+  step repeated 5×, generic prompts, "" for empty cells) and stopped a rewrite round half done. For content,
+  run ONE lesson per Codex run (parallel runs are fine — disjoint files), give a step plan per lesson, hand it
+  an audit script with a pass condition (`coincidences: 0` for its lesson), and grep for `""` cells afterwards.
