@@ -20,7 +20,7 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T22 Merge race fix | codex | 25c2445 | passed; migration tested on scratch Postgres | pushed | migration 0002 run in Supabase 15 Nov |
 | T23 Rich text + module slugs | codex | 105cf3a | checked in Chrome | pushed | |
 | Content: SUM module | codex + Claude | sum-1 (Claude), 8c05798 | 3 pedagogy rounds, ready | pushed | style guide docs/content-style.md |
-| T24 Points + leaderboards | codex | t24 branch | passed (2 rounds), live-tested on Supabase | merged (local) | share bonus once-only verified |
+| T24 Points + leaderboards | codex | t24 branch | passed (2 rounds), live-tested on Supabase | pushed | share bonus once-only verified |
 | T20 Dashboard + access | codex | bf568cf | passed (2 rounds) | pushed | progress routes paywall-gated; free users can still *open* extra lessons (migration later); live free-tier flow verified 15 Nov (sign-up → merge → 2nd lesson → 3rd = /pricing, 403 on save) |
 
 ## Open bugs
