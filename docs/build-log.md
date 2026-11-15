@@ -23,8 +23,9 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T24 Points + leaderboards | codex | t24 branch | passed (2 rounds), live-tested on Supabase | pushed | share bonus once-only verified |
 | T27 Video + workbook | codex | fbd7154 | passed, focus guards added | merged (local) | keyboard check of the modal pending a lesson with a video |
 | T25 Payments (Razorpay) | codex | merged | passed (3 rounds) | merged (local) | Stripe deferred (option 2); no lifetime |
+| T28 Engine: whole rows | codex | t28 branch | passed (2 rounds) | built | error-criteria change reverted pending Excel check |
 | T20 Dashboard + access | codex | bf568cf | passed (2 rounds) | pushed | progress routes paywall-gated; free users can still *open* extra lessons (migration later); live free-tier flow verified 15 Nov (sign-up → merge → 2nd lesson → 3rd = /pricing, 403 on save) |
 
 ## Open bugs
 - ~~Merge race~~ fixed by T22 (single-flight + unique index). Was: two concurrent `/api/progress/merge` calls for the same lesson both award points (seen: 90 instead of 45 after sign-up; React StrictMode double-runs the merge effect in dev, and dashboard + player both call it). Fix: single-flight `mergeLocalProgress()` on the client + a DB unique index on (user, lesson, IST day) where points > 0.
-- Engine: unquoted text inside SUMIF criteria (`=SUMIF(A2:A5,Hike,B2:B5)`) returns 0; Excel returns `#NAME?` (an error criterion should propagate).
+- Engine, to confirm in real Excel: `=SUMIF(A1:A3,Hike,B1:B3)` (unquoted) gives 0 here — Excel may give 0 (error criteria match errors, as `=COUNTIF(r,#N/A)` does) or `#NAME?`. Also pending: TEXTBEFORE on empty text, COUNTIF with an empty-cell criterion.
