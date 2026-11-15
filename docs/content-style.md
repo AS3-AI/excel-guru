@@ -50,6 +50,11 @@ Every lesson is original (never copy wording, data or examples from docs/teardow
 - Skill summaries come last in the module's order and mix every function the module taught.
 - Don't put the search word in another column of the same grid (confusing which column is being checked).
 
+## Lessons learned (Logical module)
+- Steps whose answer is TRUE/FALSE can't rule out every wrong formula (half of all guesses land on the same
+  value). Pick data that catches the most likely mistake for that step (e.g. a value exactly on the boundary
+  for `<` vs `<=`), and prefer IF steps that return text or numbers, which separate mistakes better.
+
 ## Grids
 - Our own small, realistic datasets (a café, a book club, a gym, a school fundraiser, a delivery team…).
   Indian and international names and contexts both welcome; amounts in plain numbers (no currency symbols).

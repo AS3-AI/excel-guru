@@ -1,0 +1,94 @@
+{
+  "id": "logical-1",
+  "module": "logical",
+  "title": "TRUE and FALSE: asking yes/no questions",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "A **comparison** asks Excel a yes/no question, and Excel answers `TRUE` or `FALSE`. `=B2>8000` asks \"is B2 more than 8000?\". You can compare with `=`, `<>` (not equal), `>`, `<`, `>=` and `<=`."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A walking club tracks each member's steps against their daily goal. Select Chitra's steps: `B4`.",
+      "grid": [["Member", "Steps", "Goal", "Reached?", "Fee", "Paid?"], ["Asha", 8200, 8000, null, "paid", null], ["Ben", 6500, 7000, null, "Due", null], ["Chitra", 10000, 10000, null, "Due", null], ["Dev", 7200, 9000, null, "Paid", null]],
+      "target": "B4"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Did Chitra reach her goal? In `D4`, type `=B4>=C4` and press Enter.",
+      "grid": [["Member", "Steps", "Goal", "Reached?", "Fee", "Paid?"], ["Asha", 8200, 8000, null, "paid", null], ["Ben", 6500, 7000, null, "Due", null], ["Chitra", 10000, 10000, null, "Due", null], ["Dev", 7200, 9000, null, "Paid", null]],
+      "targetCell": "D4",
+      "expectedValue": true,
+      "mustUse": [],
+      "solution": "=B4>=C4",
+      "explain": "Chitra walked exactly 10000 steps, and >= means \"more than or equal to\", so reaching the goal exactly counts.",
+      "highlightCells": ["B4", "C4"],
+      "mobileButtons": ["=", ">", "<"]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "Your turn. In `D3`, check whether Ben's steps in `B3` reached his goal in `C3`.",
+      "grid": [["Member", "Steps", "Goal", "Reached?", "Fee", "Paid?"], ["Asha", 8200, 8000, null, "paid", null], ["Ben", 6500, 7000, null, "Due", null], ["Chitra", 10000, 10000, true, "Due", null], ["Dev", 7200, 9000, null, "Paid", null]],
+      "targetCell": "D3",
+      "expectedValue": false,
+      "mustUse": [],
+      "solution": "=B3>=C3",
+      "explain": "6500 is less than 7000, so the answer to \"did he reach it?\" is FALSE.",
+      "highlightCells": ["B3", "C3"],
+      "mobileButtons": ["=", ">", "<"]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "You can compare text too; put the text in quotes. In `F2`, check whether Asha's fee is paid with `=E2=\"Paid\"`.",
+      "grid": [["Member", "Steps", "Goal", "Reached?", "Fee", "Paid?"], ["Asha", 8200, 8000, true, "paid", null], ["Ben", 6500, 7000, false, "Due", null], ["Chitra", 10000, 10000, true, "Due", null], ["Dev", 7200, 9000, null, "Paid", null]],
+      "targetCell": "F2",
+      "expectedValue": true,
+      "mustUse": [],
+      "solution": "=E2=\"Paid\"",
+      "explain": "Excel ignores upper and lower case when comparing text, so \"paid\" matches \"Paid\".",
+      "highlightCells": ["E2"],
+      "mobileButtons": ["=", "\""]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "`<>` means \"not equal\". In `F4`, check whether Chitra's fee is anything other than Due with `=E4<>\"Due\"`.",
+      "grid": [["Member", "Steps", "Goal", "Reached?", "Fee", "Paid?"], ["Asha", 8200, 8000, true, "paid", true], ["Ben", 6500, 7000, false, "Due", null], ["Chitra", 10000, 10000, true, "Due", null], ["Dev", 7200, 9000, null, "Paid", null]],
+      "targetCell": "F4",
+      "expectedValue": false,
+      "mustUse": [],
+      "solution": "=E4<>\"Due\"",
+      "explain": "Chitra's fee is exactly \"Due\", so \"is it not Due?\" is FALSE.",
+      "highlightCells": ["E4"],
+      "mobileButtons": ["=", "<", ">", "\""]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "What does `=10>=10` return?",
+      "options": ["TRUE", "FALSE", "10"],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A stationery shop reorders an item when its stock drops below 20. In `C2`, show TRUE if Pens need reordering, otherwise FALSE.",
+      "grid": [["Item", "Stock", "Reorder?"], ["Pens", 20, null], ["Glue", 12, null], ["Tape", 35, null]],
+      "targetCell": "C2",
+      "expectedValue": false,
+      "mustUse": [],
+      "solution": "=B2<20",
+      "explain": "\"Below 20\" means less than 20, and 20 is not below 20, so Pens don't need reordering yet.",
+      "mobileButtons": ["=", ">", "<"]
+    }
+  ]
+}
