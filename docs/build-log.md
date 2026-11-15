@@ -16,5 +16,5 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T21 CI | agent | fde79b9 | — | built | needs a real run on GitHub (2 test branches) |
 | T16 Player v1 | codex | 34571cf, 14d0680 | passed (3 rounds) | pushed | grid select mode added; T19 brings real COMPLETE badges |
 | T17 Shortcut steps | — | — | — | queued | after T16 |
-| T19 Progress API | codex | a9f9205 | passed (3 rounds), live-tested on Supabase | built | replay rule A; race + A/B cycle farming bounded (~2–4×/day) |
+| T19 Progress API | codex | a9f9205 | passed (3 rounds), live-tested on Supabase | pushed | replay rule A; race + A/B cycle farming bounded (~2–4×/day) |
 | T20 Dashboard + access | — | — | — | queued | after T19 |
