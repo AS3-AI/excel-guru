@@ -73,6 +73,8 @@ for (const f of files) {
     }
     if (s.type === "formula") {
       out.push(`${head}: ${s.prompt}\n   ${s.targetCell} ${s.solution} → ${JSON.stringify(s.expectedValue)}  mustUse ${JSON.stringify(s.mustUse)}  buttons ${(s.mobileButtons ?? []).join("")}${s.highlightCells ? `  hl ${s.highlightCells.join(",")}` : ""}\n   explain: ${s.explain}\n   ${gridNote}`);
+      const shown = [...String(s.prompt).matchAll(/\btype `(=[^`]+)`/gi)].map((m) => m[1]);
+      if (shown.length && !shown.includes(s.solution)) L(s.id, `prompt shows ${shown.join(" / ")} but solution is ${s.solution}`);
       const norm = `${s.solution}|${JSON.stringify(s.grid)}`;
       const dup = formulas.get(norm); if (dup) L(s.id, `same formula and grid as ${dup}`); formulas.set(norm, s.id);
       const body = String(s.solution).slice(1).replace(/"[^"]*"/g, (q) => (q.length > 2 ? `"${q.slice(1, -1).replace(/[^*?]/g, "")}"` : q));
