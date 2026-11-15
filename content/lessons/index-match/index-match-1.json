@@ -1,0 +1,460 @@
+{
+  "id": "index-match-1",
+  "module": "index-match",
+  "title": "MATCH: where is it in the list?",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**MATCH** tells you where a value sits in a list: `=MATCH(what to find, list, 0)` gives 1 for the list's first cell, 2 for the second, and so on. The `0` means \"exact match only\"."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A park run lists runners in the order they finished. Select the list of runners MATCH will search, without the header: `A2:A7`.",
+      "grid": [
+        [
+          "Runner",
+          "Club",
+          "Minutes",
+          null,
+          "Find",
+          "Place"
+        ],
+        [
+          "Zara",
+          "North",
+          21,
+          null,
+          "Omar",
+          null
+        ],
+        [
+          "Ben",
+          "East",
+          22,
+          null,
+          null,
+          null
+        ],
+        [
+          "Lina",
+          "North",
+          24,
+          null,
+          null,
+          null
+        ],
+        [
+          "Omar",
+          "West",
+          25,
+          null,
+          null,
+          null
+        ],
+        [
+          "Jay",
+          "East",
+          27,
+          null,
+          null,
+          null
+        ],
+        [
+          "Ravi",
+          "West",
+          29,
+          null,
+          null,
+          null
+        ]
+      ],
+      "target": "A2:A7"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In which place did the runner in `E2` finish? In `F2`, type `=MATCH(E2,A2:A7,0)` and press Enter.",
+      "grid": [
+        [
+          "Runner",
+          "Club",
+          "Minutes",
+          null,
+          "Find",
+          "Place"
+        ],
+        [
+          "Zara",
+          "North",
+          21,
+          null,
+          "Omar",
+          null
+        ],
+        [
+          "Ben",
+          "East",
+          22,
+          null,
+          null,
+          null
+        ],
+        [
+          "Lina",
+          "North",
+          24,
+          null,
+          null,
+          null
+        ],
+        [
+          "Omar",
+          "West",
+          25,
+          null,
+          null,
+          null
+        ],
+        [
+          "Jay",
+          "East",
+          27,
+          null,
+          null,
+          null
+        ],
+        [
+          "Ravi",
+          "West",
+          29,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "F2",
+      "expectedValue": 4,
+      "mustUse": [
+        "MATCH"
+      ],
+      "solution": "=MATCH(E2,A2:A7,0)",
+      "explain": "Omar is the 4th name in A2:A7, so MATCH returns 4: he finished fourth.",
+      "highlightCells": [
+        "E2",
+        "A2:A7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "Lina is on row 4 of the sheet. In `F2`, find her place in the list `A2:A7` for the name in `E2`.",
+      "grid": [
+        [
+          "Runner",
+          "Club",
+          "Minutes",
+          null,
+          "Find",
+          "Place"
+        ],
+        [
+          "Zara",
+          "North",
+          21,
+          null,
+          "Lina",
+          null
+        ],
+        [
+          "Ben",
+          "East",
+          22,
+          null,
+          null,
+          null
+        ],
+        [
+          "Lina",
+          "North",
+          24,
+          null,
+          null,
+          null
+        ],
+        [
+          "Omar",
+          "West",
+          25,
+          null,
+          null,
+          null
+        ],
+        [
+          "Jay",
+          "East",
+          27,
+          null,
+          null,
+          null
+        ],
+        [
+          "Ravi",
+          "West",
+          29,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "F2",
+      "expectedValue": 3,
+      "mustUse": [
+        "MATCH"
+      ],
+      "solution": "=MATCH(E2,A2:A7,0)",
+      "explain": "MATCH counts from the first cell of the list, not from the top of the sheet: row 4 is the 3rd cell of A2:A7.",
+      "highlightCells": [
+        "E2",
+        "A2:A7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "You can type the value in the formula; text goes in quotes. Where is the first West club runner in the list? In `F2`, type `=MATCH(\"West\",B2:B7,0)`.",
+      "grid": [
+        [
+          "Runner",
+          "Club",
+          "Minutes",
+          null,
+          "Find",
+          "Place"
+        ],
+        [
+          "Zara",
+          "North",
+          21,
+          null,
+          null,
+          null
+        ],
+        [
+          "Ben",
+          "East",
+          22,
+          null,
+          null,
+          null
+        ],
+        [
+          "Lina",
+          "North",
+          24,
+          null,
+          null,
+          null
+        ],
+        [
+          "Omar",
+          "West",
+          25,
+          null,
+          null,
+          null
+        ],
+        [
+          "Jay",
+          "East",
+          27,
+          null,
+          null,
+          null
+        ],
+        [
+          "Ravi",
+          "West",
+          29,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "F2",
+      "expectedValue": 4,
+      "mustUse": [
+        "MATCH"
+      ],
+      "solution": "=MATCH(\"West\",B2:B7,0)",
+      "explain": "Omar and Ravi are both in West; MATCH stops at the first one it meets, the 4th cell of B2:B7.",
+      "highlightCells": [
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\""
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "MATCH works across a row too. A bakery logs sales by day in row 1. In `B4`, find which position the day in `B3` has in `B1:F1`.",
+      "grid": [
+        [
+          "Day",
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri"
+        ],
+        [
+          "Loaves",
+          30,
+          26,
+          41,
+          35,
+          52
+        ],
+        [
+          "Find",
+          "Thu",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Position",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B4",
+      "expectedValue": 4,
+      "mustUse": [
+        "MATCH"
+      ],
+      "solution": "=MATCH(B3,B1:F1,0)",
+      "explain": "Across B1:F1 the days run Mon, Tue, Wed, Thu, so Thu is in position 4; starting at A1 would make it 5.",
+      "highlightCells": [
+        "B3",
+        "B1:F1"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "Omar is the 4th runner, but `=MATCH(\"Omar\",A1:A7,0)` returns 5. Why?",
+      "options": [
+        "The list starts at the header in `A1`, so every position is one higher",
+        "MATCH counts from the bottom of the list",
+        "The `0` makes MATCH skip the first cell"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A cake shop lists orders in the order they arrived. In which position is the order for the cake in `E2`? Put the answer in `F2`.",
+      "grid": [
+        [
+          "Cake",
+          "Size",
+          "Paid",
+          null,
+          "Find",
+          "Position"
+        ],
+        [
+          "Carrot",
+          "Medium",
+          "Yes",
+          null,
+          "Lemon",
+          null
+        ],
+        [
+          "Vanilla",
+          "Small",
+          "No",
+          null,
+          null,
+          null
+        ],
+        [
+          "Lemon",
+          "Small",
+          "No",
+          null,
+          null,
+          null
+        ],
+        [
+          "Chocolate",
+          "Large",
+          "Yes",
+          null,
+          null,
+          null
+        ],
+        [
+          "Red velvet",
+          "Large",
+          "Yes",
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "F2",
+      "expectedValue": 3,
+      "mustUse": [
+        "MATCH"
+      ],
+      "solution": "=MATCH(E2,A2:A6,0)",
+      "explain": "Lemon is the 3rd cake in A2:A6, so it was the third order to arrive.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    }
+  ]
+}
