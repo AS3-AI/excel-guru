@@ -18,4 +18,30 @@ describe("local progress", () => {
   it("posts and clears only on success", async () => { vi.mocked(fetch).mockResolvedValueOnce(new Response("{}", { status: 200 })); writeLocalProgress("intro", []); expect(await mergeLocalProgress()).toBe(true); expect(fetch).toHaveBeenCalledWith("/api/progress/merge", expect.anything()); expect(readLocalProgress()).toEqual([]); });
   it("keeps local data on failed response", async () => { vi.mocked(fetch).mockResolvedValueOnce(new Response("{}", { status: 500 })); writeLocalProgress("intro", []); expect(await mergeLocalProgress()).toBe(false); expect(readLocalProgress()).toHaveLength(1); });
   it("keeps local data on network error", async () => { vi.mocked(fetch).mockRejectedValueOnce(new Error("offline")); writeLocalProgress("intro", []); expect(await mergeLocalProgress()).toBe(false); expect(readLocalProgress()).toHaveLength(1); });
+  it("shares one in-flight merge and starts a fresh request after it settles", async () => {
+    let resolve!: (response: Response) => void;
+    vi.mocked(fetch).mockImplementationOnce(() => new Promise((r) => { resolve = r; })).mockResolvedValueOnce(new Response("{}", { status: 200 }));
+    writeLocalProgress("intro", []);
+    const first = mergeLocalProgress();
+    const second = mergeLocalProgress();
+    expect(fetch).toHaveBeenCalledTimes(1);
+    resolve(new Response("{}", { status: 200 }));
+    expect(await first).toBe(true);
+    expect(await second).toBe(true);
+    writeLocalProgress("intro", []);
+    expect(await mergeLocalProgress()).toBe(true);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+  it("shares a failed in-flight merge and keeps local data", async () => {
+    let reject!: (error: Error) => void;
+    vi.mocked(fetch).mockImplementationOnce(() => new Promise((_r, r) => { reject = r; }));
+    writeLocalProgress("intro", []);
+    const first = mergeLocalProgress();
+    const second = mergeLocalProgress();
+    reject(new Error("offline"));
+    expect(await first).toBe(false);
+    expect(await second).toBe(false);
+    expect(readLocalProgress()).toHaveLength(1);
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
 });

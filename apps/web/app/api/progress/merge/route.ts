@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getLesson } from "@/lib/lessons";
 import { decideLessonAccess, loadLessonAccess } from "@/lib/access";
-import { calculateProgress, getIstDayUtcBounds, getStreak, pointsAllowedForCompletion, progressAttemptRows, readBodyAfterAuthentication, type ProgressAttempt, type StreakRow } from "@/lib/progress";
+import { calculateProgress, getIstDate, getIstDayUtcBounds, getStreak, pointsAllowedForCompletion, progressAttemptRows, readBodyAfterAuthentication, shouldRetryCompletionWithZeroPoints, type ProgressAttempt, type StreakRow } from "@/lib/progress";
 
 export async function POST(request: Request) {
   const session = await createClient();
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const alreadyCompleted = completedLessonIds.includes(lesson.id);
     const accessDecision = decideLessonAccess({ lessonId: lesson.id, userId: user.id, completedLessonIds, premium, groupPremium });
     if (!accessDecision.allowed) continue;
-    if (candidate.attempts.length > lesson.steps.length * 4) continue;
+    if (candidate.attempts.length > Math.max(200, 25 * lesson.steps.length)) continue;
     let score;
     try { score = calculateProgress(lesson, candidate.attempts as ProgressAttempt[]); } catch { continue; }
     const now = new Date();
@@ -51,8 +51,13 @@ export async function POST(request: Request) {
       admin.from("lesson_completions").select("completed_at,points").eq("user_id", user.id).eq("lesson_id", lesson.id).gt("points", 0).gte("completed_at", bounds.start).lt("completed_at", bounds.end),
     ]);
     if (profile.error || prior.error || progress.error || earlierCompletions.error) continue;
-    const points = pointsAllowedForCompletion(earlierCompletions.data ?? [], now) ? score.points : 0;
-    const completionWrite = await admin.from("lesson_completions").insert({ user_id: user.id, lesson_id: lesson.id, completed_at: end, first_try_accuracy: score.firstTryAccuracy, points, group_id: profile.data?.group_id ?? null, cohort: profile.data?.cohort ?? null });
+    let points = pointsAllowedForCompletion(earlierCompletions.data ?? [], now) ? score.points : 0;
+    const completionData = { user_id: user.id, lesson_id: lesson.id, completed_at: end, ist_day: getIstDate(now), first_try_accuracy: score.firstTryAccuracy, points, group_id: profile.data?.group_id ?? null, cohort: profile.data?.cohort ?? null };
+    let completionWrite = await admin.from("lesson_completions").insert(completionData);
+    if (completionWrite.error && shouldRetryCompletionWithZeroPoints(completionWrite.error)) {
+      points = 0;
+      completionWrite = await admin.from("lesson_completions").insert({ ...completionData, points: 0 });
+    }
     if (completionWrite.error) { partialFailure = true; continue; }
     const progressWrite = await admin.from("lesson_progress").upsert({ user_id: user.id, lesson_id: lesson.id, completed_at: end, first_try_accuracy: score.firstTryAccuracy, times_completed: (progress.data?.times_completed ?? 0) + 1 });
     if (progressWrite.error) { partialFailure = true; continue; }
