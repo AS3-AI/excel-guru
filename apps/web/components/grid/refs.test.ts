@@ -17,6 +17,8 @@ describe("findRefs (references with positions, from the engine's tokens)", () =>
     expect(texts("=SUM(B:B)")).toEqual(["B:B"]);
     expect(texts("=SUM($B:$C)")).toEqual(["$B:$C"]);
     expect(texts("=SUM(3:3)")).toEqual(["3:3"]);
+    expect(texts("=SUM(3:$4)")).toEqual(["3:$4"]);
+    expect(texts("=SUM($3:3)")).toEqual(["$3:3"]);
   });
   it("spans a range written with spaces around the colon", () => {
     expect(texts("=SUM(A1 : A3)")).toEqual(["A1 : A3"]);
@@ -119,8 +121,10 @@ describe("wholeLineRef (space after a column letter)", () => {
     expect(wholeLineRef("=SUM(b)", 6, size)).toEqual({ draft: "=SUM(B:B)", start: 5, end: 8 });
     expect(wholeLineRef("=A1+C", 5, size)).toEqual({ draft: "=A1+C:C", start: 4, end: 7 });
   });
-  it("leaves row numbers alone (the engine can't evaluate 3:3 yet)", () => {
-    expect(wholeLineRef("=SUM(3", 6, size)).toBeNull();
+  it("turns a row number typed in point mode into a whole row", () => {
+    expect(wholeLineRef("=SUM(3", 6, size)).toEqual({ draft: "=SUM(3:3", start: 5, end: 8 });
+  });
+  it("leaves arithmetic numbers alone", () => {
     expect(wholeLineRef("=A1+3", 5, size)).toBeNull();
   });
   it("only for columns on the grid", () => {

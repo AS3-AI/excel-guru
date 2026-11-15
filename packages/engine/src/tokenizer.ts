@@ -100,6 +100,12 @@ export function tokenize(src: string): Token[] {
 
     // `$` can only start a reference: $A$1, $A1 or a whole column $B.
     if (ch === "$") {
+      const row = /^\$\d+/.exec(rest);
+      if (row && (src[i + row[0].length] === ":" || prev()?.type === "COLON")) {
+        tokens.push({ type: "REF", value: row[0], pos: i });
+        i += row[0].length;
+        continue;
+      }
       const cell = CELL_RE.exec(rest);
       const col = cell ? null : COLUMN_RE.exec(rest);
       const text = cell?.[0] ?? col?.[0];

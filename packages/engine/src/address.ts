@@ -9,6 +9,7 @@ export const MAX_COLS = 16_384; // A..XFD
 
 const CELL_RE = /^\$?([A-Z]{1,3})\$?(\d+)$/;
 const COLUMN_RE = /^\$?([A-Z]{1,3})$/;
+const ROW_RE = /^\$?(\d+)$/;
 
 /** "A" → 0, "AA" → 26. Letters only; the caller checks the range. */
 export function columnToIndex(letters: string): number {
@@ -44,6 +45,14 @@ export function formatAddress({ row, col }: CellAddress): string {
  * span every row — the evaluator clips them to the used rows. Null if a corner is off-sheet.
  */
 export function parseArea(from: string, to: string): Area | null {
+  const rowA = ROW_RE.exec(from);
+  const rowB = ROW_RE.exec(to);
+  if (rowA || rowB) {
+    if (!rowA || !rowB) return null;
+    const a = Number(rowA[1]) - 1, b = Number(rowB[1]) - 1;
+    if (a < 0 || b < 0 || a >= MAX_ROWS || b >= MAX_ROWS) return null;
+    return { top: Math.min(a, b), left: 0, bottom: Math.max(a, b), right: MAX_COLS - 1 };
+  }
   const a = corner(from, 0);
   const b = corner(to, MAX_ROWS - 1);
   if (!a || !b) return null;

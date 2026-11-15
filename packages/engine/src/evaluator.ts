@@ -13,6 +13,8 @@ export interface EvalContext {
   cell(row: number, col: number): CellValue;
   /** Rows in use, so whole columns (B:C) can be clipped to them. */
   usedRows(): number;
+  /** Columns in use, so whole rows (3:3) can be clipped to them. */
+  usedCols(): number;
 }
 
 type Value = CellValue | Matrix;
@@ -110,11 +112,13 @@ class Evaluator {
     const area = parseArea(from, to);
     if (!area) return err("#REF!");
     const wholeColumn = !/\d/.test(from);
+    const wholeRow = /^\$?\d+$/.test(from);
     const bottom = wholeColumn ? Math.min(area.bottom, this.ctx.usedRows() - 1) : area.bottom;
+    const right = wholeRow ? Math.min(area.right, this.ctx.usedCols() - 1) : area.right;
     const rows: Matrix = [];
     for (let r = area.top; r <= bottom; r++) {
       const row: CellValue[] = [];
-      for (let c = area.left; c <= area.right; c++) row.push(this.ctx.cell(r, c));
+      for (let c = area.left; c <= right; c++) row.push(this.ctx.cell(r, c));
       rows.push(row);
     }
     return rows;

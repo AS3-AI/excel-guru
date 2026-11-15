@@ -30,7 +30,7 @@ function tokensOf(src: string): Token[] {
 
 /** Source length of a token whose text is the same length as its value (refs, numbers, names). */
 const endOf = (t: Token) => t.pos + t.value.length;
-const isRowNumber = (t: Token | undefined): t is Token => t?.type === "NUM" && /^\d+$/.test(t.value);
+const isRowNumber = (t: Token | undefined): boolean => t?.type === "NUM" && /^\d+$/.test(t.value);
 
 /** Every cell, range, whole-column and whole-row reference in a formula, in order. */
 export function findRefs(formula: string): RefSpan[] {
@@ -44,8 +44,11 @@ export function findRefs(formula: string): RefSpan[] {
       if (colon?.type === "COLON" && end?.type === "REF") {
         push(t, end);
         i += 2;
+      } else if (/^\$?\d+$/.test(t.value) && colon?.type === "COLON" && end?.type === "NUM" && isRowNumber(end)) {
+        push(t, end);
+        i += 2;
       } else push(t, t);
-    } else if (isRowNumber(t) && colon?.type === "COLON" && isRowNumber(end)) {
+    } else if (t.type === "NUM" && isRowNumber(t) && colon?.type === "COLON" && end && ((end.type === "NUM" && isRowNumber(end)) || (end.type === "REF" && /^\$?\d+$/.test(end.value)))) {
       push(t, end); // a whole row, 3:3
       i += 2;
     }
@@ -117,18 +120,19 @@ export function arrowPoints(draft: string, caret: number, entering: boolean, las
   return (last !== null && last.end === caret) || canPoint(draft, caret);
 }
 
-/**
- * Space right after a column letter typed in point mode: "=SUM(B" becomes "=SUM(B:B". Only for
- * columns on the grid. Null when the space is just a space.
- * Whole rows ("3" → "3:3") are left out until the engine parses row ranges (needs an engine card);
- * findRefs still colours a 3:3 typed by hand.
- */
+/** Space after a point-mode row number or column letter completes its whole-line reference. */
 export function wholeLineRef(draft: string, caret: number, size: { rows: number; cols: number }): Inserted | null {
   if (!draft.startsWith("=") || !freeAfter(draft, caret)) return null;
   const toks = tokensBefore(draft, caret);
   const last = toks?.[toks.length - 1];
   if (!toks || !last || endOf(last) !== caret) return null;
-  if (last.type !== "NAME" || !/^[A-Z]{1,3}$/.test(last.value) || !isTrigger(toks[toks.length - 2])) return null;
-  if (colNumber(last.value) > size.cols) return null;
-  return insertRef(draft, { start: last.pos, end: caret }, caret, `${last.value}:${last.value}`);
+  if (!isTrigger(toks[toks.length - 2])) return null;
+  if (last.type === "NAME" && /^[A-Z]{1,3}$/.test(last.value)) {
+    if (colNumber(last.value) > size.cols) return null;
+    return insertRef(draft, { start: last.pos, end: caret }, caret, `${last.value}:${last.value}`);
+  }
+  const trigger = toks[toks.length - 2];
+  if (isRowNumber(last) && (trigger === undefined || trigger.type === "LPAREN" || trigger.type === "COMMA") && Number(last.value) > 0 && Number(last.value) <= size.rows)
+    return insertRef(draft, { start: last.pos, end: caret }, caret, `${last.value}:${last.value}`);
+  return null;
 }
