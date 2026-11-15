@@ -1,0 +1,393 @@
+{
+  "id": "logical-2",
+  "module": "logical",
+  "title": "AND, OR and XOR: combine conditions",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**AND** is TRUE only when every test is TRUE: `=AND(test1,test2)`. OR needs either test TRUE: `=OR(test1,test2)`. XOR is TRUE when exactly one test is TRUE: `=XOR(test1,test2)`."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "Select Maya’s hours and attendance in `B2:C2`.",
+      "grid": [
+        [
+          "Member",
+          "Hours",
+          "Attended",
+          "Bonus?"
+        ],
+        [
+          "Maya",
+          3,
+          "No",
+          null
+        ],
+        [
+          "Noah",
+          2,
+          "Yes",
+          null
+        ],
+        [
+          "Ola",
+          4,
+          "No",
+          null
+        ],
+        [
+          "Pia",
+          1,
+          "No",
+          null
+        ]
+      ],
+      "target": "B2:C2"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `D2`, type `=AND(B2>=3,C2=\"Yes\")` and press Enter.",
+      "grid": [
+        [
+          "Member",
+          "Hours",
+          "Attended",
+          "Bonus?"
+        ],
+        [
+          "Maya",
+          3,
+          "No",
+          null
+        ],
+        [
+          "Noah",
+          2,
+          "Yes",
+          null
+        ],
+        [
+          "Ola",
+          4,
+          "No",
+          null
+        ],
+        [
+          "Pia",
+          1,
+          "No",
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": false,
+      "mustUse": [
+        "AND"
+      ],
+      "solution": "=AND(B2>=3,C2=\"Yes\")",
+      "explain": "Maya has enough hours but did not attend, so AND is FALSE while OR would be TRUE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ">"
+      ],
+      "highlightCells": [
+        "B2",
+        "C2"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `D2`, type `=OR(B2<2,C2=\"No\")` and press Enter.",
+      "grid": [
+        [
+          "Member",
+          "Hours",
+          "Attended",
+          "Needs follow-up?"
+        ],
+        [
+          "Ari",
+          2,
+          "No",
+          null
+        ],
+        [
+          "Bea",
+          0,
+          "Yes",
+          null
+        ],
+        [
+          "Cal",
+          2,
+          "No",
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": true,
+      "mustUse": [
+        "OR"
+      ],
+      "solution": "=OR(B2<2,C2=\"No\")",
+      "explain": "Ari has exactly two hours but missed attendance, so OR is TRUE while AND is FALSE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "<"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "Asha’s tea and cake answers are in `B2` and `C2`. In `D2`, type `=XOR(B2=\"Yes\",C2=\"Yes\")` and press Enter.",
+      "grid": [
+        [
+          "Friend",
+          "Tea",
+          "Cake",
+          "Exactly one?"
+        ],
+        [
+          "Asha",
+          "Yes",
+          "No",
+          null
+        ],
+        [
+          "Bala",
+          "No",
+          "Yes",
+          null
+        ],
+        [
+          "Chen",
+          "No",
+          "No",
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": true,
+      "mustUse": [
+        "XOR"
+      ],
+      "solution": "=XOR(B2=\"Yes\",C2=\"Yes\")",
+      "explain": "Asha said Yes to tea and No to cake, so exactly one answer is Yes.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "In `D3`, type `=AND(B3>=3,C3=\"Yes\")` and press Enter.",
+      "grid": [
+        [
+          "Member",
+          "Hours",
+          "Attended",
+          "Bonus?"
+        ],
+        [
+          "Maya",
+          3,
+          "Yes",
+          null
+        ],
+        [
+          "Noah",
+          4,
+          "No",
+          null
+        ],
+        [
+          "Ola",
+          1,
+          "No",
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": false,
+      "mustUse": [
+        "AND"
+      ],
+      "solution": "=AND(B3>=3,C3=\"Yes\")",
+      "explain": "Noah has enough hours but did not attend, so AND returns FALSE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "A parcel needs review if late OR damaged. In `D3`, check South.",
+      "grid": [
+        [
+          "Route",
+          "Late",
+          "Damaged",
+          "Review?"
+        ],
+        [
+          "North",
+          "No",
+          "Yes",
+          null
+        ],
+        [
+          "South",
+          "Yes",
+          "No",
+          null
+        ],
+        [
+          "East",
+          "No",
+          "No",
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": true,
+      "mustUse": [
+        "OR"
+      ],
+      "solution": "=OR(B3=\"Yes\",C3=\"Yes\")",
+      "explain": "South is late but not damaged, so OR is TRUE while AND would be FALSE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A scholarship needs exactly one strong result. In `D2`, check Ravi.",
+      "grid": [
+        [
+          "Applicant",
+          "Math test",
+          "Interview",
+          "One strong?"
+        ],
+        [
+          "Ravi",
+          "Pass",
+          "Pass",
+          null
+        ],
+        [
+          "Sana",
+          "Fail",
+          "Pass",
+          null
+        ],
+        [
+          "Tao",
+          "Fail",
+          "Fail",
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": false,
+      "mustUse": [
+        "XOR"
+      ],
+      "solution": "=XOR(B2=\"Pass\",C2=\"Pass\")",
+      "explain": "Ravi passed both tests, so XOR is FALSE while OR would be TRUE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "prompt": "What does XOR return when both tests are TRUE?",
+      "options": [
+        "TRUE",
+        "FALSE",
+        "The first test"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "prompt": "A team earns a badge if exactly one of its two checks is Yes. What badge result does team B get? Enter it in `D3`.",
+      "grid": [
+        [
+          "Team",
+          "On time",
+          "Complete",
+          "Badge?"
+        ],
+        [
+          "A",
+          "Yes",
+          "Yes",
+          null
+        ],
+        [
+          "B",
+          "No",
+          "Yes",
+          null
+        ],
+        [
+          "C",
+          "Yes",
+          "Yes",
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": true,
+      "mustUse": [
+        "XOR"
+      ],
+      "solution": "=XOR(B3=\"Yes\",C3=\"Yes\")",
+      "explain": "Team B is not on time but is complete, so exactly one check is Yes and XOR returns TRUE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    }
+  ]
+}

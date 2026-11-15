@@ -1,0 +1,365 @@
+{
+  "id": "logical-3",
+  "module": "logical",
+  "title": "IF: return one result or another",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**IF** checks a condition, then returns one result when it is TRUE and another when it is FALSE: `=IF(condition,yes,no)`. Put text results in quotes."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A class records quiz scores. Select Dev’s score: `B4`.",
+      "grid": [
+        [
+          "Learner",
+          "Score",
+          "Result"
+        ],
+        [
+          "Asha",
+          62,
+          null
+        ],
+        [
+          "Ben",
+          48,
+          null
+        ],
+        [
+          "Dev",
+          50,
+          null
+        ],
+        [
+          "Esha",
+          20,
+          null
+        ]
+      ],
+      "target": "B4"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `C4`, type `=IF(B4>=50,\"Pass\",\"Fail\")` and press Enter.",
+      "grid": [
+        [
+          "Learner",
+          "Score",
+          "Result"
+        ],
+        [
+          "Asha",
+          62,
+          null
+        ],
+        [
+          "Ben",
+          48,
+          null
+        ],
+        [
+          "Dev",
+          50,
+          null
+        ],
+        [
+          "Esha",
+          20,
+          null
+        ]
+      ],
+      "targetCell": "C4",
+      "expectedValue": "Pass",
+      "mustUse": [
+        "IF"
+      ],
+      "solution": "=IF(B4>=50,\"Pass\",\"Fail\")",
+      "explain": "Dev scored exactly 50, which meets the at-least-50 condition.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ">"
+      ],
+      "highlightCells": [
+        "B4"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `C2`, return the number 5 when markers are below 10, otherwise return 0.",
+      "grid": [
+        [
+          "Item",
+          "Stock",
+          "Reorder"
+        ],
+        [
+          "Markers",
+          10,
+          null
+        ],
+        [
+          "Folders",
+          8,
+          null
+        ],
+        [
+          "Labels",
+          3,
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 0,
+      "mustUse": [
+        "IF"
+      ],
+      "solution": "=IF(B2<10,5,0)",
+      "explain": "Ten is not below ten, so IF returns zero.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "<"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "In `C3`, return Ready if Gold has at least 10 points; otherwise return Wait.",
+      "grid": [
+        [
+          "Team",
+          "Points",
+          "Status"
+        ],
+        [
+          "Blue",
+          12,
+          null
+        ],
+        [
+          "Gold",
+          10,
+          null
+        ],
+        [
+          "Green",
+          4,
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": "Ready",
+      "mustUse": [
+        "IF"
+      ],
+      "solution": "=IF(B3>=10,\"Ready\",\"Wait\")",
+      "explain": "Gold has exactly ten points, meeting the inclusive cutoff.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A late order is free: return 0 when order #102 took five days or more, otherwise return 12 in `C3`.",
+      "grid": [
+        [
+          "#",
+          "Days",
+          "Fee"
+        ],
+        [
+          "#101",
+          2,
+          null
+        ],
+        [
+          "#102",
+          5,
+          null
+        ],
+        [
+          "#103",
+          1,
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": 0,
+      "mustUse": [
+        "IF"
+      ],
+      "solution": "=IF(B3>=5,0,12)",
+      "explain": "Order #102 took exactly five days, and >= includes five, so the fee is 0.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ">"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "In `C4`, show Star if Kim borrowed more than five books; otherwise show Member.",
+      "grid": [
+        [
+          "Member",
+          "Books",
+          "Reward"
+        ],
+        [
+          "Ira",
+          4,
+          null
+        ],
+        [
+          "Jay",
+          2,
+          null
+        ],
+        [
+          "Kim",
+          5,
+          null
+        ],
+        [
+          "Leo",
+          8,
+          null
+        ]
+      ],
+      "targetCell": "C4",
+      "expectedValue": "Member",
+      "mustUse": [
+        "IF"
+      ],
+      "solution": "=IF(B4>5,\"Star\",\"Member\")",
+      "explain": "Kim has exactly five books, which is not more than five.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A café gives a refill when a shift sells at least 20 cups. What should PM’s result be? Put it in `C3`.",
+      "grid": [
+        [
+          "Shift",
+          "Cups",
+          "Target met"
+        ],
+        [
+          "AM",
+          18,
+          null
+        ],
+        [
+          "PM",
+          20,
+          null
+        ],
+        [
+          "Eve",
+          14,
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": "Refill",
+      "mustUse": [
+        "IF"
+      ],
+      "solution": "=IF(B3>=20,\"Refill\",\"No refill\")",
+      "explain": "PM sold exactly 20 cups, so the inclusive threshold earns a refill.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "prompt": "Which formula works to return High when B2 is above 10 and Low otherwise?",
+      "options": [
+        "=IF(B2>10,High,Low)",
+        "=IF(B2>10,\"High\",\"Low\")",
+        "=IF(\"B2>10\",\"High\",\"Low\")"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "prompt": "A workshop gives a kit to anyone who attends at least 4 sessions. What should Lee receive? Put the result in `C3`.",
+      "grid": [
+        [
+          "Student",
+          "Sessions",
+          "Result"
+        ],
+        [
+          "Kai",
+          2,
+          null
+        ],
+        [
+          "Lee",
+          4,
+          null
+        ],
+        [
+          "Mira",
+          2,
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": "Kit",
+      "mustUse": [
+        "IF"
+      ],
+      "solution": "=IF(B3>=4,\"Kit\",\"No kit\")",
+      "explain": "Lee attended exactly four sessions, meeting the minimum.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ">"
+      ]
+    }
+  ]
+}
