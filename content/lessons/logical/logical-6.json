@@ -1,0 +1,360 @@
+{
+  "id": "logical-6",
+  "module": "logical",
+  "title": "SWITCH: match one value to a case",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**SWITCH** compares one value with exact cases, using the pattern `=SWITCH(value,case1,result1,case2,result2,default)`. Add a default result for values with no match; it is clearer than IFS when every test checks the same cell for an exact value."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "Select the code for request 2 in `B3`.",
+      "grid": [
+        [
+          "Request",
+          "Code",
+          "Team"
+        ],
+        [
+          "1",
+          "P",
+          null
+        ],
+        [
+          "2",
+          "R",
+          null
+        ],
+        [
+          "3",
+          "S",
+          null
+        ]
+      ],
+      "target": "B3"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `C3`, type `=SWITCH(B3,\"P\",\"Payments\",\"R\",\"Returns\",\"S\",\"Shipping\",\"Other\")` and press Enter.",
+      "grid": [
+        [
+          "Request",
+          "Code",
+          "Team"
+        ],
+        [
+          "1",
+          "P",
+          null
+        ],
+        [
+          "2",
+          "R",
+          null
+        ],
+        [
+          "3",
+          "S",
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": "Returns",
+      "mustUse": [
+        "SWITCH"
+      ],
+      "solution": "=SWITCH(B3,\"P\",\"Payments\",\"R\",\"Returns\",\"S\",\"Shipping\",\"Other\")",
+      "explain": "Request 2 has code R, so SWITCH returns Returns.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ],
+      "highlightCells": [
+        "B3"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `C2`, map A to Morning, B to Afternoon, and other codes to Evening.",
+      "grid": [
+        [
+          "Day",
+          "Code",
+          "Shift"
+        ],
+        [
+          "Mon",
+          "A",
+          null
+        ],
+        [
+          "Tue",
+          "B",
+          null
+        ],
+        [
+          "Wed",
+          "C",
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": "Morning",
+      "mustUse": [
+        "SWITCH"
+      ],
+      "solution": "=SWITCH(B2,\"A\",\"Morning\",\"B\",\"Afternoon\",\"Evening\")",
+      "explain": "Monday’s code A matches the first case.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "In `C3`, map O to Open, M to Meeting, and anything else to Closed.",
+      "grid": [
+        [
+          "Room",
+          "Status code",
+          "Status"
+        ],
+        [
+          "1",
+          "O",
+          null
+        ],
+        [
+          "2",
+          "M",
+          null
+        ],
+        [
+          "3",
+          "X",
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": "Meeting",
+      "mustUse": [
+        "SWITCH"
+      ],
+      "solution": "=SWITCH(B3,\"O\",\"Open\",\"M\",\"Meeting\",\"Closed\")",
+      "explain": "Room 2’s M code matches the Meeting case.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "In `C4`, map N to North and S to South; use West as the default.",
+      "grid": [
+        [
+          "Parcel",
+          "Route code",
+          "Route"
+        ],
+        [
+          "A",
+          "N",
+          null
+        ],
+        [
+          "B",
+          "S",
+          null
+        ],
+        [
+          "C",
+          "W",
+          null
+        ],
+        [
+          "D",
+          "N",
+          null
+        ]
+      ],
+      "targetCell": "C4",
+      "expectedValue": "West",
+      "mustUse": [
+        "SWITCH"
+      ],
+      "solution": "=SWITCH(B4,\"N\",\"North\",\"S\",\"South\",\"West\")",
+      "explain": "Code W matches neither listed case, so SWITCH uses West as its default.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "In `C4`, map level 1 to Visitor, 2 to Member, 3 to Coach, and other numbers to Guest.",
+      "grid": [
+        [
+          "Badge",
+          "Level",
+          "Access"
+        ],
+        [
+          "Ira",
+          1,
+          null
+        ],
+        [
+          "Jay",
+          2,
+          null
+        ],
+        [
+          "Kim",
+          3,
+          null
+        ]
+      ],
+      "targetCell": "C4",
+      "expectedValue": "Coach",
+      "mustUse": [
+        "SWITCH"
+      ],
+      "solution": "=SWITCH(B4,1,\"Visitor\",2,\"Member\",3,\"Coach\",\"Guest\")",
+      "explain": "Kim’s level 3 matches the Coach case.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A shop uses exact shelf codes T for Drinks and R for Pantry, with Other as the default. What aisle is Soap in? Put it in `C4`.",
+      "grid": [
+        [
+          "Item",
+          "Shelf code",
+          "Aisle"
+        ],
+        [
+          "Tea",
+          "T",
+          null
+        ],
+        [
+          "Rice",
+          "R",
+          null
+        ],
+        [
+          "Soap",
+          "Z",
+          null
+        ],
+        [
+          "Rice cake",
+          "T",
+          null
+        ]
+      ],
+      "targetCell": "C4",
+      "expectedValue": "Other",
+      "mustUse": [
+        "SWITCH"
+      ],
+      "solution": "=SWITCH(B4,\"T\",\"Drinks\",\"R\",\"Pantry\",\"Other\")",
+      "explain": "Soap’s Z code has no listed case, so it receives the default aisle.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "prompt": "When is SWITCH usually clearer than IFS?",
+      "options": [
+        "When one cell is matched against exact listed values.",
+        "When every test is a different inequality.",
+        "When you need to total numbers."
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "prompt": "A market labels codes F as Fruit and G as Grain; any other code is Other. What label fits code X in row Soap? Put it in `C4`.",
+      "grid": [
+        [
+          "Item",
+          "Code",
+          "Group"
+        ],
+        [
+          "Apple",
+          "F",
+          null
+        ],
+        [
+          "Rice",
+          "G",
+          null
+        ],
+        [
+          "Soap",
+          "X",
+          null
+        ],
+        [
+          "Mango",
+          "F",
+          null
+        ]
+      ],
+      "targetCell": "C4",
+      "expectedValue": "Other",
+      "mustUse": [
+        "SWITCH"
+      ],
+      "solution": "=SWITCH(B4,\"F\",\"Fruit\",\"G\",\"Grain\",\"Other\")",
+      "explain": "Code X matches neither listed case, so the default is Other.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    }
+  ]
+}

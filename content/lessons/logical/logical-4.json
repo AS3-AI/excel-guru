@@ -1,0 +1,336 @@
+{
+  "id": "logical-4",
+  "module": "logical",
+  "title": "IS functions: check what a cell contains",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**IS** functions answer TRUE or FALSE about a cell: ISNUMBER uses `=ISNUMBER(value)`, ISTEXT uses `=ISTEXT(value)`, ISBLANK uses `=ISBLANK(value)`, and ISERROR, ISERR and ISNA use `=ISERROR(value)`, `=ISERR(value)` and `=ISNA(value)`. ISERROR catches every error; ISERR catches errors except #N/A, which ISNA checks specifically."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "Select ticket 2’s entry in `B3`.",
+      "grid": [
+        [
+          "Ticket",
+          "Entry",
+          "Is number?"
+        ],
+        [
+          "1",
+          42,
+          null
+        ],
+        [
+          "2",
+          "n/a",
+          null
+        ],
+        [
+          "3",
+          99,
+          null
+        ]
+      ],
+      "target": "B3"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `C3`, type `=ISNUMBER(B3)` and press Enter.",
+      "grid": [
+        [
+          "Ticket",
+          "Entry",
+          "Is number?"
+        ],
+        [
+          "1",
+          42,
+          null
+        ],
+        [
+          "2",
+          "n/a",
+          null
+        ],
+        [
+          "3",
+          99,
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": false,
+      "mustUse": [
+        "ISNUMBER"
+      ],
+      "solution": "=ISNUMBER(B3)",
+      "explain": "The cell contains the text n/a, not a numeric value.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ],
+      "highlightCells": [
+        "B3"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `C3`, check whether ticket 2 contains text.",
+      "grid": [
+        [
+          "Ticket",
+          "Entry",
+          "Is text?"
+        ],
+        [
+          "1",
+          42,
+          null
+        ],
+        [
+          "2",
+          "n/a",
+          null
+        ],
+        [
+          "3",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": true,
+      "mustUse": [
+        "ISTEXT"
+      ],
+      "solution": "=ISTEXT(B3)",
+      "explain": "The imported marker n/a is text, so ISTEXT returns TRUE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "In `C4`, check whether ticket 3’s entry is truly blank.",
+      "grid": [
+        [
+          "Ticket",
+          "Entry",
+          "Missing?"
+        ],
+        [
+          "1",
+          42,
+          null
+        ],
+        [
+          "2",
+          "n/a",
+          null
+        ],
+        [
+          "3",
+          null,
+          null
+        ],
+        [
+          "4",
+          "present",
+          null
+        ]
+      ],
+      "targetCell": "C4",
+      "expectedValue": true,
+      "mustUse": [
+        "ISBLANK"
+      ],
+      "solution": "=ISBLANK(B4)",
+      "explain": "Ticket 3’s entry cell is empty, so ISBLANK returns TRUE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "In `C3`, check whether ticket 2 contains an error.",
+      "grid": [
+        [
+          "Ticket",
+          "Entry",
+          "Error?"
+        ],
+        [
+          "1",
+          7,
+          null
+        ],
+        [
+          "2",
+          "=10/0",
+          null
+        ],
+        [
+          "3",
+          4,
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": true,
+      "mustUse": [
+        "ISERROR"
+      ],
+      "solution": "=ISERROR(B3)",
+      "explain": "Ticket 2 contains the division-by-zero error, so ISERROR returns TRUE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "In `C3`, check whether ticket 2 specifically contains #N/A.",
+      "grid": [
+        [
+          "Ticket",
+          "Entry",
+          "No match?"
+        ],
+        [
+          "1",
+          7,
+          null
+        ],
+        [
+          "2",
+          "=NA()",
+          null
+        ],
+        [
+          "3",
+          4,
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": true,
+      "mustUse": [
+        "ISNA"
+      ],
+      "solution": "=ISNA(B3)",
+      "explain": "Ticket 2 contains #N/A, the error ISNA recognizes.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "In `C2`, check whether the text entry for ticket 1 is a number.",
+      "grid": [
+        [
+          "Ticket",
+          "Entry",
+          "Is number?"
+        ],
+        [
+          "1",
+          "42",
+          null
+        ],
+        [
+          "2",
+          42,
+          null
+        ],
+        [
+          "3",
+          99,
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": false,
+      "mustUse": [
+        "ISNUMBER"
+      ],
+      "solution": "=ISNUMBER(B2)",
+      "explain": "The entry looks like a number, but “42” is stored as text, so ISNUMBER returns FALSE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "prompt": "B3 shows #N/A. What does `=ISERR(B3)` return?",
+      "options": [
+        "FALSE",
+        "TRUE",
+        "#N/A"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "prompt": "In `C3`, check whether record C contains an error.",
+      "grid": [
+        [
+          "Record",
+          "Imported value",
+          "Error?"
+        ],
+        [
+          "A",
+          18,
+          null
+        ],
+        [
+          "B",
+          "=10/0",
+          null
+        ],
+        [
+          "C",
+          99,
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": true,
+      "mustUse": [
+        "ISERROR"
+      ],
+      "solution": "=ISERROR(B3)",
+      "explain": "Record C contains a division-by-zero error, so ISERROR returns TRUE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    }
+  ]
+}

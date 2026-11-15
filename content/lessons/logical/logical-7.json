@@ -1,0 +1,396 @@
+{
+  "id": "logical-7",
+  "module": "logical",
+  "title": "IF combinations: choose the right check",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "Choose **IF** combinations to match the question: combine rules with AND or OR, spot missing data with ISBLANK, choose between outcomes with a nested IF, or show a friendly message when IFERROR catches a calculation error."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A repair desk tracks parts and approvals. Select Nila’s parts and approval: `B2:C2`.",
+      "grid": [
+        [
+          "Ticket",
+          "Parts",
+          "Approved",
+          "Quote",
+          "Hours",
+          "Note"
+        ],
+        [
+          "Nila",
+          3,
+          "Yes",
+          null,
+          2,
+          null
+        ],
+        [
+          "Omar",
+          1,
+          "No",
+          null,
+          0,
+          null
+        ],
+        [
+          "Pia",
+          4,
+          "Yes",
+          null,
+          5,
+          null
+        ],
+        [
+          "Rey",
+          2,
+          "Yes",
+          null,
+          4,
+          null
+        ]
+      ],
+      "target": "B2:C2"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `D2`, show Ready only when Nila has at least 2 parts AND is approved; otherwise show Hold.",
+      "grid": [
+        [
+          "Ticket",
+          "Parts",
+          "Approved",
+          "Status"
+        ],
+        [
+          "Nila",
+          2,
+          "No",
+          null
+        ],
+        [
+          "Omar",
+          1,
+          "No",
+          null
+        ],
+        [
+          "Pia",
+          0,
+          "Yes",
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "Hold",
+      "mustUse": [
+        "IF",
+        "AND"
+      ],
+      "solution": "=IF(AND(B2>=2,C2=\"Yes\"),\"Ready\",\"Hold\")",
+      "explain": "Nila has exactly two parts but is not approved, so AND is FALSE while OR would be TRUE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ">"
+      ],
+      "highlightCells": [
+        "B2",
+        "C2"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `D3`, show Check when Omar has fewer than 2 parts OR is not approved; otherwise show Proceed.",
+      "grid": [
+        [
+          "Ticket",
+          "Parts",
+          "Approved",
+          "Status"
+        ],
+        [
+          "Nila",
+          3,
+          "Yes",
+          null
+        ],
+        [
+          "Omar",
+          2,
+          "No",
+          null
+        ],
+        [
+          "Pia",
+          5,
+          "Yes",
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": "Check",
+      "mustUse": [
+        "IF",
+        "OR"
+      ],
+      "solution": "=IF(OR(B3<2,C3=\"No\"),\"Check\",\"Proceed\")",
+      "explain": "Omar has exactly two parts but is not approved, so OR is TRUE while AND would be FALSE.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "<"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "In `C2`, label Aria under 5 points Starter, under 10 points Growing, and all others Established.",
+      "grid": [
+        [
+          "Member",
+          "Points",
+          "Level"
+        ],
+        [
+          "Aria",
+          5,
+          null
+        ],
+        [
+          "Dev",
+          2,
+          null
+        ],
+        [
+          "Isha",
+          12,
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": "Growing",
+      "mustUse": [
+        "IFS"
+      ],
+      "solution": "=IFS(B2<5,\"Starter\",B2<10,\"Growing\",TRUE,\"Established\")",
+      "explain": "Aria has exactly five points, so she is not below five but is below ten.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "<"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "Cost per item is total divided by items. In `D3`, type `=IFERROR(B3/C3,\"Check rate\")` and press Enter for Omar.",
+      "grid": [
+        [
+          "Name",
+          "Total",
+          "Items",
+          "Cost per item"
+        ],
+        [
+          "Nila",
+          24,
+          3,
+          null
+        ],
+        [
+          "Omar",
+          20,
+          5,
+          null
+        ],
+        [
+          "Pia",
+          24,
+          4,
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": 4,
+      "mustUse": [
+        "IFERROR"
+      ],
+      "solution": "=IFERROR(B3/C3,\"Check rate\")",
+      "explain": "Omar has 20 total across five items, so IFERROR returns the valid cost of 4 per item.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "/",
+        "\""
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "In `C3`, type `=IF(B3>=70,\"Pass\",IF(B3>=50,\"Review\",\"Retry\"))` and press Enter.",
+      "grid": [
+        [
+          "Request",
+          "Score",
+          "Decision"
+        ],
+        [
+          "A",
+          85,
+          null
+        ],
+        [
+          "B",
+          70,
+          null
+        ],
+        [
+          "C",
+          85,
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": "Pass",
+      "mustUse": [
+        "IF"
+      ],
+      "solution": "=IF(B3>=70,\"Pass\",IF(B3>=50,\"Review\",\"Retry\"))",
+      "explain": "Request B scored exactly 70, and >= includes the cutoff, so the first IF already returns Pass.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A repair is Urgent when parts are more than 3 OR approval is No; otherwise Normal. What is ticket B’s status? Put it in `D3`.",
+      "grid": [
+        [
+          "Ticket",
+          "Parts",
+          "Approved",
+          "Status"
+        ],
+        [
+          "A",
+          1,
+          "Yes",
+          null
+        ],
+        [
+          "B",
+          4,
+          "Yes",
+          null
+        ],
+        [
+          "C",
+          1,
+          "Yes",
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": "Urgent",
+      "mustUse": [
+        "IF",
+        "OR"
+      ],
+      "solution": "=IF(OR(B3>3,C3=\"No\"),\"Urgent\",\"Normal\")",
+      "explain": "Ticket B has four parts, more than three, so OR makes the status Urgent.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "prompt": "A formula divides A2 by B2, but B2 may be zero. Which function can show a message if division fails?",
+      "options": [
+        "IFERROR",
+        "ISBLANK",
+        "AND"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "prompt": "Ticket B’s rate may be zero. In `D3`, show a message when dividing its hours by its rate errors.",
+      "grid": [
+        [
+          "Ticket",
+          "Hours",
+          "Rate",
+          "Charge"
+        ],
+        [
+          "A",
+          6,
+          3,
+          null
+        ],
+        [
+          "B",
+          4,
+          0,
+          null
+        ],
+        [
+          "C",
+          8,
+          2,
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": "Check rate",
+      "mustUse": [
+        "IFERROR"
+      ],
+      "solution": "=IFERROR(B3/C3,\"Check rate\")",
+      "explain": "Ticket B divides by zero, so the friendly message is shown.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "/",
+        "\""
+      ]
+    }
+  ]
+}
