@@ -1,0 +1,140 @@
+{
+  "id": "index-match-3",
+  "module": "index-match",
+  "title": "INDEX MATCH: find a value and return its match",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**INDEX MATCH** combines two jobs: `MATCH` finds a position in a list, and `INDEX` returns the item at that position from another range. Use `=INDEX(return range,MATCH(value to find,lookup range,0))` for an exact match."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A library tracks books by code. Select the code list that MATCH will search, without the header: `A2:A6`.",
+      "grid": [
+        ["Code", "Title", "Shelf", "Copies", null, "Find", "Title"],
+        ["B-42", "Moon Garden", "Blue", 3, null, "B-17", null],
+        ["B-17", "River Road", "Green", 5, null, null, null],
+        ["B-63", "Cloud Atlas", "Red", 2, null, null, null],
+        ["B-28", "Quiet Stars", "Blue", 4, null, null, null],
+        ["B-51", "Wild Coast", "Green", 1, null, null, null]
+      ],
+      "target": "A2:A6"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Which title belongs to the code in `F2`? In `G2`, type `=INDEX(B2:B6,MATCH(F2,A2:A6,0))` and press Enter.",
+      "grid": [
+        ["Code", "Title", "Shelf", "Copies", null, "Find", "Title"],
+        ["B-42", "Moon Garden", "Blue", 3, null, "B-17", null],
+        ["B-17", "River Road", "Green", 5, null, null, null],
+        ["B-63", "Cloud Atlas", "Red", 2, null, null, null],
+        ["B-28", "Quiet Stars", "Blue", 4, null, null, null],
+        ["B-51", "Wild Coast", "Green", 1, null, null, null]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "River Road",
+      "mustUse": ["INDEX", "MATCH"],
+      "solution": "=INDEX(B2:C6,MATCH(F2,A2:A6,0),1)",
+      "explain": "B-17 is second in A2:A6, so INDEX returns the second title, River Road, from B2:B6.",
+      "highlightCells": ["F2", "A2:A6", "B2:B6"],
+      "mobileButtons": ["=", "(", ")", ",", ":"]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "The library wants the shelf for the code in `F2`. In `G2`, return its shelf from the column to the left of the code list.",
+      "grid": [
+        ["Shelf", "Code", "Title", null, null, "Find", "Shelf"],
+        ["Red", "C-31", "Amber Lake", null, null, "C-84", null],
+        ["Blue", "C-84", "Small Worlds", null, null, null, null],
+        ["Green", "C-26", "Open Field", null, null, null, null],
+        ["Red", "C-59", "Night Train", null, null, null, null],
+        ["Green", "C-72", "Stone Bridge", null, null, null, null]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "Blue",
+      "mustUse": ["INDEX", "MATCH"],
+      "solution": "=INDEX(A2:B6,MATCH(F2,B2:B6,0),1)",
+      "explain": "C-84 is second in B2:B6, and the second shelf in A2:A6 is Blue; INDEX MATCH can return data to the lookup column's left.",
+      "highlightCells": ["F2", "A2:A6", "B2:B6"],
+      "mobileButtons": ["=", "(", ")", ",", ":"]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "A garden center records plant counts by day. Which count is under the day in `G2`? In `G3`, find it across the headers `B1:E1` and return the matching count from `B2:E2`.",
+      "grid": [
+        ["Bed", "Mon", "Tue", "Wed", "Thu", "Notes", "Find day"],
+        ["Herbs", 8, 6, 11, 4, "watered", "Wed"],
+        ["Flowers", 5, 9, 3, 7, "trimmed", null],
+        ["Greens", 12, 10, 8, 6, "picked", null],
+        ["Roots", 4, 7, 5, 9, "planted", null]
+      ],
+      "targetCell": "G3",
+      "expectedValue": 11,
+      "mustUse": ["INDEX", "MATCH"],
+      "solution": "=INDEX(B2:E2,MATCH(G2,B1:E1,0))",
+      "explain": "Wed is the third header in B1:E1, so INDEX returns the third count in B2:E2, which is 11.",
+      "highlightCells": ["G2", "B1:E1", "B2:E2"],
+      "mobileButtons": ["=", "(", ")", ",", ":"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A workshop tracks repair times by mechanic and job. In `G4`, find the minutes for the mechanic in `G2` and job in `G3`, using the mechanic names in `A2:A6` and job names in `B1:E1`.",
+      "grid": [
+        ["Mechanic", "Tune", "Brake", "Tire", "Chain", null, "Find"],
+        ["Isha", 32, 24, 18, 27, null, "Arun"],
+        ["Dev", 29, 21, 16, 25, null, "Tire"],
+        ["Mina", 35, 26, 20, 30, null, null],
+        ["Arun", 31, 23, 17, 28, null, null],
+        ["Noor", 34, 25, 19, 29, null, null],
+        [null, null, null, null, null, null, null]
+      ],
+      "targetCell": "G4",
+      "expectedValue": 17,
+      "mustUse": ["INDEX", "MATCH"],
+      "solution": "=INDEX(B2:E6,MATCH(G2,A2:A6,0),MATCH(G3,B1:E1,0))",
+      "explain": "Arun is fourth in A2:A6 and Tire is third in B1:E1, so INDEX returns the value at that row and column: 17.",
+      "highlightCells": ["G2:G3", "A2:A6", "B1:E1", "B2:E6"],
+      "mobileButtons": ["=", "(", ")", ",", ":"]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "A code is in row 4 of `A2:A7`. Why does `=INDEX(C1:C6,MATCH(F2,A2:A7,0))` return the item from the row above?",
+      "options": [
+        "The INDEX range starts one row earlier than the MATCH list, so the positions point to different rows",
+        "MATCH only works when the lookup list is sorted",
+        "INDEX must search in the same column as MATCH"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A delivery team has a route code on each parcel. Which driver has the code shown in `F2`? Put the driver's name in `G2`.",
+      "grid": [
+        ["Route", "Driver", "Van", "Stops", null, "Find", "Driver"],
+        ["R-8", "Pia", "Violet", 6, null, "R-3", null],
+        ["R-3", "Omar", "Silver", 4, null, null, null],
+        ["R-6", "Uma", "White", 7, null, null, null],
+        ["R-1", "Leo", "Blue", 3, null, null, null],
+        ["R-5", "Nia", "Green", 5, null, null, null]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "Omar",
+      "mustUse": ["INDEX", "MATCH"],
+      "solution": "=INDEX(B2:C6,MATCH(F2,A2:A6,0),1)",
+      "explain": "R-3 is second in the route list, and the second driver in B2:B6 is Omar.",
+      "mobileButtons": ["=", "(", ")", ",", ":"]
+    }
+  ]
+}

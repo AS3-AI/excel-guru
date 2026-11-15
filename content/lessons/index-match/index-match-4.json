@@ -1,0 +1,547 @@
+{
+  "id": "index-match-4",
+  "module": "index-match",
+  "title": "INDEX MATCH: choose the right lookup",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**INDEX MATCH** returns an item by position, and MATCH finds that position in a row or column. Combine them as `=INDEX(return range,MATCH(value,lookup range,0))` to find a value and return its partner."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A garden shop lists plants and prices. Select the plant list `A2:A5` that the formula will search.",
+      "grid": [
+        [
+          "Plant",
+          "Price",
+          null,
+          "Find",
+          "Position"
+        ],
+        [
+          "Fern",
+          8,
+          null,
+          "Ivy",
+          null
+        ],
+        [
+          "Rose",
+          12,
+          null,
+          null,
+          null
+        ],
+        [
+          "Ivy",
+          6,
+          null,
+          null,
+          null
+        ],
+        [
+          "Mint",
+          5,
+          null,
+          null,
+          null
+        ]
+      ],
+      "target": "A2:A5"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `E2`, find the position of the plant named in `D2` within `A2:A5`. Type `=MATCH(D2,A2:A5,0)`.",
+      "grid": [
+        [
+          "Plant",
+          "Price",
+          null,
+          "Find",
+          "Position"
+        ],
+        [
+          "Fern",
+          8,
+          null,
+          "Ivy",
+          null
+        ],
+        [
+          "Rose",
+          12,
+          null,
+          null,
+          null
+        ],
+        [
+          "Ivy",
+          6,
+          null,
+          null,
+          null
+        ],
+        [
+          "Mint",
+          5,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "E2",
+      "expectedValue": 3,
+      "mustUse": [
+        "MATCH"
+      ],
+      "solution": "=MATCH(D2,A2:A5,0)",
+      "explain": "Ivy is the third item in A2:A5, so its position is 3.",
+      "highlightCells": [
+        "D2",
+        "A2:A5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `E2`, return the plant at position `D2` from `A2:A5`.",
+      "grid": [
+        [
+          "Plant",
+          "Price",
+          null,
+          "Position",
+          "Plant"
+        ],
+        [
+          "Fern",
+          8,
+          null,
+          2,
+          null
+        ],
+        [
+          "Rose",
+          12,
+          null,
+          null,
+          null
+        ],
+        [
+          "Ivy",
+          6,
+          null,
+          null,
+          null
+        ],
+        [
+          "Mint",
+          5,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "E2",
+      "expectedValue": "Rose",
+      "mustUse": [
+        "INDEX"
+      ],
+      "solution": "=INDEX(A2:A5,D2)",
+      "explain": "Position 2 points to Rose because it is the second item in A2:A5.",
+      "highlightCells": [
+        "D2",
+        "A2:A5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "In `G2`, find the price of the plant named in `F2`. Its name is in the column to the right of the prices.",
+      "grid": [
+        [
+          "Price",
+          "Plant",
+          null,
+          null,
+          null,
+          "Find",
+          "Price"
+        ],
+        [
+          14,
+          "Palm",
+          null,
+          null,
+          null,
+          "Lily",
+          null
+        ],
+        [
+          9,
+          "Lily",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          7,
+          "Pine",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          4,
+          "Sage",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": 9,
+      "mustUse": [
+        "INDEX",
+        "MATCH"
+      ],
+      "solution": "=INDEX(A2:A5,MATCH(F2,B2:B5,0))",
+      "explain": "Lily is second in B2:B5, so the second price in A2:A5 is returned: 9.",
+      "highlightCells": [
+        "F2",
+        "B2:B5",
+        "A2:A5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "In `G3`, find the number of jars for the day named in `G2` across the headings `B1:E1`.",
+      "grid": [
+        [
+          "Batch",
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          null,
+          "Find day"
+        ],
+        [
+          "Herbs",
+          7,
+          4,
+          9,
+          6,
+          null,
+          "Wed"
+        ],
+        [
+          "Tea",
+          5,
+          8,
+          3,
+          2,
+          null,
+          null
+        ],
+        [
+          "Spice",
+          6,
+          1,
+          4,
+          7,
+          null,
+          null
+        ],
+        [
+          "Jam",
+          2,
+          5,
+          8,
+          3,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G3",
+      "expectedValue": 9,
+      "mustUse": [
+        "INDEX",
+        "MATCH"
+      ],
+      "solution": "=INDEX(B2:E2,MATCH(G2,B1:E1,0))",
+      "explain": "Wed is the third heading, and the third Herbs count in B2:E2 is 9.",
+      "highlightCells": [
+        "G2",
+        "B1:E1",
+        "B2:E2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "In `G2`, find how many seats remain for the show in `F2` at the time in `F3`, using the show names in `A2:A5` and time headings in `B1:D1`.",
+      "grid": [
+        [
+          "Show",
+          "Matinee",
+          "Evening",
+          "Late",
+          null,
+          "Find",
+          "Seats"
+        ],
+        [
+          "River",
+          12,
+          7,
+          3,
+          null,
+          "Hill",
+          null
+        ],
+        [
+          "Hill",
+          9,
+          5,
+          2,
+          null,
+          "Evening",
+          null
+        ],
+        [
+          "Summit",
+          6,
+          3,
+          2,
+          null,
+          null,
+          null
+        ],
+        [
+          "Cloud",
+          8,
+          4,
+          1,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": 5,
+      "mustUse": [
+        "INDEX",
+        "MATCH"
+      ],
+      "solution": "=INDEX(B2:D5,MATCH(F2,A2:A5,0),MATCH(F3,B1:D1,0))",
+      "explain": "Hill is the second show and Evening is the second heading, so their intersection contains 5 seats.",
+      "highlightCells": [
+        "F2:F3",
+        "A2:A5",
+        "B1:D1",
+        "B2:D5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "In `G2`, show TRUE if the item code in `F2` appears in `A2:A5`, or FALSE if it doesn't.",
+      "grid": [
+        [
+          "Code",
+          "Item",
+          null,
+          null,
+          null,
+          "Find",
+          "Exists"
+        ],
+        [
+          "K-14",
+          "Mug",
+          null,
+          null,
+          null,
+          "K-40",
+          null
+        ],
+        [
+          "K-38",
+          "Plate",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "K-22",
+          "Bowl",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "K-51",
+          "Cup",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": false,
+      "mustUse": [
+        "ISNUMBER",
+        "MATCH"
+      ],
+      "solution": "=ISNUMBER(MATCH(F2,A2:A5,0))",
+      "explain": "K-40 isn't in the list, so MATCH gives #N/A and ISNUMBER turns that into FALSE.",
+      "highlightCells": [
+        "F2",
+        "A2:A5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "prompt": "A table has products in A2:A5 and prices in B2:B5. Why can `=INDEX(B2:B5,MATCH(F2,A2:A5,0))` return the wrong price if the INDEX range starts at B3?",
+      "options": [
+        "The two ranges no longer start on the same row, so the position points to a different product",
+        "MATCH requires the products to be sorted",
+        "INDEX only returns values to the left of the search list"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "prompt": "A repair desk needs to show the part's cost, or the message `Code not found` when the code is missing. What should appear in `G2` for the code in `F2`?",
+      "grid": [
+        [
+          "Code",
+          "Part",
+          "Cost",
+          null,
+          null,
+          "Find",
+          "Result"
+        ],
+        [
+          "Q-12",
+          "Cable",
+          6,
+          null,
+          null,
+          "Q-99",
+          null
+        ],
+        [
+          "Q-18",
+          "Case",
+          11,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Q-30",
+          "Stand",
+          8,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Q-41",
+          "Charger",
+          15,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "Code not found",
+      "mustUse": [
+        "IFERROR",
+        "INDEX",
+        "MATCH"
+      ],
+      "solution": "=IFERROR(INDEX(C2:C5,MATCH(F2,A2:A5,0)),\"Code not found\")",
+      "explain": "Q-99 is absent from A2:A5, so the lookup error is replaced by the requested message.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\""
+      ]
+    }
+  ]
+}

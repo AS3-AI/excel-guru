@@ -1,0 +1,158 @@
+{
+  "id": "index-match-6",
+  "module": "index-match",
+  "title": "MATCH: find a position",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**MATCH** returns a value's position in one row or one column: `=MATCH(value, list, match type)`. Use `0` for an exact match, including wildcard patterns; type `1` finds the last value not above yours in an ascending list."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A garden shop lists five seed packets. Select the packet list without its header: `A2:A6`.",
+      "grid": [
+        ["Packet", "Stock", null, "Find", "Position"],
+        ["Basil", 8, null, "Mint", null],
+        ["Mint", 12, null, null, null],
+        ["Dill", 5, null, null, null],
+        ["Sage", 4, null, null, null],
+        ["Thyme", 7, null, null, null]
+      ],
+      "target": "A2:A6"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Where is the packet named in `D2`? In `E2`, type `=MATCH(D2,A2:A6,0)` and press Enter.",
+      "grid": [
+        ["Packet", "Stock", null, "Find", "Position"],
+        ["Basil", 8, null, "Mint", null],
+        ["Mint", 12, null, null, null],
+        ["Dill", 5, null, null, null],
+        ["Sage", 4, null, null, null],
+        ["Thyme", 7, null, null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": 2,
+      "mustUse": ["MATCH"],
+      "solution": "=MATCH(D2,A2:A6,0)",
+      "explain": "Mint is the second entry in A2:A6, so its position is 2.",
+      "highlightCells": ["D2", "A2:A6"],
+      "mobileButtons": ["=", "(", ")", ",", ":"]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "A music teacher lists lesson days across a row. Which position does the day in `B3` have in `B1:F1`? Put the answer in `B4`.",
+      "grid": [
+        ["Day", "Mon", "Tue", "Wed", "Thu", "Fri"],
+        ["Seats", 4, 6, 5, 3, 7],
+        ["Find", "Thu", null, null, null, null],
+        ["Position", null, null, null, null, null]
+      ],
+      "targetCell": "B4",
+      "expectedValue": 4,
+      "mustUse": ["MATCH"],
+      "solution": "=MATCH(B3,B1:F1,0)",
+      "explain": "Thu is the fourth entry across B1:F1, even though it appears in column E.",
+      "highlightCells": ["B3", "B1:F1"],
+      "mobileButtons": ["=", "(", ")", ",", ":"]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "A weather station records city codes. Find the position of the first code starting with `Sun` in `A2:A6`; put it in `E2`.",
+      "grid": [
+        ["Code", "Rain mm", null, "Find", "Position"],
+        ["Moonbay", 4, null, "Sun*", null],
+        ["Sunset", 2, null, null, null],
+        ["Sunnyvale", 0, null, null, null],
+        ["Sunrise", 1, null, null, null],
+        ["Sunfield", 3, null, null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": 2,
+      "mustUse": ["MATCH"],
+      "solution": "=MATCH(D2,A2:A6,0)",
+      "explain": "Sun* skips Moonbay and matches Sunset second; a looser * pattern would match Moonbay first.",
+      "highlightCells": ["D2", "A2:A6"],
+      "mobileButtons": ["=", "(", ")", ",", ":", "*"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A pool sets ascending fee breaks at 0, 100, 250, and 500 points. Which break position covers a score of 250? In `E2`, find its position in `A2:A5` using approximate match type 1.",
+      "grid": [
+        ["Minimum points", "Fee", null, "Score", "Break position"],
+        [0, 2, null, 250, null],
+        [100, 4, null, null, null],
+        [250, 7, null, null, null],
+        [500, 10, null, null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": 3,
+      "mustUse": ["MATCH"],
+      "solution": "=MATCH(D2,A2:A5,1)",
+      "explain": "The thresholds ascend, and 250 exactly meets the third break, so MATCH returns position 3.",
+      "highlightCells": ["D2", "A2:A5"],
+      "mobileButtons": ["=", "(", ")", ",", ":"]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "A workshop checks names against its registration list. In `C2`, check whether the name in `E2` is present in `A2:A7` by typing `=ISNUMBER(MATCH(E2,A2:A7,0))`.",
+      "grid": [
+        ["Name", "Workshop", "Registered?", null, "Find", null],
+        ["Nikhil", "Printmaking", null, null, "Noor", null],
+        ["Bo", "Pottery", null, null, null, null],
+        ["Asha", "Printmaking", null, null, null, null],
+        ["Uma", "Weaving", null, null, null, null],
+        ["Zed", "Pottery", null, null, null, null],
+        ["Ira", "Weaving", null, null, null, null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": false,
+      "mustUse": ["ISNUMBER", "MATCH"],
+      "solution": "=ISNUMBER(MATCH(E2,A2:A7,0))",
+      "explain": "Noor does not appear in A2:A7, so MATCH cannot return a numeric position and ISNUMBER returns FALSE.",
+      "highlightCells": ["E2", "A2:A7"],
+      "mobileButtons": ["=", "(", ")", ",", ":"]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "A list contains 18, 42, 27, 35 in that order. Why can `=MATCH(30,A2:A5)` give a wrong position?",
+      "options": [
+        "Without a match type, MATCH uses approximate matching, which needs an ascending list",
+        "MATCH always searches from the last cell first",
+        "The list must contain the exact value 30"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A library has five shelf labels. What position is the label in `D2` within the list `A2:A6`? Put the result in `E2`.",
+      "grid": [
+        ["Shelf label", "Books", null, "Find", "Position"],
+        ["Cedar", 12, null, "Maple", null],
+        ["Birch", 9, null, null, null],
+        ["Maple", 15, null, null, null],
+        ["Ash", 6, null, null, null],
+        ["Elm", 8, null, null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": 3,
+      "mustUse": ["MATCH"],
+      "solution": "=MATCH(D2,A2:A6,0)",
+      "explain": "Maple is the third shelf label in A2:A6, so the result is 3.",
+      "mobileButtons": ["=", "(", ")", ",", ":"]
+    }
+  ]
+}
