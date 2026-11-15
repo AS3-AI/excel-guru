@@ -72,3 +72,7 @@ update the card's line in docs/build-log.md; merge and push only when the user s
 - T20: a route that turned dynamic read content/ at request time; it worked locally but 500'd on Vercel because
   content/ wasn't traced. After every push, curl each changed route on production, not just `/`; before merging,
   check `.next/server/app/**/page.js.nft.json` includes any file read at runtime.
+- T25: offline Codex replaced the worktree's node_modules/.pnpm with a symlink to the main store and ran tools
+  directly; Turbopack then refused to build ("Could not find next/package.json"). Pre-install every dependency
+  the card needs before running Codex, tell it never to touch node_modules or symlink stores, and after Codex
+  run `ls -la node_modules/.pnpm` in the worktree — reinstall cleanly if it's a link.
