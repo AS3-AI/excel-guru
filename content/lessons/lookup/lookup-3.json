@@ -1,0 +1,531 @@
+{
+  "id": "lookup-3",
+  "module": "lookup",
+  "title": "VLOOKUP 2: use a result in a calculation",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**VLOOKUP** finds a value in the first column and returns another column from that row. Its syntax is `=VLOOKUP(value,table,column number,FALSE)`: text typed as the value needs quotes, while numbers do not."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A shop lists items by code. Select the table VLOOKUP will search, without the headers: `A2:C5`.",
+      "grid": [
+        [
+          "Code",
+          "Item",
+          "Price",
+          null,
+          "Find",
+          "Result",
+          null
+        ],
+        [
+          "P-317",
+          "Rice",
+          8,
+          null,
+          "P-204",
+          null,
+          null
+        ],
+        [
+          "P-204",
+          "Tea",
+          6,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "P-425",
+          "Soap",
+          5,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "P-508",
+          "Oil",
+          9,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "target": "A2:C5"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "The code is typed in the formula in quotes. Find its item; in `F2`, type `=VLOOKUP(\"P-204\",A2:C5,2,FALSE)`.",
+      "grid": [
+        [
+          "Code",
+          "Item",
+          "Price",
+          null,
+          "Find",
+          "Result",
+          null
+        ],
+        [
+          "P-317",
+          "Rice",
+          8,
+          null,
+          "P-204",
+          null,
+          null
+        ],
+        [
+          "P-204",
+          "Tea",
+          6,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "P-425",
+          "Soap",
+          5,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "P-508",
+          "Oil",
+          9,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "F2",
+      "expectedValue": "Tea",
+      "mustUse": [
+        "VLOOKUP"
+      ],
+      "solution": "=VLOOKUP(\"P-204\",A2:C5,2,FALSE)",
+      "explain": "P-204 is in the table's second row, and column 2 of that row is Tea.",
+      "highlightCells": [
+        "A2:C5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\""
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "Find the score for roll number `204` in the numeric first column. In `G2`, type `=VLOOKUP(204,A2:C5,2,FALSE)`; the number is typed without quotes.",
+      "grid": [
+        [
+          "Roll",
+          "Score",
+          "Grade",
+          null,
+          null,
+          "Find",
+          "Score"
+        ],
+        [
+          317,
+          82,
+          "B",
+          null,
+          null,
+          204,
+          null
+        ],
+        [
+          204,
+          91,
+          "A",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          425,
+          76,
+          "C",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          508,
+          88,
+          "B",
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": 91,
+      "mustUse": [
+        "VLOOKUP"
+      ],
+      "solution": "=VLOOKUP(204,A2:C5,2,FALSE)",
+      "explain": "Roll number 204 is numeric and its row has a score of 91 in column 2.",
+      "highlightCells": [
+        "A2:C5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "The first column is unsorted. Find the price for the code in `E2` and multiply it by the quantity in `F2`. In `G2`, type `=VLOOKUP(E2,A2:C6,3,FALSE)*F2`.",
+      "grid": [
+        [
+          "Code",
+          "Item",
+          "Price",
+          null,
+          "Find",
+          "Qty",
+          "Total"
+        ],
+        [
+          "C-8",
+          "Mug",
+          7,
+          null,
+          "C-3",
+          4,
+          null
+        ],
+        [
+          "C-5",
+          "Plate",
+          9,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "C-3",
+          "Bowl",
+          6,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "C-9",
+          "Jar",
+          5,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "C-1",
+          "Cup",
+          3,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": 24,
+      "mustUse": [
+        "VLOOKUP"
+      ],
+      "solution": "=VLOOKUP(E2,A2:C6,3,FALSE)*F2",
+      "explain": "Code C-3 has a price of 6, and four items cost 24 altogether.",
+      "highlightCells": [
+        "E2",
+        "A2:C6",
+        "F2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "*"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "You may copy the formula down. In `G2`, type `=VLOOKUP(E2,$A$2:$C$6,3,FALSE)*F2`. The dollar signs keep the table fixed when the formula is copied down.",
+      "grid": [
+        [
+          "Code",
+          "Item",
+          "Price",
+          null,
+          "Find",
+          "Qty",
+          "Total"
+        ],
+        [
+          "D-7",
+          "Notebook",
+          12,
+          null,
+          "D-2",
+          2,
+          null
+        ],
+        [
+          "D-2",
+          "Pencil",
+          4,
+          null,
+          "D-7",
+          3,
+          null
+        ],
+        [
+          "D-9",
+          "Ruler",
+          5,
+          null,
+          "D-9",
+          2,
+          null
+        ],
+        [
+          "D-4",
+          "Eraser",
+          3,
+          null,
+          "D-4",
+          5,
+          null
+        ],
+        [
+          "D-1",
+          "Folder",
+          8,
+          null,
+          "D-1",
+          2,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": 8,
+      "mustUse": [
+        "VLOOKUP"
+      ],
+      "solution": "=VLOOKUP(E2,$A$2:$C$6,3,FALSE)*F2",
+      "explain": "D-2 costs 4 each, and the quantity of 2 makes a total of 8; the locked table range remains A2:C6 when copied.",
+      "highlightCells": [
+        "E2",
+        "$A$2:$C$6",
+        "F2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "*",
+        "$"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "In `G3`, find row 3's total using the same locked table.",
+      "grid": [
+        [
+          "Code",
+          "Item",
+          "Price",
+          null,
+          "Find",
+          "Qty",
+          "Total"
+        ],
+        [
+          "E-8",
+          "Tape",
+          5,
+          null,
+          "E-2",
+          3,
+          null
+        ],
+        [
+          "E-2",
+          "Glue",
+          7,
+          null,
+          "E-8",
+          2,
+          null
+        ],
+        [
+          "E-9",
+          "Brush",
+          4,
+          null,
+          "E-9",
+          4,
+          null
+        ],
+        [
+          "E-4",
+          "Paper",
+          2,
+          null,
+          "E-4",
+          6,
+          null
+        ],
+        [
+          "E-1",
+          "Paint",
+          9,
+          null,
+          "E-1",
+          2,
+          null
+        ]
+      ],
+      "targetCell": "G3",
+      "expectedValue": 10,
+      "mustUse": [
+        "VLOOKUP"
+      ],
+      "solution": "=VLOOKUP(E3,$A$2:$C$6,3,FALSE)*F3",
+      "explain": "Row 3's code E-8 costs 5, and its quantity is 2, so the total is 10.",
+      "highlightCells": [
+        "E3",
+        "$A$2:$C$6",
+        "F3"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "*",
+        "$"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "Why does `=VLOOKUP(P-204,A2:C6,2,FALSE)` fail when `P-204` is a text code?",
+      "options": [
+        "The text code needs quote marks in the formula",
+        "The lookup table must be sorted alphabetically",
+        "The column number should be 1"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A school shop lists items by code. How much do the 3 items with the code in `E2` cost? Put the total in `G2`.",
+      "grid": [
+        [
+          "Code",
+          "Item",
+          "Price",
+          null,
+          "Find",
+          "Qty",
+          "Total"
+        ],
+        [
+          "R-8",
+          "Folder",
+          7,
+          null,
+          "R-5",
+          3,
+          null
+        ],
+        [
+          "R-2",
+          "Pencil",
+          2,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "R-5",
+          "Notebook",
+          6,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "R-9",
+          "Ruler",
+          4,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": 18,
+      "mustUse": [
+        "VLOOKUP"
+      ],
+      "solution": "=VLOOKUP(E2,A2:C5,3,FALSE)*F2",
+      "explain": "Code R-5 is Notebook at 6 each, so three cost 18.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "*"
+      ]
+    }
+  ]
+}

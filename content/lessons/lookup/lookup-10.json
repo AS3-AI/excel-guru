@@ -1,0 +1,511 @@
+{
+  "id": "lookup-10",
+  "module": "lookup",
+  "title": "XLOOKUP with wildcards",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**XLOOKUP** can use wildcard match mode `2` to find text patterns. `*` stands for any number of characters and `?` stands for exactly one: `=XLOOKUP(pattern, look in, return, if not found, 2)`."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A craft shop lists item names and codes. Select the names to search, without the header: `A2:A5`.",
+      "grid": [
+        [
+          "Item",
+          "Code",
+          null,
+          null,
+          null,
+          "Find",
+          "Code"
+        ],
+        [
+          "Blue glue",
+          "G-4",
+          null,
+          null,
+          null,
+          "Glue*",
+          null
+        ],
+        [
+          "Gluestick refill",
+          "G-2",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Glue bottle",
+          "G-3",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Glove",
+          "G-5",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "target": "A2:A5"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Which code belongs to the first item beginning with Glue? The pattern is typed in the formula. In `G2`, type `=XLOOKUP(\"Glue*\",A2:A5,B2:B5,\"Not found\",2)`.",
+      "grid": [
+        [
+          "Item",
+          "Code",
+          null,
+          null,
+          null,
+          "Find",
+          "Code"
+        ],
+        [
+          "Blue glue",
+          "G-4",
+          null,
+          null,
+          null,
+          "Glue*",
+          null
+        ],
+        [
+          "Gluestick refill",
+          "G-2",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Glue bottle",
+          "G-3",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Glove",
+          "G-5",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "G-2",
+      "mustUse": [
+        "XLOOKUP"
+      ],
+      "solution": "=XLOOKUP(\"Glue*\",A2:A5,B2:B5,\"Not found\",2)",
+      "explain": "Blue glue has extra letters before Glue, so it does not match; Gluestick refill is the first name that does.",
+      "highlightCells": [
+        "A2:A5",
+        "B2:B5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\"",
+        "*"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "The pattern is in `F2`. Which code belongs to the first name matching it? In `G2`, find the item that starts with Glue using `F2`.",
+      "grid": [
+        [
+          "Item",
+          "Code",
+          null,
+          null,
+          null,
+          "Find",
+          "Code"
+        ],
+        [
+          "Blue glue",
+          "G-4",
+          null,
+          null,
+          null,
+          "Glue*",
+          null
+        ],
+        [
+          "Gluestick refill",
+          "G-2",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Glue bottle",
+          "G-3",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Glove",
+          "G-5",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "G-2",
+      "mustUse": [
+        "XLOOKUP"
+      ],
+      "solution": "=XLOOKUP(F2,A2:A5,B2:B5,\"Not found\",2)",
+      "explain": "F2 contains Glue*, which skips Blue glue and matches Gluestick refill first, returning G-2.",
+      "highlightCells": [
+        "F2",
+        "A2:A5",
+        "B2:B5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\"",
+        "*"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "In `G2`, find the code for a name that is `Pa`, one letter, then `er`.",
+      "grid": [
+        [
+          "Item",
+          "Code",
+          null,
+          null,
+          null,
+          "Find",
+          "Code"
+        ],
+        [
+          "Pamper",
+          "P-6",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Paler",
+          "P-4",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Paver",
+          "P-5",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Paler pad",
+          "P-7",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "P-4",
+      "mustUse": [
+        "XLOOKUP"
+      ],
+      "solution": "=XLOOKUP(\"Pa?er\",A2:A5,B2:B5,\"Not found\",2)",
+      "explain": "The question mark matches just one letter, so Pamper is skipped and Paler is the first five-letter match.",
+      "highlightCells": [
+        "A2:A5",
+        "B2:B5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\"",
+        "?"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "The pattern in `F2` can match any text before and after `lue`. Which code belongs to the first name containing those letters? In `G2`, find the item matching `*lue*`.",
+      "grid": [
+        [
+          "Item",
+          "Code",
+          null,
+          null,
+          null,
+          "Find",
+          "Code"
+        ],
+        [
+          "Blue glue",
+          "G-4",
+          null,
+          null,
+          null,
+          "*lue*",
+          null
+        ],
+        [
+          "Gluestick refill",
+          "G-2",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Glue bottle",
+          "G-3",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Glove",
+          "G-5",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "G-4",
+      "mustUse": [
+        "XLOOKUP"
+      ],
+      "solution": "=XLOOKUP(F2,A2:A5,B2:B5,\"Not found\",2)",
+      "explain": "The leading and trailing asterisks allow text on both sides of lue, so Blue glue matches first and returns G-4.",
+      "highlightCells": [
+        "F2",
+        "A2:A5",
+        "B2:B5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\"",
+        "*"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "The pattern in `F2` is `*tape`. Which code belongs to the first item whose name ends with tape? In `G2`, find it.",
+      "grid": [
+        [
+          "Item",
+          "Code",
+          null,
+          null,
+          null,
+          "Find",
+          "Code"
+        ],
+        [
+          "Tape measure",
+          "T-3",
+          null,
+          null,
+          null,
+          "*tape",
+          null
+        ],
+        [
+          "Painter tape",
+          "T-2",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Tape roll",
+          "T-4",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Tape",
+          "T-1",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "T-2",
+      "mustUse": [
+        "XLOOKUP"
+      ],
+      "solution": "=XLOOKUP(F2,A2:A5,B2:B5,\"Not found\",2)",
+      "explain": "`*tape` skips Tape measure because text follows tape; Painter tape is the first name ending in tape.",
+      "highlightCells": [
+        "F2",
+        "A2:A5",
+        "B2:B5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\"",
+        "*"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "`=XLOOKUP(\"Glue*\",A2:A5,B2:B5,\"Not found\")` returns Not found even though Glue bottle is listed. Why?",
+      "options": [
+        "Match mode `2` is missing, so `*` is read as a real asterisk",
+        "Patterns need `?` instead of `*`",
+        "The lookup range must include the header"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A stationery list has a name that starts with Clip. Which code belongs to the first matching item? Put the result in `G2`.",
+      "grid": [
+        [
+          "Item",
+          "Code",
+          null,
+          null,
+          null,
+          "Find",
+          "Code"
+        ],
+        [
+          "Paper clips",
+          "C-7",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Clip box",
+          "C-8",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Clips",
+          "C-9",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Clip refill",
+          "C-10",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "C-8",
+      "mustUse": [
+        "XLOOKUP"
+      ],
+      "solution": "=XLOOKUP(\"Clip*\",A2:A5,B2:B5,\"Not found\",2)",
+      "explain": "Paper clips has characters before Clip, so the first name starting with Clip is Clip box, code C-8.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\"",
+        "*"
+      ]
+    }
+  ]
+}
