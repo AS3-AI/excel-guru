@@ -48,7 +48,8 @@ cd .claude/worktrees/<card> && codex exec -C "$PWD" -s workspace-write \
   -o $CLAUDE_JOB_DIR/tmp/codex/<card>-result.md "$(cat $CLAUDE_JOB_DIR/tmp/codex/<card>-prompt.md)" \
   > $CLAUDE_JOB_DIR/tmp/codex/<card>-log.txt 2>&1
 ```
-Never use --dangerously-bypass-approvals-and-sandbox. Codex can't commit (the worktree's git dir is outside its sandbox).
+Always run it with `run_in_background` and `< /dev/null`: in a foreground shell `codex exec` waits on stdin
+("Reading additional input from stdin…") and hangs with no session log. Never use --dangerously-bypass-approvals-and-sandbox. Codex can't commit (the worktree's git dir is outside its sandbox).
 
 ## 4. Verify (Claude, outside the sandbox)
 1. Read the result file; `git status --short` — only card files changed?
