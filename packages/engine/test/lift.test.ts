@@ -37,7 +37,30 @@ describe("element-wise function lifting", () => {
   it("IF with a scalar condition can return an array branch", () => {
     expect(ev("=IF(TRUE,A1:A2,0)", [[1], [2]])).toEqual([[1], [2]]);
   });
+  it("IF broadcasts array conditions and branches in both dimensions", () => {
+    expect(ev("=IF(A1:A3>1,B1:B3,0)", [[1, 10], [2, 20], [3, 30]])).toEqual([[0], [20], [30]]);
+    expect(ev("=IF(A1:C1>1,A2:C2,0)", [[1, 2, 3], [4, 5, 6]])).toEqual([[0, 5, 6]]);
+    expect(ev("=SUM(IF(A1:A3>1,B1:B3,0))", [[1, 10], [2, 20], [3, 30]])).toBe(50);
+  });
   it("range taking functions still receive whole arrays", () => expect(ev("=SUM(LEN(A1:A3))", [["a"], ["ab"], ["abc"]])).toBe(6));
+  it("only explicitly listed functions lift", () => {
+    const grid = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+    expect(ev("=MEDIAN(A1:A3)", grid)).toBe(4);
+    expect(ev("=AVERAGEA(A1:A3)", grid)).toBe(4);
+    expect(ev("=MAXIFS(A1:A3,A1:A3,\">0\")", grid)).toBe(7);
+    expect(ev("=ROWS(A1:A3)", grid)).toBe(3);
+    expect(ev("=COLUMNS(A1:C1)", grid)).toBe(3);
+    expect(ev("=MODE(A1:A3)", [[1], [1], [2]])).toEqual({ error: "#NAME?" });
+    expect(ev("=SMALL(A1:A3,2)", grid)).toBe(4);
+    expect(ev("=LARGE(A1:A3,2)", grid)).toBe(4);
+    expect(ev("=SUMPRODUCT(A1:A3)", grid)).toBe(12);
+    expect(ev('=TEXTJOIN(",",TRUE,A1:A3)', [["a"], ["b"], ["c"]])).toBe("a,b,c");
+    expect(ev("=CONCAT(A1:A3)", [["a"], ["b"], ["c"]])).toBe("abc");
+  });
+  it("CONCATENATE lifts while COUNTIF criteria positions lift", () => {
+    expect(ev('=CONCATENATE(C1:C3,"x")', [[0, 0, "a"], [0, 0, "b"], [0, 0, "c"]])).toEqual([["ax"], ["bx"], ["cx"]]);
+    expect(ev("=COUNTIF(A1:A3,A1:A2)", [[1], [1], [2]])).toEqual([[2], [2]]);
+  });
   it("COUNT still counts a whole range", () => expect(ev("=COUNT(A1:A3)", [[1], ["x"], [2]])).toBe(2));
   it("TEXTJOIN still joins a whole range", () => expect(ev('=TEXTJOIN(",",TRUE,A1:A3)', [["a"], [null], ["b"]])).toBe("a,b"));
   const extra: [string, CellValue[][], CellValue | Matrix][] = [

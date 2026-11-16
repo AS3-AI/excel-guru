@@ -1,6 +1,6 @@
 import type { Ast, BinaryOp } from "./parser";
 import { parseAddress, parseArea } from "./address";
-import { lookupFunction, rangeArgumentPositions, type Arg } from "./functions";
+import { lookupFunction, liftingArgumentPositions, rangeArgumentPositions, type Arg } from "./functions";
 
 export type ErrorCode = "#DIV/0!" | "#N/A" | "#VALUE!" | "#REF!" | "#NAME?" | "#NUM!" | "#SPILL!" | "#CIRC!";
 export type ExcelError = { error: ErrorCode };
@@ -147,19 +147,17 @@ class Evaluator {
     }
   }
 
-  /** Positions that consume a complete array. Every other function argument is scalar-lifted. */
+  /** Only explicitly listed single-value positions are scalar-lifted. */
   private liftFunction(name: string, fn: (...args: Arg[]) => Value, asts: Ast[], values: Arg[]): Value {
+    const lifting = liftingArgumentPositions[name] ?? [];
     const ranges = rangeArgumentPositions[name] ?? [];
-    const arraySlots = values.map((v, i) => !ranges.includes(i) && !ranges.includes(-1) && Array.isArray(v));
+    const arraySlots = values.map((v, i) => (lifting.includes(-1) || lifting.includes(i)) && !ranges.includes(i) && Array.isArray(v));
     if (!arraySlots.some(Boolean)) return fn(...values);
     const singles = values.map((v, i) => arraySlots[i] ? v as Matrix : null);
     const arrays = singles.filter((v): v is Matrix => v !== null);
     const rows = Math.max(...arrays.map((m) => m.length));
     const cols = Math.max(...arrays.map((m) => m[0]?.length ?? 0));
-    const at = (m: Matrix, r: number, c: number): CellValue | undefined => {
-      const row = m.length === 1 ? m[0] : m[r];
-      return row ? (row.length === 1 ? row[0] : row[c]) : undefined;
-    };
+    const at = matrixAt;
     const matrix: Matrix = [];
     for (let r = 0; r < rows; r++) {
       const row: CellValue[] = [];
@@ -169,17 +167,6 @@ class Evaluator {
           const cell = at(v as Matrix, r, c);
           return cell === undefined ? err("#N/A") : cell;
         });
-        // For IF, do not evaluate a branch unless at least one element needs it.
-        if (name === "IF") {
-          const cond = toBoolean(cellArgs[0] as CellValue);
-          if (isError(cond)) { row.push(cond); continue; }
-          const branchIndex = cond ? 1 : 2;
-          if (!asts[branchIndex]) { row.push(false); continue; }
-          const ast = asts[branchIndex]!;
-          const branchValue = ast.type === "empty" ? 0 : this.eval(ast);
-          row.push(Array.isArray(branchValue) ? (branchValue[0]?.[0] ?? 0) : branchValue);
-          continue;
-        }
         row.push(fn(...cellArgs) as CellValue);
       }
       matrix.push(row);
@@ -205,13 +192,23 @@ class Evaluator {
       if (!branch) return false;
       return branch.type === "empty" ? 0 : this.eval(branch);
     });
-    return truth.map((row) => row.map((v, r) => {
-      if (isError(v)) return v;
-      const branch = branches[v ? 0 : 1];
-      if (!Array.isArray(branch)) return branch ?? false;
-      const cell = branch.length === 1 ? branch[0]?.[0] : branch[r]?.[0];
-      return cell ?? err("#N/A");
-    }));
+    const matrices = [condition, ...branches.filter((b): b is Value => Array.isArray(b)) as Matrix[]];
+    const rows = Math.max(...matrices.map((m) => m.length));
+    const cols = Math.max(...matrices.map((m) => m[0]?.length ?? 0));
+    const out: Matrix = [];
+    for (let r = 0; r < rows; r++) {
+      const row: CellValue[] = [];
+      for (let c = 0; c < cols; c++) {
+        const raw = matrixAt(condition, r, c);
+        const v = raw === undefined ? err("#N/A") : toBoolean(raw);
+        if (isError(v)) { row.push(v); continue; }
+        const branch = branches[v ? 0 : 1] ?? false;
+        const cell = Array.isArray(branch) ? matrixAt(branch, r, c) : branch;
+        row.push(cell === undefined ? err("#N/A") : cell);
+      }
+      out.push(row);
+    }
+    return out;
   }
 
   /**
@@ -269,11 +266,7 @@ function lift2(l: Value, r: Value, f: (a: CellValue, b: CellValue) => CellValue)
   const b: Matrix = Array.isArray(r) ? r : [[r]];
   const rows = Math.max(a.length, b.length);
   const cols = Math.max(a[0]?.length ?? 0, b[0]?.length ?? 0);
-  const at = (m: Matrix, i: number, j: number): CellValue | undefined => {
-    const row = m.length === 1 ? m[0] : m[i];
-    if (!row) return undefined;
-    return row.length === 1 ? row[0] : row[j];
-  };
+  const at = matrixAt;
   const out: Matrix = [];
   for (let i = 0; i < rows; i++) {
     const row: CellValue[] = [];
@@ -285,6 +278,13 @@ function lift2(l: Value, r: Value, f: (a: CellValue, b: CellValue) => CellValue)
     out.push(row);
   }
   return out;
+}
+
+/** Single rows and columns repeat; absent positions in incompatible shapes return undefined. */
+function matrixAt(m: Matrix, r: number, c: number): CellValue | undefined {
+  const row = m.length === 1 ? m[0] : m[r];
+  if (!row) return undefined;
+  return row.length === 1 ? row[0] : row[c];
 }
 
 /** A 1×1 range reads as its cell; any larger range is #VALUE! in a scalar slot. */
