@@ -501,7 +501,7 @@ Copy mechanics, flows, page structure and the gamification model. Never copy the
 
 ### 5. Lesson schema v2 (replaces v1 today, before content generation)
 
-This is the only lesson schema; the v1 example is retired. The example below shows every step type in one file — a real lesson uses a few of them. Step types: `formula`, `select` (click a cell, range, column or row), `shortcut` with `mode: "chord"` (hold keys, press one) or `"sequence"` (Alt key-tips pressed in order), `mcq`, `picture`, `project` and `info`. Every step has an `id`, which the API uses as `stepId`. Optional step fields: `activeCell`, `highlightCells`, `postcondition` (grid or selection shown after success), `mobileButtons`. Lesson fields: `difficulty` (1–3), `requiredCorrect`, `isIntro`, `video`. Order is not stored in the lesson; it lives only in `content/order.json`.
+This is the only lesson schema; the v1 example is retired. The example below shows every step type in one file — a real lesson uses a few of them. Step types: `formula`, `select` (click a cell, range, column or row), `shortcut` with `mode: "chord"` (hold keys, press one) or `"sequence"` (Alt key-tips pressed in order), `mcq`, `picture`, `project` and `info`. Every step has an `id`, which the API uses as `stepId`. Optional step fields: `activeCell`, `highlightCells`, `postcondition` (`grid`, `selection` or shortcut-only `format` shown after success), `mobileButtons`; shortcut steps also accept an optional `grid` (up to 7 columns × 8 rows, equal row lengths, with `null` for empty cells; `postcondition.grid` follows the same limits, neither grid may be empty, and `activeCell`, `postcondition.selection` and `format` keys must fall inside the grid shown at that moment). `postcondition.format` maps cell or range references to arrays containing `bold`, `italic`, `underline`, `strikethrough`, `center` or `border`. Lesson fields: `difficulty` (1–3), `requiredCorrect`, `isIntro`, `video`. Order is not stored in the lesson; it lives only in `content/order.json`.
 
 ```json
 {
@@ -517,7 +517,8 @@ This is the only lesson schema; the v1 example is retired. The example below sho
       "highlightCells": ["B2:B6"], "mobileButtons": ["(", ")", ":"] },
     { "id": "s3", "type": "shortcut", "mode": "chord", "prompt": "Extend the selection one cell right.",
       "keys": { "win": "Shift+ArrowRight", "mac": "Shift+ArrowRight" }, "activeCell": "B2",
-      "postcondition": { "selection": "B2:C2" } },
+      "grid": [["Item","Qty","Total"],["Pens",12,null]],
+      "postcondition": { "selection": "B2:C2", "grid": [["Item","Qty","Total"],["Pens",12,12]], "format": { "B2:C2": ["bold", "center"] } } },
     { "id": "s4", "type": "shortcut", "mode": "sequence", "prompt": "Make the text bold with key tips.",
       "keys": { "win": ["Alt", "H", "1"], "mac": null }, "pics": ["r0.png", "r1.png", "r2.png", "r3.png"] },
     { "id": "s5", "type": "mcq", "prompt": "Which function counts only cells that contain numbers?",

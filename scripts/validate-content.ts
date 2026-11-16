@@ -166,13 +166,13 @@ const BASE = { id: true, type: true, activeCell: true, highlightCells: true, pos
 const STEP_FIELDS: { [T in StepType]: Fields<Extract<Step, { type: T }>> } = {
   formula: { ...BASE, prompt: true, grid: true, targetCell: true, expectedValue: true, mustUse: true, solution: true, explain: true },
   select: { ...BASE, prompt: true, grid: true, target: true },
-  shortcut: { ...BASE, mode: true, prompt: true, keys: true, pics: true },
+  shortcut: { ...BASE, mode: true, prompt: true, keys: true, pics: true, grid: true },
   mcq: { ...BASE, prompt: true, options: true, answer: true },
   picture: { ...BASE, prompt: true, image: true, accept: true },
   project: { ...BASE, prompt: true, file: true, accept: true },
   info: { ...BASE, text: true },
 };
-const POSTCONDITION_FIELDS: Fields<Postcondition> = { grid: true, selection: true };
+const POSTCONDITION_FIELDS: Fields<Postcondition> = { grid: true, selection: true, format: true };
 const KEYS_FIELDS: Fields<ShortcutChordStep["keys"]> & Fields<ShortcutSequenceStep["keys"]> = { win: true, mac: true };
 
 /** Reports keys of `obj` outside `allowed`, suggesting a case/underscore/hyphen variant. */
@@ -268,6 +268,10 @@ function checkStepShape(s: Obj, fail: Fail) {
       const { grid, selection } = s.postcondition;
       if (grid !== undefined && !isGrid(grid)) fail("postcondition.grid must be an array of rows of strings, numbers, booleans or null");
       if (selection !== undefined && typeof selection !== "string") fail("postcondition.selection must be a string");
+      if (s.postcondition.format !== undefined) {
+        if (s.type !== "shortcut") fail("postcondition.format is only allowed on shortcut steps");
+        else if (!isObj(s.postcondition.format) || Object.entries(s.postcondition.format).some(([, styles]) => !Array.isArray(styles) || !styles.every((style) => typeof style === "string"))) fail("postcondition.format must map cell or range references to arrays of styles");
+      }
     }
   }
   if (s.mobileButtons !== undefined && !isStrings(s.mobileButtons)) fail("mobileButtons must be an array of strings");
@@ -313,6 +317,7 @@ function checkStepShape(s: Obj, fail: Fail) {
         need("keys.mac", isTexts(mac) || mac === null, "a non-empty array of strings or null for a sequence");
       }
       if (s.pics !== undefined) need("pics", isStrings(s.pics), "an array of strings");
+      if (s.grid !== undefined && !isGrid(s.grid)) fail("grid must be an array of rows of strings, numbers, booleans or null");
       return;
     }
     case "mcq": {
@@ -521,12 +526,62 @@ function checkCombo(combo: string, bareModifierOk: boolean, label: string, fail:
   if (isReservedCombo(combo)) fail(`${label} "${combo}" uses a browser-reserved combo (Ctrl/Cmd + W, T, N, Q, Tab)`);
 }
 
+const ALLOWED_FORMAT_STYLES = new Set(["bold", "italic", "underline", "strikethrough", "center", "border"]);
+
+function checkShortcutGrid(grid: unknown[][], label: string, fail: Fail): { rows: number; cols: number } | null {
+  const rows = grid.length;
+  const cols = Math.max(0, ...grid.map((row) => (Array.isArray(row) ? row.length : 0)));
+  if (rows === 0 || cols === 0) {
+    fail(`${label} must not be empty`);
+    return null;
+  }
+  if (cols > 7 || rows > 8) fail(`${label} must have at most 7 columns and 8 rows`);
+  if (grid.some((row) => !Array.isArray(row) || row.length !== cols)) fail(`${label} rows must have equal length`);
+  return { rows, cols };
+}
+
+function isInside(ref: string, rows: number, cols: number): boolean {
+  const parsed = parseTarget(ref);
+  return (
+    !!parsed &&
+    parsed.parts.every((part) =>
+      part.kind === "col"
+        ? rows > 0 && part.col < cols
+        : part.kind === "row"
+          ? cols > 0 && part.row < rows
+          : part.row < rows && part.col < cols,
+    )
+  );
+}
+
 function checkShortcut(step: ShortcutStep, fail: Fail) {
   for (const os of ["win", "mac"] as const) {
     const keys = step.keys[os];
     if (keys === null) continue;
     // A sequence entry may be a lone modifier, e.g. the "Alt" that opens key tips.
     for (const combo of Array.isArray(keys) ? keys : [keys]) checkCombo(combo, step.mode === "sequence", `${os} shortcut`, fail);
+  }
+
+  const stepGridDim = step.grid ? checkShortcutGrid(step.grid, "grid", fail) : null;
+  const postGridDim = step.postcondition?.grid ? checkShortcutGrid(step.postcondition.grid, "postcondition.grid", fail) : null;
+
+  if (step.activeCell && stepGridDim && !isInside(step.activeCell, stepGridDim.rows, stepGridDim.cols)) {
+    fail(`activeCell "${step.activeCell}" is outside the grid`);
+  }
+
+  const targetDim = step.postcondition?.grid ? postGridDim : stepGridDim;
+  const selection = step.postcondition?.selection;
+  if (selection && targetDim && !isInside(selection, targetDim.rows, targetDim.cols)) {
+    fail(`postcondition.selection "${selection}" is outside the grid`);
+  }
+
+  for (const [ref, styles] of Object.entries(step.postcondition?.format ?? {})) {
+    if (targetDim && !isInside(ref, targetDim.rows, targetDim.cols)) {
+      fail(`postcondition.format key "${ref}" is outside the grid`);
+    }
+    for (const style of styles) {
+      if (!ALLOWED_FORMAT_STYLES.has(style)) fail(`postcondition.format style "${style}" is not allowed`);
+    }
   }
 }
 

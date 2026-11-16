@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { ShortcutStep as ShortcutStepType, Os } from "@excel-guru/grader";
 import { normaliseKeys } from "@excel-guru/grader";
 import type { KeyEventLike } from "@excel-guru/grader";
 import { RichText } from "../../../../../components/RichText";
+import { Grid } from "../../../../../components/grid/Grid";
+import { shortcutView } from "../../../../../lib/shortcut-view";
 import "./shortcut.css";
 
 type Mode = "chord" | "sequence";
@@ -54,10 +56,12 @@ function keyHint(step: ShortcutStepType, os: Os): string {
 
 export function ShortcutStep({ step, os, touch, showPostcondition, onAttempt, onSkip, onSkipSection, onPracticeReady }:{ step: ShortcutStepType; os: Os; touch: boolean; showPostcondition?: boolean; onAttempt:(input:string, correct:boolean)=>void; onSkip:()=>void; onSkipSection:()=>void; onPracticeReady?:(node:HTMLElement|null)=>void }) {
   const [sequenceIndex, setSequenceIndex] = useState(0);
+  const practiceRef = useRef<HTMLElement>(null);
   const keys = step.keys[os];
   const expected = useMemo(() => keys === null ? [] : Array.isArray(keys) ? keys : [keys], [keys]);
   const isMissingMac = os === "mac" && keys === null;
   const hint = keyHint(step, os);
+  const view = shortcutView(step, Boolean(showPostcondition));
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
     if (keys === null || event.defaultPrevented) return;
@@ -72,13 +76,13 @@ export function ShortcutStep({ step, os, touch, showPostcondition, onAttempt, on
     if (step.mode === "sequence" && result.status === "wrong") setSequenceIndex(0);
   };
 
-  return <section className="shortcut-practice" tabIndex={0} aria-label="Shortcut practice area" onKeyDown={onKeyDown} ref={onPracticeReady}>
+  return <section className="shortcut-practice" tabIndex={0} aria-label="Shortcut practice area" onKeyDown={onKeyDown} ref={(node) => { practiceRef.current = node; onPracticeReady?.(node); }}>
     {touch && <div className="shortcut-banner" role="status">Mobile device detected — <button type="button" onClick={onSkipSection}>Skip section</button></div>}
     <p className="shortcut-prompt"><RichText text={step.prompt} /></p>
     {isMissingMac ? <div className="shortcut-skip" role="status">This shortcut is not available on Mac. <button type="button" onClick={onSkip}>Skip this step</button></div> : <>
-      {step.pics?.length ? <div className="shortcut-picture" aria-live="polite"><img src={step.pics[Math.min(sequenceIndex, step.pics.length - 1)]} alt={`Shortcut step ${sequenceIndex + 1}`} /></div> : <div className="shortcut-grid" aria-hidden="true"><span>{showPostcondition ? step.postcondition?.selection ?? "A1" : "A1"}</span><span>{showPostcondition ? step.postcondition?.grid?.[0]?.[0] ?? "Excel" : "Excel"}</span></div>}
+      {step.pics?.length ? <div className="shortcut-picture" aria-live="polite"><img src={step.pics[Math.min(sequenceIndex, step.pics.length - 1)]} alt={`Shortcut step ${sequenceIndex + 1}`} /></div> : view ? <div className="shortcut-grid-wrap"><Grid key={`${step.id}-${showPostcondition ? "after" : "before"}`} grid={view.grid} displayOnly activeCell={view.activeCell} selection={view.selection} highlightCells={[view.selection]} format={view.format} onDisplayClick={() => practiceRef.current?.focus({ preventScroll: true })} /></div> : <div className="shortcut-grid" aria-hidden="true"><span>{showPostcondition ? step.postcondition?.selection ?? "A1" : step.activeCell ?? "A1"}</span><span>{showPostcondition ? step.postcondition?.grid?.[0]?.[0] ?? "Excel" : "Excel"}</span></div>}
       <p className="shortcut-hint" aria-live="polite">{step.mode === "sequence" && sequenceIndex > 0 ? `${sequenceIndex} of ${expected.length}: ` : ""}{hint}</p>
-      {showPostcondition && step.postcondition && <div className="shortcut-postcondition" aria-label="After the shortcut">{step.postcondition.selection && <span>Selection: {step.postcondition.selection}</span>}{step.postcondition.grid && <span>{step.postcondition.grid.map((row) => row.join(" · ")).join(" / ")}</span>}</div>}
+      {showPostcondition && step.postcondition && (view ? <span className="shortcut-after" role="status">After</span> : <div className="shortcut-postcondition" aria-label="After the shortcut">{step.postcondition.selection && <span>Selection: {step.postcondition.selection}</span>}{step.postcondition.grid && <span>{step.postcondition.grid.map((row) => row.join(" · ")).join(" / ")}</span>}</div>)}
     </>}
   </section>;
 }

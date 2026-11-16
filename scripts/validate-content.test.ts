@@ -1,3 +1,5 @@
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -14,6 +16,23 @@ function errorsFor(name: string, file: string): string[] {
   return results.find((r) => r.file === file)?.errors ?? [];
 }
 
+/** Dynamic fixture helper that validates a synthetic lesson without touching the repo tree. */
+function validateLesson(lesson: Record<string, unknown>): string[] {
+  const root = mkdtempSync(join(tmpdir(), "validate-test-"));
+  try {
+    const mod = String(lesson.module ?? "testmod");
+    const id = String(lesson.id ?? "test-1");
+    const dir = join(root, "lessons", mod);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, `${id}.json`), JSON.stringify(lesson));
+    writeFileSync(join(root, "order.json"), JSON.stringify([id]));
+    const results = validateContent(root);
+    return results.find((r) => r.file.endsWith(`${id}.json`))?.errors ?? [];
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+}
+
 /** Every reported error must name its file, so CI output is self-explanatory. */
 function expectEveryErrorNamesItsFile(name: string) {
   const results = validateContent(fixture(name));
@@ -27,6 +46,244 @@ function expectEveryErrorNamesItsFile(name: string) {
 describe("validateContent: valid content", () => {
   it("accepts a valid lesson set (formula, select in all four shapes, shortcuts, mcq, info)", () => {
     expect(validateContent(fixture("valid"))).toEqual([]);
+  });
+
+  it("accepts a shortcut lesson fixture with a grid and formatted postcondition", () => {
+    expect(validateContent(fixture("shortcut-grid"))).toEqual([]);
+  });
+});
+
+describe("validateContent: shortcut grids and formatting", () => {
+  it("checks dimensions, rectangular rows, references and allowed format styles", () => {
+    const errors = errorsFor("shortcut-grid-invalid", lessonFile("shortcut-grid-invalid", "nav/nav-1.json"));
+    expect(errors).toEqual(expect.arrayContaining([
+      expect.stringMatching(/step "large": grid must have at most 7 columns and 8 rows/),
+      expect.stringMatching(/step "ragged": grid rows must have equal length/),
+      expect.stringMatching(/step "active": activeCell "C1" is outside the grid/),
+      expect.stringMatching(/step "selection": postcondition\.selection "A1:C1" is outside the grid/),
+      expect.stringMatching(/step "format-key": postcondition\.format key "C1" is outside the grid/),
+      expect.stringMatching(/step "style": postcondition\.format style "shadow" is not allowed/),
+    ]));
+  });
+
+  it("rejects postcondition.format on non-shortcut steps", () => {
+    const errors = validateLesson({
+      id: "formula-format",
+      module: "nav",
+      title: "Formula format",
+      difficulty: 1,
+      requiredCorrect: 1,
+      isIntro: false,
+      video: null,
+      steps: [
+        {
+          id: "f1",
+          type: "formula",
+          prompt: "Formula step",
+          grid: [[1, 2]],
+          targetCell: "A1",
+          expectedValue: 1,
+          solution: "=1",
+          postcondition: { format: { "A1": ["bold"] } },
+        },
+      ],
+    });
+    expect(errors).toEqual([
+      expect.stringMatching(/step "f1": postcondition\.format is only allowed on shortcut steps/),
+    ]);
+  });
+
+  it("applies size rules to postcondition.grid", () => {
+    const errors = validateLesson({
+      id: "post-grid-limits",
+      module: "nav",
+      title: "Postcondition grid limits",
+      difficulty: 1,
+      requiredCorrect: 3,
+      isIntro: false,
+      video: null,
+      steps: [
+        {
+          id: "large-post",
+          type: "shortcut",
+          mode: "chord",
+          prompt: "x",
+          keys: { win: "Ctrl+B", mac: "Cmd+B" },
+          postcondition: { grid: [[1, 2, 3, 4, 5, 6, 7, 8]] },
+        },
+        {
+          id: "ragged-post",
+          type: "shortcut",
+          mode: "chord",
+          prompt: "x",
+          keys: { win: "Ctrl+B", mac: "Cmd+B" },
+          postcondition: { grid: [[1, 2], [3]] },
+        },
+        {
+          id: "tall-post",
+          type: "shortcut",
+          mode: "chord",
+          prompt: "x",
+          keys: { win: "Ctrl+B", mac: "Cmd+B" },
+          postcondition: { grid: [[1], [2], [3], [4], [5], [6], [7], [8], [9]] },
+        },
+      ],
+    });
+    expect(errors).toEqual(expect.arrayContaining([
+      expect.stringMatching(/step "large-post": postcondition\.grid must have at most 7 columns and 8 rows/),
+      expect.stringMatching(/step "ragged-post": postcondition\.grid rows must have equal length/),
+      expect.stringMatching(/step "tall-post": postcondition\.grid must have at most 7 columns and 8 rows/),
+    ]));
+  });
+
+  it("allows postcondition.grid one row larger than step.grid, and checks format keys against postcondition.grid", () => {
+    const validErrors = validateLesson({
+      id: "larger-grid",
+      module: "nav",
+      title: "Larger postcondition grid",
+      difficulty: 1,
+      requiredCorrect: 1,
+      isIntro: false,
+      video: null,
+      steps: [
+        {
+          id: "s1",
+          type: "shortcut",
+          mode: "chord",
+          prompt: "Extend selection",
+          keys: { win: "Ctrl+ArrowDown", mac: "Cmd+ArrowDown" },
+          activeCell: "B2",
+          grid: [
+            ["Item", "Qty"],
+            ["Pens", 10],
+          ],
+          postcondition: {
+            selection: "B3",
+            grid: [
+              ["Item", "Qty"],
+              ["Pens", 10],
+              ["Total", 10],
+            ],
+            format: { "B3": ["bold"] },
+          },
+        },
+      ],
+    });
+    expect(validErrors).toEqual([]);
+
+    const invalidErrors = validateLesson({
+      id: "format-outside-post",
+      module: "nav",
+      title: "Format key outside postcondition grid",
+      difficulty: 1,
+      requiredCorrect: 1,
+      isIntro: false,
+      video: null,
+      steps: [
+        {
+          id: "s1",
+          type: "shortcut",
+          mode: "chord",
+          prompt: "Extend selection",
+          keys: { win: "Ctrl+ArrowDown", mac: "Cmd+ArrowDown" },
+          activeCell: "B2",
+          grid: [
+            ["Item", "Qty"],
+            ["Pens", 10],
+          ],
+          postcondition: {
+            grid: [
+              ["Item", "Qty"],
+              ["Pens", 10],
+              ["Total", 10],
+            ],
+            format: { "B4": ["bold"] },
+          },
+        },
+      ],
+    });
+    expect(invalidErrors).toEqual([
+      expect.stringMatching(/step "s1": postcondition\.format key "B4" is outside the grid/),
+    ]);
+  });
+
+  it("keeps today's behaviour when neither grid exists", () => {
+    const errors = validateLesson({
+      id: "no-grids",
+      module: "nav",
+      title: "No grids",
+      difficulty: 1,
+      requiredCorrect: 1,
+      isIntro: false,
+      video: null,
+      steps: [
+        {
+          id: "s1",
+          type: "shortcut",
+          mode: "chord",
+          prompt: "x",
+          keys: { win: "Ctrl+B", mac: "Cmd+B" },
+          activeCell: "Z99",
+          postcondition: {
+            selection: "Z99:Z100",
+            format: { "Z99": ["bold"] },
+          },
+        },
+      ],
+    });
+    expect(errors).toEqual([]);
+  });
+
+  it("rejects an empty grid ([] or [[]]) on a shortcut step with a clear message", () => {
+    const errors = validateLesson({
+      id: "empty-grids",
+      module: "nav",
+      title: "Empty grids",
+      difficulty: 1,
+      requiredCorrect: 4,
+      isIntro: false,
+      video: null,
+      steps: [
+        {
+          id: "empty-step-grid",
+          type: "shortcut",
+          mode: "chord",
+          prompt: "x",
+          keys: { win: "Ctrl+B", mac: "Cmd+B" },
+          grid: [],
+        },
+        {
+          id: "empty-row-step-grid",
+          type: "shortcut",
+          mode: "chord",
+          prompt: "x",
+          keys: { win: "Ctrl+B", mac: "Cmd+B" },
+          grid: [[]],
+        },
+        {
+          id: "empty-post-grid",
+          type: "shortcut",
+          mode: "chord",
+          prompt: "x",
+          keys: { win: "Ctrl+B", mac: "Cmd+B" },
+          postcondition: { grid: [] },
+        },
+        {
+          id: "empty-row-post-grid",
+          type: "shortcut",
+          mode: "chord",
+          prompt: "x",
+          keys: { win: "Ctrl+B", mac: "Cmd+B" },
+          postcondition: { grid: [[]] },
+        },
+      ],
+    });
+    expect(errors).toEqual(expect.arrayContaining([
+      expect.stringMatching(/step "empty-step-grid": grid must not be empty/),
+      expect.stringMatching(/step "empty-row-step-grid": grid must not be empty/),
+      expect.stringMatching(/step "empty-post-grid": postcondition\.grid must not be empty/),
+      expect.stringMatching(/step "empty-row-post-grid": postcondition\.grid must not be empty/),
+    ]));
   });
 });
 
