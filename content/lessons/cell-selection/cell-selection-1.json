@@ -1,0 +1,399 @@
+{
+  "id": "cell-selection-1",
+  "module": "cell-selection",
+  "title": "Arrow keys: move around fast",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "The **arrow keys** move the active cell one step. Hold `Ctrl` (Mac: `⌘`) with an arrow to jump to the edge of the data, stopping at the last filled cell before a gap. `Ctrl+Home` jumps back to `A1` (on a Mac laptop: `fn+Ctrl+←`)."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A running club logs lap times. Click Asha's first lap: `B2`.",
+      "grid": [
+        [
+          "Runner",
+          "Lap 1",
+          "Lap 2"
+        ],
+        [
+          "Asha",
+          62,
+          60
+        ],
+        [
+          "Ben",
+          58,
+          57
+        ],
+        [
+          "Cy",
+          65,
+          63
+        ],
+        [
+          "Dev",
+          60,
+          59
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Ela",
+          64,
+          61
+        ],
+        [
+          "Finn",
+          59,
+          58
+        ]
+      ],
+      "target": "B2"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Move down one cell to Ben's first lap: press `↓`.",
+      "keys": {
+        "win": "ArrowDown",
+        "mac": "ArrowDown"
+      },
+      "activeCell": "B2",
+      "grid": [
+        [
+          "Runner",
+          "Lap 1",
+          "Lap 2"
+        ],
+        [
+          "Asha",
+          62,
+          60
+        ],
+        [
+          "Ben",
+          58,
+          57
+        ],
+        [
+          "Cy",
+          65,
+          63
+        ],
+        [
+          "Dev",
+          60,
+          59
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Ela",
+          64,
+          61
+        ],
+        [
+          "Finn",
+          59,
+          58
+        ]
+      ],
+      "postcondition": {
+        "selection": "B3"
+      }
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Move right to Ben's second lap: press `→`.",
+      "keys": {
+        "win": "ArrowRight",
+        "mac": "ArrowRight"
+      },
+      "activeCell": "B3",
+      "grid": [
+        [
+          "Runner",
+          "Lap 1",
+          "Lap 2"
+        ],
+        [
+          "Asha",
+          62,
+          60
+        ],
+        [
+          "Ben",
+          58,
+          57
+        ],
+        [
+          "Cy",
+          65,
+          63
+        ],
+        [
+          "Dev",
+          60,
+          59
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Ela",
+          64,
+          61
+        ],
+        [
+          "Finn",
+          59,
+          58
+        ]
+      ],
+      "postcondition": {
+        "selection": "C3"
+      }
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Jump to the last runner before the gap: press `Ctrl+↓` (Mac: `⌘↓`) from `A2`.",
+      "keys": {
+        "win": "Ctrl+ArrowDown",
+        "mac": "Cmd+ArrowDown"
+      },
+      "activeCell": "A2",
+      "grid": [
+        [
+          "Runner",
+          "Lap 1",
+          "Lap 2"
+        ],
+        [
+          "Asha",
+          62,
+          60
+        ],
+        [
+          "Ben",
+          58,
+          57
+        ],
+        [
+          "Cy",
+          65,
+          63
+        ],
+        [
+          "Dev",
+          60,
+          59
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Ela",
+          64,
+          61
+        ],
+        [
+          "Finn",
+          59,
+          58
+        ]
+      ],
+      "postcondition": {
+        "selection": "A5"
+      }
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Row 6 is empty. From `A5`, press `Ctrl+↓` (Mac: `⌘↓`) again to jump to the next block of data.",
+      "keys": {
+        "win": "Ctrl+ArrowDown",
+        "mac": "Cmd+ArrowDown"
+      },
+      "activeCell": "A5",
+      "grid": [
+        [
+          "Runner",
+          "Lap 1",
+          "Lap 2"
+        ],
+        [
+          "Asha",
+          62,
+          60
+        ],
+        [
+          "Ben",
+          58,
+          57
+        ],
+        [
+          "Cy",
+          65,
+          63
+        ],
+        [
+          "Dev",
+          60,
+          59
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Ela",
+          64,
+          61
+        ],
+        [
+          "Finn",
+          59,
+          58
+        ]
+      ],
+      "postcondition": {
+        "selection": "A7"
+      }
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Go back to the top-left corner: press `Ctrl+Home`.",
+      "keys": {
+        "win": "Ctrl+Home",
+        "mac": "Ctrl+Home"
+      },
+      "activeCell": "C8",
+      "grid": [
+        [
+          "Runner",
+          "Lap 1",
+          "Lap 2"
+        ],
+        [
+          "Asha",
+          62,
+          60
+        ],
+        [
+          "Ben",
+          58,
+          57
+        ],
+        [
+          "Cy",
+          65,
+          63
+        ],
+        [
+          "Dev",
+          60,
+          59
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Ela",
+          64,
+          61
+        ],
+        [
+          "Finn",
+          59,
+          58
+        ]
+      ],
+      "postcondition": {
+        "selection": "A1"
+      }
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "From `A2`, `Ctrl+↓` stopped at `A5`, not at the last runner in `A8`. Why?",
+      "options": [
+        "`A6` is empty, and Ctrl+Arrow stops at the edge of the data before a gap",
+        "Ctrl+Arrow always moves 3 cells",
+        "The keyboard skipped a key press"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "A quiz sheet lists scores down column B with no gaps. From `B2`, jump to the last score.",
+      "keys": {
+        "win": "Ctrl+ArrowDown",
+        "mac": "Cmd+ArrowDown"
+      },
+      "activeCell": "B2",
+      "grid": [
+        [
+          "Name",
+          "Score"
+        ],
+        [
+          "Amit",
+          8
+        ],
+        [
+          "Bela",
+          6
+        ],
+        [
+          "Chen",
+          9
+        ],
+        [
+          "Dina",
+          7
+        ],
+        [
+          "Eko",
+          10
+        ],
+        [
+          "Faye",
+          5
+        ]
+      ],
+      "postcondition": {
+        "selection": "B7"
+      }
+    }
+  ]
+}
