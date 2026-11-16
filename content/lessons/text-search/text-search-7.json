@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**TEXTBEFORE** extracts text before a delimiter, while `TEXTAFTER` takes text after it: `=TEXTBEFORE(text, delimiter)` and `=TEXTAFTER(text, delimiter)`. Delimiters like `\"@\"` or `\"-\"` go in quotation marks."
+      "text": "**TEXTBEFORE** extracts text before a delimiter, while `TEXTAFTER` takes text after it: `=TEXTBEFORE(text, delimiter)` and `=TEXTAFTER(text, delimiter)`. Delimiters like `\"@\"` or `\"-\"` go in quotation marks. TEXTBEFORE and TEXTAFTER need Excel 2024 or Microsoft 365; older Excel shows #NAME?."
     },
     {
       "id": "s2",
@@ -301,7 +301,7 @@
     {
       "id": "s7",
       "type": "formula",
-      "prompt": "When a delimiter is missing, TEXTAFTER returns #N/A unless you provide the 6th argument (if_not_found). In `D2`, extract the text after @ in `A2`, skipping commas to show \"No email\" if missing: `=TEXTAFTER(A2,\"@\",,,,\"No email\")`.",
+      "prompt": "When a delimiter is missing, TEXTAFTER returns #N/A unless you provide the 6th argument (if_not_found). In `D2`, extract the text after @ in `A2`, leave arguments 3 to 5 empty by typing just commas: `,,,,` to show \"No email\" if missing: `=TEXTAFTER(A2,\"@\",,,,\"No email\")`.",
       "grid": [
         [
           "Contact",

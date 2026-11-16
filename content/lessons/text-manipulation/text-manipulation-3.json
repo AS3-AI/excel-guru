@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**UPPER** converts text to all capital letters: `=UPPER(text)`. `LOWER` makes every letter lowercase: `=LOWER(text)`. `PROPER` capitalises the first letter of each word: `=PROPER(text)`. `PROPER` capitalises the first letter of each word and any letter after a non-letter (like ' or -), and makes the rest lowercase."
+      "text": "**UPPER** converts text to all capital letters: `=UPPER(text)`. `LOWER` makes every letter lowercase: `=LOWER(text)`. `PROPER` capitalises the first letter of each word and any letter after a non-letter (like ' or -), and makes the rest lowercase: `=PROPER(text)`."
     },
     {
       "id": "s2",
