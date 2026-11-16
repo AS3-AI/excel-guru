@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getLesson } from "../../../lib/lessons";
 import { loadLessonAccess } from "../../../lib/access";
 import { gradeFormulaStep } from "@excel-guru/grader";
-import { buildExplainPrompt, getOrCreateExplain, isExplainInputWrong, normaliseExplainInput, requestGeminiExplanation } from "../../../lib/explain";
+import { buildExplainPrompt, callerKey, countExplainCalls, insertExplainCall, insertExplainCache, isExplainInputWrong, istDayStart, lookupExplainCache, normaliseExplainInput, requestGeminiExplanation, shouldAllowUncachedCall } from "../../../lib/explain";
 import { createClient } from "../../../lib/supabase/server";
 import { createAdminClient } from "../../../lib/supabase/admin";
 
@@ -36,14 +36,30 @@ export async function POST(request: Request) {
   } else if (lessonId !== "intro") return NextResponse.json({ error: "signup" }, { status: 401 });
 
   const inputNorm = normaliseExplainInput(input.slice(0, 200));
-  // TODO(T26 schema): ai_explanations has neither user_id nor IP attribution. Until attribution
-  // and an IST-day counter can be persisted, the per-user/IP 20-call serverless limit cannot run.
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
+  const salt = process.env.EXPLAIN_IP_SALT;
+  const caller = callerKey(user?.id ?? null, ip, salt);
+  if (!caller) return unavailable();
+
+  // Check the cache first: a hit is served without consuming today's allowance.
+  try {
+    const hit = await lookupExplainCache(admin, lessonId, stepId, inputNorm);
+    if (hit) return NextResponse.json({ id: hit.id, text: hit.text, cached: true });
+  } catch { return unavailable(); }
+
+  try {
+    const count = await countExplainCalls(admin, caller, istDayStart());
+    if (!shouldAllowUncachedCall(count)) return NextResponse.json({ error: "limit" }, { status: 429 });
+    if (!await insertExplainCall(admin, caller)) return unavailable();
+  } catch { return unavailable(); }
 
   const apiKey = process.env.GEMINI_API_KEY;
   const model = process.env.GEMINI_MODEL;
   const prompt = buildExplainPrompt(lesson, stepId, input);
   try {
-    const result = await getOrCreateExplain(admin, lessonId, stepId, inputNorm, () => requestGeminiExplanation(prompt, apiKey, model));
-    return result ? NextResponse.json(result) : unavailable();
+    const text = await requestGeminiExplanation(prompt, apiKey, model);
+    if (!text) return unavailable();
+    const row = await insertExplainCache(admin, { lesson_id: lessonId, step_id: stepId, input_norm: inputNorm, text });
+    return row ? NextResponse.json({ id: row.id, text, cached: false }) : unavailable();
   } catch { return unavailable(); }
 }

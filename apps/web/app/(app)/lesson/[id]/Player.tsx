@@ -197,6 +197,10 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
       const isCurrent = () => explainRequest.current?.id === requestId;
       void fetch("/api/explain", { method: "POST", headers: { "content-type": "application/json" }, signal: controller.signal, body: JSON.stringify({ lessonId: lesson.id, stepId: step.id, input, os: platform.os }) })
         .then(async (response) => {
+          if (response.status === 429) {
+            if (isCurrent()) setAiExplanation({ id: "", text: "You've used today's AI explanations. They reset at midnight.", cached: false });
+            return;
+          }
           if (!response.ok) throw new Error("unavailable");
           const result = await response.json() as { id: string; text: string; cached: boolean };
           if (typeof result.id !== "string" || typeof result.text !== "string") throw new Error("unavailable");

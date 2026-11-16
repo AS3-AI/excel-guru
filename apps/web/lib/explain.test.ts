@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildExplainPrompt, normaliseExplainInput, rateScore, requestGeminiExplanation, selectServableExplanation, shouldAllowUncachedCall, withinWordLimit, lookupExplainCache, insertExplainCache, getOrCreateExplain } from "./explain";
+import { buildExplainPrompt, callerKey, countExplainCalls, insertExplainCall, istDayStart, normaliseExplainInput, rateScore, requestGeminiExplanation, selectServableExplanation, shouldAllowUncachedCall, withinWordLimit, lookupExplainCache, insertExplainCache, getOrCreateExplain } from "./explain";
 import { decideLessonAccess } from "./access";
 
 describe("normaliseExplainInput", () => {
@@ -70,6 +70,40 @@ describe("prompt safety", () => {
 });
 
 describe("cache, limits, and ratings", () => {
+  it("hashes user identities and salted IP identities without retaining raw values", () => {
+    expect(callerKey("user-123", null)).toMatch(/^[a-f0-9]{64}$/);
+    expect(callerKey("user-123", null)).toBe(callerKey("user-123", "ignored", "salt"));
+    expect(callerKey(null, "203.0.113.4", "salt")).toBe(callerKey(null, "203.0.113.4", "salt"));
+    expect(callerKey(null, "203.0.113.4", "salt")).not.toBe(callerKey(null, "203.0.113.4", "other"));
+    expect(callerKey(null, "203.0.113.4")).toBeNull();
+  });
+  it("returns the UTC instant of IST midnight including day rollover", () => {
+    expect(istDayStart(new Date("2026-11-15T19:00:00.000Z"))).toBe("2026-11-15T18:30:00.000Z");
+    expect(istDayStart(new Date("2026-11-15T20:00:00.000Z"))).toBe("2026-11-15T18:30:00.000Z");
+  });
+  it("uses the previous UTC date for IST midnight after UTC midnight", () => expect(istDayStart(new Date("2026-11-16T01:00:00.000Z"))).toBe("2026-11-15T18:30:00.000Z"));
+  it.each([[19, true], [20, false], [21, false]] as const)("quota decision for count %i", (count, allowed) => expect(shouldAllowUncachedCall(count)).toBe(allowed));
+  it("counts logged calls since the supplied IST boundary using the admin client", async () => {
+    const calls: unknown[] = [];
+    const client = { from: (table: string) => { expect(table).toBe("explain_calls"); const q: any = { select: () => q, eq: (k: string, v: unknown) => { calls.push(["eq", k, v]); return q; }, gte: (k: string, v: unknown) => { calls.push(["gte", k, v]); return q; }, then: (resolve: (v: unknown) => unknown) => resolve({ count: 19, error: null }) }; return q; } };
+    await expect(countExplainCalls(client, "hash", "start")).resolves.toBe(19);
+    expect(calls).toContainEqual(["eq", "caller", "hash"]);
+    expect(calls).toContainEqual(["gte", "called_at", "start"]);
+  });
+  it("inserts the caller log before generation", async () => {
+    const events: unknown[] = [];
+    const client = { from: () => ({ insert: (row: unknown) => { events.push(row); return { then: (resolve: (v: unknown) => unknown) => resolve({ error: null }) }; } }) };
+    await expect(insertExplainCall(client, "hash")).resolves.toBe(true);
+    expect(events).toEqual([{ caller: "hash" }]);
+  });
+  it("fails closed when counting errors", async () => {
+    const client = { from: () => { const q: any = { select: () => q, eq: () => q, gte: () => q, then: (resolve: (v: unknown) => unknown) => resolve({ count: null, error: new Error("db") }) }; return q; } };
+    await expect(countExplainCalls(client, "hash", "start")).rejects.toThrow("db");
+  });
+  it("reports a failed call-log insert", async () => {
+    const client = { from: () => ({ insert: () => ({ then: (resolve: (v: unknown) => unknown) => resolve({ error: new Error("db") }) }) }) };
+    await expect(insertExplainCall(client, "hash")).resolves.toBe(false);
+  });
   const rows = [{ id: "retired", text: "old", score: -1, served_count: 2 }, { id: "ok", text: "best", score: 3, served_count: 4 }, { id: "zero", text: "zero", score: 0, served_count: 1 }];
   it("serves the highest scored eligible cached explanation", () => expect(selectServableExplanation(rows)?.id).toBe("ok"));
   it("does not serve retired cache entries", () => expect(selectServableExplanation([rows[0]!])).toBeNull());
