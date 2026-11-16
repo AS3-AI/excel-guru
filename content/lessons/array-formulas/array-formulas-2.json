@@ -1,0 +1,240 @@
+{
+  "id": "array-formulas-2",
+  "module": "array-formulas",
+  "title": "FILTER: return rows that meet a condition",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**FILTER** extracts the rows that meet a condition and spills them into neighbouring cells: `=FILTER(range, condition, [if_empty])`. If no rows match, the optional `if_empty` value is shown instead."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A sales team tracks results across cities. Select the column of names FILTER will return from: `A2:A7`.",
+      "grid": [
+        ["Name", "City", "Sales", null, "Over 85", null, null],
+        ["Priya", "Delhi", 85, null, null, null, null],
+        ["Arjun", "Mumbai", 92, null, null, null, null],
+        ["Neha", "Delhi", 74, null, null, null, null],
+        ["Kabir", "Delhi", 90, null, null, null, null],
+        ["Riya", "Pune", 68, null, null, null, null],
+        ["Tara", "Delhi", 94, null, null, null, null]
+      ],
+      "target": "A2:A7"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Which salespeople had sales over 85? In `E2`, type `=FILTER(A2:A7,C2:C7>85)` and press Enter. The other matching names spill into `E3` and `E4`.",
+      "grid": [
+        ["Name", "City", "Sales", null, "Over 85", null, null],
+        ["Priya", "Delhi", 85, null, null, null, null],
+        ["Arjun", "Mumbai", 92, null, null, null, null],
+        ["Neha", "Delhi", 74, null, null, null, null],
+        ["Kabir", "Delhi", 90, null, null, null, null],
+        ["Riya", "Pune", 68, null, null, null, null],
+        ["Tara", "Delhi", 94, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": "Arjun",
+      "mustUse": [
+        "FILTER"
+      ],
+      "solution": "=FILTER(A2:A7,C2:C7>85)",
+      "explain": "FILTER checks C2:C7 for values over 85 and returns the matching names from A2:A7: Arjun, Kabir and Tara.",
+      "highlightCells": [
+        "A2:A7",
+        "C2:C7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        ">"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "FILTER can return whole rows when given multiple columns. In `E2`, filter all columns in `A2:C7` for salespeople where the city in `B2:B7` is \"Delhi\". The results spill across columns `E:G` and down to row 5.",
+      "grid": [
+        ["Name", "City", "Sales", null, "Name", "City", "Sales"],
+        ["Priya", "Delhi", 85, null, null, null, null],
+        ["Arjun", "Mumbai", 92, null, null, null, null],
+        ["Neha", "Delhi", 74, null, null, null, null],
+        ["Kabir", "Delhi", 90, null, null, null, null],
+        ["Riya", "Pune", 68, null, null, null, null],
+        ["Tara", "Delhi", 94, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": "Priya",
+      "mustUse": [
+        "FILTER"
+      ],
+      "solution": "=FILTER(A2:C7,B2:B7=\"Delhi\")",
+      "explain": "Giving A2:C7 as the first argument returns all three columns for every salesperson in Delhi.",
+      "highlightCells": [
+        "A2:C7",
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\""
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "When no rows match, FILTER returns an error unless you provide a fallback value as the third argument. In `E2`, filter `A2:A7` for sales in `C2:C7` over 500, showing \"None\" if no one reached that target.",
+      "grid": [
+        ["Name", "City", "Sales", null, "Over 500", null, null],
+        ["Priya", "Delhi", 85, null, null, null, null],
+        ["Arjun", "Mumbai", 92, null, null, null, null],
+        ["Neha", "Delhi", 74, null, null, null, null],
+        ["Kabir", "Delhi", 90, null, null, null, null],
+        ["Riya", "Pune", 68, null, null, null, null],
+        ["Tara", "Delhi", 94, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": "None",
+      "mustUse": [
+        "FILTER"
+      ],
+      "solution": "=FILTER(A2:A7,C2:C7>500,\"None\")",
+      "explain": "No salesperson sold over 500, so FILTER returned the third argument, \"None\", instead of an error.",
+      "highlightCells": [
+        "A2:A7",
+        "C2:C7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        ">",
+        "\""
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "To check multiple conditions, multiply them with `*` inside parentheses. In `E2`, filter `A2:A7` for names where `B2:B7` is \"Delhi\" and `C2:C7` is greater than 85. The other matching name spills into `E3`.",
+      "grid": [
+        ["Name", "City", "Sales", null, "Delhi >85", null, null],
+        ["Priya", "Delhi", 85, null, null, null, null],
+        ["Arjun", "Mumbai", 92, null, null, null, null],
+        ["Neha", "Delhi", 74, null, null, null, null],
+        ["Kabir", "Delhi", 90, null, null, null, null],
+        ["Riya", "Pune", 68, null, null, null, null],
+        ["Tara", "Delhi", 94, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": "Kabir",
+      "mustUse": [
+        "FILTER"
+      ],
+      "solution": "=FILTER(A2:A7,(B2:B7=\"Delhi\")*(C2:C7>85))",
+      "explain": "Multiplying the two comparisons acts like AND: only Kabir and Tara are in Delhi with sales over 85.",
+      "highlightCells": [
+        "A2:A7",
+        "B2:B7",
+        "C2:C7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\"",
+        "*",
+        ">"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "You can wrap FILTER inside SUM to add up only the matching rows. In `E2`, find the total sales from `C2:C7` for the team members where `B2:B7` is \"Delhi\".",
+      "grid": [
+        ["Name", "City", "Sales", null, "Delhi Total", null, null],
+        ["Priya", "Delhi", 85, null, null, null, null],
+        ["Arjun", "Mumbai", 92, null, null, null, null],
+        ["Neha", "Delhi", 74, null, null, null, null],
+        ["Kabir", "Delhi", 90, null, null, null, null],
+        ["Riya", "Pune", 68, null, null, null, null],
+        ["Tara", "Delhi", 94, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": 343,
+      "mustUse": [
+        "FILTER"
+      ],
+      "solution": "=SUM(FILTER(C2:C7,B2:B7=\"Delhi\"))",
+      "explain": "FILTER extracts the four Delhi sales figures (85, 74, 90 and 94), and SUM adds them up to 343.",
+      "highlightCells": [
+        "B2:B7",
+        "C2:C7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\""
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "When combining two conditions in FILTER, what is the difference between `*` and `+`?",
+      "options": [
+        "`*` acts as AND (both true), while `+` acts as OR (either true)",
+        "`*` acts as OR (either true), while `+` acts as AND (both true)",
+        "`*` is for numbers, while `+` is for text"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "Which bakery items does the café sell? In `E2`, list them from `A2:A7`.",
+      "grid": [
+        ["Item", "Category", "Revenue", null, "Bakery items"],
+        ["Sourdough", "Bakery", 450, null, null],
+        ["Espresso", "Drink", 320, null, null],
+        ["Croissant", "Bakery", 280, null, null],
+        ["Latte", "Drink", 410, null, null],
+        ["Muffin", "Bakery", 190, null, null],
+        ["Green tea", "Drink", 150, null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": "Sourdough",
+      "mustUse": [
+        "FILTER"
+      ],
+      "solution": "=FILTER(A2:A7,B2:B7=\"Bakery\")",
+      "explain": "FILTER checks B2:B7 for \"Bakery\" and returns the matching items from A2:A7: Sourdough, Croissant and Muffin.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":",
+        "\""
+      ]
+    }
+  ]
+}

@@ -1,0 +1,708 @@
+{
+  "id": "combined-1",
+  "module": "combined",
+  "title": "Case study: a café's weekly report",
+  "difficulty": 3,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "In a weekly report, you often **combine** functions to calculate and format answers in a single cell: nest one inside another, like `=IF(SUMIF(range, criteria, sum_range) >= target, \"Goal met\", \"Below goal\")`. The inner function runs first and passes its result to the outer function."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A café manager tracks sales across the week. Select the category column that the first formula will check: `C2:C7`.",
+      "grid": [
+        [
+          "Day",
+          "Item",
+          "Category",
+          "Qty",
+          "Price",
+          "Staff"
+        ],
+        [
+          "Mon",
+          "Chai",
+          "Drink",
+          35,
+          25,
+          "Aarav"
+        ],
+        [
+          "Mon",
+          "Samosa",
+          "Snack",
+          28,
+          20,
+          "Diya"
+        ],
+        [
+          "Tue",
+          "Coffee",
+          "Drink",
+          22,
+          50,
+          "Aarav"
+        ],
+        [
+          "Tue",
+          "Wrap",
+          "Snack",
+          17,
+          60,
+          "Diya"
+        ],
+        [
+          "Wed",
+          "Muffin",
+          "Bakery",
+          15,
+          40,
+          "Aarav"
+        ],
+        [
+          "Wed",
+          "Chai",
+          "Drink",
+          44,
+          25,
+          "Diya"
+        ],
+        [
+          "Report",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "target": "C2:C7"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "What is the total quantity of drinks sold? In `B8`, type `=SUMIF(C2:C7,\"Drink\",D2:D7)` and press Enter.",
+      "grid": [
+        [
+          "Day",
+          "Item",
+          "Category",
+          "Qty",
+          "Price",
+          "Staff"
+        ],
+        [
+          "Mon",
+          "Chai",
+          "Drink",
+          35,
+          25,
+          "Aarav"
+        ],
+        [
+          "Mon",
+          "Samosa",
+          "Snack",
+          28,
+          20,
+          "Diya"
+        ],
+        [
+          "Tue",
+          "Coffee",
+          "Drink",
+          22,
+          50,
+          "Aarav"
+        ],
+        [
+          "Tue",
+          "Wrap",
+          "Snack",
+          17,
+          60,
+          "Diya"
+        ],
+        [
+          "Wed",
+          "Muffin",
+          "Bakery",
+          15,
+          40,
+          "Aarav"
+        ],
+        [
+          "Wed",
+          "Chai",
+          "Drink",
+          44,
+          25,
+          "Diya"
+        ],
+        [
+          "Report",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 101,
+      "mustUse": [
+        "SUMIF"
+      ],
+      "solution": "=SUMIF(C2:C7,\"Drink\",D2:D7)",
+      "explain": "SUMIF checks C2:C7 for Drink and adds the quantities 35, 22, and 44 to get 101.",
+      "highlightCells": [
+        "C2:C7",
+        "D2:D7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ":"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "The manager's weekly target for Snack sales is 45 items. In `B8`, check if total Snack quantity sold in `C2:C7` is at least 45: return \"Goal met\" if it reached the target, and \"Below goal\" if not.",
+      "grid": [
+        [
+          "Day",
+          "Item",
+          "Category",
+          "Qty",
+          "Price",
+          "Staff"
+        ],
+        [
+          "Mon",
+          "Chai",
+          "Drink",
+          35,
+          25,
+          "Aarav"
+        ],
+        [
+          "Mon",
+          "Samosa",
+          "Snack",
+          28,
+          20,
+          "Diya"
+        ],
+        [
+          "Tue",
+          "Coffee",
+          "Drink",
+          22,
+          50,
+          "Aarav"
+        ],
+        [
+          "Tue",
+          "Wrap",
+          "Snack",
+          17,
+          60,
+          "Diya"
+        ],
+        [
+          "Wed",
+          "Muffin",
+          "Bakery",
+          15,
+          40,
+          "Aarav"
+        ],
+        [
+          "Wed",
+          "Chai",
+          "Drink",
+          44,
+          25,
+          "Diya"
+        ],
+        [
+          "Report",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": "Goal met",
+      "mustUse": [
+        "IF",
+        "SUMIF"
+      ],
+      "solution": "=IF(SUMIF(C2:C7,\"Snack\",D2:D7)>=45,\"Goal met\",\"Below goal\")",
+      "explain": "SUMIF adds the snack quantities 28 and 17 to get 45, which meets the target of at least 45 and returns Goal met.",
+      "highlightCells": [
+        "C2:C7",
+        "D2:D7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ":",
+        ">"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "A customer asks for the price of a Muffin. In `B8`, look up the price of \"Muffin\" from the items in `B2:B7` and prices in `E2:E7`.",
+      "grid": [
+        [
+          "Day",
+          "Item",
+          "Category",
+          "Qty",
+          "Price",
+          "Staff"
+        ],
+        [
+          "Mon",
+          "Chai",
+          "Drink",
+          35,
+          25,
+          "Aarav"
+        ],
+        [
+          "Mon",
+          "Samosa",
+          "Snack",
+          28,
+          20,
+          "Diya"
+        ],
+        [
+          "Tue",
+          "Coffee",
+          "Drink",
+          22,
+          50,
+          "Aarav"
+        ],
+        [
+          "Tue",
+          "Wrap",
+          "Snack",
+          17,
+          60,
+          "Diya"
+        ],
+        [
+          "Wed",
+          "Muffin",
+          "Bakery",
+          15,
+          40,
+          "Aarav"
+        ],
+        [
+          "Wed",
+          "Chai",
+          "Drink",
+          44,
+          25,
+          "Diya"
+        ],
+        [
+          "Report",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 40,
+      "mustUse": [
+        "INDEX",
+        "MATCH"
+      ],
+      "solution": "=INDEX(E2:E7,MATCH(\"Muffin\",B2:B7,0))",
+      "explain": "MATCH finds Muffin at position 5 in B2:B7, and INDEX returns the 5th price from E2:E7, which is 40.",
+      "highlightCells": [
+        "B2:B7",
+        "E2:E7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ":"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "For reordering takeaway bags, the manager needs to cover the highest single order quantity in `D2:D7`, rounded up to the nearest pack of 10. In `B8`, find the reorder amount.",
+      "grid": [
+        [
+          "Day",
+          "Item",
+          "Category",
+          "Qty",
+          "Price",
+          "Staff"
+        ],
+        [
+          "Mon",
+          "Chai",
+          "Drink",
+          35,
+          25,
+          "Aarav"
+        ],
+        [
+          "Mon",
+          "Samosa",
+          "Snack",
+          28,
+          20,
+          "Diya"
+        ],
+        [
+          "Tue",
+          "Coffee",
+          "Drink",
+          22,
+          50,
+          "Aarav"
+        ],
+        [
+          "Tue",
+          "Wrap",
+          "Snack",
+          17,
+          60,
+          "Diya"
+        ],
+        [
+          "Wed",
+          "Muffin",
+          "Bakery",
+          15,
+          40,
+          "Aarav"
+        ],
+        [
+          "Wed",
+          "Chai",
+          "Drink",
+          44,
+          25,
+          "Diya"
+        ],
+        [
+          "Report",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 50,
+      "mustUse": [
+        "CEILING",
+        "MAX"
+      ],
+      "solution": "=CEILING(MAX(D2:D7),10)",
+      "explain": "MAX finds the highest quantity sold, 44, and CEILING rounds it up to the next multiple of 10, giving 50.",
+      "highlightCells": [
+        "D2:D7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "Create an inventory code for the first order by combining the first 3 letters of its category in `C2` with its quantity in `D2` separated by a hyphen. Put the code in `B8`.",
+      "grid": [
+        [
+          "Day",
+          "Item",
+          "Category",
+          "Qty",
+          "Price",
+          "Staff"
+        ],
+        [
+          "Mon",
+          "Chai",
+          "Drink",
+          35,
+          25,
+          "Aarav"
+        ],
+        [
+          "Mon",
+          "Samosa",
+          "Snack",
+          28,
+          20,
+          "Diya"
+        ],
+        [
+          "Tue",
+          "Coffee",
+          "Drink",
+          22,
+          50,
+          "Aarav"
+        ],
+        [
+          "Tue",
+          "Wrap",
+          "Snack",
+          17,
+          60,
+          "Diya"
+        ],
+        [
+          "Wed",
+          "Muffin",
+          "Bakery",
+          15,
+          40,
+          "Aarav"
+        ],
+        [
+          "Wed",
+          "Chai",
+          "Drink",
+          44,
+          25,
+          "Diya"
+        ],
+        [
+          "Report",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": "Dri-35",
+      "mustUse": [
+        "CONCAT",
+        "LEFT"
+      ],
+      "solution": "=CONCAT(LEFT(C2,3),\"-\",D2)",
+      "explain": "LEFT extracts Dri from Drink, and CONCAT joins it with a hyphen and the quantity 35 to make Dri-35.",
+      "highlightCells": [
+        "C2",
+        "D2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "-"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A shift qualifies for a bonus if its quantity was at least 20 and its item price was at least 40. In `B8`, check if Tuesday's coffee order in row 4 earned a bonus: return \"Bonus\" if both conditions are met, otherwise \"Standard\".",
+      "grid": [
+        [
+          "Day",
+          "Item",
+          "Category",
+          "Qty",
+          "Price",
+          "Staff"
+        ],
+        [
+          "Mon",
+          "Chai",
+          "Drink",
+          35,
+          25,
+          "Aarav"
+        ],
+        [
+          "Mon",
+          "Samosa",
+          "Snack",
+          28,
+          20,
+          "Diya"
+        ],
+        [
+          "Tue",
+          "Coffee",
+          "Drink",
+          22,
+          50,
+          "Aarav"
+        ],
+        [
+          "Tue",
+          "Wrap",
+          "Snack",
+          17,
+          60,
+          "Diya"
+        ],
+        [
+          "Wed",
+          "Muffin",
+          "Bakery",
+          15,
+          40,
+          "Aarav"
+        ],
+        [
+          "Wed",
+          "Chai",
+          "Drink",
+          44,
+          25,
+          "Diya"
+        ],
+        [
+          "Report",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B8",
+      "expectedValue": "Bonus",
+      "mustUse": [
+        "IF",
+        "AND"
+      ],
+      "solution": "=IF(AND(D4>=20,E4>=40),\"Bonus\",\"Standard\")",
+      "explain": "Row 4 has a quantity of 22 and price of 50, satisfying both tests in AND, so IF returns Bonus.",
+      "highlightCells": [
+        "D4:E4"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "prompt": "The manager now wants to know if drink sales reached at least 100. Which formula combines `IF` and `SUMIF` correctly?",
+      "options": [
+        "`=IF(SUMIF(C2:C7,\"Drink\",D2:D7)>=100,\"Goal met\",\"Below goal\")`",
+        "`=IF(=SUMIF(C2:C7,\"Drink\",D2:D7)>=100,\"Goal met\",\"Below goal\")`",
+        "`=IF(SUMIF(C2:C7,\"Drink\",D2:D7>=100),\"Goal met\",\"Below goal\")`"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "prompt": "A smoothie bar tracks Saturday orders. Did Berry drinks meet the sales target of 50 cups? If the total quantity for Berry drinks is at least 50, return \"Target met\", otherwise \"Below target\". Put the answer in `B6`.",
+      "grid": [
+        [
+          "Item",
+          "Flavor",
+          "Size",
+          "Qty",
+          "Price"
+        ],
+        [
+          "Smoothie",
+          "Berry",
+          "Regular",
+          28,
+          45
+        ],
+        [
+          "Juice",
+          "Citrus",
+          "Large",
+          18,
+          50
+        ],
+        [
+          "Smoothie",
+          "Berry",
+          "Large",
+          26,
+          60
+        ],
+        [
+          "Frappe",
+          "Mocha",
+          "Regular",
+          15,
+          55
+        ],
+        [
+          "Result",
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": "Target met",
+      "mustUse": [
+        "IF",
+        "SUMIF"
+      ],
+      "solution": "=IF(SUMIF(B2:B5,\"Berry\",D2:D5)>=50,\"Target met\",\"Below target\")",
+      "explain": "Berry orders in rows 2 and 4 have quantities 28 and 26, totaling 54, which meets the target and returns Target met.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ":",
+        ">"
+      ]
+    }
+  ]
+}

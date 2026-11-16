@@ -467,3 +467,46 @@ describe("COUNTIF family: error criteria", () => {
     expect(ev('=COUNTIF(A1:A2,"#N/A")', [["#N/A"], [err("#N/A")]])).toBe(1);
   });
 });
+
+describe("MEDIAN, SMALL, LARGE and MODE", () => {
+  const sample: CellValue[][] = [[4, "x", null, 10, 7, 7, 2.5]];
+  it("ignores text, blanks and booleans in ranges", () => {
+    expect(ev("=MEDIAN(A1:G1)", sample)).toBe(7);
+    expect(ev("=SMALL(A1:G1,2)", sample)).toBe(4);
+    expect(ev("=LARGE(A1:G1,2)", sample)).toBe(7);
+  });
+  it("calculates odd and even medians", () => {
+    expect(ev("=MEDIAN(A1:C1)", [[1, 9, 3]])).toBe(3);
+    expect(ev("=MEDIAN(A1:D1)", [[1, 9, 3, 5]])).toBe(4);
+  });
+  it("returns NUM for a median with no numbers", () => expect(ev('=MEDIAN(A1:B1)', [["x", null]])).toEqual(err("#NUM!")));
+  it("truncates k for SMALL and LARGE", () => {
+    expect(ev("=SMALL(A1:C1,1.9)", [[8, 2, 5]])).toBe(2);
+    expect(ev("=LARGE(A1:C1,2.9)", [[8, 2, 5]])).toBe(5);
+  });
+  it("returns NUM for invalid SMALL and LARGE k", () => {
+    expect(ev("=SMALL(A1:C1,0)", [[8, 2, 5]])).toEqual(err("#NUM!"));
+    expect(ev("=SMALL(A1:C1,4)", [[8, 2, 5]])).toEqual(err("#NUM!"));
+    expect(ev("=LARGE(A1:C1,-1)", [[8, 2, 5]])).toEqual(err("#NUM!"));
+  });
+  it("counts typed numeric arguments and rejects typed text", () => {
+    expect(ev("=MEDIAN(2,4,10)")).toBe(4);
+    expect(ev('=MEDIAN(2,"x",10)')).toEqual(err("#VALUE!"));
+    expect(ev('=SMALL(2,"x",1)')).toEqual(err("#VALUE!"));
+  });
+  it("MODE and MODE.SNGL choose the first value when tied", () => {
+    expect(ev("=MODE(A1:D1)", [[2, 3, 3, 2]])).toBe(2);
+    expect(ev("=MODE.SNGL(A1:D1)", [[2, 3, 3, 2]])).toBe(2);
+  });
+  it("MODE returns NA if no value repeats", () => expect(ev("=MODE(A1:C1)", [[1, 2, 3]])).toEqual(err("#N/A")));
+  it("MODE.MULT spills tied modes in first appearance order", () => {
+    expect(ev("=MODE.MULT(A1:F1)", [[3, 2, 2, 3, 5, 5]])).toEqual([[3], [2], [5]]);
+  });
+  it("MODE.MULT returns the only mode as a one-cell spill", () => {
+    expect(ev("=MODE.MULT(A1:D1)", [[5, 2, 2, 3]])).toBe(2);
+  });
+  it("ignores logicals and text in statistical ranges", () => {
+    expect(ev("=MEDIAN(A1:D1)", [[true, 5, "8", false]])).toBe(5);
+    expect(ev("=MODE(A1:E1)", [[true, 4, "x", 4, false]])).toBe(4);
+  });
+});

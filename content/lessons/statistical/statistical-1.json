@@ -1,0 +1,381 @@
+{
+  "id": "statistical-1",
+  "module": "statistical",
+  "title": "AVERAGE: the typical value",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**AVERAGE** adds up the numbers in a range and divides by how many numbers there are: `=AVERAGE(B2:B7)`. Text and empty cells are skipped, but a 0 counts."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A tea stall counts the cups it sells each day; it was closed on Wednesday. Select the cup counts: `B2:B7`.",
+      "grid": [
+        [
+          "Day",
+          "Cups",
+          null,
+          "Average"
+        ],
+        [
+          "Mon",
+          42,
+          null,
+          null
+        ],
+        [
+          "Tue",
+          38,
+          null,
+          null
+        ],
+        [
+          "Wed",
+          "closed",
+          null,
+          null
+        ],
+        [
+          "Thu",
+          51,
+          null,
+          null
+        ],
+        [
+          "Fri",
+          44,
+          null,
+          null
+        ],
+        [
+          "Sat",
+          60,
+          null,
+          null
+        ]
+      ],
+      "target": "B2:B7"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "How many cups does the stall sell on a typical day? In `D2`, type `=AVERAGE(B2:B7)` and press Enter.",
+      "grid": [
+        [
+          "Day",
+          "Cups",
+          null,
+          "Average"
+        ],
+        [
+          "Mon",
+          42,
+          null,
+          null
+        ],
+        [
+          "Tue",
+          38,
+          null,
+          null
+        ],
+        [
+          "Wed",
+          "closed",
+          null,
+          null
+        ],
+        [
+          "Thu",
+          51,
+          null,
+          null
+        ],
+        [
+          "Fri",
+          44,
+          null,
+          null
+        ],
+        [
+          "Sat",
+          60,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 47,
+      "mustUse": [
+        "AVERAGE"
+      ],
+      "solution": "=AVERAGE(B2:B7)",
+      "explain": "The five numbers add up to 235, and \"closed\" is skipped, so 235 ÷ 5 = 47.",
+      "highlightCells": [
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "What was the average for the first three days, Monday to Wednesday? In `D3`, average `B2:B4`.",
+      "grid": [
+        [
+          "Day",
+          "Cups",
+          null,
+          "Average"
+        ],
+        [
+          "Mon",
+          42,
+          null,
+          null
+        ],
+        [
+          "Tue",
+          38,
+          null,
+          null
+        ],
+        [
+          "Wed",
+          "closed",
+          null,
+          null
+        ],
+        [
+          "Thu",
+          51,
+          null,
+          null
+        ],
+        [
+          "Fri",
+          44,
+          null,
+          null
+        ],
+        [
+          "Sat",
+          60,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": 40,
+      "mustUse": [
+        "AVERAGE"
+      ],
+      "solution": "=AVERAGE(B2:B4)",
+      "explain": "Wednesday's \"closed\" is text, so AVERAGE uses only 42 and 38: 80 ÷ 2 = 40.",
+      "highlightCells": [
+        "B2:B4"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "Like SUM, AVERAGE can take separate cells. In `D4`, average Thursday and Saturday with `=AVERAGE(B5,B7)`.",
+      "grid": [
+        [
+          "Day",
+          "Cups",
+          null,
+          "Average"
+        ],
+        [
+          "Mon",
+          42,
+          null,
+          null
+        ],
+        [
+          "Tue",
+          38,
+          null,
+          null
+        ],
+        [
+          "Wed",
+          "closed",
+          null,
+          null
+        ],
+        [
+          "Thu",
+          51,
+          null,
+          null
+        ],
+        [
+          "Fri",
+          44,
+          null,
+          null
+        ],
+        [
+          "Sat",
+          60,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D4",
+      "expectedValue": 55.5,
+      "mustUse": [
+        "AVERAGE"
+      ],
+      "solution": "=AVERAGE(B5,B7)",
+      "explain": "51 and 60 add up to 111, and 111 ÷ 2 = 55.5.",
+      "highlightCells": [
+        "B5",
+        "B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A quiz club records each member's score; Ravi scored 0 and Mira was absent. In `D2`, find the average score in `B2:B6`.",
+      "grid": [
+        [
+          "Member",
+          "Score",
+          null,
+          "Average"
+        ],
+        [
+          "Asha",
+          8,
+          null,
+          null
+        ],
+        [
+          "Ravi",
+          0,
+          null,
+          null
+        ],
+        [
+          "Tom",
+          6,
+          null,
+          null
+        ],
+        [
+          "Mira",
+          null,
+          null,
+          null
+        ],
+        [
+          "Lena",
+          10,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 6,
+      "mustUse": [
+        "AVERAGE"
+      ],
+      "solution": "=AVERAGE(B2:B6)",
+      "explain": "Ravi's 0 is a number, so it counts; Mira's empty cell is skipped: 24 ÷ 4 = 6.",
+      "highlightCells": [
+        "B2:B6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "`B4` says \"closed\". Does `=AVERAGE(B2:B7)` divide the total by 6?",
+      "options": [
+        "No: text is skipped, so it divides by 5",
+        "Yes: text counts as 0",
+        "No: it gives #VALUE! because of the text"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A gym logs how many times a member visited each week. How many visits does she make in a typical week? Put the answer in `B6`.",
+      "grid": [
+        [
+          "Week",
+          "Visits"
+        ],
+        [
+          "Week 1",
+          12
+        ],
+        [
+          "Week 2",
+          15
+        ],
+        [
+          "Week 3",
+          9
+        ],
+        [
+          "Week 4",
+          20
+        ],
+        [
+          "Average",
+          null
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 14,
+      "mustUse": [
+        "AVERAGE"
+      ],
+      "solution": "=AVERAGE(B2:B5)",
+      "explain": "12 + 15 + 9 + 20 = 56 visits over 4 weeks, so 14 a week.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    }
+  ]
+}
