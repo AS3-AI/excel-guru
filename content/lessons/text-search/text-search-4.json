@@ -347,13 +347,13 @@
     {
       "id": "s8",
       "type": "mcq",
-      "prompt": "How does the `?` wildcard differ from `*` in Excel formulas?",
+      "prompt": "`=COUNTIF(A2:A7,\"B?k\")` returns 0 for Book, Bank and Bark. Why?",
       "options": [
-        "`?` matches any number of characters, while `*` matches exactly one character",
-        "`?` matches exactly one character, while `*` matches any number of characters",
-        "`?` matches only numbers, while `*` matches only letters"
+        "Each `?` matches exactly one character, so `B?k` only matches 3-letter words",
+        "`?` matches only numbers",
+        "COUNTIF is case-sensitive"
       ],
-      "answer": 1
+      "answer": 0
     },
     {
       "id": "s9",

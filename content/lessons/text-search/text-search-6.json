@@ -227,6 +227,7 @@
       "targetCell": "C5",
       "expectedValue": "24 Ring",
       "mustUse": [
+        "LEFT",
         "SEARCH"
       ],
       "solution": "=LEFT(A5,SEARCH(\"road\",A5)-2)",
@@ -246,13 +247,13 @@
     {
       "id": "s7",
       "type": "mcq",
-      "prompt": "When should you use SEARCH instead of FIND?",
+      "prompt": "`=FIND(\"road\",A3)` on `45 MG ROAD` returns `#VALUE!`. What fixes it?",
       "options": [
-        "When you need an exact case-sensitive match for capital letters",
-        "When you want to find text in any case or use wildcard patterns",
-        "When searching for numbers rather than text"
+        "`=SEARCH(\"road\",A3)`, because SEARCH ignores case",
+        "`=FIND(\"road\",A3,1)`",
+        "Put ROAD in brackets"
       ],
-      "answer": 1
+      "answer": 0
     },
     {
       "id": "s8",

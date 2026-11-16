@@ -358,11 +358,11 @@
     {
       "id": "s8",
       "type": "mcq",
-      "prompt": "A learner wants the first 3 characters of `BLR-502` in `A2`, but writes `=RIGHT(A2,3)`. Why does Excel return `502` instead of `BLR`?",
+      "prompt": "A learner writes `=RIGHT(A3,LEN(A3)-3)` for `STU-905`. Why does it return `-905`?",
       "options": [
-        "RIGHT counts characters from the end of the text, not the start",
-        "The formula needs quotes around the number 3",
-        "RIGHT only extracts digits and skips letters"
+        "The prefix `STU-` is 4 characters, so subtract 4",
+        "LEN skips hyphens",
+        "RIGHT counts from the start"
       ],
       "answer": 0
     },
