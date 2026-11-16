@@ -164,7 +164,7 @@
     {
       "id": "s8",
       "type": "formula",
-      "prompt": "A community centre lists members by full name. What is the first name of the member in `A2`? Put it in `C2`.",
+      "prompt": "A community centre lists members by full name. What is the first name of the member in `A2`? Put it in `C2` (hint: find the space between the names).",
       "grid": [
         ["Member", "City", "First Name"],
         ["Asha Rao", "Bengaluru", null],
@@ -187,7 +187,8 @@
         ")",
         ",",
         "\"",
-        "-"
+        "-",
+        " "
       ]
     }
   ]

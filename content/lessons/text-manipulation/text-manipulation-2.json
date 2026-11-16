@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**TEXTJOIN** joins many pieces of text with the same delimiter, and can take a whole range: `=TEXTJOIN(delimiter, ignore_empty, text1, …)`. Set `ignore_empty` to `TRUE` to skip blank cells, or `FALSE` to keep them."
+      "text": "**TEXTJOIN** joins many pieces of text with the same delimiter, and can take a whole range: `=TEXTJOIN(delimiter, ignore_empty, text1, …)`. Set `ignore_empty` to `TRUE` to skip blank cells, or `FALSE` to keep them. TEXTJOIN needs Excel 2019 or Microsoft 365; older Excel shows #NAME?."
     },
     {
       "id": "s2",
