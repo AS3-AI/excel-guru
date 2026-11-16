@@ -630,11 +630,11 @@
     {
       "id": "s9",
       "type": "mcq",
-      "prompt": "A manager wants to check if total snack sales reached at least 45. Which formula combines `IF` and `SUMIF` correctly?",
+      "prompt": "The manager now wants to know if drink sales reached at least 100. Which formula combines `IF` and `SUMIF` correctly?",
       "options": [
-        "`=IF(SUMIF(C2:C7,\"Snack\",D2:D7)>=45,\"Goal met\",\"Below goal\")`",
-        "`=IF(=SUMIF(C2:C7,\"Snack\",D2:D7)>=45,\"Goal met\",\"Below goal\")`",
-        "`=IF(SUMIF(C2:C7,\"Snack\",D2:D7>=45),\"Goal met\",\"Below goal\")`"
+        "`=IF(SUMIF(C2:C7,\"Drink\",D2:D7)>=100,\"Goal met\",\"Below goal\")`",
+        "`=IF(=SUMIF(C2:C7,\"Drink\",D2:D7)>=100,\"Goal met\",\"Below goal\")`",
+        "`=IF(SUMIF(C2:C7,\"Drink\",D2:D7>=100),\"Goal met\",\"Below goal\")`"
       ],
       "answer": 0
     },
