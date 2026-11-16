@@ -117,4 +117,4 @@ All secrets are confined to server-side code execution. Server-only libraries im
 |---|---|:---:|:---:|
 | Run migration `0005_security.sql` | Execute `supabase/migrations/0005_security.sql` in the Supabase SQL editor on the production and staging databases. | Owner | ⚠ owner |
 | Test Razorpay Refund Flow | Make one test purchase (or ₹499 live test) and trigger a refund from the Razorpay dashboard to verify end-to-end ledger reconciliation. | Owner | ⚠ owner |
-| Production Build Secret Grep | Automated grep over production `.next` build output bundles ensuring no service keys or private secrets are leaked into client JS bundles. | Claude / CI | ⚠ owner |
+| Production Build Secret Grep | Automated grep over production `.next` build output bundles ensuring no service keys or private secrets are leaked into client JS bundles. | Claude | ✅ 0 hits in .next/static (17 Nov) |
