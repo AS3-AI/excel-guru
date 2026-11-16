@@ -1,0 +1,221 @@
+{
+  "id": "intro-to-shortcuts-3",
+  "module": "intro-to-shortcuts",
+  "title": "Number formatting shortcuts",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**Number formatting shortcuts** change how values look without altering the underlying number. Hold `Ctrl+Shift` and press a key: `Ctrl+Shift+1` number (two decimals), `Ctrl+Shift+4` currency, `Ctrl+Shift+5` percent, `Ctrl+Shift+3` date, and `Ctrl+Shift+~` general (plain). Mac uses the exact same keys with `⌃` (Control)."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A coffee roastery prepares an invoice. Click the weight of Arabica in `C2` to select it.",
+      "grid": [
+        ["Item", "Date", "Weight", "Price", "Discount"],
+        ["Arabica", 45672, 1250, 45, 0.15],
+        ["Robusta", 45673, 850, 32, 0.1],
+        ["Cold brew", 45674, 420, 18, 0.05],
+        ["Espresso", 45675, 1600, 54, 0.2],
+        ["Total", null, 4120, 149, null]
+      ],
+      "target": "C2"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Format the weight in `C2` as a number with two decimal places: press `Ctrl+Shift+1` (Mac: `⌃⇧1`).",
+      "keys": {
+        "win": "Ctrl+Shift+1",
+        "mac": "Ctrl+Shift+1"
+      },
+      "activeCell": "C2",
+      "grid": [
+        ["Item", "Date", "Weight", "Price", "Discount"],
+        ["Arabica", 45672, 1250, 45, 0.15],
+        ["Robusta", 45673, 850, 32, 0.1],
+        ["Cold brew", 45674, 420, 18, 0.05],
+        ["Espresso", 45675, 1600, 54, 0.2],
+        ["Total", null, 4120, 149, null]
+      ],
+      "postcondition": {
+        "selection": "C2",
+        "grid": [
+          ["Item", "Date", "Weight", "Price", "Discount"],
+          ["Arabica", 45672, "1,250.00", 45, 0.15],
+          ["Robusta", 45673, 850, 32, 0.1],
+          ["Cold brew", 45674, 420, 18, 0.05],
+          ["Espresso", 45675, 1600, 54, 0.2],
+          ["Total", null, 4120, 149, null]
+        ]
+      }
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Format Arabica's price in `D2` as currency: press `Ctrl+Shift+4` (Mac: `⌃⇧4`).",
+      "keys": {
+        "win": "Ctrl+Shift+4",
+        "mac": "Ctrl+Shift+4"
+      },
+      "activeCell": "D2",
+      "grid": [
+        ["Item", "Date", "Weight", "Price", "Discount"],
+        ["Arabica", 45672, "1,250.00", 45, 0.15],
+        ["Robusta", 45673, 850, 32, 0.1],
+        ["Cold brew", 45674, 420, 18, 0.05],
+        ["Espresso", 45675, 1600, 54, 0.2],
+        ["Total", null, 4120, 149, null]
+      ],
+      "postcondition": {
+        "selection": "D2",
+        "grid": [
+          ["Item", "Date", "Weight", "Price", "Discount"],
+          ["Arabica", 45672, "1,250.00", "$45.00", 0.15],
+          ["Robusta", 45673, 850, 32, 0.1],
+          ["Cold brew", 45674, 420, 18, 0.05],
+          ["Espresso", 45675, 1600, 54, 0.2],
+          ["Total", null, 4120, 149, null]
+        ]
+      }
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "`E2` holds the discount rate `0.15`. Format it as a percentage: press `Ctrl+Shift+5` (Mac: `⌃⇧5`).",
+      "keys": {
+        "win": "Ctrl+Shift+5",
+        "mac": "Ctrl+Shift+5"
+      },
+      "activeCell": "E2",
+      "grid": [
+        ["Item", "Date", "Weight", "Price", "Discount"],
+        ["Arabica", 45672, "1,250.00", "$45.00", 0.15],
+        ["Robusta", 45673, 850, 32, 0.1],
+        ["Cold brew", 45674, 420, 18, 0.05],
+        ["Espresso", 45675, 1600, 54, 0.2],
+        ["Total", null, 4120, 149, null]
+      ],
+      "postcondition": {
+        "selection": "E2",
+        "grid": [
+          ["Item", "Date", "Weight", "Price", "Discount"],
+          ["Arabica", 45672, "1,250.00", "$45.00", "15%"],
+          ["Robusta", 45673, 850, 32, 0.1],
+          ["Cold brew", 45674, 420, 18, 0.05],
+          ["Espresso", 45675, 1600, 54, 0.2],
+          ["Total", null, 4120, 149, null]
+        ]
+      }
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "The date in `B2` appears as raw serial number `45672`. Format it as a date: press `Ctrl+Shift+3` (Mac: `⌃⇧3`).",
+      "keys": {
+        "win": "Ctrl+Shift+3",
+        "mac": "Ctrl+Shift+3"
+      },
+      "activeCell": "B2",
+      "grid": [
+        ["Item", "Date", "Weight", "Price", "Discount"],
+        ["Arabica", 45672, "1,250.00", "$45.00", "15%"],
+        ["Robusta", 45673, 850, 32, 0.1],
+        ["Cold brew", 45674, 420, 18, 0.05],
+        ["Espresso", 45675, 1600, 54, 0.2],
+        ["Total", null, 4120, 149, null]
+      ],
+      "postcondition": {
+        "selection": "B2",
+        "grid": [
+          ["Item", "Date", "Weight", "Price", "Discount"],
+          ["Arabica", "15-Jan-25", "1,250.00", "$45.00", "15%"],
+          ["Robusta", 45673, 850, 32, 0.1],
+          ["Cold brew", 45674, 420, 18, 0.05],
+          ["Espresso", 45675, 1600, 54, 0.2],
+          ["Total", null, 4120, 149, null]
+        ]
+      }
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "The weight in `C4` was formatted as currency (`$420.00`) by mistake. Reset it to general format: press `Ctrl+Shift+~` (Mac: `⌃⇧~`).",
+      "keys": {
+        "win": "Ctrl+Shift+`",
+        "mac": "Ctrl+Shift+`"
+      },
+      "activeCell": "C4",
+      "grid": [
+        ["Item", "Date", "Weight", "Price", "Discount"],
+        ["Arabica", "15-Jan-25", "1,250.00", "$45.00", "15%"],
+        ["Robusta", 45673, 850, 32, 0.1],
+        ["Cold brew", 45674, "$420.00", 18, 0.05],
+        ["Espresso", 45675, 1600, 54, 0.2],
+        ["Total", null, 4120, 149, null]
+      ],
+      "postcondition": {
+        "selection": "C4",
+        "grid": [
+          ["Item", "Date", "Weight", "Price", "Discount"],
+          ["Arabica", "15-Jan-25", "1,250.00", "$45.00", "15%"],
+          ["Robusta", 45673, 850, 32, 0.1],
+          ["Cold brew", 45674, 420, 18, 0.05],
+          ["Espresso", 45675, 1600, 54, 0.2],
+          ["Total", null, 4120, 149, null]
+        ]
+      }
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "You want to display `1250` as a standard number with two decimal places (`1,250.00`), without adding a currency symbol. Which shortcut should you press?",
+      "options": [
+        "Ctrl+Shift+1 (Mac: ⌃⇧1)",
+        "Ctrl+Shift+4 (Mac: ⌃⇧4)",
+        "Ctrl+Shift+5 (Mac: ⌃⇧5)"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Robusta's price in `D3` is `32`. Format it as currency for the invoice.",
+      "keys": {
+        "win": "Ctrl+Shift+4",
+        "mac": "Ctrl+Shift+4"
+      },
+      "activeCell": "D3",
+      "grid": [
+        ["Item", "Date", "Weight", "Price", "Discount"],
+        ["Arabica", "15-Jan-25", "1,250.00", "$45.00", "15%"],
+        ["Robusta", 45673, 850, 32, 0.1],
+        ["Cold brew", 45674, 420, 18, 0.05],
+        ["Espresso", 45675, 1600, 54, 0.2],
+        ["Total", null, 4120, 149, null]
+      ],
+      "postcondition": {
+        "selection": "D3",
+        "grid": [
+          ["Item", "Date", "Weight", "Price", "Discount"],
+          ["Arabica", "15-Jan-25", "1,250.00", "$45.00", "15%"],
+          ["Robusta", 45673, 850, "$32.00", 0.1],
+          ["Cold brew", 45674, 420, 18, 0.05],
+          ["Espresso", 45675, 1600, 54, 0.2],
+          ["Total", null, 4120, 149, null]
+        ]
+      }
+    }
+  ]
+}

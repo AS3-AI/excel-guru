@@ -1,0 +1,169 @@
+{
+  "id": "cell-selection-4",
+  "module": "cell-selection",
+  "title": "Select rows and columns",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**Row and column shortcuts** let you select or edit whole lines in one press: `Shift+Space` row · `Ctrl+Space` column · `Ctrl+Shift+=` insert · `Ctrl+-` delete. On Mac, use `⌘` for insert and delete (`⌘⇧=` and `⌘-`). macOS reserves `Ctrl+Space` for switching input sources, so column selection has no default Mac shortcut."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A café plans its weekly shifts. Click Ben's shift: `B3`.",
+      "grid": [
+        ["Day", "Shift", "Staff", "Hours"],
+        ["Mon", "Morning", "Asha", 6],
+        ["Tue", "Morning", "Ben", 6],
+        ["Wed", "Evening", "Chaya", 5],
+        ["Thu", "Evening", "Dev", 5],
+        ["Fri", "Morning", "Elena", 6]
+      ],
+      "target": "B3"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Select Ben's entire row: press `Shift+Space` (Mac: `⇧Space`).",
+      "keys": {
+        "win": "Shift+Space",
+        "mac": "Shift+Space"
+      },
+      "activeCell": "B3",
+      "grid": [
+        ["Day", "Shift", "Staff", "Hours"],
+        ["Mon", "Morning", "Asha", 6],
+        ["Tue", "Morning", "Ben", 6],
+        ["Wed", "Evening", "Chaya", 5],
+        ["Thu", "Evening", "Dev", 5],
+        ["Fri", "Morning", "Elena", 6]
+      ],
+      "postcondition": {
+        "selection": "A3:D3"
+      }
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Select the entire Hours column from `D3`: press `Ctrl+Space`. (Mac: `⌃Space` — if macOS switches keyboard language instead, turn off that shortcut in System Settings → Keyboard.)",
+      "keys": {
+        "win": "Ctrl+Space",
+        "mac": "Ctrl+Space"
+      },
+      "activeCell": "D3",
+      "grid": [
+        ["Day", "Shift", "Staff", "Hours"],
+        ["Mon", "Morning", "Asha", 6],
+        ["Tue", "Morning", "Ben", 6],
+        ["Wed", "Evening", "Chaya", 5],
+        ["Thu", "Evening", "Dev", 5],
+        ["Fri", "Morning", "Elena", 6]
+      ],
+      "postcondition": {
+        "selection": "D1:D6"
+      }
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "With row 4 selected (`Shift+Space`), insert a row above it: press `Ctrl+Shift+=` (Mac: `⌘⇧=`).",
+      "keys": {
+        "win": "Ctrl+Shift+=",
+        "mac": "Shift+Cmd+="
+      },
+      "activeCell": "A4:D4",
+      "grid": [
+        ["Day", "Shift", "Staff", "Hours"],
+        ["Mon", "Morning", "Asha", 6],
+        ["Tue", "Morning", "Ben", 6],
+        ["Wed", "Evening", "Chaya", 5],
+        ["Thu", "Evening", "Dev", 5],
+        ["Fri", "Morning", "Elena", 6]
+      ],
+      "postcondition": {
+        "selection": "A4:D4",
+        "grid": [
+          ["Day", "Shift", "Staff", "Hours"],
+          ["Mon", "Morning", "Asha", 6],
+          ["Tue", "Morning", "Ben", 6],
+          [null, null, null, null],
+          ["Wed", "Evening", "Chaya", 5],
+          ["Thu", "Evening", "Dev", 5],
+          ["Fri", "Morning", "Elena", 6]
+        ]
+      }
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "With row 4 selected (`Shift+Space`), delete it: press `Ctrl+-` (Mac: `⌘-`).",
+      "keys": {
+        "win": "Ctrl+-",
+        "mac": "Cmd+-"
+      },
+      "activeCell": "A4:D4",
+      "grid": [
+        ["Day", "Shift", "Staff", "Hours"],
+        ["Mon", "Morning", "Asha", 6],
+        ["Tue", "Morning", "Ben", 6],
+        [null, null, null, null],
+        ["Wed", "Evening", "Chaya", 5],
+        ["Thu", "Evening", "Dev", 5],
+        ["Fri", "Morning", "Elena", 6]
+      ],
+      "postcondition": {
+        "selection": "A4:D4",
+        "grid": [
+          ["Day", "Shift", "Staff", "Hours"],
+          ["Mon", "Morning", "Asha", 6],
+          ["Tue", "Morning", "Ben", 6],
+          ["Wed", "Evening", "Chaya", 5],
+          ["Thu", "Evening", "Dev", 5],
+          ["Fri", "Morning", "Elena", 6]
+        ]
+      }
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "You want to select an entire column of hours, but you accidentally press `Shift+Space` instead of `Ctrl+Space`. What does Excel select?",
+      "options": [
+        "The entire row",
+        "The entire column",
+        "The entire worksheet"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Friday's shift needs a quick schedule check. Select Elena's entire row from `A6`.",
+      "keys": {
+        "win": "Shift+Space",
+        "mac": "Shift+Space"
+      },
+      "activeCell": "A6",
+      "grid": [
+        ["Day", "Shift", "Staff", "Hours"],
+        ["Mon", "Morning", "Asha", 6],
+        ["Tue", "Morning", "Ben", 6],
+        ["Wed", "Evening", "Chaya", 5],
+        ["Thu", "Evening", "Dev", 5],
+        ["Fri", "Morning", "Elena", 6]
+      ],
+      "postcondition": {
+        "selection": "A6:D6"
+      }
+    }
+  ]
+}

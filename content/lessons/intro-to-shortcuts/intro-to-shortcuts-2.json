@@ -1,0 +1,356 @@
+{
+  "id": "intro-to-shortcuts-2",
+  "module": "intro-to-shortcuts",
+  "title": "Text formatting shortcuts",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**Formatting shortcuts** style the selected cell without the ribbon: `Ctrl+B` bold, `Ctrl+I` italic, `Ctrl+U` underline and `Ctrl+5` strikethrough. On a Mac use `⌘` instead of Ctrl (strikethrough is `⌘⇧X`). Press the same shortcut again to turn the style off."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A team keeps a task list. Select the heading you'll make bold: `A1`.",
+      "grid": [
+        [
+          "Item",
+          "Status",
+          null,
+          null
+        ],
+        [
+          "Monthly report",
+          "Done",
+          null,
+          null
+        ],
+        [
+          "Team photos",
+          "Pending",
+          null,
+          null
+        ],
+        [
+          "Budget draft",
+          "Pending",
+          null,
+          null
+        ],
+        [
+          "Old banner",
+          "Cancelled",
+          null,
+          null
+        ],
+        [
+          "Total",
+          "4 tasks",
+          null,
+          null
+        ]
+      ],
+      "target": "A1"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Make the heading in `A1` bold: press `Ctrl+B` (Mac: `⌘B`).",
+      "keys": {
+        "win": "Ctrl+B",
+        "mac": "Cmd+B"
+      },
+      "activeCell": "A1",
+      "grid": [
+        [
+          "Item",
+          "Status",
+          null,
+          null
+        ],
+        [
+          "Monthly report",
+          "Done",
+          null,
+          null
+        ],
+        [
+          "Team photos",
+          "Pending",
+          null,
+          null
+        ],
+        [
+          "Budget draft",
+          "Pending",
+          null,
+          null
+        ],
+        [
+          "Old banner",
+          "Cancelled",
+          null,
+          null
+        ],
+        [
+          "Total",
+          "4 tasks",
+          null,
+          null
+        ]
+      ],
+      "postcondition": {
+        "selection": "A1",
+        "format": {
+          "A1": [
+            "bold"
+          ]
+        }
+      }
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Put the pending task in `A3` in italics: press `Ctrl+I` (Mac: `⌘I`).",
+      "keys": {
+        "win": "Ctrl+I",
+        "mac": "Cmd+I"
+      },
+      "activeCell": "A3",
+      "grid": [
+        [
+          "Item",
+          "Status",
+          null,
+          null
+        ],
+        [
+          "Monthly report",
+          "Done",
+          null,
+          null
+        ],
+        [
+          "Team photos",
+          "Pending",
+          null,
+          null
+        ],
+        [
+          "Budget draft",
+          "Pending",
+          null,
+          null
+        ],
+        [
+          "Old banner",
+          "Cancelled",
+          null,
+          null
+        ],
+        [
+          "Total",
+          "4 tasks",
+          null,
+          null
+        ]
+      ],
+      "postcondition": {
+        "selection": "A3",
+        "format": {
+          "A3": [
+            "italic"
+          ]
+        }
+      }
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Underline the word Done in `B2` so it stands out: press `Ctrl+U` (Mac: `⌘U`).",
+      "keys": {
+        "win": "Ctrl+U",
+        "mac": "Cmd+U"
+      },
+      "activeCell": "B2",
+      "grid": [
+        [
+          "Item",
+          "Status",
+          null,
+          null
+        ],
+        [
+          "Monthly report",
+          "Done",
+          null,
+          null
+        ],
+        [
+          "Team photos",
+          "Pending",
+          null,
+          null
+        ],
+        [
+          "Budget draft",
+          "Pending",
+          null,
+          null
+        ],
+        [
+          "Old banner",
+          "Cancelled",
+          null,
+          null
+        ],
+        [
+          "Total",
+          "4 tasks",
+          null,
+          null
+        ]
+      ],
+      "postcondition": {
+        "selection": "B2",
+        "format": {
+          "B2": [
+            "underline"
+          ]
+        }
+      }
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "The banner was cancelled. Strike through `A5`: press `Ctrl+5` (Mac: `⌘⇧X`).",
+      "keys": {
+        "win": "Ctrl+5",
+        "mac": "Shift+Cmd+X"
+      },
+      "activeCell": "A5",
+      "grid": [
+        [
+          "Item",
+          "Status",
+          null,
+          null
+        ],
+        [
+          "Monthly report",
+          "Done",
+          null,
+          null
+        ],
+        [
+          "Team photos",
+          "Pending",
+          null,
+          null
+        ],
+        [
+          "Budget draft",
+          "Pending",
+          null,
+          null
+        ],
+        [
+          "Old banner",
+          "Cancelled",
+          null,
+          null
+        ],
+        [
+          "Total",
+          "4 tasks",
+          null,
+          null
+        ]
+      ],
+      "postcondition": {
+        "selection": "A5",
+        "format": {
+          "A5": [
+            "strikethrough"
+          ]
+        }
+      }
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "`A1` is already bold and you press `Ctrl+B` again. What happens?",
+      "options": [
+        "The bold turns off",
+        "It stays bold",
+        "It becomes italic"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "The total row should stand out from the tasks. Make the label in `A6` bold.",
+      "keys": {
+        "win": "Ctrl+B",
+        "mac": "Cmd+B"
+      },
+      "activeCell": "A6",
+      "grid": [
+        [
+          "Item",
+          "Status",
+          null,
+          null
+        ],
+        [
+          "Monthly report",
+          "Done",
+          null,
+          null
+        ],
+        [
+          "Team photos",
+          "Pending",
+          null,
+          null
+        ],
+        [
+          "Budget draft",
+          "Pending",
+          null,
+          null
+        ],
+        [
+          "Old banner",
+          "Cancelled",
+          null,
+          null
+        ],
+        [
+          "Total",
+          "4 tasks",
+          null,
+          null
+        ]
+      ],
+      "postcondition": {
+        "selection": "A6",
+        "format": {
+          "A6": [
+            "bold"
+          ]
+        }
+      }
+    }
+  ]
+}
