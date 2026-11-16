@@ -151,3 +151,5 @@ the worktrees and branches.
   typecheck, test, validate-content, build (and TZ engine tests) in the slot → numbered fix prompt with the exact
   failing test names and error lines → repeat. Prompts for agy code work list every file, every rule as a
   numbered checklist, the must-keep behaviours, and ask for a per-item "already correct / changed" reply.
+- Owner rule (16 Nov): after every merge, push or status change, update docs/roadmap.md (status column, the
+  "Last updated" line) and docs/build-log.md in the same commit.

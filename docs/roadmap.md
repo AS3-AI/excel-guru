@@ -5,7 +5,7 @@ Existing cards live in full in `docs/tasks/Tn.md` and are listed here with their
 a file yet are written out in full below; when work on one starts, copy it to `docs/tasks/` unchanged.
 
 Sources: phases from `docs/plan.md` (Plan → phases), features from `docs/SPEC.md` (Product spec §6–§16),
-status from `docs/build-log.md`. Last updated 16 Nov 2026.
+status from `docs/build-log.md`. Last updated 16 Nov 2026 (evening): 62 of 86 lessons and 10 articles live.
 
 **Status keys:** ✅ live · 🟢 merged, not live · 🟡 in progress / waiting on the owner · ⏸ parked · ⬜ not started.
 **Card kinds:** `T` = code card (engine/grader tests first, Codex or agent builds, reviewer checks).
@@ -45,15 +45,15 @@ done = typecheck, test and validate-content pass, with the output pasted.
 **Goal:** the full lesson experience: every step type graded, progress saved, dashboard with status tags, and
 the first half of the curriculum (Intro through Text Manipulation, plus Index Match).
 **Done when:** a learner can do all SUM → Text lessons and see their progress.
-**Status:** platform done; content missing Text Search and Text Manipulation.
+**Status:** ✅ done (16 Nov).
 
 | Card | What | Status |
 |---|---|---|
 | T6 | Dynamic arrays (spill) | ✅ |
 | T11 | Player polish | ✅ |
 | T12 | Engine functions batch | ✅ |
-| T13 | Element-wise functions | ⏸ parked (needed by Array Formulas, maybe Tables) |
-| T14 | Grade spilled answers | ⏸ parked (needed by Array Formulas) |
+| T13 | Element-wise functions | ✅ (16 Nov) |
+| T14 | Grade spilled answers | ✅ (16 Nov) |
 | T15 | Grader for every step type | ✅ |
 | T16 | Player v1 (Check / Show Answer / Skip / Previous, Enter) | ✅ |
 | T17 | Shortcut steps (Win/Mac, mobile banners) | ✅ |
@@ -67,8 +67,9 @@ the first half of the curriculum (Intro through Text Manipulation, plus Index Ma
 | T29 | IS functions see errors | ✅ |
 | T31 | INDEX and MATCH follow Excel | ✅ |
 | C-SUM, C-COUNT, C-LOG, C-LOOK, C-IM | SUM 9, COUNT 7, Logical 7, Lookup 10, Index Match 6 | ✅ |
-| **C1** | Text Search (7) | ⬜ — card below |
-| **C2** | Text Manipulation (4) | ⬜ — card below |
+| **C1** | Text Search (7) | ✅ |
+| T51 | Text functions follow Excel (SEARCH wildcards, PROPER, LEFT/RIGHT) | ✅ |
+| **C2** | Text Manipulation (4) | ✅ |
 
 ---
 
@@ -89,12 +90,19 @@ per-user AI ratings deferred.
 | T30 | Payments switch `PAYMENTS_ENABLED` | ✅ (on, test keys) |
 | T32 | Razorpay `total_count` + logged errors | ✅ (test purchase passed 16 Nov) |
 | T33 | 20 new Gemini calls a day (migration 0003) | ✅ code; 🟡 owner runs 0003 |
+| T36 | Free tier counts lessons opened (migration 0004) | ✅ (owner ran 0004; browser check with a free account pending) |
+| T52 | Statistical functions follow Excel | ✅ |
+| T53 | Dates display as dates; fixed lesson today | 🟢 built, review pending |
+| T54 | Shortcut steps show a real grid + `grid`/`postcondition.format` schema (owner-approved) | 🟡 fix round 3 |
 | **O1** | Turn on AI explanations | 🟡 owner — below |
 | **T34** | Payments: subscription row + Manage / cancel button | ⬜ — below |
 | **O2** | Payments to live mode | ⬜ owner — below (also listed in Phase 5) |
 | **T35** | One AI rating per user | ⏸ deferred by owner — below |
-| **T36** | Free tier: block opening locked lessons | ⬜ — below |
-| **C3–C10** | Remaining 7 modules (Shortcuts, Cell Selection, Statistical, Tables, Dates, Other Skills, Array Formulas, Combined) | ⬜ — below |
+| ~~T36~~ | moved up: done |
+| C5 Statistical (7) · C9 Array Formulas (2) · C10 Combined (2) | | ✅ live 16 Nov |
+| C3 Intro to Shortcuts (6) · C4 Cell Selection (7) | plan: docs/content/shortcuts-plan.md | 🟡 waiting for T54 |
+| C6 Dates (5) | | 🟡 waiting for T53 |
+| C7 Tables (4) · C8 Other Skills (2) | | ⏸ owner design decision |
 | **C11** | 4 project datasets + steps | ⬜ — below |
 
 ---
@@ -116,7 +124,7 @@ grading, the paywall or payments.
 | **T40** | Certificates + public verify | ⬜ |
 | **T41** | Group admin portal + invites | ⬜ |
 | **T42** | Projects: modal, page, player | ⬜ (needs C11) |
-| **T43** + **C14** | `/learn/[function]` article template + 10 articles | ⬜ |
+| **T43** + **C14** | `/learn/[function]` article template + 10 articles | ✅ live 16 Nov |
 | **C15** | Landing copy + pricing FAQ | ⬜ |
 
 ---
