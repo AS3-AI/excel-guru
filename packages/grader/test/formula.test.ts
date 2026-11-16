@@ -82,6 +82,10 @@ describe("gradeFormulaStep: Done-when cases", () => {
     expect(gradeFormulaStep(countStep, "=SUM(")).toEqual(fail("parse_error"));
   });
 
+  it("throws when the step's own solution has a parse error", () => {
+    expect(() => gradeFormulaStep(step({ solution: "=SUM(" }), "=SUM(B2:B4)")).toThrow();
+  });
+
   it("=0.1+0.2 matches expectedValue 0.3", () => {
     expect(gradeFormulaStep(step({ expectedValue: 0.3 }), "=0.1+0.2")).toEqual(pass);
   });
@@ -220,5 +224,34 @@ describe("lesson types", () => {
     expect(steps.map((s) => s.type)).toEqual([
       "select", "formula", "shortcut", "shortcut", "mcq", "picture", "project", "info",
     ]);
+  });
+});
+
+describe("gradeFormulaStep: dynamic array spills", () => {
+  const arrayStep: FormulaStep = {
+    id: "spill", type: "formula", prompt: "Return unique items.",
+    grid: [["A"], ["B"], ["A"], ["C"]], targetCell: "B1",
+    expectedValue: "A", solution: "=UNIQUE(A1:A4)",
+  };
+
+  it("rejects a spilled answer when the step expects one value", () => {
+    const scalar = step({
+      grid: [[0, 0, 0], [0, 2, 3], [0, 4, 5], [0, 6, 7]],
+      targetCell: "D2", expectedValue: 6, solution: "=B2*C2",
+    });
+    expect(gradeFormulaStep(scalar, "=B2:B4*C2:C4")).toEqual(fail("wrong_value"));
+    expect(gradeFormulaStep(scalar, "=B2*C2")).toEqual(pass);
+  });
+
+  it("accepts a full spill matching a spilling solution", () => {
+    expect(gradeFormulaStep(arrayStep, "=UNIQUE(A1:A4)")).toEqual(pass);
+  });
+
+  it("rejects a spill with the right first value but missing rows", () => {
+    expect(gradeFormulaStep(arrayStep, "=A1")).toEqual(fail("wrong_value"));
+  });
+
+  it("rejects a spill whose later values differ", () => {
+    expect(gradeFormulaStep(arrayStep, "=SORT(A1:A4)")).toEqual(fail("wrong_value"));
   });
 });
