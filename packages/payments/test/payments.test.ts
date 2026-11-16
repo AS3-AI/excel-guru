@@ -1,5 +1,5 @@
 import { createHmac } from "node:crypto";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { isDuplicateWebhook, isEntitled, mapRazorpayEvent, providerFor, razorpayEventTime, shouldApplyEntitlement, validateCheckoutInput, verifyRazorpaySignature } from "../src/index";
 
 const makeBody = (event: string, extra: Record<string, unknown> = {}) => JSON.stringify({ id: "evt_1", event, created_at: 1_700_000_000, payload: { subscription: { entity: { id: "sub_1", current_end: 1_800_000_000, created_at: 1_700_000_000, notes: { userId: "user_1", plan: "annual" }, ...extra } } } });
@@ -59,4 +59,32 @@ describe("payment decision helpers", () => {
   it("routes USD to unavailable Stripe provider", async () => { await expect(providerFor("USD").createCheckout({ userId: "u", email: "e", plan: "monthly" })).rejects.toThrow("stripe_unavailable"); });
   it("Stripe does not verify", () => { expect(providerFor("USD").verifyWebhook("{}", new Headers())).toBe(false); });
   it("Stripe does not map events", () => { expect(providerFor("USD").toEntitlementEvent("{}")).toBeNull(); });
+
+  describe("razorpay createCheckout request", () => {
+    const env = { ...process.env };
+    afterEach(() => { process.env = { ...env }; vi.unstubAllGlobals(); });
+    function setup(response: Response) {
+      process.env.RAZORPAY_KEY_ID = "rzp_test_k"; process.env.RAZORPAY_KEY_SECRET = "s3cret";
+      process.env.RAZORPAY_PLAN_MONTHLY = "plan_m"; process.env.RAZORPAY_PLAN_ANNUAL = "plan_a";
+      const fetchMock = vi.fn(async () => response); vi.stubGlobal("fetch", fetchMock); return fetchMock;
+    }
+    it("sends total_count 120 for monthly", async () => {
+      const f = setup(new Response(JSON.stringify({ id: "sub_1" }), { status: 200 }));
+      await providerFor("INR").createCheckout({ userId: "u", email: "e", plan: "monthly" });
+      expect(JSON.parse((f.mock.calls[0] as unknown as [string, RequestInit])[1].body as string)).toMatchObject({ plan_id: "plan_m", total_count: 120 });
+    });
+    it("sends total_count 10 for annual", async () => {
+      const f = setup(new Response(JSON.stringify({ id: "sub_2" }), { status: 200 }));
+      await providerFor("INR").createCheckout({ userId: "u", email: "e", plan: "annual" });
+      expect(JSON.parse((f.mock.calls[0] as unknown as [string, RequestInit])[1].body as string)).toMatchObject({ plan_id: "plan_a", total_count: 10 });
+    });
+    it("reports Razorpay's error without secrets", async () => {
+      setup(new Response(JSON.stringify({ error: { code: "BAD_REQUEST_ERROR", description: "total_count is required" } }), { status: 400 }));
+      const err = await providerFor("INR").createCheckout({ userId: "u", email: "e", plan: "monthly" }).catch((e: Error) => e);
+      expect(String((err as Error).message)).toContain("400");
+      expect(String((err as Error).message)).toContain("total_count is required");
+      expect(String((err as Error).message)).not.toContain("s3cret");
+    });
+  });
 });
+

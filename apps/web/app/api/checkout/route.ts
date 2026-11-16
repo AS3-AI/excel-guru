@@ -49,5 +49,8 @@ export async function POST(request: Request) {
   try {
     const result = await providerFor("INR").createCheckout({ userId: user.id, email: profile?.email ?? user.email ?? "", plan: validPlan });
     return NextResponse.json({ provider: "razorpay", payload: result.payload });
-  } catch { return NextResponse.json({ error: "checkout_unavailable" }, { status: 503 }); }
+  } catch (error) {
+    console.error("checkout:", error instanceof Error ? error.message : "unknown error");
+    return NextResponse.json({ error: "checkout_unavailable" }, { status: 503 });
+  }
 }

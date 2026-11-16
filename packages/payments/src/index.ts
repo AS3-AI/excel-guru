@@ -89,9 +89,13 @@ const razorpayProvider: PaymentProvider = {
     if (!keyId || !keySecret || !planId) throw new Error("payment_unavailable");
     const response = await fetch("https://api.razorpay.com/v1/subscriptions", {
       method: "POST", headers: { Authorization: `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ plan_id: planId, customer_notify: 1, quantity: 1, notes: { userId: input.userId, plan: input.plan } }),
+      body: JSON.stringify({ plan_id: planId, total_count: input.plan === "monthly" ? 120 : 10, customer_notify: 1, quantity: 1, notes: { userId: input.userId, plan: input.plan } }),
     });
-    if (!response.ok) throw new Error("checkout_failed");
+    if (!response.ok) {
+      // Razorpay's error body names the problem (e.g. a missing field); it never echoes our credentials.
+      const detail = await response.json().catch(() => null) as { error?: { code?: string; description?: string } } | null;
+      throw new Error(`checkout_failed: ${response.status} ${detail?.error?.code ?? ""} ${detail?.error?.description ?? ""}`.trim());
+    }
     const result = await response.json() as { id?: string };
     if (!result.id) throw new Error("checkout_failed");
     return { payload: { key_id: keyId, subscription_id: result.id, prefill: { email: input.email } } };
