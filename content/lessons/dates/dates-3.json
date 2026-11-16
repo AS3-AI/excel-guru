@@ -1,0 +1,358 @@
+{
+  "id": "dates-3",
+  "module": "dates",
+  "title": "DATEDIF: whole years, months and days",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**DATEDIF** finds the difference between two dates in completed years, months or days: `=DATEDIF(start, end, unit)`. The start date must come before the end date, and the unit is written in quotes: `\"Y\"` for whole years, `\"M\"` for whole months, or `\"D\"` for days."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A community centre tracks members and their ages. Select Aarav's date of birth and the as-of date: `B2:C2`.",
+      "grid": [
+        [
+          "Name",
+          "Birth Date",
+          "As Of",
+          "Age"
+        ],
+        [
+          "Aarav",
+          "1998-08-20",
+          "2026-01-15",
+          null
+        ],
+        [
+          "Fatima",
+          "2002-04-11",
+          "2026-01-15",
+          23
+        ],
+        [
+          "Liam",
+          "1995-12-03",
+          "2026-01-15",
+          30
+        ],
+        [
+          "Ananya",
+          "2000-09-25",
+          "2026-01-15",
+          25
+        ]
+      ],
+      "target": "B2:C2"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Find Aarav's age in completed whole years. In `D2`, type `=DATEDIF(B2,C2,\"Y\")` and press Enter.",
+      "grid": [
+        [
+          "Name",
+          "Birth Date",
+          "As Of",
+          "Age"
+        ],
+        [
+          "Aarav",
+          "1998-08-20",
+          "2026-01-15",
+          null
+        ],
+        [
+          "Fatima",
+          "2002-04-11",
+          "2026-01-15",
+          23
+        ],
+        [
+          "Liam",
+          "1995-12-03",
+          "2026-01-15",
+          30
+        ],
+        [
+          "Ananya",
+          "2000-09-25",
+          "2026-01-15",
+          25
+        ]
+      ],
+      "targetCell": "D2",
+      "solution": "=DATEDIF(B2,C2,\"Y\")",
+      "mustUse": [
+        "DATEDIF"
+      ],
+      "explain": "Aarav turns 28 in August 2026, so on 15 Jan 2026 he has completed 27 whole years.",
+      "highlightCells": [
+        "B2:C2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ],
+      "expectedValue": 27
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "Use unit `\"M\"` to count completed calendar months. In `D2`, find how many whole months Priya's magazine subscription lasted.",
+      "grid": [
+        [
+          "Subscriber",
+          "Started",
+          "Renewed",
+          "Months"
+        ],
+        [
+          "Priya",
+          "2024-03-10",
+          "2025-08-25",
+          null
+        ],
+        [
+          "Marcus",
+          "2024-07-01",
+          "2025-02-15",
+          7
+        ],
+        [
+          "Deepa",
+          "2023-11-15",
+          "2025-01-10",
+          13
+        ]
+      ],
+      "targetCell": "D2",
+      "solution": "=DATEDIF(B2,C2,\"M\")",
+      "mustUse": [
+        "DATEDIF"
+      ],
+      "explain": "From 10 Mar 2024 to 25 Aug 2025 is 17 full months; the 18th month would complete on 10 Sep 2025.",
+      "highlightCells": [
+        "B2:C2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ],
+      "expectedValue": 17
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "Unit `\"D\"` counts the exact number of days between two dates. In `D2`, find how many days the design phase took.",
+      "grid": [
+        [
+          "Phase",
+          "Start Date",
+          "End Date",
+          "Days"
+        ],
+        [
+          "Design",
+          "2025-05-12",
+          "2025-06-03",
+          null
+        ],
+        [
+          "Testing",
+          "2025-07-01",
+          "2025-07-16",
+          15
+        ],
+        [
+          "Launch",
+          "2025-08-10",
+          "2025-09-01",
+          22
+        ]
+      ],
+      "targetCell": "D2",
+      "solution": "=DATEDIF(B2,C2,\"D\")",
+      "mustUse": [
+        "DATEDIF"
+      ],
+      "explain": "From 12 May 2025 to 3 Jun 2025 is exactly 22 days.",
+      "highlightCells": [
+        "B2:C2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ],
+      "expectedValue": 22
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "Unit `\"YM\"` finds the months remaining after whole years. In `D2`, find the extra months Meera has worked beyond her full years.",
+      "grid": [
+        [
+          "Employee",
+          "Hired",
+          "Reviewed",
+          "Extra Months"
+        ],
+        [
+          "Meera",
+          "2021-04-10",
+          "2025-09-15",
+          null
+        ],
+        [
+          "Kenji",
+          "2022-01-20",
+          "2025-07-10",
+          5
+        ],
+        [
+          "Tara",
+          "2020-08-05",
+          "2025-10-30",
+          2
+        ]
+      ],
+      "targetCell": "D2",
+      "solution": "=DATEDIF(B2,C2,\"YM\")",
+      "mustUse": [
+        "DATEDIF"
+      ],
+      "explain": "Meera has worked 4 whole years plus 5 extra months, because 5 full months have passed since her April anniversary.",
+      "highlightCells": [
+        "B2:C2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ],
+      "expectedValue": 5
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "In this lesson, today is 15 Jan 2026. In `C2`, find Rohan's age in whole years today using `TODAY()`.",
+      "grid": [
+        [
+          "Student",
+          "Birth Date",
+          "Age"
+        ],
+        [
+          "Rohan",
+          "2005-03-22",
+          null
+        ],
+        [
+          "Diya",
+          "2007-11-08",
+          null
+        ],
+        [
+          "Omar",
+          "2004-01-10",
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "solution": "=DATEDIF(B2,TODAY(),\"Y\")",
+      "mustUse": [
+        "DATEDIF"
+      ],
+      "explain": "In this lesson today is 15 Jan 2026; Rohan turns 21 in March, so he has completed 20 whole years.",
+      "highlightCells": [
+        "B2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ],
+      "expectedValue": 20
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "A learner enters `=DATEDIF(C2,B2,\"Y\")` with the later date first and the earlier start date second. What does Excel return?",
+      "options": [
+        "Excel returns `#NUM!` because the start date must come first",
+        "Excel returns a negative number",
+        "Excel returns `#VALUE!`"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "How many full months was the phone in use before the claim was made? Put the answer in `D3`.",
+      "grid": [
+        [
+          "Device",
+          "Purchased",
+          "Claimed",
+          "Months Used"
+        ],
+        [
+          "Laptop",
+          "2023-02-18",
+          "2025-10-05",
+          null
+        ],
+        [
+          "Phone",
+          "2024-05-12",
+          "2025-08-20",
+          null
+        ],
+        [
+          "Tablet",
+          "2024-09-01",
+          "2025-04-10",
+          null
+        ],
+        [
+          "Watch",
+          "2024-11-25",
+          "2025-06-15",
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "solution": "=DATEDIF(B3,C3,\"M\")",
+      "mustUse": [
+        "DATEDIF"
+      ],
+      "explain": "From 12 May 2024 to 20 Aug 2025 is 15 completed whole months.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ],
+      "expectedValue": 15
+    }
+  ]
+}
