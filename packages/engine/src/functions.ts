@@ -5,6 +5,29 @@ import type { CellValue, ErrorCode, ExcelError, Matrix } from "./evaluator";
 export type Arg = CellValue | Matrix | undefined;
 type Impl = (...args: Arg[]) => CellValue | Matrix;
 
+/** Only these positions receive element-wise single-value evaluation. All other array arguments stay whole. */
+export const liftingArgumentPositions: Readonly<Record<string, readonly number[]>> = {
+  ABS: [0], ROUND: [0, 1], ROUNDUP: [0, 1], ROUNDDOWN: [0, 1], INT: [0], MOD: [0, 1], SQRT: [0], POWER: [0, 1],
+  FLOOR: [0, 1], CEILING: [0, 1], ODD: [0], EVEN: [0], SIGN: [0],
+  LEN: [0], LEFT: [0, 1], RIGHT: [0, 1], MID: [0, 1, 2], UPPER: [0], LOWER: [0], PROPER: [0], TRIM: [0],
+  SUBSTITUTE: [0, 1, 2, 3], REPLACE: [0, 1, 2, 3], FIND: [0, 1, 2], SEARCH: [0, 1, 2],
+  TEXTBEFORE: [0, 1, 2], TEXTAFTER: [0, 1, 2], VALUE: [0], TEXT: [0, 1], CONCATENATE: [-1], EXACT: [0, 1], REPT: [0, 1],
+  NOT: [0], ISNUMBER: [0], ISTEXT: [0], ISBLANK: [0], ISERROR: [0], ISERR: [0], ISNA: [0], ISLOGICAL: [0], ISEVEN: [0], ISODD: [0],
+  DATE: [0, 1, 2], YEAR: [0], MONTH: [0], DAY: [0], WEEKDAY: [0, 1], DATEVALUE: [0], DAYS: [0, 1], DATEDIF: [0, 1, 2],
+  COUNTIF: [1], COUNTIFS: [1, 3, 5, 7], SUMIF: [1], SUMIFS: [2, 4, 6],
+  AVERAGEIF: [1], AVERAGEIFS: [2, 4, 6], VLOOKUP: [0], HLOOKUP: [0], XLOOKUP: [0], MATCH: [0],
+};
+
+/** Positions that receive full arrays because the function's contract consumes ranges. */
+export const rangeArgumentPositions: Readonly<Record<string, readonly number[]>> = {
+  SUM: [-1], SUMSQ: [-1], PRODUCT: [-1], AVERAGE: [-1], MIN: [-1], MAX: [-1], COUNT: [-1], COUNTA: [-1], COUNTBLANK: [0],
+  COUNTIF: [0], COUNTIFS: [0, 2, 4, 6], SUMIF: [0, 2], SUMIFS: [0, 1, 3, 5],
+  AVERAGEIF: [0, 2], AVERAGEIFS: [0, 1, 3, 5],
+  VLOOKUP: [1], HLOOKUP: [1], XLOOKUP: [1, 2], INDEX: [0], MATCH: [1],
+  UNIQUE: [0], FILTER: [0, 1], SORT: [0], TEXTJOIN: [2], CONCAT: [0],
+  SUMPRODUCT: [-1],
+};
+
 const CODES: ErrorCode[] = ["#DIV/0!", "#N/A", "#VALUE!", "#REF!", "#NAME?", "#NUM!", "#SPILL!", "#CIRC!"];
 const LIBRARY = formulajs as unknown as Record<string, unknown>;
 
