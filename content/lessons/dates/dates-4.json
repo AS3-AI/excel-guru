@@ -1,0 +1,148 @@
+{
+  "id": "dates-4",
+  "module": "dates",
+  "title": "DAYS: count the days between two dates",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**DAYS** counts the number of days between two dates: `=DAYS(end_date, start_date)`. The end date comes first (the opposite order to DATEDIF), so Excel calculates end minus start."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A resort hotel tracks holiday bookings. Select Aarav's check-in and check-out dates: `B2:C2`.",
+      "grid": [
+        ["Guest", "Check-in", "Check-out", "Days"],
+        ["Aarav", "2025-12-24", "2025-12-31", null],
+        ["Elena", "2026-01-02", "2026-01-05", null],
+        ["Rohan", "2026-01-14", "2026-01-20", null],
+        ["Mei", "2026-02-01", "2026-02-10", null]
+      ],
+      "target": "B2:C2"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "How many days is Aarav staying? In `D2`, type `=DAYS(C2,B2)` and press Enter.",
+      "grid": [
+        ["Guest", "Check-in", "Check-out", "Days"],
+        ["Aarav", "2025-12-24", "2025-12-31", null],
+        ["Elena", "2026-01-02", "2026-01-05", null],
+        ["Rohan", "2026-01-14", "2026-01-20", null],
+        ["Mei", "2026-02-01", "2026-02-10", null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 7,
+      "mustUse": ["DAYS"],
+      "solution": "=DAYS(C2,B2)",
+      "explain": "DAYS puts check-out in C2 first, then check-in in B2, returning 7 days.",
+      "highlightCells": ["C2", "B2"],
+      "mobileButtons": ["=", "(", ")", ","]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "If you put the start date first, DAYS returns a negative number. In `D2`, find the positive number of rental days for Priya by passing the return date in `C2` before the hire date in `B2`.",
+      "grid": [
+        ["Customer", "Hired", "Returned", "Days"],
+        ["Priya", "2026-03-05", "2026-03-17", null],
+        ["Marcus", "2026-03-08", "2026-03-12", null],
+        ["Zara", "2026-03-10", "2026-03-25", null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 12,
+      "mustUse": ["DAYS"],
+      "solution": "=DAYS(C2,B2)",
+      "explain": "Putting the return date C2 first gives positive 12 days; reversing them to B2, C2 would give -12.",
+      "highlightCells": ["C2", "B2"],
+      "mobileButtons": ["=", "(", ")", ","]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "DAYS automatically accounts for month and year boundaries. In `D2`, find how many days the bridge repair takes from `B2` to `C2`.",
+      "grid": [
+        ["Project", "Start", "Finish", "Days"],
+        ["Bridge repair", "2025-12-28", "2026-01-08", null],
+        ["Tunnel inspection", "2025-12-29", "2026-01-03", null],
+        ["Road resurfacing", "2025-12-15", "2025-12-30", null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 11,
+      "mustUse": ["DAYS"],
+      "solution": "=DAYS(C2,B2)",
+      "explain": "DAYS handles the month and year transition across 2025 and 2026, counting 11 days from 28 Dec to 8 Jan.",
+      "highlightCells": ["C2", "B2"],
+      "mobileButtons": ["=", "(", ")", ","]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "In this lesson, today is 15 Jan 2026. In `C2`, find how many days are left until the Data Analytics exam in `B2` using `TODAY()`.",
+      "grid": [
+        ["Course", "Exam Date", "Days Left"],
+        ["Data Analytics", "2026-01-29", null],
+        ["Finance", "2026-02-05", null],
+        ["Marketing", "2026-02-18", null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 14,
+      "mustUse": ["DAYS"],
+      "solution": "=DAYS(B2,TODAY())",
+      "explain": "DAYS counts 14 days from today (15 Jan 2026) to the Data Analytics exam on 29 Jan 2026.",
+      "highlightCells": ["B2"],
+      "mobileButtons": ["=", "(", ")", ","]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "Under the hood, Excel stores dates as serial numbers. Because `A2` and `B2` are numbers, you can subtract them directly. In `C2`, type `=B2-A2`.",
+      "grid": [
+        ["Check-in", "Check-out", "Days"],
+        [46015, 46022, null],
+        [46025, 46028, null],
+        [46030, 46035, null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 7,
+      "mustUse": [],
+      "solution": "=B2-A2",
+      "explain": "Subtracting 46015 from 46022 gives 7, showing that DAYS computes the difference between date serial numbers.",
+      "highlightCells": ["B2", "A2"],
+      "mobileButtons": ["=", "-"]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "A learner writes `=DAYS(A2,B2)` to find the days between check-in in `A2` and check-out in `B2`, but Excel returns `-7`. Why?",
+      "options": [
+        "DAYS takes the end date first: `=DAYS(B2,A2)`",
+        "The date cells must be formatted as numbers first",
+        "DAYS requires quotation marks around cell references"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A design studio tracks summer internships. How many days does Zainab's internship last? Put the result in `D2`.",
+      "grid": [
+        ["Intern", "Start Date", "End Date", "Days"],
+        ["Zainab", "2026-06-01", "2026-08-15", null],
+        ["Kabir", "2026-06-15", "2026-07-31", null],
+        ["Tara", "2026-07-01", "2026-07-25", null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 75,
+      "mustUse": ["DAYS"],
+      "solution": "=DAYS(C2,B2)",
+      "explain": "Zainab's internship from 1 June 2026 to 15 August 2026 spans 75 days.",
+      "mobileButtons": ["=", "(", ")", ","]
+    }
+  ]
+}
