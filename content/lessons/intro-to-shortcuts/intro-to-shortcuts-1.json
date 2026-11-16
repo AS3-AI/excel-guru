@@ -316,7 +316,7 @@
       "options": [
         "Key tips navigate through ribbon menus step by step",
         "You must hold all keys down together like `Ctrl+B`",
-        "Pressing keys sequentially closes the workbook"
+        "Key tips only work while the mouse pointer is over the ribbon"
       ],
       "answer": 0
     },
