@@ -138,7 +138,7 @@ grading, the paywall or payments.
 |---|---|---|
 | **T44** | Error states, toasts, connection banner, one-column layout | ⬜ |
 | **T45** | Landing "Start free" + email the waitlist | ⬜ |
-| **T46** | Security pass: RLS on every table, rate limits, refunds | ⬜ |
+| **T46** | Security pass: RLS on every table, rate limits, refunds | 🟢 on integrate/launch-content; owner runs 0005 + refund test |
 | **T47** | SEO basics + help / privacy / terms pages | 🟢 on integrate/launch-content; owner fills legal placeholders; Lighthouse pending |
 | **T48** | Analytics (PostHog) + cookie banner | ⬜ |
 | **O2** | Payments to live mode | ⬜ owner |
