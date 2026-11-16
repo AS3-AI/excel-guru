@@ -1,0 +1,212 @@
+{
+  "id": "tables-2",
+  "module": "tables",
+  "title": "Pivot tables 2: two-way summaries",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "In a pivot table, placing fields in both Rows and Columns creates a two-way summary called a **cross-tab**. Each inner cell calculates a total matching two conditions, just like SUMIFS."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A project tracker logs hours by month and team. Select the hours: `C2:C8`.",
+      "grid": [
+        ["Month", "Team", "Hours", null, "Sum", "May", "Jun"],
+        ["May", "Dev", 10, null, "Dev", null, null],
+        ["May", "Ops", 14, null, "Ops", null, null],
+        ["Jun", "Ops", 15, null, null, null, null],
+        ["May", "Dev", 12, null, null, null, null],
+        ["May", "Ops", 11, null, null, null, null],
+        ["Jun", "Dev", 18, null, null, null, null],
+        ["Jun", "Dev", 16, null, null, null, null]
+      ],
+      "target": "C2:C8"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `F2`, find total May hours for the Dev team: `=SUMIFS(C2:C8,A2:A8,\"May\",B2:B8,\"Dev\")`.",
+      "grid": [
+        ["Month", "Team", "Hours", null, "Sum", "May", "Jun"],
+        ["May", "Dev", 10, null, "Dev", null, null],
+        ["May", "Ops", 14, null, "Ops", null, null],
+        ["Jun", "Ops", 15, null, null, null, null],
+        ["May", "Dev", 12, null, null, null, null],
+        ["May", "Ops", 11, null, null, null, null],
+        ["Jun", "Dev", 18, null, null, null, null],
+        ["Jun", "Dev", 16, null, null, null, null]
+      ],
+      "targetCell": "F2",
+      "expectedValue": 22,
+      "mustUse": [
+        "SUMIFS"
+      ],
+      "solution": "=SUMIFS(C2:C8,A2:A8,\"May\",B2:B8,\"Dev\")",
+      "explain": "Row 2 (10) and row 5 (12) match both May and Dev, totaling 22 hours.",
+      "highlightCells": [
+        "C2:C8",
+        "A2:A8",
+        "B2:B8"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `G2`, use SUMIFS to total Jun hours for the Dev team.",
+      "grid": [
+        ["Month", "Team", "Hours", null, "Sum", "May", "Jun"],
+        ["May", "Dev", 10, null, "Dev", 22, null],
+        ["May", "Ops", 14, null, "Ops", null, null],
+        ["Jun", "Ops", 15, null, null, null, null],
+        ["May", "Dev", 12, null, null, null, null],
+        ["May", "Ops", 11, null, null, null, null],
+        ["Jun", "Dev", 18, null, null, null, null],
+        ["Jun", "Dev", 16, null, null, null, null]
+      ],
+      "targetCell": "G2",
+      "expectedValue": 34,
+      "mustUse": [
+        "SUMIFS"
+      ],
+      "solution": "=SUMIFS(C2:C8,A2:A8,\"Jun\",B2:B8,\"Dev\")",
+      "explain": "Rows 7 (18) and 8 (16) match Jun and Dev, giving 34 total hours.",
+      "highlightCells": [
+        "C2:C8",
+        "A2:A8",
+        "B2:B8"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "Value Field Settings can switch Sum to Average. In `F2`, use AVERAGEIFS to find the average May hours for the Dev team.",
+      "grid": [
+        ["Month", "Team", "Hours", null, "Average", "May", "Jun"],
+        ["May", "Dev", 10, null, "Dev", null, null],
+        ["May", "Ops", 14, null, "Ops", null, null],
+        ["Jun", "Ops", 15, null, null, null, null],
+        ["May", "Dev", 12, null, null, null, null],
+        ["May", "Ops", 11, null, null, null, null],
+        ["Jun", "Dev", 18, null, null, null, null],
+        ["Jun", "Dev", 16, null, null, null, null]
+      ],
+      "targetCell": "F2",
+      "expectedValue": 11,
+      "mustUse": [
+        "AVERAGEIFS"
+      ],
+      "solution": "=AVERAGEIFS(C2:C8,A2:A8,\"May\",B2:B8,\"Dev\")",
+      "explain": "The Dev team has two May shifts with 10 and 12 hours, giving an average of 11.",
+      "highlightCells": [
+        "C2:C8",
+        "A2:A8",
+        "B2:B8"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "Switching the value field to Count shows shift totals. In `F2`, use COUNTIFS to count the May shifts for the Dev team.",
+      "grid": [
+        ["Month", "Team", "Hours", null, "Count", "May", "Jun"],
+        ["May", "Dev", 10, null, "Dev", null, null],
+        ["May", "Ops", 14, null, "Ops", null, null],
+        ["Jun", "Ops", 15, null, null, null, null],
+        ["May", "Dev", 12, null, null, null, null],
+        ["May", "Ops", 11, null, null, null, null],
+        ["Jun", "Dev", 18, null, null, null, null],
+        ["Jun", "Dev", 16, null, null, null, null]
+      ],
+      "targetCell": "F2",
+      "expectedValue": 2,
+      "mustUse": [
+        "COUNTIFS"
+      ],
+      "solution": "=COUNTIFS(A2:A8,\"May\",B2:B8,\"Dev\")",
+      "explain": "Rows 2 and 5 are the two shifts that match both May and Dev.",
+      "highlightCells": [
+        "A2:A8",
+        "B2:B8"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "Why does `=SUMIFS(A2:A8,\"May\",B2:B8,\"Dev\",C2:C8)` return an error in Excel?",
+      "options": [
+        "The sum range `C2:C8` must be the first argument in SUMIFS.",
+        "SUMIFS accepts only one condition range.",
+        "Criteria text like \"May\" must not have quotes."
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A medical network tracks staff hours by clinic and role. How many total hours were worked by Doctors at the North clinic? Enter the total in `C8`.",
+      "grid": [
+        ["Clinic", "Role", "Hours"],
+        ["North", "Doctor", 28],
+        ["South", "Doctor", 35],
+        ["North", "Nurse", 24],
+        ["South", "Nurse", 18],
+        ["North", "Nurse", 22],
+        ["North", "Doctor", 26],
+        ["Total", null, null]
+      ],
+      "targetCell": "C8",
+      "expectedValue": 54,
+      "mustUse": [
+        "SUMIFS"
+      ],
+      "solution": "=SUMIFS(C2:C7,A2:A7,\"North\",B2:B7,\"Doctor\")",
+      "explain": "Rows 2 (28) and 7 (26) are Doctors at North, totaling 54 hours.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\""
+      ]
+    }
+  ]
+}
