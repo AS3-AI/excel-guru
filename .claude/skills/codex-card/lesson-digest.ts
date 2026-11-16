@@ -27,7 +27,7 @@ for (const f of files) {
   const formulas = new Map<string, string>();
   const firstGuided = steps.find((s) => s.type === "formula");
   const last = steps[steps.length - 1];
-  if (last?.type !== "formula") L(last?.id, "last step is not an apply-it formula step");
+  if (last?.type !== "formula" && last?.type !== "shortcut") L(last?.id, "last step is not an apply-it formula or shortcut step");
   if (steps[steps.length - 2]?.type !== "mcq") L(steps[steps.length - 2]?.id, "mcq is not right before the apply-it step");
   if (last?.highlightCells?.length) L(last.id, "apply-it step has highlightCells (gives the answer away)");
   const fnNames = (last?.solution ?? "").match(/[A-Z][A-Z.]+(?=\()/g) ?? [];
