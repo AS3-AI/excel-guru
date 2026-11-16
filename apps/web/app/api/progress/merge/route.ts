@@ -19,11 +19,13 @@ export async function POST(request: Request) {
   const admin = createAdminClient();
   if (!admin) return NextResponse.json({ error: "Progress unavailable" }, { status: 503 });
   let completedLessonIds: string[];
+  let openedLessonIds: string[];
   let premium: boolean;
   let groupPremium: boolean;
   try {
     const access = await loadLessonAccess(admin, user.id, "intro");
     completedLessonIds = access.completedLessonIds;
+    openedLessonIds = access.openedLessonIds;
     premium = access.premium;
     groupPremium = access.groupPremium;
   } catch { return NextResponse.json({ error: "Progress unavailable" }, { status: 500 }); }
@@ -36,7 +38,7 @@ export async function POST(request: Request) {
     const lesson = getLesson(candidate.lessonId);
     if (!lesson) continue;
     const alreadyCompleted = completedLessonIds.includes(lesson.id);
-    const accessDecision = decideLessonAccess({ lessonId: lesson.id, userId: user.id, completedLessonIds, premium, groupPremium });
+    const accessDecision = decideLessonAccess({ lessonId: lesson.id, userId: user.id, completedLessonIds, openedLessonIds, premium, groupPremium });
     if (!accessDecision.allowed) continue;
     if (candidate.attempts.length > Math.max(200, 25 * lesson.steps.length)) continue;
     let score;
@@ -59,9 +61,9 @@ export async function POST(request: Request) {
       completionWrite = await admin.from("lesson_completions").insert({ ...completionData, points: 0 });
     }
     if (completionWrite.error) { partialFailure = true; continue; }
+    if (!completedLessonIds.includes(lesson.id) && !openedLessonIds.includes(lesson.id)) completedLessonIds.push(lesson.id);
     const progressWrite = await admin.from("lesson_progress").upsert({ user_id: user.id, lesson_id: lesson.id, completed_at: end, first_try_accuracy: score.firstTryAccuracy, times_completed: (progress.data?.times_completed ?? 0) + 1 });
     if (progressWrite.error) { partialFailure = true; continue; }
-    if (!alreadyCompleted) completedLessonIds.push(lesson.id);
     const attemptRows = progressAttemptRows(user.id, lesson.id, candidate.attempts as ProgressAttempt[], lesson, now);
     if (attemptRows.length && (await admin.from("step_attempts").insert(attemptRows)).error) { partialFailure = true; continue; }
     if (points > 0 && (await admin.from("points_log").insert({ user_id: user.id, points, reason: `lesson:${lesson.id}`, created_at: end })).error) { partialFailure = true; continue; }
