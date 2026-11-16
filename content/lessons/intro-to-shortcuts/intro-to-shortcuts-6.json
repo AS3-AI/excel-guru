@@ -1,0 +1,197 @@
+{
+  "id": "intro-to-shortcuts-6",
+  "module": "intro-to-shortcuts",
+  "title": "Data shortcuts",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**Data shortcuts** help you manage records and enter data fast without reaching for the mouse: `Ctrl+Shift+L` toggles filter arrows (Mac: `⌘⇧F`), `Alt+↓` opens a column's filter menu (Mac: `⌥↓`), `Ctrl+;` inserts today's date, and `Ctrl+Shift+;` inserts the current time (Mac: `⌘;`). Press `F2` to edit the active cell directly."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A dispatch team tracks daily orders. Select the first table header: `A1`.",
+      "grid": [
+        ["Order", "Client", "Date", "Time", "Status"],
+        [101, "Asha", "2026-11-14", "10:30", "Delivered"],
+        [102, "Bikram", "2026-11-15", "14:15", "Shipped"],
+        [103, "Chaya", "2026-11-15", "16:45", "Pending"],
+        [104, "Dev", null, null, "New"],
+        [105, "Esha", null, null, "New"]
+      ],
+      "target": "A1"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Turn on filter arrows for the table: press `Ctrl+Shift+L` (Mac: `⌘⇧F`).",
+      "keys": {
+        "win": "Ctrl+Shift+L",
+        "mac": "Shift+Cmd+F"
+      },
+      "activeCell": "A1",
+      "grid": [
+        ["Order", "Client", "Date", "Time", "Status"],
+        [101, "Asha", "2026-11-14", "10:30", "Delivered"],
+        [102, "Bikram", "2026-11-15", "14:15", "Shipped"],
+        [103, "Chaya", "2026-11-15", "16:45", "Pending"],
+        [104, "Dev", null, null, "New"],
+        [105, "Esha", null, null, "New"]
+      ],
+      "postcondition": {
+        "selection": "A1"
+      }
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Open the filter drop-down for the Status column: press `Alt+↓` (Mac: `⌥↓`).",
+      "keys": {
+        "win": "Alt+ArrowDown",
+        "mac": "Alt+ArrowDown"
+      },
+      "activeCell": "E1",
+      "grid": [
+        ["Order", "Client", "Date", "Time", "Status"],
+        [101, "Asha", "2026-11-14", "10:30", "Delivered"],
+        [102, "Bikram", "2026-11-15", "14:15", "Shipped"],
+        [103, "Chaya", "2026-11-15", "16:45", "Pending"],
+        [104, "Dev", null, null, "New"],
+        [105, "Esha", null, null, "New"]
+      ],
+      "postcondition": {
+        "selection": "E1"
+      }
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Dev's order was placed today. Insert today's date into `C5`: press `Ctrl+;` (Mac: `Ctrl+;`).",
+      "keys": {
+        "win": "Ctrl+;",
+        "mac": "Ctrl+;"
+      },
+      "activeCell": "C5",
+      "grid": [
+        ["Order", "Client", "Date", "Time", "Status"],
+        [101, "Asha", "2026-11-14", "10:30", "Delivered"],
+        [102, "Bikram", "2026-11-15", "14:15", "Shipped"],
+        [103, "Chaya", "2026-11-15", "16:45", "Pending"],
+        [104, "Dev", null, null, "New"],
+        [105, "Esha", null, null, "New"]
+      ],
+      "postcondition": {
+        "selection": "C5",
+        "grid": [
+          ["Order", "Client", "Date", "Time", "Status"],
+          [101, "Asha", "2026-11-14", "10:30", "Delivered"],
+          [102, "Bikram", "2026-11-15", "14:15", "Shipped"],
+          [103, "Chaya", "2026-11-15", "16:45", "Pending"],
+          [104, "Dev", "2026-11-16", null, "New"],
+          [105, "Esha", null, null, "New"]
+        ]
+      }
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Now record the dispatch time in `D5`: press `Ctrl+Shift+;` (Mac: `⌘;`).",
+      "keys": {
+        "win": "Ctrl+Shift+;",
+        "mac": "Cmd+;"
+      },
+      "activeCell": "D5",
+      "grid": [
+        ["Order", "Client", "Date", "Time", "Status"],
+        [101, "Asha", "2026-11-14", "10:30", "Delivered"],
+        [102, "Bikram", "2026-11-15", "14:15", "Shipped"],
+        [103, "Chaya", "2026-11-15", "16:45", "Pending"],
+        [104, "Dev", "2026-11-16", null, "New"],
+        [105, "Esha", null, null, "New"]
+      ],
+      "postcondition": {
+        "selection": "D5",
+        "grid": [
+          ["Order", "Client", "Date", "Time", "Status"],
+          [101, "Asha", "2026-11-14", "10:30", "Delivered"],
+          [102, "Bikram", "2026-11-15", "14:15", "Shipped"],
+          [103, "Chaya", "2026-11-15", "16:45", "Pending"],
+          [104, "Dev", "2026-11-16", "09:00", "New"],
+          [105, "Esha", null, null, "New"]
+        ]
+      }
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Dev's order is ready to go. Edit the status in `E5` without using the mouse: press `F2` (Mac laptop: `fn+F2`).",
+      "keys": {
+        "win": "F2",
+        "mac": "F2"
+      },
+      "activeCell": "E5",
+      "grid": [
+        ["Order", "Client", "Date", "Time", "Status"],
+        [101, "Asha", "2026-11-14", "10:30", "Delivered"],
+        [102, "Bikram", "2026-11-15", "14:15", "Shipped"],
+        [103, "Chaya", "2026-11-15", "16:45", "Pending"],
+        [104, "Dev", "2026-11-16", "09:00", "New"],
+        [105, "Esha", null, null, "New"]
+      ],
+      "postcondition": {
+        "selection": "E5"
+      }
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "You want to stamp the current time into a cell. Which shortcut should you press?",
+      "options": [
+        "`Ctrl+Shift+;` (Mac: `⌘;`)",
+        "`Ctrl+;` (Mac: `Ctrl+;`)",
+        "`Alt+;` (Mac: `⌥;`)"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Esha's order also arrived today. Stamp today's date in `C6`.",
+      "keys": {
+        "win": "Ctrl+;",
+        "mac": "Ctrl+;"
+      },
+      "activeCell": "C6",
+      "grid": [
+        ["Order", "Client", "Date", "Time", "Status"],
+        [101, "Asha", "2026-11-14", "10:30", "Delivered"],
+        [102, "Bikram", "2026-11-15", "14:15", "Shipped"],
+        [103, "Chaya", "2026-11-15", "16:45", "Pending"],
+        [104, "Dev", "2026-11-16", "09:00", "New"],
+        [105, "Esha", null, null, "New"]
+      ],
+      "postcondition": {
+        "selection": "C6",
+        "grid": [
+          ["Order", "Client", "Date", "Time", "Status"],
+          [101, "Asha", "2026-11-14", "10:30", "Delivered"],
+          [102, "Bikram", "2026-11-15", "14:15", "Shipped"],
+          [103, "Chaya", "2026-11-15", "16:45", "Pending"],
+          [104, "Dev", "2026-11-16", "09:00", "New"],
+          [105, "Esha", "2026-11-16", null, "New"]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "id": "cell-selection-3",
+  "module": "cell-selection",
+  "title": "Larger selections",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**Selection shortcuts** highlight large ranges in seconds: `Ctrl+A` selects the current data region (press twice for the whole sheet), `Ctrl+Shift+End` extends to the last used cell, and `Ctrl+Shift+Home` extends to cell `A1`. On a Mac use `⌘A` and `⌘⇧End` (on laptops: `fn+Ctrl+Shift+←` for Home)."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A farm stand tracks produce sales. Click a cell inside the table to start: `B2`.",
+      "grid": [
+        ["Item", "Category", "Bags", "Price", null],
+        ["Apples", "Fruit", 14, 3, null],
+        ["Carrots", "Root", 22, 2, null],
+        ["Spinach", "Leafy", 18, 4, null],
+        ["Berries", "Fruit", 9, 5, null],
+        [null, null, null, null, null]
+      ],
+      "target": "B2"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Select the entire produce table: press `Ctrl+A` (Mac: `⌘A`).",
+      "keys": {
+        "win": "Ctrl+A",
+        "mac": "Cmd+A"
+      },
+      "activeCell": "B2",
+      "grid": [
+        ["Item", "Category", "Bags", "Price", null],
+        ["Apples", "Fruit", 14, 3, null],
+        ["Carrots", "Root", 22, 2, null],
+        ["Spinach", "Leafy", 18, 4, null],
+        ["Berries", "Fruit", 9, 5, null],
+        [null, null, null, null, null]
+      ],
+      "postcondition": {
+        "selection": "A1:D5"
+      }
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "A second press expands beyond the data. Press `Ctrl+A` (Mac: `⌘A`) to select the entire worksheet.",
+      "keys": {
+        "win": "Ctrl+A",
+        "mac": "Cmd+A"
+      },
+      "activeCell": "B2",
+      "grid": [
+        ["Item", "Category", "Bags", "Price", null],
+        ["Apples", "Fruit", 14, 3, null],
+        ["Carrots", "Root", 22, 2, null],
+        ["Spinach", "Leafy", 18, 4, null],
+        ["Berries", "Fruit", 9, 5, null],
+        [null, null, null, null, null]
+      ],
+      "postcondition": {
+        "selection": "A1:E6"
+      }
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "From the top-left cell `A1`, extend your selection to the last cell with data: press `Ctrl+Shift+End` (Mac: `⌘⇧End`).",
+      "keys": {
+        "win": "Ctrl+Shift+End",
+        "mac": "Shift+Cmd+End"
+      },
+      "activeCell": "A1",
+      "grid": [
+        ["Item", "Category", "Bags", "Price", null],
+        ["Apples", "Fruit", 14, 3, null],
+        ["Carrots", "Root", 22, 2, null],
+        ["Spinach", "Leafy", 18, 4, null],
+        ["Berries", "Fruit", 9, 5, null],
+        [null, null, null, null, null]
+      ],
+      "postcondition": {
+        "selection": "A1:D5"
+      }
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "To select the data rows without the header row, start at `B2` and press `Ctrl+Shift+End` (Mac: `⌘⇧End`).",
+      "keys": {
+        "win": "Ctrl+Shift+End",
+        "mac": "Shift+Cmd+End"
+      },
+      "activeCell": "B2",
+      "grid": [
+        ["Item", "Category", "Bags", "Price", null],
+        ["Apples", "Fruit", 14, 3, null],
+        ["Carrots", "Root", 22, 2, null],
+        ["Spinach", "Leafy", 18, 4, null],
+        ["Berries", "Fruit", 9, 5, null],
+        [null, null, null, null, null]
+      ],
+      "postcondition": {
+        "selection": "B2:D5"
+      }
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "From the bottom-right cell `D5`, extend the selection back to `A1`: press `Ctrl+Shift+Home` (Mac laptop: `fn+Ctrl+Shift+←`).",
+      "keys": {
+        "win": "Ctrl+Shift+Home",
+        "mac": "Ctrl+Shift+Home"
+      },
+      "activeCell": "D5",
+      "grid": [
+        ["Item", "Category", "Bags", "Price", null],
+        ["Apples", "Fruit", 14, 3, null],
+        ["Carrots", "Root", 22, 2, null],
+        ["Spinach", "Leafy", 18, 4, null],
+        ["Berries", "Fruit", 9, 5, null],
+        [null, null, null, null, null]
+      ],
+      "postcondition": {
+        "selection": "A1:D5"
+      }
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "You are on cell `B2` and want to select down to `D5`. What happens if you press `Ctrl+A` instead of `Ctrl+Shift+End`?",
+      "options": [
+        "Ctrl+A selects the entire table including the header row",
+        "Ctrl+A only selects cell B2",
+        "Ctrl+A selects the entire worksheet"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "A community library catalogs new books. Active cell is `B2`. Select the entire book catalog table in one keystroke.",
+      "keys": {
+        "win": "Ctrl+A",
+        "mac": "Cmd+A"
+      },
+      "activeCell": "B2",
+      "grid": [
+        ["Book", "Genre", "Copies", "Price"],
+        ["Dune", "Sci-Fi", 8, 15],
+        ["Emma", "Classic", 5, 12],
+        ["1984", "Fiction", 10, 14],
+        ["Hamlet", "Drama", 6, 11],
+        ["Total", "4 titles", 29, 52]
+      ],
+      "postcondition": {
+        "selection": "A1:D6"
+      }
+    }
+  ]
+}

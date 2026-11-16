@@ -1,0 +1,399 @@
+{
+  "id": "cell-selection-5",
+  "module": "cell-selection",
+  "title": "Range selection: jump and extend",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**Range selection** shortcuts let you highlight entire blocks of data in seconds: `Ctrl+Shift+↓` extends down to the last filled cell, `Ctrl+Shift+→` extends across columns, and `Shift+PageDown` extends down one screen. On a Mac, use `⌘` instead of `Ctrl` (such as `⌘⇧↓`). Empty rows stop the selection early."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A café tracks morning pastry and coffee stock. Click the first item: `A2`.",
+      "grid": [
+        [
+          "Item",
+          "Category",
+          "Stock"
+        ],
+        [
+          "Croissant",
+          "Bakery",
+          24
+        ],
+        [
+          "Muffin",
+          "Bakery",
+          18
+        ],
+        [
+          "Scone",
+          "Bakery",
+          15
+        ],
+        [
+          "Bagel",
+          "Bakery",
+          30
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Espresso",
+          "Coffee",
+          50
+        ],
+        [
+          "Latte",
+          "Coffee",
+          40
+        ]
+      ],
+      "target": "A2"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Extend the selection down to the last pastry before the gap: press `Ctrl+Shift+↓` (Mac: `⌘⇧↓`).",
+      "keys": {
+        "win": "Ctrl+Shift+ArrowDown",
+        "mac": "Shift+Cmd+ArrowDown"
+      },
+      "activeCell": "A2",
+      "grid": [
+        [
+          "Item",
+          "Category",
+          "Stock"
+        ],
+        [
+          "Croissant",
+          "Bakery",
+          24
+        ],
+        [
+          "Muffin",
+          "Bakery",
+          18
+        ],
+        [
+          "Scone",
+          "Bakery",
+          15
+        ],
+        [
+          "Bagel",
+          "Bakery",
+          30
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Espresso",
+          "Coffee",
+          50
+        ],
+        [
+          "Latte",
+          "Coffee",
+          40
+        ]
+      ],
+      "postcondition": {
+        "selection": "A2:A5"
+      }
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "With the pastries highlighted in `A2:A5`, extend the selection across all columns: press `Ctrl+Shift+→` (Mac: `⌘⇧→`).",
+      "keys": {
+        "win": "Ctrl+Shift+ArrowRight",
+        "mac": "Shift+Cmd+ArrowRight"
+      },
+      "activeCell": "A2",
+      "grid": [
+        [
+          "Item",
+          "Category",
+          "Stock"
+        ],
+        [
+          "Croissant",
+          "Bakery",
+          24
+        ],
+        [
+          "Muffin",
+          "Bakery",
+          18
+        ],
+        [
+          "Scone",
+          "Bakery",
+          15
+        ],
+        [
+          "Bagel",
+          "Bakery",
+          30
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Espresso",
+          "Coffee",
+          50
+        ],
+        [
+          "Latte",
+          "Coffee",
+          40
+        ]
+      ],
+      "postcondition": {
+        "selection": "A2:C5"
+      }
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Without Shift, arrow jumps move the active cell instead of selecting. From `A2`, jump down to the edge before the empty row: press `Ctrl+↓` (Mac: `⌘↓`).",
+      "keys": {
+        "win": "Ctrl+ArrowDown",
+        "mac": "Cmd+ArrowDown"
+      },
+      "activeCell": "A2",
+      "grid": [
+        [
+          "Item",
+          "Category",
+          "Stock"
+        ],
+        [
+          "Croissant",
+          "Bakery",
+          24
+        ],
+        [
+          "Muffin",
+          "Bakery",
+          18
+        ],
+        [
+          "Scone",
+          "Bakery",
+          15
+        ],
+        [
+          "Bagel",
+          "Bakery",
+          30
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Espresso",
+          "Coffee",
+          50
+        ],
+        [
+          "Latte",
+          "Coffee",
+          40
+        ]
+      ],
+      "postcondition": {
+        "selection": "A5"
+      }
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Row 6 is empty. From `A5`, extend across the gap to the next block of items: press `Ctrl+Shift+↓` (Mac: `⌘⇧↓`).",
+      "keys": {
+        "win": "Ctrl+Shift+ArrowDown",
+        "mac": "Shift+Cmd+ArrowDown"
+      },
+      "activeCell": "A5",
+      "grid": [
+        [
+          "Item",
+          "Category",
+          "Stock"
+        ],
+        [
+          "Croissant",
+          "Bakery",
+          24
+        ],
+        [
+          "Muffin",
+          "Bakery",
+          18
+        ],
+        [
+          "Scone",
+          "Bakery",
+          15
+        ],
+        [
+          "Bagel",
+          "Bakery",
+          30
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Espresso",
+          "Coffee",
+          50
+        ],
+        [
+          "Latte",
+          "Coffee",
+          40
+        ]
+      ],
+      "postcondition": {
+        "selection": "A5:A7"
+      }
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "From `A2`, extend the selection down one full screen of rows without stopping at empty rows: press `Shift+PageDown` (Mac: `⇧PageDown`, or `fn+⇧↓`).",
+      "keys": {
+        "win": "Shift+PageDown",
+        "mac": "Shift+PageDown"
+      },
+      "activeCell": "A2",
+      "grid": [
+        [
+          "Item",
+          "Category",
+          "Stock"
+        ],
+        [
+          "Croissant",
+          "Bakery",
+          24
+        ],
+        [
+          "Muffin",
+          "Bakery",
+          18
+        ],
+        [
+          "Scone",
+          "Bakery",
+          15
+        ],
+        [
+          "Bagel",
+          "Bakery",
+          30
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Espresso",
+          "Coffee",
+          50
+        ],
+        [
+          "Latte",
+          "Coffee",
+          40
+        ]
+      ],
+      "postcondition": {
+        "selection": "A2:A8"
+      }
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "You want to select all items down a column. You hold `Ctrl` and press `↓`, but only the last cell is highlighted. What shortcut selects the entire range?",
+      "options": [
+        "Ctrl+Shift+↓ (Mac: ⌘⇧↓)",
+        "Alt+↓ (Mac: ⌥↓)",
+        "Shift+Home"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "A tea merchant logs daily packet sales in column B. Starting from `B2`, extend the selection down to the last sale in the column.",
+      "keys": {
+        "win": "Ctrl+Shift+ArrowDown",
+        "mac": "Shift+Cmd+ArrowDown"
+      },
+      "activeCell": "B2",
+      "grid": [
+        [
+          "Blend",
+          "Packets"
+        ],
+        [
+          "Assam",
+          35
+        ],
+        [
+          "Darjeeling",
+          28
+        ],
+        [
+          "Earl Grey",
+          42
+        ],
+        [
+          "Green Tea",
+          50
+        ],
+        [
+          "Masala Chai",
+          65
+        ],
+        [
+          "Oolong",
+          20
+        ]
+      ],
+      "postcondition": {
+        "selection": "B2:B7"
+      }
+    }
+  ]
+}

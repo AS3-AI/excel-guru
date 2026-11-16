@@ -1,0 +1,426 @@
+{
+  "id": "dates-5",
+  "module": "dates",
+  "title": "Dates skill summary",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "Excel stores dates as serial numbers: use **DATE** to build a date (`=DATE(year,month,day)`), `TODAY()` for the current date, `DAYS(end,start)` to count days between dates, and `DATEDIF(start,end,unit)` for completed years or months."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A community library tracks when staff joined. In Asha's row, select her joining year, month and day: `C2:E2`.",
+      "grid": [
+        [
+          "Staff",
+          "Role",
+          "Year",
+          "Month",
+          "Day",
+          "Joined"
+        ],
+        [
+          "Asha",
+          "Librarian",
+          2021,
+          6,
+          1,
+          null
+        ],
+        [
+          "Ravi",
+          "Archivist",
+          2018,
+          9,
+          15,
+          null
+        ],
+        [
+          "Pooja",
+          "Assistant",
+          2023,
+          3,
+          10,
+          null
+        ],
+        [
+          "Kiran",
+          "Manager",
+          2016,
+          11,
+          25,
+          null
+        ]
+      ],
+      "target": "C2:E2"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Turn Asha's joining parts into a date. In `F2`, type `=DATE(C2,D2,E2)` and press Enter.",
+      "grid": [
+        [
+          "Staff",
+          "Role",
+          "Year",
+          "Month",
+          "Day",
+          "Joined"
+        ],
+        [
+          "Asha",
+          "Librarian",
+          2021,
+          6,
+          1,
+          null
+        ],
+        [
+          "Ravi",
+          "Archivist",
+          2018,
+          9,
+          15,
+          null
+        ],
+        [
+          "Pooja",
+          "Assistant",
+          2023,
+          3,
+          10,
+          null
+        ],
+        [
+          "Kiran",
+          "Manager",
+          2016,
+          11,
+          25,
+          null
+        ]
+      ],
+      "targetCell": "F2",
+      "expectedValue": 44348,
+      "mustUse": [
+        "DATE"
+      ],
+      "solution": "=DATE(C2,D2,E2)",
+      "explain": "DATE combines 2021, 6 and 1 into the serial number for 1 Jun 2021.",
+      "highlightCells": [
+        "C2:E2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ","
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In this lesson, today is 15 Jan 2026. How many full years has Ravi worked at the library? In `F3`, find his completed years of service.",
+      "grid": [
+        [
+          "Staff",
+          "Role",
+          "Year",
+          "Month",
+          "Day",
+          "Years"
+        ],
+        [
+          "Asha",
+          "Librarian",
+          2021,
+          6,
+          1,
+          4
+        ],
+        [
+          "Ravi",
+          "Archivist",
+          2018,
+          9,
+          15,
+          null
+        ],
+        [
+          "Pooja",
+          "Assistant",
+          2023,
+          3,
+          10,
+          null
+        ],
+        [
+          "Kiran",
+          "Manager",
+          2016,
+          11,
+          25,
+          null
+        ]
+      ],
+      "targetCell": "F3",
+      "expectedValue": 7,
+      "mustUse": [
+        "DATEDIF",
+        "DATE",
+        "TODAY"
+      ],
+      "solution": "=DATEDIF(DATE(C3,D3,E3),TODAY(),\"Y\")",
+      "explain": "From 15 Sep 2018 to 15 Jan 2026 is 7 complete years of service.",
+      "highlightCells": [
+        "C3:E3"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "How many days was Dev allowed for his loan? In `E2`, find the days between the borrowed date in `C2` and the due date in `D2`.",
+      "grid": [
+        [
+          "Book",
+          "Borrower",
+          "Borrowed",
+          "Due",
+          "Days"
+        ],
+        [
+          "Clean Code",
+          "Dev",
+          "2026-01-06",
+          "2026-01-20",
+          null
+        ],
+        [
+          "Data Science",
+          "Priya",
+          "2025-12-29",
+          "2026-01-10",
+          null
+        ],
+        [
+          "Python Basics",
+          "Omar",
+          "2026-01-05",
+          "2026-01-15",
+          null
+        ],
+        [
+          "Web Design",
+          "Neha",
+          "2026-01-08",
+          "2026-01-25",
+          null
+        ]
+      ],
+      "targetCell": "E2",
+      "expectedValue": 14,
+      "mustUse": [
+        "DAYS"
+      ],
+      "solution": "=DAYS(D2,C2)",
+      "explain": "From 6 Jan 2026 to 20 Jan 2026 is 14 days.",
+      "highlightCells": [
+        "C2:D2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ","
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "In this lesson, today is 15 Jan 2026. A loan is overdue when fewer than 0 days remain. In `E3`, return \"Overdue\" if Priya's loan is past due, or \"On time\" if not.",
+      "grid": [
+        [
+          "Book",
+          "Borrower",
+          "Borrowed",
+          "Due",
+          "Status"
+        ],
+        [
+          "Clean Code",
+          "Dev",
+          "2026-01-06",
+          "2026-01-20",
+          "On time"
+        ],
+        [
+          "Data Science",
+          "Priya",
+          "2025-12-29",
+          "2026-01-10",
+          null
+        ],
+        [
+          "Python Basics",
+          "Omar",
+          "2026-01-05",
+          "2026-01-15",
+          null
+        ],
+        [
+          "Web Design",
+          "Neha",
+          "2026-01-08",
+          "2026-01-25",
+          null
+        ]
+      ],
+      "targetCell": "E3",
+      "expectedValue": "Overdue",
+      "mustUse": [
+        "IF",
+        "DAYS",
+        "TODAY"
+      ],
+      "solution": "=IF(DAYS(D3,TODAY())<0,\"Overdue\",\"On time\")",
+      "explain": "Priya's loan was due on 10 Jan 2026, which is 5 days before today, so it is Overdue.",
+      "highlightCells": [
+        "D3"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "<",
+        "\""
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "On what day of the month is Neha's loan due? In `E5`, extract the day from the due date in `D5`.",
+      "grid": [
+        [
+          "Book",
+          "Borrower",
+          "Borrowed",
+          "Due",
+          "Day"
+        ],
+        [
+          "Clean Code",
+          "Dev",
+          "2026-01-06",
+          "2026-01-20",
+          20
+        ],
+        [
+          "Data Science",
+          "Priya",
+          "2025-12-29",
+          "2026-01-10",
+          10
+        ],
+        [
+          "Python Basics",
+          "Omar",
+          "2026-01-05",
+          "2026-01-15",
+          15
+        ],
+        [
+          "Web Design",
+          "Neha",
+          "2026-01-08",
+          "2026-01-25",
+          null
+        ]
+      ],
+      "targetCell": "E5",
+      "expectedValue": 25,
+      "mustUse": [
+        "DAY"
+      ],
+      "solution": "=DAY(D5)",
+      "explain": "DAY extracts day 25 from the date 2026-01-25.",
+      "highlightCells": [
+        "D5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "A learner wants to find the days remaining from today until a due date on `2026-01-20`, but `=DAYS(TODAY(),\"2026-01-20\")` returns `-5`. Why?",
+      "options": [
+        "DAYS takes the end date first: `=DAYS(\"2026-01-20\",TODAY())`",
+        "The due date must be written as a serial number",
+        "TODAY cannot be used inside another function"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A veterinary clinic tracks vaccination appointments. In this lesson, today is 15 Jan 2026. How many days remain until Bella's vaccination in `C2` is due? Put the number of days in `D2`.",
+      "grid": [
+        [
+          "Pet",
+          "Owner",
+          "Due date",
+          "Days left"
+        ],
+        [
+          "Bella",
+          "Sam",
+          "2026-01-23",
+          null
+        ],
+        [
+          "Milo",
+          "Tara",
+          "2026-01-19",
+          null
+        ],
+        [
+          "Luna",
+          "Kiran",
+          "2026-01-28",
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 8,
+      "mustUse": [
+        "DAYS",
+        "TODAY"
+      ],
+      "solution": "=DAYS(C2,TODAY())",
+      "explain": "From 15 Jan 2026 to 23 Jan 2026 is 8 days.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ","
+      ]
+    }
+  ]
+}
