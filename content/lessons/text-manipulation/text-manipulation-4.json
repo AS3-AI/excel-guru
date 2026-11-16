@@ -17,12 +17,42 @@
       "type": "select",
       "prompt": "A clinic records appointment dates with dashes instead of slashes. Select Aarav's date: `B2`.",
       "grid": [
-        ["Patient", "Date", null, "Formatted"],
-        ["Aarav", "15-07-2024", null, null],
-        ["Meera", "22-08-2024", null, null],
-        ["Lucas", "03-09-2024", null, null],
-        ["Priya", "19-10-2024", null, null],
-        ["Zain", "11-11-2024", null, null]
+        [
+          "Patient",
+          "Date",
+          null,
+          "Formatted"
+        ],
+        [
+          "Aarav",
+          "15-07-2024",
+          null,
+          null
+        ],
+        [
+          "Meera",
+          "22-08-2024",
+          null,
+          null
+        ],
+        [
+          "Lucas",
+          "03-09-2024",
+          null,
+          null
+        ],
+        [
+          "Priya",
+          "19-10-2024",
+          null,
+          null
+        ],
+        [
+          "Zain",
+          "11-11-2024",
+          null,
+          null
+        ]
       ],
       "target": "B2"
     },
@@ -31,12 +61,42 @@
       "type": "formula",
       "prompt": "Replace both dashes in Aarav's date with slashes. In `D2`, type `=SUBSTITUTE(B2,\"-\",\"/\")` and press Enter.",
       "grid": [
-        ["Patient", "Date", null, "Formatted"],
-        ["Aarav", "15-07-2024", null, null],
-        ["Meera", "22-08-2024", null, null],
-        ["Lucas", "03-09-2024", null, null],
-        ["Priya", "19-10-2024", null, null],
-        ["Zain", "11-11-2024", null, null]
+        [
+          "Patient",
+          "Date",
+          null,
+          "Formatted"
+        ],
+        [
+          "Aarav",
+          "15-07-2024",
+          null,
+          null
+        ],
+        [
+          "Meera",
+          "22-08-2024",
+          null,
+          null
+        ],
+        [
+          "Lucas",
+          "03-09-2024",
+          null,
+          null
+        ],
+        [
+          "Priya",
+          "19-10-2024",
+          null,
+          null
+        ],
+        [
+          "Zain",
+          "11-11-2024",
+          null,
+          null
+        ]
       ],
       "targetCell": "D2",
       "expectedValue": "15/07/2024",
@@ -63,11 +123,36 @@
       "type": "formula",
       "prompt": "To remove characters, replace them with empty quotes `\"\"`. In `D2`, remove all spaces from Ananya's phone number in `B2`.",
       "grid": [
-        ["Contact", "Phone", null, "Clean"],
-        ["Ananya", "98 765 43210", null, null],
-        ["Vikram", "91 888 12345", null, null],
-        ["Sarah", "44 791 55501", null, null],
-        ["Tariq", "97 150 98765", null, null]
+        [
+          "Contact",
+          "Phone",
+          null,
+          "Clean"
+        ],
+        [
+          "Ananya",
+          "98 765 43210",
+          null,
+          null
+        ],
+        [
+          "Vikram",
+          "91 888 12345",
+          null,
+          null
+        ],
+        [
+          "Sarah",
+          "44 791 55501",
+          null,
+          null
+        ],
+        [
+          "Tariq",
+          "97 150 98765",
+          null,
+          null
+        ]
       ],
       "targetCell": "D2",
       "expectedValue": "9876543210",
@@ -92,11 +177,36 @@
       "type": "formula",
       "prompt": "A 4th argument specifies which match to change. In `D2`, replace only the 2nd dash in order code `A2` with a slash `/`.",
       "grid": [
-        ["Order", "Type", null, "Code"],
-        ["ORD-101-EXP", "Express", null, null],
-        ["ORD-102-STD", "Standard", null, null],
-        ["ORD-103-AIR", "Air", null, null],
-        ["ORD-104-SEA", "Sea", null, null]
+        [
+          "Order",
+          "Type",
+          null,
+          "Code"
+        ],
+        [
+          "ORD-101-EXP",
+          "Express",
+          null,
+          null
+        ],
+        [
+          "ORD-102-STD",
+          "Standard",
+          null,
+          null
+        ],
+        [
+          "ORD-103-AIR",
+          "Air",
+          null,
+          null
+        ],
+        [
+          "ORD-104-SEA",
+          "Sea",
+          null,
+          null
+        ]
       ],
       "targetCell": "D2",
       "expectedValue": "ORD-101/EXP",
@@ -121,23 +231,48 @@
     {
       "id": "s6",
       "type": "formula",
-      "prompt": "SUBSTITUTE is case-sensitive, so uppercase and lowercase letters must match exactly. In `D2`, replace `\"Road\"` with `\"Rd\"` in the address `A2`.",
+      "prompt": "SUBSTITUTE is case-sensitive, so the old text must match exactly. In `D3`, shorten the street in `A3` to `45 North Rd`.",
       "grid": [
-        ["Street", "City", null, "Short"],
-        ["12 MG Road", "Bengaluru", null, null],
-        ["45 North road", "Delhi", null, null],
-        ["8 Park Road", "Kolkata", null, null],
-        ["21 Lake road", "Mumbai", null, null]
+        [
+          "Street",
+          "City",
+          null,
+          "Short"
+        ],
+        [
+          "12 MG Road",
+          "Bengaluru",
+          null,
+          null
+        ],
+        [
+          "45 North road",
+          "Delhi",
+          null,
+          null
+        ],
+        [
+          "8 Park Road",
+          "Kolkata",
+          null,
+          null
+        ],
+        [
+          "21 Lake road",
+          "Mumbai",
+          null,
+          null
+        ]
       ],
-      "targetCell": "D2",
-      "expectedValue": "12 MG Rd",
+      "targetCell": "D3",
+      "expectedValue": "45 North Rd",
       "mustUse": [
         "SUBSTITUTE"
       ],
-      "solution": "=SUBSTITUTE(A2,\"Road\",\"Rd\")",
-      "explain": "Because SUBSTITUTE is case-sensitive, \"Road\" matched the capital R in 12 MG Road to give 12 MG Rd.",
+      "solution": "=SUBSTITUTE(A3,\"road\",\"Rd\")",
+      "explain": "A3 has lowercase road, so the old text must be \"road\"; \"Road\" would not match and nothing would change.",
       "highlightCells": [
-        "A2"
+        "A3"
       ],
       "mobileButtons": [
         "=",
@@ -152,11 +287,36 @@
       "type": "formula",
       "prompt": "To replace two different characters, nest one SUBSTITUTE inside another. In `D2`, replace both `/` and `.` in code `A2` with dashes using `=SUBSTITUTE(SUBSTITUTE(A2,\"/\",\"-\"),\".\",\"-\")`.",
       "grid": [
-        ["Code", "City", null, "Standard"],
-        ["DEL/401.A", "Delhi", null, null],
-        ["MUM/202.B", "Mumbai", null, null],
-        ["BLR/303.A", "Bengaluru", null, null],
-        ["HYD/504.C", "Hyderabad", null, null]
+        [
+          "Code",
+          "City",
+          null,
+          "Standard"
+        ],
+        [
+          "DEL/401.A",
+          "Delhi",
+          null,
+          null
+        ],
+        [
+          "MUM/202.B",
+          "Mumbai",
+          null,
+          null
+        ],
+        [
+          "BLR/303.A",
+          "Bengaluru",
+          null,
+          null
+        ],
+        [
+          "HYD/504.C",
+          "Hyderabad",
+          null,
+          null
+        ]
       ],
       "targetCell": "D2",
       "expectedValue": "DEL-401-A",
@@ -195,11 +355,31 @@
       "type": "formula",
       "prompt": "A courier upgraded the parcel in row 3 from standard to express by replacing `STD` with `EXP`. What is the updated tracking code? Put it in `C3`.",
       "grid": [
-        ["Tracking", "City", "Updated"],
-        ["PKG-101-STD", "Pune", null],
-        ["PKG-102-STD", "Jaipur", null],
-        ["PKG-103-EXP", "Goa", null],
-        ["PKG-104-STD", "Kochi", null]
+        [
+          "Tracking",
+          "City",
+          "Updated"
+        ],
+        [
+          "PKG-101-STD",
+          "Pune",
+          null
+        ],
+        [
+          "PKG-102-STD",
+          "Jaipur",
+          null
+        ],
+        [
+          "PKG-103-EXP",
+          "Goa",
+          null
+        ],
+        [
+          "PKG-104-STD",
+          "Kochi",
+          null
+        ]
       ],
       "targetCell": "C3",
       "expectedValue": "PKG-102-EXP",

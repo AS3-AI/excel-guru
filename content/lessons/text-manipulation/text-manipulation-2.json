@@ -202,7 +202,7 @@
         "TEXTJOIN"
       ],
       "solution": "=TEXTJOIN(\" - \",TRUE,A2:A6)",
-      "explain": "TEXTJOIN skips the cancelled stop in A4 and connects the four cities with a hyphen.",
+      "explain": "The delimiter \" - \" is a space, a hyphen and a space, so the four cities become Delhi - Jaipur - Agra - Kanpur.",
       "highlightCells": [
         "A2:A6"
       ],
@@ -274,11 +274,11 @@
     {
       "id": "s7",
       "type": "mcq",
-      "prompt": "Why is TEXTJOIN more convenient than CONCAT when joining a long list of cells with commas?",
+      "prompt": "`=TEXTJOIN(\", \",A2:A6)` returns an error. Why?",
       "options": [
-        "You write the delimiter once instead of typing \", \" between every cell",
-        "CONCAT cannot combine more than two cells at a time",
-        "TEXTJOIN automatically sorts the text in alphabetical order"
+        "The ignore_empty argument (TRUE or FALSE) is missing, so `A2:A6` is read as ignore_empty",
+        "The delimiter can't contain a space",
+        "TEXTJOIN can't take a range"
       ],
       "answer": 0
     },

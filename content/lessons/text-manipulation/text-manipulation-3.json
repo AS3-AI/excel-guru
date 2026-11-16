@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**UPPER** converts text to all capital letters: `=UPPER(text)`. `LOWER` makes every letter lowercase: `=LOWER(text)`. `PROPER` capitalises the first letter of each word: `=PROPER(text)`."
+      "text": "**UPPER** converts text to all capital letters: `=UPPER(text)`. `LOWER` makes every letter lowercase: `=LOWER(text)`. `PROPER` capitalises the first letter of each word: `=PROPER(text)`. `PROPER` capitalises the first letter of each word and any letter after a non-letter (like ' or -), and makes the rest lowercase."
     },
     {
       "id": "s2",
@@ -287,11 +287,11 @@
     {
       "id": "s8",
       "type": "mcq",
-      "prompt": "Which function converts the lowercase text \"riya sen\" into \"Riya Sen\"?",
+      "prompt": "`=PROPER(\"o'neil\")` gives `O'Neil`, but `=PROPER(\"mcdonald\")` gives `Mcdonald`. Why?",
       "options": [
-        "PROPER",
-        "UPPER",
-        "LOWER"
+        "PROPER capitalises only the first letter and any letter after a non-letter, such as ' or -",
+        "PROPER only capitalises names it recognises",
+        "PROPER treats an apostrophe as a space"
       ],
       "answer": 0
     },
