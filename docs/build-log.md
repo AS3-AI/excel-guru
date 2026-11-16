@@ -34,6 +34,7 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T14 Grade spilled answers | codex | 7f0cee6 | passed | merged (local) | |
 | Content: Statistical (1..7) | claude gold + antigravity | 875744a | review + fixes | merged (local) | |
 | Content: Array Formulas (1..2) + Combined (1..2) | antigravity from Claude plans | 8fcfaaf | 2 reviews + fixes | merged (local) | Combined after Statistical in order |
+| T43 /learn template + 10 articles | codex + antigravity | e449db4 | 2 reviews + fixes | pushed | phone layout judged from CSS |
 | T26 AI explanations | codex | 46400a7 | passed (2 rounds + Claude fixes) | merged | 20-a-day limit + per-user ratings pending schema approval; keep GEMINI_API_KEY unset in prod
 | Content: Logical (logical-1..7) | claude gold + codex drafts | 749ae67 | pedagogy review 2 rounds + coincidence audit (9 accepted TRUE/FALSE trade-offs) | merged | |
 | Content: Lookup (lookup-1..10) | claude gold + codex (per-lesson runs) | a4ba6e2 | pedagogy review 2 rounds + lint + lookup audit (accepted: not-found-message steps, one band edge) | merged | |
