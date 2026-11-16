@@ -1,10 +1,11 @@
 ---
 name: codex-card
-description: Build a docs/tasks card with Codex CLI — Claude plans, prompts, verifies and reviews; Codex writes the code. Use whenever a card is to be built "with codex".
+description: Build docs/tasks cards and lessons with Codex CLI and Antigravity CLI (agy), alone or side by side — Claude plans, prompts, verifies, reviews and integrates; the builders write the files. Use whenever work is to be built with codex or antigravity.
 ---
-# Build a task card with Codex
+# Build cards and lessons with Codex and Antigravity
 
-Claude owns planning, the prompt, verification, review, commits and the build log. Codex only edits files.
+Claude owns planning, prompts, verification, review, commits, integration and the build log. The builders
+(Codex, Antigravity) only edit files. Sections 1–5 are the single-slot flow; §6 runs both builders in parallel.
 
 ## 1. Prepare (Claude)
 1. Read the card and every spec section it cites. Check its dependencies are merged **and pushed**.
@@ -103,10 +104,46 @@ update the card's line in docs/build-log.md; merge and push only when the user s
   run ONE lesson per Codex run (parallel runs are fine — disjoint files), give a step plan per lesson, hand it
   an audit script with a pass condition (`coincidences: 0` for its lesson), and grep for `""` cells afterwards.
 
-## Antigravity CLI (`agy`) for lessons (owner approved 16 Nov)
-- Use it like Codex for content: one lesson per run, same prompt (head + lesson plan), run from the worktree:
-  `agy -p "$(cat prompt)" --mode accept-edits --print-timeout 900s < /dev/null > log 2>&1` (background).
-- Headless agy edits files but cannot run shell commands (auto-denied; never use --dangerously-skip-permissions).
-  So drop the "Done when … run" lines from its prompt: Claude runs lesson-digest, the audit and validate-content
-  afterwards and sends a numbered fix prompt with the exact LINT/audit lines.
-- Codex and agy can work in parallel on different lesson files; never two tools on the same file.
+## 6. Two builders side by side: Codex and Antigravity (owner approved 16 Nov)
+Goal: run Codex and Antigravity (`agy`) at the same time without their work colliding, so every finished
+piece merges into main with no more than a mechanical conflict in a Claude-owned file.
+
+**Slots.** One slot = one card or one lesson → one branch → one worktree → one builder. Name the branch
+`<card>-<builder>` (`t37-codex`, `c1-agy-tsearch3`) and the worktree `.claude/worktrees/<branch>`; give each
+worktree its own `pnpm install`. Never two builders, or two runs, in the same worktree.
+
+**Ownership.** Each slot's prompt lists the exact files it may touch, as the card's Files list does. Before
+launching parallel slots, write the lists side by side: two slots run together only if their lists share no
+file. Anything both need waits, or goes to one slot.
+
+**Claude-owned files.** These are never in a builder's list; Claude edits them before launch or at merge time:
+`content/order.json`, `docs/build-log.md`, `docs/roadmap.md`, `docs/tasks/*`, `package.json` and the lockfile
+(install dependencies before launch), `.env.example` (add names in the card), `apps/web/lib/tokens.css`,
+`apps/web/lib/modules.ts`, frozen interfaces (lesson schema, API contracts, PaymentProvider), and migration
+numbers: the card reserves `00NN_name.sql` and the slot writes only that file.
+
+**Seams.** When two slots meet (a page and its API, a helper used by both), Claude commits the contract on main
+first: types and function signatures in a stub file, or in the card, with the agreed error shapes. Both slots
+branch after that commit, build against it, and test the other side with fakes. Neither slot edits the
+contract; a needed change stops both and goes through Claude.
+
+**Which builder.**
+- Codex: code. It runs typecheck, tests and the build in its sandbox. Command in §3.
+- Antigravity: lesson JSON, banks, articles and other files that don't need a command run; or a pure helper
+  whose tests Claude runs. It can edit files but can't run shell commands when unattended (auto-denied; never
+  use `--dangerously-skip-permissions`). Command, from the slot's worktree, in the background:
+  `agy -p "$(cat <prompt>)" --mode accept-edits --print-timeout 900s < /dev/null > <log> 2>&1`
+  Its prompt is the same as Codex's minus the "Done = run …" lines. Claude runs every check afterwards and sends
+  a numbered fix prompt with the exact LINT, audit or test lines.
+- A slot never switches builders mid-way. If one stalls twice on the same fix, Claude finishes it by hand.
+
+**Running.** At most 4 slots at once. Each run's prompt, result and log go in
+`$CLAUDE_JOB_DIR/tmp/<builder>/<branch>-{prompt,result,log}`. Check each slot from its own worktree, so audits use
+that worktree's engine.
+
+**Integration.** When slots finish and pass review, Claude commits each on its own branch (crediting the builder:
+"Built with Codex CLI / Antigravity from a Claude-written prompt"), then merges them one at a time onto
+`integrate/<batch>`, running all four checks after each merge. Claude resolves conflicts in Claude-owned files:
+append ids to `order.json` in curriculum order, add build-log lines. If code slots touched neighbouring areas,
+review the combined diff once. Merge `integrate/<batch>` into main and push only on the owner's word, then remove
+the worktrees and branches.
