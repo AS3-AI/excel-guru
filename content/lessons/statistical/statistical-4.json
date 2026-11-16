@@ -15,7 +15,7 @@
     {
       "id": "s2",
       "type": "select",
-      "prompt": "A cricket team records runs scored in its last six matches. Select the runs: `B2:B7`.",
+      "prompt": "A cricket team records the runs scored by six batters in the final. Select the runs: `B2:B7`.",
       "grid": [
         [
           "Player",
@@ -65,7 +65,7 @@
     {
       "id": "s3",
       "type": "formula",
-      "prompt": "To set a tournament target, round the cricket team's average score up to the nearest multiple of 10. In `D2`, type `=CEILING(AVERAGE(B2:B7),10)` and press Enter.",
+      "prompt": "To set a target, round the batters' average score up to the nearest multiple of 10. In `D2`, type `=CEILING(AVERAGE(B2:B7),10)` and press Enter.",
       "grid": [
         [
           "Player",
@@ -132,7 +132,7 @@
     {
       "id": "s4",
       "type": "formula",
-      "prompt": "What was the team's second-highest score? In `D3`, find the second-highest score in `B2:B7`.",
+      "prompt": "What was the second-highest score among the batters? In `D3`, find it in `B2:B7`.",
       "grid": [
         [
           "Player",
@@ -394,11 +394,11 @@
     {
       "id": "s8",
       "type": "mcq",
-      "prompt": "Which formula correctly finds the second-highest score in `B2:B7`?",
+      "prompt": "A learner wants the average rounded up to the next 10 and types `=AVERAGE(CEILING(B2:B7,10))`. What is wrong?",
       "options": [
-        "=LARGE(B2:B7,2)",
-        "=MAX(B2:B7,2)",
-        "=SMALL(B2:B7,2)"
+        "The functions are nested the wrong way round: round the average with `=CEILING(AVERAGE(B2:B7),10)`",
+        "CEILING can't be used with AVERAGE",
+        "The 10 should go inside AVERAGE"
       ],
       "answer": 0
     },

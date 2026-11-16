@@ -250,11 +250,11 @@
     {
       "id": "s8",
       "type": "mcq",
-      "prompt": "Which function rounds a number UP to the nearest multiple?",
+      "prompt": "A shop needs 68 samosas, which come in trays of 15. A learner writes `=FLOOR(68,15)` and gets 60. What went wrong?",
       "options": [
-        "CEILING",
-        "FLOOR",
-        "ROUND"
+        "FLOOR rounds down, so 8 samosas are missing; `=CEILING(68,15)` gives 75",
+        "FLOOR needs the significance first: `=FLOOR(15,68)`",
+        "15 is not a valid significance"
       ],
       "answer": 0
     },

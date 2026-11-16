@@ -211,7 +211,7 @@
     {
       "id": "s7",
       "type": "formula",
-      "prompt": "A roller coaster seats riders in pairs. In `C2`, use EVEN to round the 5 visitors in `B2` up to the number of seats needed.",
+      "prompt": "In `C2`, use ODD to round the value in `B2` up to the next odd whole number.",
       "grid": [
         [
           "Family",
@@ -220,7 +220,7 @@
         ],
         [
           "Kapoor",
-          5,
+          4.2,
           null
         ],
         [
@@ -235,12 +235,12 @@
         ]
       ],
       "targetCell": "C2",
-      "expectedValue": 6,
+      "expectedValue": 5,
       "mustUse": [
-        "EVEN"
+        "ODD"
       ],
-      "solution": "=EVEN(B2)",
-      "explain": "5 is an odd number, so EVEN rounds it up to the next even number, 6.",
+      "solution": "=ODD(B2)",
+      "explain": "ODD rounds 4.2 up to the next odd whole number, 5.",
       "highlightCells": [
         "B2"
       ],

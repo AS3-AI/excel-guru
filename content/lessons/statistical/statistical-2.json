@@ -59,7 +59,7 @@
     {
       "id": "s3",
       "type": "formula",
-      "prompt": "Who won the quiz? In `D2`, type `=MAX(B2:B6)` and press Enter.",
+      "prompt": "What was the winning score? In `D2`, type `=MAX(B2:B6)` and press Enter.",
       "grid": [
         [
           "Finalist",
@@ -309,7 +309,7 @@
           "Runner",
           "Minutes",
           null,
-          "Winner"
+          "Winning time"
         ],
         [
           "Rohan",
