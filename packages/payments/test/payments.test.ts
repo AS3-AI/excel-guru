@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { isDuplicateWebhook, isEntitled, mapRazorpayEvent, providerFor, razorpayEventTime, shouldApplyEntitlement, validateCheckoutInput, verifyRazorpaySignature } from "../src/index";
+import { isDuplicateWebhook, isEntitled, mapRazorpayEvent, providerFor, razorpayEventTime, razorpayMissingNotes, shouldApplyEntitlement, validateCheckoutInput, verifyRazorpaySignature } from "../src/index";
 
 const makeBody = (event: string, extra: Record<string, unknown> = {}) => JSON.stringify({ id: "evt_1", event, created_at: 1_700_000_000, payload: { subscription: { entity: { id: "sub_1", current_end: 1_800_000_000, created_at: 1_700_000_000, notes: { userId: "user_1", plan: "annual" }, ...extra } } } });
 const sign = (body: string, secret: string) => createHmac("sha256", secret).update(body).digest("hex");
@@ -34,6 +34,126 @@ describe("Razorpay event mapping", () => {
   it("maps current end", () => { expect(mapRazorpayEvent(makeBody("subscription.activated"))?.periodEnd?.getTime()).toBe(1_800_000_000_000); });
   it("uses null period end if absent", () => { expect(mapRazorpayEvent(makeBody("subscription.activated", { current_end: undefined }))?.periodEnd).toBeNull(); });
   it("derives event id when the body has no event id", () => { const raw = makeBody("subscription.activated").replace('"id":"evt_1",', ""); expect(mapRazorpayEvent(raw)?.eventId).toBe("subscription.activated:sub_1:1700000000"); });
+  it("derives stable eventId for realistic webhook body without top-level id", () => {
+    const realisticBody = JSON.stringify({
+      entity: "event",
+      account_id: "acc_live_123",
+      event: "subscription.activated",
+      contains: ["subscription"],
+      payload: {
+        subscription: {
+          entity: {
+            id: "sub_real_1",
+            current_end: 1_800_000_000,
+            created_at: 1_700_000_000,
+            notes: { userId: "user_1", plan: "annual" },
+          },
+        },
+      },
+      created_at: 1_700_000_000,
+    });
+    expect(mapRazorpayEvent(realisticBody)?.eventId).toBe("subscription.activated:sub_real_1:1700000000");
+  });
+  it("maps subscription.charged carrying payload.payment.entity without error", () => {
+    const chargedBody = JSON.stringify({
+      entity: "event",
+      account_id: "acc_live_123",
+      event: "subscription.charged",
+      contains: ["subscription", "payment"],
+      payload: {
+        subscription: {
+          entity: {
+            id: "sub_1",
+            current_end: 1_800_000_000,
+            created_at: 1_700_000_000,
+            notes: { userId: "user_1", plan: "annual" },
+          },
+        },
+        payment: {
+          entity: {
+            id: "pay_1",
+            amount: 149900,
+            currency: "INR",
+            status: "captured",
+          },
+        },
+      },
+      created_at: 1_700_000_000,
+    });
+    const event = mapRazorpayEvent(chargedBody);
+    expect(event).toMatchObject({
+      eventId: "subscription.charged:sub_1:1700000000",
+      userId: "user_1",
+      provider: "razorpay",
+      providerRef: "sub_1",
+      plan: "annual",
+      status: "active",
+    });
+    expect(event?.periodEnd?.getTime()).toBe(1_800_000_000_000);
+  });
+  it("returns null when notes.plan is missing even if subscription has plan_id", () => {
+    const raw = JSON.stringify({
+      event: "subscription.activated",
+      created_at: 1_700_000_000,
+      payload: {
+        subscription: {
+          entity: {
+            id: "sub_1",
+            plan_id: "plan_annual_123",
+            current_end: 1_800_000_000,
+            notes: { userId: "user_1" },
+          },
+        },
+      },
+    });
+    expect(mapRazorpayEvent(raw)).toBeNull();
+  });
+});
+
+describe("razorpayMissingNotes", () => {
+  it("returns event name when notes.plan is missing and subscription has plan_id", () => {
+    const raw = JSON.stringify({
+      event: "subscription.activated",
+      created_at: 1_700_000_000,
+      payload: { subscription: { entity: { id: "sub_1", plan_id: "plan_123", notes: { userId: "user_1" } } } },
+    });
+    expect(razorpayMissingNotes(raw)).toBe("subscription.activated");
+  });
+  it("returns event name when notes.userId is missing", () => {
+    const raw = JSON.stringify({
+      event: "subscription.activated",
+      created_at: 1_700_000_000,
+      payload: { subscription: { entity: { id: "sub_1", notes: { plan: "annual" } } } },
+    });
+    expect(razorpayMissingNotes(raw)).toBe("subscription.activated");
+  });
+  it("returns event name when notes.plan is invalid", () => {
+    const raw = JSON.stringify({
+      event: "subscription.charged",
+      created_at: 1_700_000_000,
+      payload: { subscription: { entity: { id: "sub_1", notes: { userId: "user_1", plan: "weekly" } } } },
+    });
+    expect(razorpayMissingNotes(raw)).toBe("subscription.charged");
+  });
+  it("returns null when notes are valid", () => {
+    const raw = JSON.stringify({
+      event: "subscription.activated",
+      created_at: 1_700_000_000,
+      payload: { subscription: { entity: { id: "sub_1", notes: { userId: "user_1", plan: "annual" } } } },
+    });
+    expect(razorpayMissingNotes(raw)).toBeNull();
+  });
+  it("returns null for unknown events even with missing notes", () => {
+    const raw = JSON.stringify({
+      event: "subscription.authenticated",
+      created_at: 1_700_000_000,
+      payload: { subscription: { entity: { id: "sub_1" } } },
+    });
+    expect(razorpayMissingNotes(raw)).toBeNull();
+  });
+  it("returns null for malformed JSON", () => {
+    expect(razorpayMissingNotes("{bad json")).toBeNull();
+  });
 });
 
 describe("payment decision helpers", () => {

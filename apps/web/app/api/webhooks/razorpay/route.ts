@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isDuplicateWebhook, isEntitled, mapRazorpayEvent, razorpayEventTime, shouldApplyEntitlement, verifyRazorpaySignature } from "@excel-guru/payments";
+import { isDuplicateWebhook, isEntitled, mapRazorpayEvent, razorpayEventTime, razorpayMissingNotes, shouldApplyEntitlement, verifyRazorpaySignature } from "@excel-guru/payments";
 import { createAdminClient } from "../../../../lib/supabase/admin";
 
 export async function POST(request: Request) {
@@ -8,7 +8,11 @@ export async function POST(request: Request) {
   if (!secret) return NextResponse.json({ error: "webhook_unavailable" }, { status: 500 });
   if (!verifyRazorpaySignature(rawBody, request.headers.get("x-razorpay-signature"), secret)) return NextResponse.json({ error: "invalid_signature" }, { status: 400 });
   const event = mapRazorpayEvent(rawBody);
-  if (!event) return NextResponse.json({ received: true });
+  if (!event) {
+    const missing = razorpayMissingNotes(rawBody);
+    if (missing) console.error("Razorpay webhook ignored: missing notes", missing);
+    return NextResponse.json({ received: true });
+  }
   const eventTime = razorpayEventTime(rawBody);
   const admin = createAdminClient();
   if (!admin) return NextResponse.json({ error: "webhook_unavailable" }, { status: 500 });

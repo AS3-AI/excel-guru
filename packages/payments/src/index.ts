@@ -31,8 +31,33 @@ export function verifyRazorpaySignature(rawBody: string, signature: string | nul
   } catch { return false; }
 }
 
-type RazorpaySubscription = { id?: string; status?: string; current_end?: number; created_at?: number; notes?: { userId?: string; plan?: string } };
+type RazorpaySubscription = { id?: string; plan_id?: string; status?: string; current_end?: number; created_at?: number; notes?: { userId?: string; plan?: string } };
 type RazorpayBody = { id?: string; event?: string; created_at?: number; payload?: { subscription?: { entity?: RazorpaySubscription } } };
+
+const HANDLED_SUBSCRIPTION_EVENTS = new Set([
+  "subscription.activated",
+  "subscription.charged",
+  "subscription.cancelled",
+  "subscription.completed",
+  "subscription.halted",
+]);
+
+export function razorpayMissingNotes(rawBody: string): string | null {
+  try {
+    const body = JSON.parse(rawBody) as RazorpayBody;
+    const name = body.event;
+    if (!name || !HANDLED_SUBSCRIPTION_EVENTS.has(name)) return null;
+    const subscription = body.payload?.subscription?.entity;
+    if (!subscription) return null;
+    const notes = subscription.notes;
+    if (!notes?.userId || (notes.plan !== "monthly" && notes.plan !== "annual")) {
+      return name;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 export function mapRazorpayEvent(rawBody: string): EntitlementEvent | null {
   let body: RazorpayBody;
