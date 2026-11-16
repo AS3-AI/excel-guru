@@ -1,0 +1,431 @@
+{
+  "id": "text-search-7",
+  "module": "text-search",
+  "title": "TEXTBEFORE and TEXTAFTER: extract text around delimiters",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**TEXTBEFORE** extracts text before a delimiter, while `TEXTAFTER` takes text after it: `=TEXTBEFORE(text, delimiter)` and `=TEXTAFTER(text, delimiter)`. Delimiters like `\"@\"` or `\"-\"` go in quotation marks."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A community centre lists volunteer contact details. Select Riya's email address: `B2`.",
+      "grid": [
+        [
+          "Name",
+          "Email",
+          null,
+          "Extracted"
+        ],
+        [
+          "Riya Sen",
+          "riya.sen@mail.com",
+          null,
+          null
+        ],
+        [
+          "Arjun Mehta",
+          "arjun.m@work.org",
+          null,
+          null
+        ],
+        [
+          "Elena Rostova",
+          "elena@fastdesk.net",
+          null,
+          null
+        ],
+        [
+          "Kavya Nair",
+          "kavya.n@citylab.io",
+          null,
+          null
+        ],
+        [
+          "Dev Patel",
+          "dev.p@globalnet.in",
+          null,
+          null
+        ]
+      ],
+      "target": "B2"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Extract the username from Riya's email before the @ sign. In `D2`, type `=TEXTBEFORE(B2,\"@\")` and press Enter.",
+      "grid": [
+        [
+          "Name",
+          "Email",
+          null,
+          "Extracted"
+        ],
+        [
+          "Riya Sen",
+          "riya.sen@mail.com",
+          null,
+          null
+        ],
+        [
+          "Arjun Mehta",
+          "arjun.m@work.org",
+          null,
+          null
+        ],
+        [
+          "Elena Rostova",
+          "elena@fastdesk.net",
+          null,
+          null
+        ],
+        [
+          "Kavya Nair",
+          "kavya.n@citylab.io",
+          null,
+          null
+        ],
+        [
+          "Dev Patel",
+          "dev.p@globalnet.in",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "riya.sen",
+      "mustUse": [
+        "TEXTBEFORE"
+      ],
+      "solution": "=TEXTBEFORE(B2,\"@\")",
+      "explain": "TEXTBEFORE returns all characters before the @ symbol, giving Riya's username riya.sen.",
+      "highlightCells": [
+        "B2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "To get text after a separator, use `TEXTAFTER`. In `D3`, extract the domain after the @ sign from Arjun's email in `B3`.",
+      "grid": [
+        [
+          "Name",
+          "Email",
+          null,
+          "Extracted"
+        ],
+        [
+          "Riya Sen",
+          "riya.sen@mail.com",
+          null,
+          "riya.sen"
+        ],
+        [
+          "Arjun Mehta",
+          "arjun.m@work.org",
+          null,
+          null
+        ],
+        [
+          "Elena Rostova",
+          "elena@fastdesk.net",
+          null,
+          null
+        ],
+        [
+          "Kavya Nair",
+          "kavya.n@citylab.io",
+          null,
+          null
+        ],
+        [
+          "Dev Patel",
+          "dev.p@globalnet.in",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": "work.org",
+      "mustUse": [
+        "TEXTAFTER"
+      ],
+      "solution": "=TEXTAFTER(B3,\"@\")",
+      "explain": "TEXTAFTER returns all characters after the @ symbol, giving Arjun's domain work.org.",
+      "highlightCells": [
+        "B3"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "Order codes have multiple segments. In `D2`, use the third argument of `TEXTBEFORE` to get everything before the 2nd hyphen in `A2`.",
+      "grid": [
+        [
+          "Code",
+          "Item",
+          null,
+          "Part"
+        ],
+        [
+          "AB-123-X",
+          "Cable",
+          null,
+          null
+        ],
+        [
+          "CD-456-Y",
+          "Adapter",
+          null,
+          null
+        ],
+        [
+          "EF-789-Z",
+          "Switch",
+          null,
+          null
+        ],
+        [
+          "GH-012-W",
+          "Router",
+          null,
+          null
+        ],
+        [
+          "JK-345-V",
+          "Hub",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "AB-123",
+      "mustUse": [
+        "TEXTBEFORE"
+      ],
+      "solution": "=TEXTBEFORE(A2,\"-\",2)",
+      "explain": "Setting instance 2 stops at the second hyphen, returning the prefix AB-123.",
+      "highlightCells": [
+        "A2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "-"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A negative instance number counts backward from the end. In `D2`, extract the status code after the last hyphen in `A2` using `-1`.",
+      "grid": [
+        [
+          "Tracking",
+          "Carrier",
+          null,
+          "Status"
+        ],
+        [
+          "EXP-MUM-901-DEL",
+          "SpeedPost",
+          null,
+          null
+        ],
+        [
+          "STD-BLR-442-OUT",
+          "BlueDart",
+          null,
+          null
+        ],
+        [
+          "AIR-DEL-108-ARR",
+          "DTDC",
+          null,
+          null
+        ],
+        [
+          "SUR-HYD-770-DEL",
+          "TrackOn",
+          null,
+          null
+        ],
+        [
+          "PRI-KOL-335-HLD",
+          "Express",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "DEL",
+      "mustUse": [
+        "TEXTAFTER"
+      ],
+      "solution": "=TEXTAFTER(A2,\"-\",-1)",
+      "explain": "A negative instance of -1 searches from the end, returning the status code DEL after the final hyphen.",
+      "highlightCells": [
+        "A2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "-"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "When a delimiter is missing, TEXTAFTER returns #N/A unless you provide the 6th argument (if_not_found). In `D2`, extract the text after @ in `A2`, skipping commas to show \"No email\" if missing: `=TEXTAFTER(A2,\"@\",,,,\"No email\")`.",
+      "grid": [
+        [
+          "Contact",
+          "Member",
+          null,
+          "Domain"
+        ],
+        [
+          "Phone only",
+          "Asha Rao",
+          null,
+          null
+        ],
+        [
+          "ben@office.com",
+          "Ben Cole",
+          null,
+          null
+        ],
+        [
+          "Walk-in",
+          "Chetan Das",
+          null,
+          null
+        ],
+        [
+          "diya@fastmail.in",
+          "Diya Sen",
+          null,
+          null
+        ],
+        [
+          "Offline",
+          "Esha Gupta",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "No email",
+      "mustUse": [
+        "TEXTAFTER"
+      ],
+      "solution": "=TEXTAFTER(A2,\"@\",,,,\"No email\")",
+      "explain": "Because A2 contains no @ symbol, TEXTAFTER returns the 6th argument, No email, instead of an error.",
+      "highlightCells": [
+        "A2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "You have an email address like `arjun@work.org` in cell `A2`. Which formula extracts the domain `work.org`?",
+      "options": [
+        "`=TEXTAFTER(A2,\"@\")`",
+        "`=TEXTBEFORE(A2,\"@\")`",
+        "`=TEXTAFTER(A2,\".\")`"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "Uploaded files often have multiple dots in their name. In `D2`, find the file extension after the last dot for the document in `A2`.",
+      "grid": [
+        [
+          "File",
+          "Author",
+          null,
+          "Extension"
+        ],
+        [
+          "report_2024.v1.final.pdf",
+          "Sonia",
+          null,
+          null
+        ],
+        [
+          "client.brief.v2.docx",
+          "Tariq",
+          null,
+          null
+        ],
+        [
+          "budget.draft.final.xlsx",
+          "Ananya",
+          null,
+          null
+        ],
+        [
+          "summary.notes.txt",
+          "Vikram",
+          null,
+          null
+        ],
+        [
+          "site.backup.08.zip",
+          "Maya",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "pdf",
+      "mustUse": [
+        "TEXTAFTER"
+      ],
+      "solution": "=TEXTAFTER(A2,\".\",-1)",
+      "explain": "Searching from the end with -1 extracts the extension pdf after the final dot.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "-"
+      ]
+    }
+  ]
+}

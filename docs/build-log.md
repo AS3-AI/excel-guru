@@ -27,6 +27,8 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T32 Razorpay total_count | claude | 2de0f88 | tests first; live test purchase passed (test mode) | pushed | PAYMENTS_ENABLED=true in prod with test keys |
 | T33 Explain call limit | codex | 4569c5c | passed (1 round) | pushed | migration 0003; needs GEMINI_API_KEY, GEMINI_MODEL, EXPLAIN_IP_SALT in prod |
 | T36 Free tier counts opens | codex | 28f25f0 | passed (2 rounds) | pushed | migration 0004; parallel-tab race accepted |
+| T51 Text functions follow Excel | codex | 436caf2 | self-review + probes | merged (local) | SEARCH wildcards, PROPER, LEFT/RIGHT negative
+| Content: Text Search (1..7) + Text Manipulation (1..4) | claude gold + antigravity (per-lesson runs) | 95d611d | pedagogy review per module + lint + text audit | merged (local) | |
 | T26 AI explanations | codex | 46400a7 | passed (2 rounds + Claude fixes) | merged | 20-a-day limit + per-user ratings pending schema approval; keep GEMINI_API_KEY unset in prod
 | Content: Logical (logical-1..7) | claude gold + codex drafts | 749ae67 | pedagogy review 2 rounds + coincidence audit (9 accepted TRUE/FALSE trade-offs) | merged | |
 | Content: Lookup (lookup-1..10) | claude gold + codex (per-lesson runs) | a4ba6e2 | pedagogy review 2 rounds + lint + lookup audit (accepted: not-found-message steps, one band edge) | merged | |
