@@ -137,7 +137,7 @@ contract; a needed change stops both and goes through Claude.
   a numbered fix prompt with the exact LINT, audit or test lines.
 - A slot never switches builders mid-way. If one stalls twice on the same fix, Claude finishes it by hand.
 
-**Running.** At most 4 slots at once. Each run's prompt, result and log go in
+**Running.** At most 9 slots at once (owner, 16 Nov). Each run's prompt, result and log go in
 `$CLAUDE_JOB_DIR/tmp/<builder>/<branch>-{prompt,result,log}`. Check each slot from its own worktree, so audits use
 that worktree's engine.
 
