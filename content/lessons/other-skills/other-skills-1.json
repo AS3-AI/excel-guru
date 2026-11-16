@@ -1,0 +1,258 @@
+{
+  "id": "other-skills-1",
+  "module": "other-skills",
+  "title": "Working with worksheets",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "A workbook can contain multiple **worksheets** (tabs). To use a cell from another sheet, write the sheet name followed by an exclamation mark before the cell reference: `Expenses!B3`. If the sheet name has spaces, wrap it in single quotes: `'Jan Sales'!B3`."
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Move to the next worksheet tab in the workbook: press `Ctrl+PageDown`.",
+      "keys": {
+        "win": "Ctrl+PageDown",
+        "mac": null
+      },
+      "activeCell": "A1",
+      "grid": [
+        [
+          "Sheet",
+          "Status"
+        ],
+        [
+          "Jan",
+          "Complete"
+        ],
+        [
+          "Feb",
+          "Draft"
+        ]
+      ],
+      "postcondition": {
+        "selection": "A1"
+      }
+    },
+    {
+      "id": "s5",
+      "type": "select",
+      "prompt": "A summary sheet collects totals from monthly worksheets. Select the monthly totals in `B2:B5`.",
+      "grid": [
+        [
+          "Month",
+          "Total"
+        ],
+        [
+          "Jan",
+          420
+        ],
+        [
+          "Feb",
+          380
+        ],
+        [
+          "Mar",
+          510
+        ],
+        [
+          "Apr",
+          490
+        ],
+        [
+          "Total",
+          null
+        ],
+        [
+          "Average",
+          null
+        ]
+      ],
+      "target": "B2:B5"
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "In `B6`, add up the four monthly totals: type `=SUM(B2:B5)` and press Enter.",
+      "grid": [
+        [
+          "Month",
+          "Total"
+        ],
+        [
+          "Jan",
+          420
+        ],
+        [
+          "Feb",
+          380
+        ],
+        [
+          "Mar",
+          510
+        ],
+        [
+          "Apr",
+          490
+        ],
+        [
+          "Total",
+          null
+        ],
+        [
+          "Average",
+          null
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 1800,
+      "mustUse": [
+        "SUM"
+      ],
+      "solution": "=SUM(B2:B5)",
+      "explain": "SUM adds the four monthly figures to find the overall total of 1800.",
+      "highlightCells": [
+        "B2:B5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "In `B7`, find the average of the four monthly totals: `=AVERAGE(B2:B5)`.",
+      "grid": [
+        [
+          "Month",
+          "Total"
+        ],
+        [
+          "Jan",
+          420
+        ],
+        [
+          "Feb",
+          380
+        ],
+        [
+          "Mar",
+          510
+        ],
+        [
+          "Apr",
+          490
+        ],
+        [
+          "Total",
+          1800
+        ],
+        [
+          "Average",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 450,
+      "mustUse": [
+        "AVERAGE"
+      ],
+      "solution": "=AVERAGE(B2:B5)",
+      "explain": "AVERAGE divides the sum of the four months (1800) by 4 to give 450.",
+      "highlightCells": [
+        "B2:B5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s2",
+      "type": "mcq",
+      "prompt": "Which reference correctly points to cell `B3` on a worksheet named Expenses?",
+      "options": [
+        "Expenses!B3",
+        "Expenses.B3",
+        "B3!Expenses"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "prompt": "A worksheet is named Jan Sales with a space. How do you reference cell `B3` on that sheet?",
+      "options": [
+        "'Jan Sales'!B3",
+        "Jan Sales!B3",
+        "\"Jan Sales\"!B3"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "What does the 3D reference formula `=SUM(Jan:Mar!B2)` do?",
+      "options": [
+        "Adds cell B2 across every worksheet from Jan through Mar",
+        "Adds cells Jan and Mar on a worksheet named B2",
+        "Adds cell B2 on Jan and Mar only, skipping any sheets in between"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A pottery studio brings each month's workshop revenue onto a summary tab. What did the studio earn over the three summer months, June to August? Enter it in `B6`.",
+      "grid": [
+        [
+          "Month",
+          "Total"
+        ],
+        [
+          "May",
+          260
+        ],
+        [
+          "Jun",
+          340
+        ],
+        [
+          "Jul",
+          290
+        ],
+        [
+          "Aug",
+          410
+        ],
+        [
+          "Jun–Aug",
+          null
+        ]
+      ],
+      "targetCell": "B6",
+      "expectedValue": 1040,
+      "mustUse": [
+        "SUM"
+      ],
+      "solution": "=SUM(B3:B5)",
+      "explain": "June, July and August sit in `B3:B5`, and 340 + 290 + 410 = 1040; May in `B2` is left out.",
+      "mobileButtons": [
+        "(",
+        ")",
+        ":"
+      ]
+    }
+  ]
+}
