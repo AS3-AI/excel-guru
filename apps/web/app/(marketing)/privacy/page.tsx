@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PRIVACY_SECTIONS } from "@/lib/legal";
-import { STATIC_METADATA, buildMetadata } from "@/lib/seo";
+import { STATIC_METADATA } from "@/lib/seo";
 
-export const metadata: Metadata = buildMetadata({
+export const metadata: Metadata = {
   title: STATIC_METADATA.privacy.title,
   description: STATIC_METADATA.privacy.description,
-  path: "/privacy",
-});
+  openGraph: {
+    title: STATIC_METADATA.privacy.title,
+    description: STATIC_METADATA.privacy.description,
+  },
+};
 
 export default function PrivacyPage() {
   return (
@@ -19,8 +22,8 @@ export default function PrivacyPage() {
       <h1>Privacy Policy</h1>
       <p className="lead">
         Last updated: November 2026. This policy describes how Excel Guru handles your personal data,
-        including user authentication and database management (Supabase), payment processing (Razorpay and Stripe),
-        AI-generated feedback (Google Gemini), and analytics.
+        including user authentication and learning progress (Supabase), Google sign-in, payment processing (Razorpay),
+        AI explanations (Google Gemini), Vercel hosting logs, and session cookies.
       </p>
 
       {PRIVACY_SECTIONS.map((section) => (

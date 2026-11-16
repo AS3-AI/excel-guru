@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { HELP_SECTIONS, getHelpCategories, searchHelp } from "./help";
+import { PLANS, formatPrice } from "./plans";
 
 describe("HELP_SECTIONS", () => {
   it("contains structured categories with non-empty questions and answers", () => {
@@ -18,46 +19,59 @@ describe("HELP_SECTIONS", () => {
     const allQuestions = HELP_SECTIONS.flatMap((s) => s.items.map((i) => i.q.toLowerCase())).join(" ");
     expect(allQuestions).toContain("free");
     expect(allQuestions).toContain("shortcut");
+    expect(allQuestions).toContain("cancel");
     expect(allQuestions).toContain("refund");
     expect(allQuestions).toContain("progress");
   });
 
-  it("states refund policy matching pricing page with no day limit", () => {
+  it("explains how lessons work including Check, Show Answer, and Skip", () => {
+    const lessonItem = HELP_SECTIONS.flatMap((s) => s.items).find((i) => i.q.toLowerCase().includes("how do lessons"));
+    expect(lessonItem).toBeDefined();
+    expect(lessonItem?.a).toContain("Check");
+    expect(lessonItem?.a).toContain("Show Answer");
+    expect(lessonItem?.a).toContain("Skip");
+  });
+
+  it("explains Mac vs Windows shortcuts", () => {
+    const shortcutItem = HELP_SECTIONS.flatMap((s) => s.items).find((i) => i.q.toLowerCase().includes("mac vs windows"));
+    expect(shortcutItem).toBeDefined();
+    expect(shortcutItem?.a.toLowerCase()).toContain("mac");
+    expect(shortcutItem?.a.toLowerCase()).toContain("windows");
+  });
+
+  it("states refund policy matching pricing page", () => {
     const refundItem = HELP_SECTIONS.flatMap((s) => s.items).find((i) => i.q.toLowerCase().includes("refund"));
     expect(refundItem).toBeDefined();
-    expect(refundItem?.a).toContain("a full refund if you're unhappy; cancel any time");
+    expect(refundItem?.a).toContain("full refund if unhappy");
+    expect(refundItem?.a).toContain("[CONTACT EMAIL]");
     expect(refundItem?.a).not.toContain("14-day");
     expect(refundItem?.a).not.toContain("14 days");
   });
 
-  it("instructs to use the Help page to cancel instead of non-existent account settings or Profile", () => {
+  it("instructs to cancel via Pricing page → Manage / cancel subscription", () => {
     const cancelItem = HELP_SECTIONS.flatMap((s) => s.items).find((i) => i.q.toLowerCase().includes("cancel"));
     expect(cancelItem).toBeDefined();
-    expect(cancelItem?.a).toContain("To cancel, use the Help page");
+    expect(cancelItem?.a).toContain("Pricing page → Manage / cancel subscription");
     expect(cancelItem?.a).not.toContain("Profile");
     expect(cancelItem?.a).not.toContain("Account menu");
   });
 
-  it("does not claim delete-account or reset from Profile", () => {
-    const resetItem = HELP_SECTIONS.flatMap((s) => s.items).find((i) => i.q.toLowerCase().includes("reset"));
-    expect(resetItem).toBeDefined();
-    expect(resetItem?.a).toContain("On the Dashboard");
-    expect(resetItem?.a).not.toContain("Profile");
-
-    const deleteItem = HELP_SECTIONS.flatMap((s) => s.items).find((i) => i.q.toLowerCase().includes("delete"));
-    expect(deleteItem).toBeDefined();
-    expect(deleteItem?.a).toContain("use the Help page to contact us");
-    expect(deleteItem?.a).not.toContain("Profile");
+  it("uses prices formatted from plans.ts", () => {
+    const plansItem = HELP_SECTIONS.flatMap((s) => s.items).find((i) => i.q.toLowerCase().includes("free and premium"));
+    expect(plansItem).toBeDefined();
+    expect(plansItem?.a).toContain(formatPrice("INR", PLANS.INR.monthly));
+    expect(plansItem?.a).toContain(formatPrice("INR", PLANS.INR.annual));
   });
 
-  it("does not contain the invented support email", () => {
-    for (const item of HELP_SECTIONS.flatMap((s) => s.items)) {
-      expect(item.a).not.toContain("support@excelguru.dev");
-    }
+  it("uses the contact email placeholder instead of invented emails", () => {
+    const allAnswers = HELP_SECTIONS.flatMap((s) => s.items.map((i) => i.a)).join(" ");
+    expect(allAnswers).toContain("[CONTACT EMAIL]");
+    expect(allAnswers).not.toContain("support@excelguru.dev");
+    expect(allAnswers).not.toContain("support@excelguru.in");
   });
 
   it("does not claim unbuilt features in lesson descriptions", () => {
-    const freeItem = HELP_SECTIONS.flatMap((s) => s.items).find((i) => i.q.toLowerCase().includes("free"));
+    const freeItem = HELP_SECTIONS.flatMap((s) => s.items).find((i) => i.q.toLowerCase().includes("free and premium"));
     expect(freeItem).toBeDefined();
     expect(freeItem?.a).toContain("80+");
     expect(freeItem?.a).not.toContain("86");
@@ -70,8 +84,8 @@ describe("HELP_SECTIONS", () => {
 describe("getHelpCategories", () => {
   it("returns distinct category names", () => {
     const categories = getHelpCategories();
-    expect(categories).toContain("Getting Started & Lessons");
-    expect(categories).toContain("Subscriptions & Billing");
+    expect(categories).toContain("How Lessons Work");
+    expect(categories).toContain("Free vs Premium & Billing");
     expect(new Set(categories).size).toBe(categories.length);
   });
 });
@@ -94,4 +108,3 @@ describe("searchHelp", () => {
     expect(results).toEqual([]);
   });
 });
-

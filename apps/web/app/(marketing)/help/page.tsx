@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HELP_SECTIONS } from "@/lib/help";
-import { STATIC_METADATA, buildMetadata } from "@/lib/seo";
+import { STATIC_METADATA } from "@/lib/seo";
+import "./help.css";
 
-export const metadata: Metadata = buildMetadata({
+export const metadata: Metadata = {
   title: STATIC_METADATA.help.title,
   description: STATIC_METADATA.help.description,
-  path: "/help",
-});
+  openGraph: {
+    title: STATIC_METADATA.help.title,
+    description: STATIC_METADATA.help.description,
+  },
+};
 
 export default function HelpPage() {
   return (
-    <main className="wrap prose">
-      <nav aria-label="Breadcrumb" style={{ marginBottom: 24 }}>
+    <main className="wrap prose help-page">
+      <nav className="help-nav" aria-label="Breadcrumb">
         <Link href="/">← Back to Excel Guru</Link>
       </nav>
 
@@ -23,33 +27,36 @@ export default function HelpPage() {
       </p>
 
       {HELP_SECTIONS.map((section) => (
-        <section key={section.id} id={section.id} style={{ padding: "32px 0", borderTop: "1px solid var(--border)" }}>
-          <h2 style={{ fontSize: "1.5rem", marginBottom: 16 }}>{section.category}</h2>
+        <section key={section.id} id={section.id} className="help-section">
+          <h2>{section.category}</h2>
           {section.items.map((item) => (
-            <details key={item.q} style={{ marginBottom: 12 }}>
-              <summary style={{ padding: "8px 0" }}>{item.q}</summary>
-              <p style={{ marginTop: 8 }}>{item.a}</p>
+            <details key={item.q} className="help-item">
+              <summary className="help-summary">{item.q}</summary>
+              <p className="help-answer">{item.a}</p>
             </details>
           ))}
         </section>
       ))}
 
-      <section id="contact-support" style={{ padding: "32px 0", borderTop: "1px solid var(--border)" }}>
-        <h2 style={{ fontSize: "1.5rem", marginBottom: 16 }}>Still need help?</h2>
-        <p>
-          Can&apos;t find what you&apos;re looking for? Use the Help page to contact us. We&apos;re happy to assist you with
-          any questions or technical feedback.
-        </p>
+      <section id="contact-support" className="help-section">
+        <h2>Still need help?</h2>
+        <div className="help-contact-card">
+          <h3>Contact our team</h3>
+          <p>
+            Have a question, feedback, or need help with your account or billing? Email us at:
+          </p>
+          <span className="help-contact-email">[CONTACT EMAIL]</span>
+        </div>
       </section>
 
-      <footer style={{ marginTop: 40, borderTop: "1px solid var(--border)", paddingTop: 24, fontSize: "0.95rem" }}>
-        <nav aria-label="Footer navigation" style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
+      <footer className="help-footer">
+        <nav className="help-footer-nav" aria-label="Footer navigation">
           <Link href="/">Home</Link>
           <Link href="/pricing">Pricing</Link>
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>
         </nav>
-        <p style={{ color: "var(--muted)", margin: 0 }}>© {new Date().getFullYear()} Excel Guru</p>
+        <p className="help-copyright">© {new Date().getFullYear()} Excel Guru</p>
       </footer>
     </main>
   );

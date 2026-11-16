@@ -4,9 +4,12 @@ import { safeNext } from "@/lib/auth";
 import { GoogleButton, SignupForm } from "../AuthForms";
 
 export const metadata: Metadata = {
-  title: "Sign up — Excel Guru",
+  title: "Sign up",
   description: "Create your free Excel Guru account to track your progress and learn Excel with real formulas.",
-  robots: { index: false, follow: false },
+  openGraph: {
+    title: "Sign up",
+    description: "Create your free Excel Guru account to track your progress and learn Excel with real formulas.",
+  },
 };
 
 export default async function SignupPage({

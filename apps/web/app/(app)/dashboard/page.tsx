@@ -5,14 +5,14 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getLesson, getOrder } from "@/lib/lessons";
 import { getStatusTag } from "@/lib/progress";
 import { MODULES, type StatusTag } from "@/lib/modules";
-import { STATIC_METADATA, buildMetadata } from "@/lib/seo";
+import { STATIC_METADATA } from "@/lib/seo";
 import "./dashboard.css";
 
-export const metadata: Metadata = buildMetadata({
+export const metadata: Metadata = {
   title: STATIC_METADATA.dashboard.title,
   description: STATIC_METADATA.dashboard.description,
-  noIndex: true,
-});
+  robots: { index: false },
+};
 
 export default async function DashboardPage() {
   const order = getOrder();

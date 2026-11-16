@@ -22,7 +22,7 @@ export const STATIC_METADATA = {
   privacy: {
     title: "Privacy Policy",
     description:
-      "Learn how Excel Guru handles and protects your data, including Supabase authentication, Razorpay and Stripe payments, Gemini AI, and analytics.",
+      "Learn how Excel Guru handles and protects your data, including Supabase authentication, Razorpay payments, Gemini AI, and cookies.",
   },
   terms: {
     title: "Terms of Service",
@@ -48,10 +48,18 @@ export const STATIC_METADATA = {
     title: "Finish your profile",
     description: "Complete your Excel Guru learner profile.",
   },
+  sandbox: {
+    title: "Sandbox",
+    description: "Practice spreadsheet formulas freely in the Excel Guru sandbox.",
+  },
+  learn: {
+    title: "Excel Function Guides",
+    description: "Clear guides to Excel functions, with examples and hands-on practice.",
+  },
 } as const;
 
 export function siteUrl(path = "", customBase?: string): string {
-  const rawBase = customBase ?? (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000");
+  const rawBase = customBase ?? (process.env.NEXT_PUBLIC_BASE_URL || "https://excelguru.in");
   const base = rawBase.replace(/\/+$/, "");
   if (!path) return base;
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
@@ -151,6 +159,8 @@ export type BuildSitemapInput = {
 export function buildSitemap(input: BuildSitemapInput): MetadataRoute.Sitemap {
   const lastModified = input.now ?? new Date();
   const learnSlugs = input.learnSlugs ?? input.articles?.map((a) => a.slug) ?? [];
+  const moduleSlugs = input.modules?.map((m) => m.slug) ?? [];
+
   const entries: MetadataRoute.Sitemap = [
     {
       url: siteUrl("/", input.baseUrl),
@@ -181,7 +191,22 @@ export function buildSitemap(input: BuildSitemapInput): MetadataRoute.Sitemap {
     });
   }
 
+  for (const slug of moduleSlugs) {
+    entries.push({
+      url: siteUrl(`/modules/${slug}`, input.baseUrl),
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    });
+  }
+
   entries.push(
+    {
+      url: siteUrl("/help", input.baseUrl),
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     {
       url: siteUrl("/privacy", input.baseUrl),
       lastModified,
@@ -193,18 +218,6 @@ export function buildSitemap(input: BuildSitemapInput): MetadataRoute.Sitemap {
       lastModified,
       changeFrequency: "yearly",
       priority: 0.5,
-    },
-    {
-      url: siteUrl("/help", input.baseUrl),
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: siteUrl("/lesson/intro", input.baseUrl),
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.7,
     },
   );
 
@@ -218,12 +231,9 @@ export function buildRobots(input: { baseUrl: string }): MetadataRoute.Robots {
       allow: "/",
       disallow: [
         "/api/",
-        "/auth/",
         "/dashboard",
-        "/profile",
-        "/admin",
         "/onboarding",
-        "/review",
+        "/sandbox",
       ],
     },
     sitemap: siteUrl("/sitemap.xml", input.baseUrl),

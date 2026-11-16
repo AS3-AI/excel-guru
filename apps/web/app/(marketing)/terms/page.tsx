@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { TERMS_SECTIONS } from "@/lib/legal";
-import { STATIC_METADATA, buildMetadata } from "@/lib/seo";
+import { STATIC_METADATA } from "@/lib/seo";
 
-export const metadata: Metadata = buildMetadata({
+export const metadata: Metadata = {
   title: STATIC_METADATA.terms.title,
   description: STATIC_METADATA.terms.description,
-  path: "/terms",
-});
+  openGraph: {
+    title: STATIC_METADATA.terms.title,
+    description: STATIC_METADATA.terms.description,
+  },
+};
 
 export default function TermsPage() {
   return (

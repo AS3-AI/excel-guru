@@ -2,14 +2,19 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { currencyForCountry, formatPrice, PLANS } from "@/lib/plans";
-import { STATIC_METADATA, buildMetadata } from "@/lib/seo";
+import { STATIC_METADATA } from "@/lib/seo";
 import { WaitlistForm } from "./WaitlistForm";
 
-export const metadata: Metadata = buildMetadata({
-  title: STATIC_METADATA.landing.title,
+export const metadata: Metadata = {
+  title: {
+    absolute: STATIC_METADATA.landing.title,
+  },
   description: STATIC_METADATA.landing.description,
-  path: "/",
-});
+  openGraph: {
+    title: STATIC_METADATA.landing.title,
+    description: STATIC_METADATA.landing.description,
+  },
+};
 
 const MODULES = [
   "SUM",

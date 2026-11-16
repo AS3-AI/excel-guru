@@ -4,15 +4,18 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { currencyForCountry } from "@/lib/plans";
 import { paymentsEnabled } from "@/lib/payments-config";
-import { STATIC_METADATA, buildMetadata } from "@/lib/seo";
+import { STATIC_METADATA } from "@/lib/seo";
 import { PricingClient } from "./pricing-client";
 import "./pricing.css";
 
-export const metadata: Metadata = buildMetadata({
+export const metadata: Metadata = {
   title: STATIC_METADATA.pricing.title,
   description: STATIC_METADATA.pricing.description,
-  path: "/pricing",
-});
+  openGraph: {
+    title: STATIC_METADATA.pricing.title,
+    description: STATIC_METADATA.pricing.description,
+  },
+};
 
 export default async function PricingPage() {
   const requestHeaders = await headers();

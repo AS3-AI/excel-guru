@@ -11,7 +11,7 @@ import {
 } from "./seo";
 
 describe("siteUrl", () => {
-  it("uses provided base URL or defaults to localhost", () => {
+  it("uses provided base URL or defaults to excelguru.in", () => {
     expect(siteUrl("/pricing", "https://excelguru.dev")).toBe("https://excelguru.dev/pricing");
     expect(siteUrl("pricing", "https://excelguru.dev")).toBe("https://excelguru.dev/pricing");
     expect(siteUrl("/", "https://excelguru.dev/")).toBe("https://excelguru.dev/");
@@ -126,10 +126,11 @@ describe("moduleMetadata", () => {
 });
 
 describe("buildSitemap", () => {
-  it("includes only public pages (landing, pricing, learn, learn/<slug>, privacy, terms, help, lesson/intro)", () => {
+  it("includes only public pages (landing, pricing, learn, learn/<slug>, modules/<slug>, help, privacy, terms)", () => {
     const sitemap = buildSitemap({
       baseUrl: "https://excelguru.dev",
       learnSlugs: ["sum", "count"],
+      modules: [{ slug: "sum" }, { slug: "count" }],
       now: new Date("2026-11-16T00:00:00Z"),
     });
 
@@ -140,23 +141,27 @@ describe("buildSitemap", () => {
       "https://excelguru.dev/learn",
       "https://excelguru.dev/learn/sum",
       "https://excelguru.dev/learn/count",
+      "https://excelguru.dev/modules/sum",
+      "https://excelguru.dev/modules/count",
+      "https://excelguru.dev/help",
       "https://excelguru.dev/privacy",
       "https://excelguru.dev/terms",
-      "https://excelguru.dev/help",
-      "https://excelguru.dev/lesson/intro",
     ]);
+
+    // Lessons are behind sign-in and should NOT be in the sitemap
+    expect(urls).not.toContain("https://excelguru.dev/lesson/intro");
+    expect(urls).not.toContain("https://excelguru.dev/lesson/sum-1");
 
     // Private and unindexed routes should NOT be in sitemap
     expect(urls).not.toContain("https://excelguru.dev/dashboard");
     expect(urls).not.toContain("https://excelguru.dev/profile");
     expect(urls).not.toContain("https://excelguru.dev/admin");
     expect(urls).not.toContain("https://excelguru.dev/onboarding");
+    expect(urls).not.toContain("https://excelguru.dev/sandbox");
     expect(urls).not.toContain("https://excelguru.dev/review");
     expect(urls).not.toContain("https://excelguru.dev/login");
     expect(urls).not.toContain("https://excelguru.dev/signup");
     expect(urls).not.toContain("https://excelguru.dev/api/progress");
-    expect(urls).not.toContain("https://excelguru.dev/lesson/sum-1");
-    expect(urls).not.toContain("https://excelguru.dev/modules/sum");
 
     // Homepage has priority 1.0
     const home = sitemap.find((entry) => entry.url === "https://excelguru.dev/");
@@ -173,12 +178,9 @@ describe("buildRobots", () => {
       allow: "/",
       disallow: [
         "/api/",
-        "/auth/",
         "/dashboard",
-        "/profile",
-        "/admin",
         "/onboarding",
-        "/review",
+        "/sandbox",
       ],
     });
     expect(robots.sitemap).toBe("https://excelguru.dev/sitemap.xml");
@@ -209,5 +211,9 @@ describe("STATIC_METADATA", () => {
     expect(STATIC_METADATA.pricing.description).not.toContain("real-data projects");
     expect(STATIC_METADATA.pricing.description).not.toContain("daily challenges");
     expect(STATIC_METADATA.pricing.description).not.toContain("verifiable certificate");
+  });
+
+  it("does not claim Stripe in privacy description", () => {
+    expect(STATIC_METADATA.privacy.description.toLowerCase()).not.toContain("stripe");
   });
 });

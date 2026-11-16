@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getArticles } from "@/lib/learn";
+import { MODULES } from "@/lib/modules";
 import { buildSitemap, siteUrl } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -8,5 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return buildSitemap({
     baseUrl,
     learnSlugs: articles.map((article) => article.slug),
+    modules: MODULES,
   });
 }

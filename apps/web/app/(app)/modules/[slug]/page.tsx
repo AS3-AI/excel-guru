@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { TopNav } from "@/components/TopNav";
 import { getLesson, getOrder } from "@/lib/lessons";
 import { MODULES } from "@/lib/modules";
-import { moduleMetadata } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import "../../dashboard/dashboard.css";
@@ -12,7 +11,14 @@ import "../../dashboard/dashboard.css";
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const module = MODULES.find((item) => item.slug === slug);
-  return moduleMetadata(module ?? null);
+  if (!module) return {};
+  const title = `${module.title} Excel Lessons`;
+  const description = `Master Excel ${module.title} functions and techniques with ${module.total} interactive hands-on lessons with real spreadsheet practice.`;
+  return {
+    title,
+    description,
+    openGraph: { title, description },
+  };
 }
 
 export default async function ModulePage({ params }: { params: Promise<{ slug: string }> }) {

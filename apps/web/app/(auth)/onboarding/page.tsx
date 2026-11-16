@@ -5,9 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { OnboardingForm } from "../AuthForms";
 
 export const metadata: Metadata = {
-  title: "Finish your profile — Excel Guru",
+  title: "Finish your profile",
   description: "Complete your Excel Guru learner profile.",
-  robots: { index: false, follow: false },
+  robots: { index: false },
 };
 
 // Fills the profiles row for an auth user who has none (e.g. first Google sign-in).

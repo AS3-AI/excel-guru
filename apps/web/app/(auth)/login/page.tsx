@@ -4,9 +4,12 @@ import { safeNext } from "@/lib/auth";
 import { GoogleButton, LoginForm } from "../AuthForms";
 
 export const metadata: Metadata = {
-  title: "Log in — Excel Guru",
+  title: "Log in",
   description: "Log in to your Excel Guru account to continue your interactive spreadsheet lessons.",
-  robots: { index: false, follow: false },
+  openGraph: {
+    title: "Log in",
+    description: "Log in to your Excel Guru account to continue your interactive spreadsheet lessons.",
+  },
 };
 
 const ERRORS: Record<string, string> = {

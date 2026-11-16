@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getLesson, getOrder, nextLessonId, stepSequence } from "@/lib/lessons";
-import { lessonMetadata } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decideAndRecordLessonOpen, decideLessonAccess, loadLessonAccess } from "@/lib/access";
@@ -15,7 +14,14 @@ type Props = { params: Promise<{ id: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const lesson = getLesson(id);
-  return lessonMetadata(lesson ? { id, title: lesson.title, module: lesson.module } : null);
+  if (!lesson) return {};
+  const title = lesson.title;
+  const description = `Practice ${lesson.title} in Excel with interactive browser-based spreadsheet exercises, real-time formula evaluation, and instant grading.`;
+  return {
+    title,
+    description,
+    openGraph: { title, description },
+  };
 }
 
 export default async function LessonPage({ params }: Props) {
