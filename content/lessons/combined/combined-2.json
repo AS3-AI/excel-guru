@@ -334,7 +334,6 @@
       "targetCell": "G2",
       "expectedValue": "Karan",
       "mustUse": [
-        "XLOOKUP",
         "MIN"
       ],
       "solution": "=XLOOKUP(MIN(D2:D7),D2:D7,A2:A7)",

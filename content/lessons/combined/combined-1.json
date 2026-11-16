@@ -177,7 +177,7 @@
     {
       "id": "s4",
       "type": "formula",
-      "prompt": "The manager's weekly target for Snack sales is 45 items. In `B8`, check if total Snack quantity sold in `C2:C7` is at least 45: return \"Goal met\" if it reached the target, and \"Below goal\" if not.",
+      "prompt": "The manager's weekly target for Snack sales is 45 items. In `B8`, check if total Snack quantity sold (category in `C2:C7`, quantity in `D2:D7`) is at least 45: return \"Goal met\" if it reached the target, and \"Below goal\" if not.",
       "grid": [
         [
           "Day",
@@ -338,10 +338,7 @@
       ],
       "targetCell": "B8",
       "expectedValue": 40,
-      "mustUse": [
-        "INDEX",
-        "MATCH"
-      ],
+      "mustUse": [],
       "solution": "=INDEX(E2:E7,MATCH(\"Muffin\",B2:B7,0))",
       "explain": "MATCH finds Muffin at position 5 in B2:B7, and INDEX returns the 5th price from E2:E7, which is 40.",
       "highlightCells": [
@@ -519,7 +516,6 @@
       "targetCell": "B8",
       "expectedValue": "Dri-35",
       "mustUse": [
-        "CONCAT",
         "LEFT"
       ],
       "solution": "=CONCAT(LEFT(C2,3),\"-\",D2)",
