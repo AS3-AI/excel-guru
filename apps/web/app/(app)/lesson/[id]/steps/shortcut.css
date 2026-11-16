@@ -7,6 +7,9 @@
 .shortcut-picture img { display:block; max-width:100%; max-height:260px; object-fit:contain; }
 .shortcut-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); min-height:140px; border:1px solid var(--border); border-radius:8px; background:var(--surface-warm); }
 .shortcut-grid span { padding:18px; border:1px solid var(--border); color:var(--ink); }
+.shortcut-grid-wrap { min-width:0; max-width:100%; overflow:auto; border:1px solid var(--border); border-radius:8px; background:var(--surface); }
+.shortcut-grid-wrap .eg-sheet { min-width:560px; }
+.shortcut-after { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 .shortcut-hint { display:inline-block; margin:14px 0 0; padding:8px 12px; border:1px solid var(--border); border-radius:999px; background:var(--surface-warm); color:var(--ink); font-weight:650; overflow-wrap:anywhere; }
 .shortcut-postcondition { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; color:var(--muted); font-size:.9rem; }
 .shortcut-postcondition span { max-width:100%; padding:6px 9px; border:1px solid var(--border); border-radius:7px; overflow-wrap:anywhere; }

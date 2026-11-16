@@ -4,11 +4,13 @@ import type { CellValue } from "@excel-guru/engine";
 /** A literal cell in a lesson grid; grid[0][0] is A1. Strings starting with "=" are formulas. */
 export type GridValue = string | number | boolean | null;
 export type Grid = GridValue[][];
+export type FormatStyle = "bold" | "italic" | "underline" | "strikethrough" | "center" | "border";
 
 /** Grid or selection shown after a step is answered correctly. */
 export type Postcondition = {
   grid?: Grid;
   selection?: string;
+  format?: Record<string, FormatStyle[]>;
 };
 
 /** Fields every step may carry. */
@@ -47,6 +49,7 @@ export type ShortcutChordStep = StepBase & {
   prompt: string;
   /** e.g. "Ctrl+Shift+ArrowDown"; mac null shows the Mac skip bar. */
   keys: { win: string; mac: string | null };
+  grid?: Grid;
   pics?: string[];
 };
 
@@ -56,6 +59,7 @@ export type ShortcutSequenceStep = StepBase & {
   prompt: string;
   /** Key-tips pressed in order, e.g. ["Alt", "H", "1"]; mac null shows the Mac skip bar. */
   keys: { win: string[]; mac: string[] | null };
+  grid?: Grid;
   /** One frame per correct key. */
   pics?: string[];
 };
