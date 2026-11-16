@@ -116,7 +116,7 @@
     {
       "id": "s4",
       "type": "formula",
-      "prompt": "In `B7`, count who has not submitted a form yet.",
+      "prompt": "Use COUNTBLANK to count who has not submitted a form yet in `B7`.",
       "grid": [
         [
           "Learner",

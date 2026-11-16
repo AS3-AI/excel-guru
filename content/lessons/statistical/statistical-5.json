@@ -214,22 +214,22 @@
       "prompt": "In `C2`, use ODD to round the value in `B2` up to the next odd whole number.",
       "grid": [
         [
-          "Family",
-          "Visitors",
-          "Seats"
+          "Item",
+          "Kg",
+          "Order"
         ],
         [
-          "Kapoor",
+          "Flour",
           4.2,
           null
         ],
         [
-          "Shah",
+          "Sugar",
           3,
           null
         ],
         [
-          "Patel",
+          "Rice",
           9,
           null
         ]

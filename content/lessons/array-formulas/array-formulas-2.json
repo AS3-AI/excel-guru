@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**FILTER** extracts the rows that meet a condition and spills them into neighbouring cells: `=FILTER(range, condition, [if_empty])`. If no rows match, the optional `if_empty` value is shown instead."
+      "text": "**FILTER** extracts the rows that meet a condition and spills them into neighbouring cells: `=FILTER(range, condition, [if_empty])`. If no rows match, the optional `if_empty` value is shown instead. FILTER needs Excel 2021 or Microsoft 365; older Excel shows #NAME?."
     },
     {
       "id": "s2",

@@ -15,7 +15,7 @@
     {
       "id": "s2",
       "type": "select",
-      "prompt": "A shop logs units sold. Select the unit counts in `B2:B7`.",
+      "prompt": "A shop logs units sold. Select the units in `B2:B7`.",
       "grid": [
         [
           "Item",
@@ -55,7 +55,7 @@
     {
       "id": "s3",
       "type": "formula",
-      "prompt": "In `B8`, type `=COUNTIF(B2:B7,\">100\")` to count entries above 100.",
+      "prompt": "In `B8`, type `=COUNTIF(B2:B7,\">100\")` to count units above 100.",
       "grid": [
         [
           "Item",
@@ -96,7 +96,7 @@
         "COUNTIF"
       ],
       "solution": "=COUNTIF(B2:B7,\">100\")",
-      "explain": "Only the two stock values 120 are greater than 100; the value 100 itself does not qualify.",
+      "explain": "Only the two units of 120 are greater than 100; the value 100 itself does not qualify.",
       "highlightCells": [
         "B2:B7"
       ],
@@ -113,7 +113,7 @@
     {
       "id": "s4",
       "type": "formula",
-      "prompt": "In `B8`, count entries of 5 or less using `=COUNTIF(B2:B7,\"<=5\")`.",
+      "prompt": "In `B8`, count units of 5 or less using `=COUNTIF(B2:B7,\"<=5\")`.",
       "grid": [
         [
           "Item",
@@ -154,7 +154,7 @@
         "COUNTIF"
       ],
       "solution": "=COUNTIF(B2:B7,\"<=5\")",
-      "explain": "The values 4, 4 and 5 are the three entries at or below 5.",
+      "explain": "The values 4, 4 and 5 are the three units at or below 5.",
       "mobileButtons": [
         "=",
         "(",
