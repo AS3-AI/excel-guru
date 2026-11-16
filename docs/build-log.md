@@ -50,6 +50,8 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T28 Engine: whole rows | codex | a454a6c | passed (2 rounds) | merged | error-criteria change reverted pending Excel check |
 | Content: COUNT module | codex + Claude | count-1 (Claude), c881e5f | 2 pedagogy rounds, ready | merged | |
 | T20 Dashboard + access | codex | bf568cf | passed (2 rounds) | pushed | progress routes paywall-gated; free users can still *open* extra lessons (migration later); live free-tier flow verified 15 Nov (sign-up → merge → 2nd lesson → 3rd = /pricing, 403 on save) |
+| T34 Webhook events | antigravity | t34-agy | Claude-run checks; mock fixed by Claude | integrate | tests for each event; logs events ignored for missing notes |
+| Content: Tables (1..4), Other Skills (1..2), intro-to-shortcuts-1 | antigravity (7 parallel runs) from Claude plans | integrate/launch-content | criteria audit + 1 pedagogy review, fixes by Claude | integrate | 86 of 86 lessons; no picture steps (owner) |
 
 ## Open bugs
 - Payments (16 Nov, test mode): purchase works and premium unlocks, but "Manage / cancel subscription" does not show, so the subscriptions row is likely not saved as active with a future period_end. Check Razorpay webhook deliveries + the Supabase subscriptions row before the first real renewal (renewal/cancel/halt may not update premium correctly until fixed).

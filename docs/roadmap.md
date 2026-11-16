@@ -5,7 +5,7 @@ Existing cards live in full in `docs/tasks/Tn.md` and are listed here with their
 a file yet are written out in full below; when work on one starts, copy it to `docs/tasks/` unchanged.
 
 Sources: phases from `docs/plan.md` (Plan → phases), features from `docs/SPEC.md` (Product spec §6–§16),
-status from `docs/build-log.md`. Last updated 16 Nov 2026 (late): 79 of 86 lessons written and merged, 10 articles live.
+status from `docs/build-log.md`. Last updated 16 Nov 2026 (night): 86 of 86 lessons written; tables, other-skills and intro-to-shortcuts-1 on integrate/launch-content, 10 articles live.
 
 **Status keys:** ✅ live · 🟢 merged, not live · 🟡 in progress / waiting on the owner · ⏸ parked · ⬜ not started.
 **Card kinds:** `T` = code card (engine/grader tests first, Codex or agent builds, reviewer checks).
@@ -95,15 +95,15 @@ per-user AI ratings deferred.
 | T53 | Dates display as dates; fixed lesson today | ✅ merged 16 Nov |
 | T54 | Shortcut steps show a real grid + `grid`/`postcondition.format` schema (owner-approved) | ✅ merged 16 Nov (browser check pending) |
 | **O1** | Turn on AI explanations | 🟡 owner — below |
-| **T34** | Payments: subscription row + Manage / cancel button | ⬜ — below |
+| **T34** | Payments: subscription row + Manage / cancel button | 🟢 tests + ignored-event logging on integrate/launch-content; root cause needs the owner's Razorpay webhook deliveries |
 | **O2** | Payments to live mode | ⬜ owner — below (also listed in Phase 5) |
 | **T35** | One AI rating per user | ⏸ deferred by owner — below |
 | ~~T36~~ | moved up: done |
 | C5 Statistical (7) · C9 Array Formulas (2) · C10 Combined (2) | | ✅ live 16 Nov |
-| C3 Intro to Shortcuts 2–6 · C4 Cell Selection 1–7 | plan: docs/content/shortcuts-plan.md | ✅ merged 16 Nov (browser key test pending; intro-to-shortcuts-1 Alt key tips waits on the owner) |
+| C3 Intro to Shortcuts 2–6 · C4 Cell Selection 1–7 | plan: docs/content/shortcuts-plan.md | ✅ merged 16 Nov (browser key test pending; intro-to-shortcuts-1 Alt key tips 🟢 on integrate/launch-content, Windows-only) |
 | C6 Dates (5) | | ✅ merged 16 Nov |
-| C7 Tables (4) · C8 Other Skills (2) | | ⏸ owner design decision |
-| **C11** | 4 project datasets + steps | ⬜ — below |
+| C7 Tables (4) · C8 Other Skills (2) | owner: formula + mcq steps, no new UI | 🟢 on integrate/launch-content |
+| **C11** | 4 project datasets + steps | ⏸ after launch with T42 (owner) |
 
 ---
 
