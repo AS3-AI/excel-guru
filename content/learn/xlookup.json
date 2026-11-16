@@ -1,0 +1,158 @@
+{
+  "slug": "xlookup",
+  "fn": "XLOOKUP",
+  "title": "How to use XLOOKUP in Excel",
+  "description": "Learn how to use XLOOKUP in Excel to search ranges, return values in any direction, handle missing data, and replace VLOOKUP with hands-on practice.",
+  "syntax": "=XLOOKUP(lookup_value, lookup_array, return_array, [if_not_found], [match_mode], [search_mode])",
+  "args": [
+    {
+      "name": "lookup_value",
+      "required": true,
+      "text": "The value you want to search for."
+    },
+    {
+      "name": "lookup_array",
+      "required": true,
+      "text": "The range or column to search within."
+    },
+    {
+      "name": "return_array",
+      "required": true,
+      "text": "The range or column that holds the value you want to return."
+    },
+    {
+      "name": "if_not_found",
+      "required": false,
+      "text": "The text or value to display if no match is found, instead of #N/A."
+    },
+    {
+      "name": "match_mode",
+      "required": false,
+      "text": "0 for exact match (default), -1 for next smaller, 1 for next larger, or 2 for wildcard match."
+    },
+    {
+      "name": "search_mode",
+      "required": false,
+      "text": "1 to search from first to last (default), -1 to search in reverse, 2 or -2 for binary search."
+    }
+  ],
+  "sections": [
+    {
+      "heading": "What XLOOKUP does",
+      "text": "**XLOOKUP** searches a range for a specific value and returns a matching value from another range. It defaults to an exact match, so you do not need to add extra flags for everyday lookups. Here, the formula searches for the item in `A6` and returns its price.",
+      "grid": [
+        [
+          "Item",
+          "Category",
+          "Price"
+        ],
+        [
+          "Espresso",
+          "Drink",
+          3
+        ],
+        [
+          "Croissant",
+          "Bakery",
+          4
+        ],
+        [
+          "Muffin",
+          "Bakery",
+          3
+        ],
+        [
+          "Tea",
+          "Drink",
+          2
+        ],
+        [
+          "Croissant",
+          "Find Price",
+          null
+        ]
+      ],
+      "formula": "=XLOOKUP(A6,A2:A5,C2:C5)",
+      "result": 4
+    },
+    {
+      "heading": "Look up to the left",
+      "text": "Earlier functions like VLOOKUP can only return values to the right of your lookup column. With XLOOKUP, your return range can sit anywhere. Here, the formula looks up bib `425` in column B and returns the runner name from column A on its left.",
+      "grid": [
+        [
+          "Runner",
+          "Bib",
+          "Distance"
+        ],
+        [
+          "Ananya",
+          204,
+          5
+        ],
+        [
+          "Bilal",
+          318,
+          10
+        ],
+        [
+          "Chloe",
+          425,
+          21
+        ],
+        [
+          "Dan",
+          512,
+          10
+        ],
+        [
+          null,
+          425,
+          "Find Runner"
+        ]
+      ],
+      "formula": "=XLOOKUP(B6,B2:B5,A2:A5)",
+      "result": "Chloe"
+    },
+    {
+      "heading": "Handle missing values cleanly",
+      "text": "When a lookup value does not exist, Excel normally returns a `#N/A` error. You can use XLOOKUP’s fourth argument to show a friendly fallback message instead of wrapping your formula in `IFERROR`. In this example, searching for missing order `1099` returns `Not Found`.",
+      "grid": [
+        [
+          "Order ID",
+          "Customer",
+          "Status"
+        ],
+        [
+          1001,
+          "Amina",
+          "Shipped"
+        ],
+        [
+          1002,
+          "Carlos",
+          "Delivered"
+        ],
+        [
+          1003,
+          "Deepa",
+          "Pending"
+        ],
+        [
+          1099,
+          "Find Status",
+          null
+        ]
+      ],
+      "formula": "=XLOOKUP(A5,A2:A4,C2:C4,\"Not Found\")",
+      "result": "Not Found"
+    },
+    {
+      "heading": "Common mistake: Mismatched range sizes",
+      "text": "Both `lookup_array` and `return_array` must have the exact same number of rows or columns. If you search four cells in `A2:A5` but supply five cells in `C2:C6` to return from, Excel cannot align the rows and displays a `#VALUE!` error. Always make sure your two ranges start and end on matching row numbers."
+    }
+  ],
+  "lessonId": "lookup-6",
+  "related": [
+    "vlookup"
+  ]
+}

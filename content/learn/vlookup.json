@@ -1,0 +1,58 @@
+{
+  "slug": "vlookup",
+  "fn": "VLOOKUP",
+  "title": "How to use VLOOKUP in Excel",
+  "description": "Learn how to use VLOOKUP in Excel to find data in a table, with syntax, argument explanations, a worked example, and common mistakes to avoid.",
+  "syntax": "=VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup])",
+  "args": [
+    {
+      "name": "lookup_value",
+      "required": true,
+      "text": "The value you want to search for in the first column of the table."
+    },
+    {
+      "name": "table_array",
+      "required": true,
+      "text": "The range of cells that contains the data to search and return."
+    },
+    {
+      "name": "col_index_num",
+      "required": true,
+      "text": "The column number in the table to return, starting at 1 for the first column."
+    },
+    {
+      "name": "range_lookup",
+      "required": false,
+      "text": "Use FALSE for an exact match, or TRUE for an approximate match on sorted data."
+    }
+  ],
+  "sections": [
+    {
+      "heading": "What VLOOKUP does",
+      "text": "**VLOOKUP** searches down the first column of a table for a specific value, then returns a value from another column in that same row. You give it four pieces of information: what to find, the table range, the column number to retrieve, and whether you need an exact match."
+    },
+    {
+      "heading": "A worked example",
+      "text": "Here is a small product catalog. In cell `C5`, the formula searches the table for the product code in `B5` and returns its price from column 3.",
+      "grid": [
+        ["Code", "Item", "Price"],
+        ["T-10", "T-Shirt", 20],
+        ["H-20", "Hoodie", 45],
+        ["J-30", "Jacket", 80],
+        ["Find", "H-20", null]
+      ],
+      "formula": "=VLOOKUP(B5,A2:C4,3,FALSE)",
+      "result": 45
+    },
+    {
+      "heading": "Counting column numbers",
+      "text": "The third argument tells Excel which column to pull data from. Always count from left to right starting at 1 for the first column of your table. In `A2:C4`, `Code` is 1, `Item` is 2, and `Price` is 3. To return the item name instead of the price, change the column number to 2: `=VLOOKUP(B5,A2:C4,2,FALSE)`."
+    },
+    {
+      "heading": "Common mistake: omitting FALSE",
+      "text": "If you leave out the fourth argument, Excel defaults to `TRUE` for an approximate match. On unsorted tables, this can quietly return the wrong row. Always use `FALSE` when you need an exact match. Remember also that **VLOOKUP** can only search the leftmost column of your table—it cannot look to the left."
+    }
+  ],
+  "lessonId": "lookup-1",
+  "related": ["sum"]
+}

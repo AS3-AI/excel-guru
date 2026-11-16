@@ -1,0 +1,67 @@
+{
+  "slug": "sumif",
+  "fn": "SUMIF",
+  "title": "How to use SUMIF in Excel",
+  "description": "Learn how to use SUMIF in Excel to add cells based on a condition. See formula examples, syntax, common mistakes, and try hands-on practice.",
+  "syntax": "=SUMIF(range, criteria, [sum_range])",
+  "args": [
+    {
+      "name": "range",
+      "required": true,
+      "text": "The range of cells you want evaluated by your condition."
+    },
+    {
+      "name": "criteria",
+      "required": true,
+      "text": "The condition that determines which cells to add, such as \">50\", 10, or \"Bread\"."
+    },
+    {
+      "name": "sum_range",
+      "required": false,
+      "text": "The actual cells to add if different from range. If omitted, Excel sums the cells in range."
+    }
+  ],
+  "sections": [
+    {
+      "heading": "What SUMIF does",
+      "text": "**SUMIF** adds values in a range that meet one condition you specify. You can test numbers against a threshold or check text in one column and add matching amounts from another."
+    },
+    {
+      "heading": "Sum values that meet a condition",
+      "text": "When your condition and the values to add are in the same column, pass two arguments: the range and the criteria. Enclose comparison operators in quotation marks. Here, the formula adds all sales amounts greater than 50.",
+      "grid": [
+        ["Item", "Sales"],
+        ["Vase", 65],
+        ["Bowl", 30],
+        ["Mug", 85],
+        ["Plate", 45],
+        ["Total", null]
+      ],
+      "formula": "=SUMIF(B2:B5,\">50\")",
+      "result": 150
+    },
+    {
+      "heading": "Sum matching values from another column",
+      "text": "To check one column and add numbers from a different column, add `sum_range` as the third argument. The formula checks the category in column A and adds the box counts in column B for matching rows.",
+      "grid": [
+        ["Category", "Boxes"],
+        ["Bread", 14],
+        ["Pastry", 22],
+        ["Bread", 18],
+        ["Cake", 9],
+        ["Total", null]
+      ],
+      "formula": "=SUMIF(A2:A5,\"Bread\",B2:B5)",
+      "result": 32
+    },
+    {
+      "heading": "Common mistake: missing quotes around operators",
+      "text": "When your criteria uses comparison operators such as `>`, `<`, or `<>`, you must enclose both the operator and the number in quotation marks, like `\">50\"`. Writing `=SUMIF(B2:B5, >50)` without quotes causes a syntax error. To combine an operator with a cell reference such as `C1`, join them with an ampersand: `\">\"&C1`."
+    }
+  ],
+  "lessonId": "sum-3",
+  "related": [
+    "sum",
+    "countif"
+  ]
+}

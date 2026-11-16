@@ -1,0 +1,179 @@
+{
+  "slug": "countif",
+  "fn": "COUNTIF",
+  "title": "Excel COUNTIF Function: How to Count Cells with Criteria",
+  "description": "Learn how to use the Excel COUNTIF function to count cells that match a condition. See formula examples for text, numbers, cell references, and wildcards.",
+  "syntax": "=COUNTIF(range, criteria)",
+  "args": [
+    {
+      "name": "range",
+      "required": true,
+      "text": "The group of cells you want to evaluate."
+    },
+    {
+      "name": "criteria",
+      "required": true,
+      "text": "The condition that determines which cells to count. Can be a number, text, cell reference, comparison expression, or wildcard pattern."
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Count cells that match specific text",
+      "text": "Use **COUNTIF** to count cells containing an exact word or text string. Text comparisons in Excel are case-insensitive, so `\"Apples\"` and `\"apples\"` match the same cells. Always enclose text criteria in double quotes.",
+      "grid": [
+        [
+          "Item",
+          "Quantity"
+        ],
+        [
+          "Apples",
+          14
+        ],
+        [
+          "Oranges",
+          8
+        ],
+        [
+          "Apples",
+          22
+        ],
+        [
+          "Bananas",
+          15
+        ],
+        [
+          "Apples",
+          5
+        ],
+        [
+          "Apples orders",
+          null
+        ]
+      ],
+      "formula": "=COUNTIF(A2:A6, \"Apples\")",
+      "result": 3
+    },
+    {
+      "heading": "Count numbers with greater than or less than",
+      "text": "To count numbers above or below a threshold, combine a comparison operator with your number inside quotation marks. For example, use `\">=50\"` to include values equal to 50, or `\"<20\"` to find smaller values.",
+      "grid": [
+        [
+          "Customer",
+          "Score"
+        ],
+        [
+          "Tara",
+          45
+        ],
+        [
+          "Liam",
+          78
+        ],
+        [
+          "Noah",
+          92
+        ],
+        [
+          "Emma",
+          34
+        ],
+        [
+          "Zoe",
+          60
+        ],
+        [
+          "Passing (>=50)",
+          null
+        ]
+      ],
+      "formula": "=COUNTIF(B2:B6, \">=50\")",
+      "result": 3
+    },
+    {
+      "heading": "Use a cell reference for dynamic criteria",
+      "text": "You can supply criteria from another cell instead of hardcoding a value. Do not put quotation marks around the cell reference. If the criterion cell changes, your count updates automatically.",
+      "grid": [
+        [
+          "Task",
+          "Priority"
+        ],
+        [
+          "Backup data",
+          "High"
+        ],
+        [
+          "Update styles",
+          "Low"
+        ],
+        [
+          "Fix login bug",
+          "High"
+        ],
+        [
+          "Write tests",
+          "Medium"
+        ],
+        [
+          "Deploy build",
+          "High"
+        ],
+        [
+          "Target",
+          "High"
+        ],
+        [
+          "High tasks",
+          null
+        ]
+      ],
+      "formula": "=COUNTIF(B2:B6, B7)",
+      "result": 3
+    },
+    {
+      "heading": "Count partial matches with wildcards",
+      "text": "Use wildcards when you only know part of the text. An asterisk `*` matches any number of characters, and a question mark `?` matches any single character. To count cells that contain a keyword anywhere inside, place an asterisk on both sides, such as `\"*Report*\"`.",
+      "grid": [
+        [
+          "Project",
+          "Owner"
+        ],
+        [
+          "Finance Report",
+          "Sara"
+        ],
+        [
+          "User Research",
+          "Ken"
+        ],
+        [
+          "Weekly Report",
+          "Alex"
+        ],
+        [
+          "Logo Design",
+          "Mina"
+        ],
+        [
+          "Annual Report",
+          "Sara"
+        ],
+        [
+          "Report count",
+          null
+        ]
+      ],
+      "formula": "=COUNTIF(A2:A6, \"*Report*\")",
+      "result": 3
+    },
+    {
+      "heading": "Common mistake: missing quotes on comparisons",
+      "text": "A frequent mistake is omitting quotes around comparison operators, writing `=COUNTIF(B2:B6, >=50)` instead of `=COUNTIF(B2:B6, \">=50\")`. Excel flags unquoted operators as syntax errors. If you need to combine an operator with a cell reference such as `C1`, join them using an ampersand: `\">=\"&C1`."
+    }
+  ],
+  "lessonId": "count-2",
+  "related": [
+    "sumif",
+    "sum",
+    "if"
+  ]
+}
