@@ -17,30 +17,126 @@
       "type": "select",
       "prompt": "A café logs its daily drink orders. Select the quantities in `D2:D8`.",
       "grid": [
-        ["Day", "Item", "Size", "Qty", "Result"],
-        ["Mon", "Tea", "Large", 7, null],
-        ["Mon", "Coffee", "Large", 6, null],
-        ["Tue", "Juice", "Small", 2, null],
-        ["Tue", "Tea", "Small", 5, null],
-        ["Wed", "Coffee", "Small", 4, null],
-        ["Wed", "Juice", "Large", 8, null],
-        ["Wed", "Coffee", "Large", 10, null]
+        [
+          "Day",
+          "Item",
+          "Size",
+          "Qty",
+          "Result"
+        ],
+        [
+          "Mon",
+          "Tea",
+          "Large",
+          7,
+          null
+        ],
+        [
+          "Mon",
+          "Coffee",
+          "Large",
+          6,
+          null
+        ],
+        [
+          "Tue",
+          "Juice",
+          "Small",
+          2,
+          null
+        ],
+        [
+          "Tue",
+          "Tea",
+          "Small",
+          5,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Small",
+          4,
+          null
+        ],
+        [
+          "Wed",
+          "Juice",
+          "Large",
+          8,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Large",
+          10,
+          null
+        ]
       ],
       "target": "D2:D8"
     },
     {
       "id": "s3",
       "type": "formula",
-      "prompt": "How many total cups of Tea were ordered? In `E2`, type `=SUMIF(B2:B8,\"Tea\",D2:D8)` and press Enter.",
+      "prompt": "How many cups of Tea were ordered in total? Put the total in `E2`.",
       "grid": [
-        ["Day", "Item", "Size", "Qty", "Result"],
-        ["Mon", "Tea", "Large", 7, null],
-        ["Mon", "Coffee", "Large", 6, null],
-        ["Tue", "Juice", "Small", 2, null],
-        ["Tue", "Tea", "Small", 5, null],
-        ["Wed", "Coffee", "Small", 4, null],
-        ["Wed", "Juice", "Large", 8, null],
-        ["Wed", "Coffee", "Large", 10, null]
+        [
+          "Day",
+          "Item",
+          "Size",
+          "Qty",
+          "Result"
+        ],
+        [
+          "Mon",
+          "Tea",
+          "Large",
+          7,
+          null
+        ],
+        [
+          "Mon",
+          "Coffee",
+          "Large",
+          6,
+          null
+        ],
+        [
+          "Tue",
+          "Juice",
+          "Small",
+          2,
+          null
+        ],
+        [
+          "Tue",
+          "Tea",
+          "Small",
+          5,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Small",
+          4,
+          null
+        ],
+        [
+          "Wed",
+          "Juice",
+          "Large",
+          8,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Large",
+          10,
+          null
+        ]
       ],
       "targetCell": "E2",
       "expectedValue": 12,
@@ -49,10 +145,6 @@
       ],
       "solution": "=SUMIF(B2:B8,\"Tea\",D2:D8)",
       "explain": "SUMIF checks the item column for Tea and adds the matching quantities from rows 2 and 5.",
-      "highlightCells": [
-        "B2:B8",
-        "D2:D8"
-      ],
       "mobileButtons": [
         "=",
         "(",
@@ -67,14 +159,62 @@
       "type": "formula",
       "prompt": "How many orders were for Large Coffee? Put the count in `E2`.",
       "grid": [
-        ["Day", "Item", "Size", "Qty", "Result"],
-        ["Mon", "Tea", "Large", 7, null],
-        ["Mon", "Coffee", "Large", 6, null],
-        ["Tue", "Juice", "Small", 2, null],
-        ["Tue", "Tea", "Small", 5, null],
-        ["Wed", "Coffee", "Small", 4, null],
-        ["Wed", "Juice", "Large", 8, null],
-        ["Wed", "Coffee", "Large", 10, null]
+        [
+          "Day",
+          "Item",
+          "Size",
+          "Qty",
+          "Result"
+        ],
+        [
+          "Mon",
+          "Tea",
+          "Large",
+          7,
+          null
+        ],
+        [
+          "Mon",
+          "Coffee",
+          "Large",
+          6,
+          null
+        ],
+        [
+          "Tue",
+          "Juice",
+          "Small",
+          2,
+          null
+        ],
+        [
+          "Tue",
+          "Tea",
+          "Small",
+          5,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Small",
+          4,
+          null
+        ],
+        [
+          "Wed",
+          "Juice",
+          "Large",
+          8,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Large",
+          10,
+          null
+        ]
       ],
       "targetCell": "E2",
       "expectedValue": 2,
@@ -101,14 +241,62 @@
       "type": "formula",
       "prompt": "What was the average quantity for Wednesday Coffee orders? Put the average in `E2`.",
       "grid": [
-        ["Day", "Item", "Size", "Qty", "Result"],
-        ["Mon", "Tea", "Large", 7, null],
-        ["Mon", "Coffee", "Large", 6, null],
-        ["Tue", "Juice", "Small", 2, null],
-        ["Tue", "Tea", "Small", 5, null],
-        ["Wed", "Coffee", "Small", 4, null],
-        ["Wed", "Juice", "Large", 8, null],
-        ["Wed", "Coffee", "Large", 10, null]
+        [
+          "Day",
+          "Item",
+          "Size",
+          "Qty",
+          "Result"
+        ],
+        [
+          "Mon",
+          "Tea",
+          "Large",
+          7,
+          null
+        ],
+        [
+          "Mon",
+          "Coffee",
+          "Large",
+          6,
+          null
+        ],
+        [
+          "Tue",
+          "Juice",
+          "Small",
+          2,
+          null
+        ],
+        [
+          "Tue",
+          "Tea",
+          "Small",
+          5,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Small",
+          4,
+          null
+        ],
+        [
+          "Wed",
+          "Juice",
+          "Large",
+          8,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Large",
+          10,
+          null
+        ]
       ],
       "targetCell": "E2",
       "expectedValue": 7,
@@ -136,14 +324,62 @@
       "type": "formula",
       "prompt": "Which items were ordered on Monday? In `E2`, extract them from `B2:B8` where `A2:A8` is \"Mon\".",
       "grid": [
-        ["Day", "Item", "Size", "Qty", "Result"],
-        ["Mon", "Tea", "Large", 7, null],
-        ["Mon", "Coffee", "Large", 6, null],
-        ["Tue", "Juice", "Small", 2, null],
-        ["Tue", "Tea", "Small", 5, null],
-        ["Wed", "Coffee", "Small", 4, null],
-        ["Wed", "Juice", "Large", 8, null],
-        ["Wed", "Coffee", "Large", 10, null]
+        [
+          "Day",
+          "Item",
+          "Size",
+          "Qty",
+          "Result"
+        ],
+        [
+          "Mon",
+          "Tea",
+          "Large",
+          7,
+          null
+        ],
+        [
+          "Mon",
+          "Coffee",
+          "Large",
+          6,
+          null
+        ],
+        [
+          "Tue",
+          "Juice",
+          "Small",
+          2,
+          null
+        ],
+        [
+          "Tue",
+          "Tea",
+          "Small",
+          5,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Small",
+          4,
+          null
+        ],
+        [
+          "Wed",
+          "Juice",
+          "Large",
+          8,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Large",
+          10,
+          null
+        ]
       ],
       "targetCell": "E2",
       "expectedValue": "Tea",
@@ -170,14 +406,62 @@
       "type": "formula",
       "prompt": "How many cups of Large Coffee were ordered in total? Put the sum in `E2`.",
       "grid": [
-        ["Day", "Item", "Size", "Qty", "Result"],
-        ["Mon", "Tea", "Large", 7, null],
-        ["Mon", "Coffee", "Large", 6, null],
-        ["Tue", "Juice", "Small", 2, null],
-        ["Tue", "Tea", "Small", 5, null],
-        ["Wed", "Coffee", "Small", 4, null],
-        ["Wed", "Juice", "Large", 8, null],
-        ["Wed", "Coffee", "Large", 10, null]
+        [
+          "Day",
+          "Item",
+          "Size",
+          "Qty",
+          "Result"
+        ],
+        [
+          "Mon",
+          "Tea",
+          "Large",
+          7,
+          null
+        ],
+        [
+          "Mon",
+          "Coffee",
+          "Large",
+          6,
+          null
+        ],
+        [
+          "Tue",
+          "Juice",
+          "Small",
+          2,
+          null
+        ],
+        [
+          "Tue",
+          "Tea",
+          "Small",
+          5,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Small",
+          4,
+          null
+        ],
+        [
+          "Wed",
+          "Juice",
+          "Large",
+          8,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Large",
+          10,
+          null
+        ]
       ],
       "targetCell": "E2",
       "expectedValue": 16,
@@ -216,14 +500,62 @@
       "type": "formula",
       "prompt": "How many orders in total were for Large size? Put the count in `E2`.",
       "grid": [
-        ["Day", "Item", "Size", "Qty", "Result"],
-        ["Mon", "Tea", "Large", 7, null],
-        ["Mon", "Coffee", "Large", 6, null],
-        ["Tue", "Juice", "Small", 2, null],
-        ["Tue", "Tea", "Small", 5, null],
-        ["Wed", "Coffee", "Small", 4, null],
-        ["Wed", "Juice", "Large", 8, null],
-        ["Wed", "Coffee", "Large", 10, null]
+        [
+          "Day",
+          "Item",
+          "Size",
+          "Qty",
+          "Result"
+        ],
+        [
+          "Mon",
+          "Tea",
+          "Large",
+          7,
+          null
+        ],
+        [
+          "Mon",
+          "Coffee",
+          "Large",
+          6,
+          null
+        ],
+        [
+          "Tue",
+          "Juice",
+          "Small",
+          2,
+          null
+        ],
+        [
+          "Tue",
+          "Tea",
+          "Small",
+          5,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Small",
+          4,
+          null
+        ],
+        [
+          "Wed",
+          "Juice",
+          "Large",
+          8,
+          null
+        ],
+        [
+          "Wed",
+          "Coffee",
+          "Large",
+          10,
+          null
+        ]
       ],
       "targetCell": "E2",
       "expectedValue": 4,
