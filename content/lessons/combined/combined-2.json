@@ -1,0 +1,672 @@
+{
+  "id": "combined-2",
+  "module": "combined",
+  "title": "Case study: a school sports day",
+  "difficulty": 3,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "In a sports day case study, you combine tools to answer real questions. Use **SUMIFS** to add numbers meeting several criteria: `=SUMIFS(sum_range, criteria_range1, criterion1, criteria_range2, criterion2)`."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A sports day table logs student race times and house points. Select the points SUMIFS will add: `E2:E7`.",
+      "grid": [
+        [
+          "Student",
+          "House",
+          "Age",
+          "Time",
+          "Points",
+          null,
+          "Total"
+        ],
+        [
+          "Aarav",
+          "Red",
+          "U14",
+          12.7,
+          8,
+          null,
+          null
+        ],
+        [
+          "Diya",
+          "Blue",
+          "U14",
+          13.4,
+          5,
+          null,
+          null
+        ],
+        [
+          "Karan",
+          "Red",
+          "U16",
+          12.1,
+          10,
+          null,
+          null
+        ],
+        [
+          "Maya",
+          "Blue",
+          "U16",
+          14.5,
+          4,
+          null,
+          null
+        ],
+        [
+          "Rohan",
+          "Green",
+          "U14",
+          13.1,
+          6,
+          null,
+          null
+        ],
+        [
+          "Zara",
+          "Red",
+          "U16",
+          12.5,
+          9,
+          null,
+          null
+        ]
+      ],
+      "target": "E2:E7"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "How many points did Red house score in the U16 group? In `G2`, type `=SUMIFS(E2:E7,B2:B7,\"Red\",C2:C7,\"U16\")` and press Enter.",
+      "grid": [
+        [
+          "Student",
+          "House",
+          "Age",
+          "Time",
+          "Points",
+          null,
+          "Total"
+        ],
+        [
+          "Aarav",
+          "Red",
+          "U14",
+          12.7,
+          8,
+          null,
+          null
+        ],
+        [
+          "Diya",
+          "Blue",
+          "U14",
+          13.4,
+          5,
+          null,
+          null
+        ],
+        [
+          "Karan",
+          "Red",
+          "U16",
+          12.1,
+          10,
+          null,
+          null
+        ],
+        [
+          "Maya",
+          "Blue",
+          "U16",
+          14.5,
+          4,
+          null,
+          null
+        ],
+        [
+          "Rohan",
+          "Green",
+          "U14",
+          13.1,
+          6,
+          null,
+          null
+        ],
+        [
+          "Zara",
+          "Red",
+          "U16",
+          12.5,
+          9,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": 19,
+      "mustUse": [
+        "SUMIFS"
+      ],
+      "solution": "=SUMIFS(E2:E7,B2:B7,\"Red\",C2:C7,\"U16\")",
+      "explain": "SUMIFS checks both conditions and adds Karan's 10 points and Zara's 9 points to give 19.",
+      "highlightCells": [
+        "E2:E7",
+        "B2:B7",
+        "C2:C7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ":"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "How many runners competed for Red house in the U16 group? In `G2`, count them.",
+      "grid": [
+        [
+          "Student",
+          "House",
+          "Age",
+          "Time",
+          "Points",
+          null,
+          "Count"
+        ],
+        [
+          "Aarav",
+          "Red",
+          "U14",
+          12.7,
+          8,
+          null,
+          null
+        ],
+        [
+          "Diya",
+          "Blue",
+          "U14",
+          13.4,
+          5,
+          null,
+          null
+        ],
+        [
+          "Karan",
+          "Red",
+          "U16",
+          12.1,
+          10,
+          null,
+          null
+        ],
+        [
+          "Maya",
+          "Blue",
+          "U16",
+          14.5,
+          4,
+          null,
+          null
+        ],
+        [
+          "Rohan",
+          "Green",
+          "U14",
+          13.1,
+          6,
+          null,
+          null
+        ],
+        [
+          "Zara",
+          "Red",
+          "U16",
+          12.5,
+          9,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": 2,
+      "mustUse": [
+        "COUNTIFS"
+      ],
+      "solution": "=COUNTIFS(B2:B7,\"Red\",C2:C7,\"U16\")",
+      "explain": "COUNTIFS counts rows matching both criteria: Karan and Zara both run for Red in U16, giving 2.",
+      "highlightCells": [
+        "B2:B7",
+        "C2:C7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ":"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "Who won the sprint with the fastest (lowest) time? In `G2`, look up the student in `A2:A7` who ran the minimum time in `D2:D7`.",
+      "grid": [
+        [
+          "Student",
+          "House",
+          "Age",
+          "Time",
+          "Points",
+          null,
+          "Fastest"
+        ],
+        [
+          "Aarav",
+          "Red",
+          "U14",
+          12.7,
+          8,
+          null,
+          null
+        ],
+        [
+          "Diya",
+          "Blue",
+          "U14",
+          13.4,
+          5,
+          null,
+          null
+        ],
+        [
+          "Karan",
+          "Red",
+          "U16",
+          12.1,
+          10,
+          null,
+          null
+        ],
+        [
+          "Maya",
+          "Blue",
+          "U16",
+          14.5,
+          4,
+          null,
+          null
+        ],
+        [
+          "Rohan",
+          "Green",
+          "U14",
+          13.1,
+          6,
+          null,
+          null
+        ],
+        [
+          "Zara",
+          "Red",
+          "U16",
+          12.5,
+          9,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "Karan",
+      "mustUse": [
+        "XLOOKUP",
+        "MIN"
+      ],
+      "solution": "=XLOOKUP(MIN(D2:D7),D2:D7,A2:A7)",
+      "explain": "MIN found the fastest time of 12.1 seconds, and XLOOKUP matched that row to return Karan.",
+      "highlightCells": [
+        "D2:D7",
+        "A2:A7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "Outliers like Maya's 14.5 can pull the average away from the pack. In `G2`, find the median sprint time in `D2:D7` to see the typical performance.",
+      "grid": [
+        [
+          "Student",
+          "House",
+          "Age",
+          "Time",
+          "Points",
+          null,
+          "Median"
+        ],
+        [
+          "Aarav",
+          "Red",
+          "U14",
+          12.7,
+          8,
+          null,
+          null
+        ],
+        [
+          "Diya",
+          "Blue",
+          "U14",
+          13.4,
+          5,
+          null,
+          null
+        ],
+        [
+          "Karan",
+          "Red",
+          "U16",
+          12.1,
+          10,
+          null,
+          null
+        ],
+        [
+          "Maya",
+          "Blue",
+          "U16",
+          14.5,
+          4,
+          null,
+          null
+        ],
+        [
+          "Rohan",
+          "Green",
+          "U14",
+          13.1,
+          6,
+          null,
+          null
+        ],
+        [
+          "Zara",
+          "Red",
+          "U16",
+          12.5,
+          9,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": 12.9,
+      "mustUse": [
+        "MEDIAN"
+      ],
+      "solution": "=MEDIAN(D2:D7)",
+      "explain": "MEDIAN takes the middle of the sorted times, 12.9, which resists the 14.5 outlier better than the average of 13.05.",
+      "highlightCells": [
+        "D2:D7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "A runner needs at least 8 points to earn a medal. In `G2`, check Aarav's points in `E2`: return `\"Medal\"` if he scored 8 or more, otherwise return `\"Ribbon\"`.",
+      "grid": [
+        [
+          "Student",
+          "House",
+          "Age",
+          "Time",
+          "Points",
+          null,
+          "Medal"
+        ],
+        [
+          "Aarav",
+          "Red",
+          "U14",
+          12.7,
+          8,
+          null,
+          null
+        ],
+        [
+          "Diya",
+          "Blue",
+          "U14",
+          13.4,
+          5,
+          null,
+          null
+        ],
+        [
+          "Karan",
+          "Red",
+          "U16",
+          12.1,
+          10,
+          null,
+          null
+        ],
+        [
+          "Maya",
+          "Blue",
+          "U16",
+          14.5,
+          4,
+          null,
+          null
+        ],
+        [
+          "Rohan",
+          "Green",
+          "U14",
+          13.1,
+          6,
+          null,
+          null
+        ],
+        [
+          "Zara",
+          "Red",
+          "U16",
+          12.5,
+          9,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "Medal",
+      "mustUse": [
+        "IF"
+      ],
+      "solution": "=IF(E2>=8,\"Medal\",\"Ribbon\")",
+      "explain": "Aarav scored exactly 8 points, so E2>=8 is TRUE and IF awards Medal, whereas >8 would give Ribbon.",
+      "highlightCells": [
+        "E2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ">"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "Column `F` lists Red house's podium finishers, with empty cells for non-winners. In `G2`, join the winners in `F2:F7` with a comma and space, skipping blanks.",
+      "grid": [
+        [
+          "Student",
+          "House",
+          "Age",
+          "Time",
+          "Points",
+          "Winner",
+          "Team"
+        ],
+        [
+          "Aarav",
+          "Red",
+          "U14",
+          12.7,
+          8,
+          "Aarav",
+          null
+        ],
+        [
+          "Diya",
+          "Blue",
+          "U14",
+          13.4,
+          5,
+          null,
+          null
+        ],
+        [
+          "Karan",
+          "Red",
+          "U16",
+          12.1,
+          10,
+          "Karan",
+          null
+        ],
+        [
+          "Maya",
+          "Blue",
+          "U16",
+          14.5,
+          4,
+          null,
+          null
+        ],
+        [
+          "Rohan",
+          "Green",
+          "U14",
+          13.1,
+          6,
+          null,
+          null
+        ],
+        [
+          "Zara",
+          "Red",
+          "U16",
+          12.5,
+          9,
+          "Zara",
+          null
+        ]
+      ],
+      "targetCell": "G2",
+      "expectedValue": "Aarav, Karan, Zara",
+      "mustUse": [
+        "TEXTJOIN"
+      ],
+      "solution": "=TEXTJOIN(\", \",TRUE,F2:F7)",
+      "explain": "TEXTJOIN skips the empty cells because ignore_empty is TRUE, combining the three names into Aarav, Karan, Zara.",
+      "highlightCells": [
+        "F2:F7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ":"
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "prompt": "A teacher wants to sum the points in `E2:E7` where House in `B2:B7` is \"Red\" and Age in `C2:C7` is \"U16\". Which formula is correct?",
+      "options": [
+        "`=SUMIFS(B2:B7,\"Red\",C2:C7,\"U16\",E2:E7)`",
+        "`=SUMIFS(E2:E7,B2:B7,\"Red\",C2:C7,\"U16\")`",
+        "`=SUMIFS(E2:E7,B2:B7=Red,C2:C7=U16)`"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "prompt": "A volunteer typed student names for the sports day certificates in all lowercase. In `C2`, fix the capitalization of Priya's name in `A2` so each word begins with a capital letter.",
+      "grid": [
+        [
+          "Student",
+          "House",
+          "Certificate"
+        ],
+        [
+          "priya sharma",
+          "Red",
+          null
+        ],
+        [
+          "liam o'connor",
+          "Blue",
+          null
+        ],
+        [
+          "ananya sen",
+          "Green",
+          null
+        ],
+        [
+          "david chen",
+          "Red",
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": "Priya Sharma",
+      "mustUse": [
+        "PROPER"
+      ],
+      "solution": "=PROPER(A2)",
+      "explain": "PROPER capitalises the first letter of each word in priya sharma, producing Priya Sharma for the printed certificate.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    }
+  ]
+}

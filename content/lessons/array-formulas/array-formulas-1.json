@@ -1,0 +1,196 @@
+{
+  "id": "array-formulas-1",
+  "module": "array-formulas",
+  "title": "UNIQUE: extract distinct values",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**UNIQUE** lists each different value once: `=UNIQUE(range)`. The values spill down into the cells below automatically, and uppercase or lowercase letters count as the same."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A delivery team logs drop-offs across India. Select the list of cities UNIQUE will check, without the header: `B2:B8`.",
+      "grid": [
+        ["Delivery", "City", null, "Unique"],
+        ["D-101", "Pune", null, null],
+        ["D-102", "Mumbai", null, null],
+        ["D-103", "pune", null, null],
+        ["D-104", "Delhi", null, null],
+        ["D-105", "Mumbai", null, null],
+        ["D-106", "Pune", null, null],
+        ["D-107", "Chennai", null, null]
+      ],
+      "target": "B2:B8"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Which cities did the team visit? In `D2`, type `=UNIQUE(B2:B8)` and press Enter to list each city once. The remaining cities spill down through `D5`.",
+      "grid": [
+        ["Delivery", "City", null, "Unique"],
+        ["D-101", "Pune", null, null],
+        ["D-102", "Mumbai", null, null],
+        ["D-103", "pune", null, null],
+        ["D-104", "Delhi", null, null],
+        ["D-105", "Mumbai", null, null],
+        ["D-106", "Pune", null, null],
+        ["D-107", "Chennai", null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "Pune",
+      "mustUse": [
+        "UNIQUE"
+      ],
+      "solution": "=UNIQUE(B2:B8)",
+      "explain": "UNIQUE keeps the first appearance of each city and treats Pune and pune as the same.",
+      "highlightCells": [
+        "B2:B8"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "How many different members attended the club? In `D2`, count the distinct names in `B2:B8` by wrapping UNIQUE inside COUNTA.",
+      "grid": [
+        ["Session", "Member", null, "Distinct"],
+        ["S-1", "Farhan", null, null],
+        ["S-2", "Dev", null, null],
+        ["S-3", "Anya", null, null],
+        ["S-4", "Kavya", null, null],
+        ["S-5", "Dev", null, null],
+        ["S-6", "Anya", null, null],
+        ["S-7", "Sara", null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 5,
+      "mustUse": [
+        "UNIQUE"
+      ],
+      "solution": "=COUNTA(UNIQUE(B2:B8))",
+      "explain": "UNIQUE returns the 5 different member names, and COUNTA counts them to give 5.",
+      "highlightCells": [
+        "B2:B8"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "In `D2`, list the sports from `B2:B8` in alphabetical order with no repeats by wrapping UNIQUE inside SORT. The remaining sports spill down through `D6`.",
+      "grid": [
+        ["Slot", "Sport", null, "Alphabetical"],
+        ["T-1", "Tennis", null, null],
+        ["T-2", "Cricket", null, null],
+        ["T-3", "Squash", null, null],
+        ["T-4", "Tennis", null, null],
+        ["T-5", "Badminton", null, null],
+        ["T-6", "Cricket", null, null],
+        ["T-7", "Archery", null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "Archery",
+      "mustUse": [
+        "UNIQUE"
+      ],
+      "solution": "=SORT(UNIQUE(B2:B8))",
+      "explain": "UNIQUE removes duplicate sports and SORT arranges the 5 distinct sports alphabetically from Archery to Tennis.",
+      "highlightCells": [
+        "B2:B8"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "Which volunteers signed up for only one shift? In `D2`, type `=UNIQUE(B2:B8,,TRUE)` to list names that appear exactly once. The rest spill down into `D3:D4`.",
+      "grid": [
+        ["Shift", "Volunteer", null, "Once"],
+        ["M-1", "Maya", null, null],
+        ["M-2", "Kiran", null, null],
+        ["M-3", "Arjun", null, null],
+        ["M-4", "Maya", null, null],
+        ["M-5", "Kiran", null, null],
+        ["M-6", "Deepa", null, null],
+        ["M-7", "Rahul", null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "Arjun",
+      "mustUse": [
+        "UNIQUE"
+      ],
+      "solution": "=UNIQUE(B2:B8,,TRUE)",
+      "explain": "Setting the third argument to TRUE filters out Maya and Kiran because they each volunteered more than once.",
+      "highlightCells": [
+        "B2:B8"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "What happens if an existing entry in the sheet blocks the formula's spill area?",
+      "options": [
+        "Excel returns a #SPILL! error until the blocking cell is cleared",
+        "Excel overwrites the blocking cell with the spilled values",
+        "Excel returns #VALUE! and stops spilling at the blocked row"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A farm market stall logs each jar sold today. How many different products were sold? In `D2`, count the distinct items in `B2:B8`.",
+      "grid": [
+        ["Sale", "Product", null, "Different"],
+        ["S-101", "Walnut Oil", null, null],
+        ["S-102", "Honey", null, null],
+        ["S-103", "Granola", null, null],
+        ["S-104", "Fig Jam", null, null],
+        ["S-105", "Honey", null, null],
+        ["S-106", "Granola", null, null],
+        ["S-107", "Olive Oil", null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 5,
+      "mustUse": [
+        "UNIQUE"
+      ],
+      "solution": "=COUNTA(UNIQUE(B2:B8))",
+      "explain": "The stall sold 5 different products across 7 orders, counting Walnut Oil, Honey, Granola, Fig Jam, and Olive Oil once each.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    }
+  ]
+}
