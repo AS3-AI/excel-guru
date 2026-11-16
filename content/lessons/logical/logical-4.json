@@ -246,7 +246,7 @@
     {
       "id": "s8",
       "type": "formula",
-      "prompt": "In `C2`, check whether the text entry for ticket 1 is a number.",
+      "prompt": "In `C2`, check whether the text entry for ticket 1 is a number (B2 holds 42 typed as text).",
       "grid": [
         [
           "Ticket",

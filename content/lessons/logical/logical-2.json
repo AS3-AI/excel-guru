@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**AND** is TRUE only when every test is TRUE: `=AND(test1,test2)`. OR needs either test TRUE: `=OR(test1,test2)`. XOR is TRUE when exactly one test is TRUE: `=XOR(test1,test2)`."
+      "text": "**AND** is TRUE only when every test is TRUE: `=AND(test1,test2)`. OR needs either test TRUE: `=OR(test1,test2)`. XOR is TRUE when exactly one test is TRUE: `=XOR(test1,test2)`. XOR needs Excel 2013 or Microsoft 365; older Excel shows #NAME?."
     },
     {
       "id": "s2",

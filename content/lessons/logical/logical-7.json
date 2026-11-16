@@ -145,7 +145,7 @@
     {
       "id": "s5",
       "type": "formula",
-      "prompt": "In `C2`, label Aria under 5 points Starter, under 10 points Growing, and all others Established.",
+      "prompt": "Use IFS to label Aria under 5 points Starter, under 10 points Growing, and all others Established in `C2`.",
       "grid": [
         [
           "Member",
@@ -186,6 +186,11 @@
     },
     {
       "id": "s6",
+      "type": "info",
+      "text": "**IFERROR** shows your message instead of an error: `=IFERROR(value, value_if_error)`."
+    },
+    {
+      "id": "s7",
       "type": "formula",
       "prompt": "Cost per item is total divided by items. In `D3`, type `=IFERROR(B3/C3,\"Check items\")` and press Enter for Omar.",
       "grid": [
@@ -204,7 +209,7 @@
         [
           "Omar",
           20,
-          5,
+          0,
           null
         ],
         [
@@ -215,12 +220,12 @@
         ]
       ],
       "targetCell": "D3",
-      "expectedValue": 4,
+      "expectedValue": "Check items",
       "mustUse": [
         "IFERROR"
       ],
       "solution": "=IFERROR(B3/C3,\"Check items\")",
-      "explain": "Omar has 20 total across five items, so IFERROR returns the valid cost of 4 per item.",
+      "explain": "Omar has 0 items, so 20/0 is #DIV/0! and IFERROR shows Check items instead.",
       "mobileButtons": [
         "=",
         "(",
@@ -231,7 +236,12 @@
       ]
     },
     {
-      "id": "s7",
+      "id": "s8",
+      "type": "info",
+      "text": "A nested IF puts a second IF in the value_if_false slot, so Excel checks a second condition when the first is FALSE."
+    },
+    {
+      "id": "s9",
       "type": "formula",
       "prompt": "In `C3`, type `=IF(B3>=70,\"Pass\",IF(B3>=50,\"Review\",\"Retry\"))` and press Enter.",
       "grid": [
@@ -273,7 +283,7 @@
       ]
     },
     {
-      "id": "s8",
+      "id": "s10",
       "type": "formula",
       "prompt": "A repair is Urgent when parts are more than 3 OR approval is No; otherwise Normal. What is ticket B’s status? Put it in `D3`.",
       "grid": [
@@ -320,7 +330,7 @@
       ]
     },
     {
-      "id": "s9",
+      "id": "s11",
       "type": "mcq",
       "prompt": "A formula divides A2 by B2, but B2 may be zero. Which function can show a message if division fails?",
       "options": [
@@ -331,7 +341,7 @@
       "answer": 0
     },
     {
-      "id": "s10",
+      "id": "s12",
       "type": "formula",
       "prompt": "Cost per hour is cost divided by hours, but ticket B has no hours logged yet. In `D3`, work out ticket B's cost per hour, showing \"Check hours\" if the division gives an error.",
       "grid": [
