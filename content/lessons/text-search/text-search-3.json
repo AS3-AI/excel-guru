@@ -1,0 +1,420 @@
+{
+  "id": "text-search-3",
+  "module": "text-search",
+  "title": "Text practice: LEFT, RIGHT, MID and LEN",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**MID** extracts characters from inside text: `=MID(text, start, count)`. Combined with `LEFT`, `RIGHT` and `LEN`, you can take apart any ID code or measure its length."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "An airport departures board lists flight codes. Select the first flight code: `A2`.",
+      "grid": [
+        [
+          "Flight",
+          "Destination",
+          null,
+          "Part"
+        ],
+        [
+          "6E-345-BOM",
+          "Mumbai",
+          null,
+          null
+        ],
+        [
+          "AI-812-DEL",
+          "Delhi",
+          null,
+          null
+        ],
+        [
+          "UK-920-BLR",
+          "Bengaluru",
+          null,
+          null
+        ],
+        [
+          "SG-107-CCU",
+          "Kolkata",
+          null,
+          null
+        ],
+        [
+          "QP-451-GOI",
+          "Goa",
+          null,
+          null
+        ]
+      ],
+      "target": "A2"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Each flight code has a 3-digit flight number in the middle. In `D2`, type `=MID(A2,4,3)` and press Enter.",
+      "grid": [
+        [
+          "Flight",
+          "Destination",
+          null,
+          "Part"
+        ],
+        [
+          "6E-345-BOM",
+          "Mumbai",
+          null,
+          null
+        ],
+        [
+          "AI-812-DEL",
+          "Delhi",
+          null,
+          null
+        ],
+        [
+          "UK-920-BLR",
+          "Bengaluru",
+          null,
+          null
+        ],
+        [
+          "SG-107-CCU",
+          "Kolkata",
+          null,
+          null
+        ],
+        [
+          "QP-451-GOI",
+          "Goa",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "345",
+      "mustUse": [
+        "MID"
+      ],
+      "solution": "=MID(A2,4,3)",
+      "explain": "Starting at character 4, MID takes 3 characters to extract the flight number 345.",
+      "highlightCells": [
+        "A2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ","
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In `D3`, get the 2-letter airline code from the start of flight `A3`.",
+      "grid": [
+        [
+          "Flight",
+          "Destination",
+          null,
+          "Part"
+        ],
+        [
+          "6E-345-BOM",
+          "Mumbai",
+          null,
+          "345"
+        ],
+        [
+          "AI-812-DEL",
+          "Delhi",
+          null,
+          null
+        ],
+        [
+          "UK-920-BLR",
+          "Bengaluru",
+          null,
+          null
+        ],
+        [
+          "SG-107-CCU",
+          "Kolkata",
+          null,
+          null
+        ],
+        [
+          "QP-451-GOI",
+          "Goa",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": "AI",
+      "mustUse": [
+        "LEFT"
+      ],
+      "solution": "=LEFT(A3,2)",
+      "explain": "LEFT takes the first 2 characters of AI-812-DEL, giving the airline code AI.",
+      "highlightCells": [
+        "A3"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ","
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "How many characters long is the city name in `B4`? In `D4`, count them.",
+      "grid": [
+        [
+          "Flight",
+          "Destination",
+          null,
+          "Part"
+        ],
+        [
+          "6E-345-BOM",
+          "Mumbai",
+          null,
+          "345"
+        ],
+        [
+          "AI-812-DEL",
+          "Delhi",
+          null,
+          "AI"
+        ],
+        [
+          "UK-920-BLR",
+          "Bengaluru",
+          null,
+          null
+        ],
+        [
+          "SG-107-CCU",
+          "Kolkata",
+          null,
+          null
+        ],
+        [
+          "QP-451-GOI",
+          "Goa",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D4",
+      "expectedValue": 9,
+      "mustUse": [
+        "LEN"
+      ],
+      "solution": "=LEN(B4)",
+      "explain": "Bengaluru has 9 letters, so LEN returns 9.",
+      "highlightCells": [
+        "B4"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ","
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "Each student ID begins with a 4-character prefix `STU-`. In `D2`, type `=RIGHT(A2,LEN(A2)-4)` to extract the student number.",
+      "grid": [
+        [
+          "ID",
+          "Student",
+          null,
+          "Number"
+        ],
+        [
+          "STU-4821",
+          "Aarav",
+          null,
+          null
+        ],
+        [
+          "STU-905",
+          "Fatima",
+          null,
+          null
+        ],
+        [
+          "STU-13726",
+          "Diya",
+          null,
+          null
+        ],
+        [
+          "STU-64",
+          "Dev",
+          null,
+          null
+        ],
+        [
+          "STU-8201",
+          "Zara",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "4821",
+      "mustUse": [
+        "RIGHT",
+        "LEN"
+      ],
+      "solution": "=RIGHT(A2,LEN(A2)-4)",
+      "explain": "LEN(A2) is 8, minus 4 is 4, so RIGHT takes the last 4 characters: 4821.",
+      "highlightCells": [
+        "A2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "-"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "The next student ID has a 3-digit number instead. In `D3`, extract the student number from `A3` by subtracting the 4 prefix characters from the total length.",
+      "grid": [
+        [
+          "ID",
+          "Student",
+          null,
+          "Number"
+        ],
+        [
+          "STU-4821",
+          "Aarav",
+          null,
+          "4821"
+        ],
+        [
+          "STU-905",
+          "Fatima",
+          null,
+          null
+        ],
+        [
+          "STU-13726",
+          "Diya",
+          null,
+          null
+        ],
+        [
+          "STU-64",
+          "Dev",
+          null,
+          null
+        ],
+        [
+          "STU-8201",
+          "Zara",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": "905",
+      "mustUse": [
+        "RIGHT",
+        "LEN"
+      ],
+      "solution": "=RIGHT(A3,LEN(A3)-4)",
+      "explain": "LEN(A3) is 7, minus 4 is 3, so RIGHT gets 905 even though this ID is shorter.",
+      "highlightCells": [
+        "A3"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "-"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "A learner writes `=RIGHT(A3,LEN(A3)-3)` for `STU-905`. Why does it return `-905`?",
+      "options": [
+        "The prefix `STU-` is 4 characters, so subtract 4",
+        "LEN skips hyphens",
+        "RIGHT counts from the start"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A transport office records vehicle number plates. The two digits after the state code identify the district. In `D2`, extract the 2-digit district code from the plate in `A2`.",
+      "grid": [
+        [
+          "Plate",
+          "Owner",
+          null,
+          "District"
+        ],
+        [
+          "MH-12-RN-4021",
+          "Pooja",
+          null,
+          null
+        ],
+        [
+          "DL-04-AB-7183",
+          "Karan",
+          null,
+          null
+        ],
+        [
+          "KA-05-MK-9204",
+          "Sneha",
+          null,
+          null
+        ],
+        [
+          "TN-07-BQ-1568",
+          "Vikram",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "12",
+      "mustUse": [
+        "MID"
+      ],
+      "solution": "=MID(A2,4,2)",
+      "explain": "Starting at character 4, MID takes 2 characters to extract district code 12.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ","
+      ]
+    }
+  ]
+}

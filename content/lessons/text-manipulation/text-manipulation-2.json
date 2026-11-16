@@ -1,0 +1,339 @@
+{
+  "id": "text-manipulation-2",
+  "module": "text-manipulation",
+  "title": "TEXTJOIN: join a range with a delimiter",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**TEXTJOIN** joins many pieces of text with the same delimiter, and can take a whole range: `=TEXTJOIN(delimiter, ignore_empty, text1, …)`. Set `ignore_empty` to `TRUE` to skip blank cells, or `FALSE` to keep them."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A relay race lists team runners in `A2:A6`, with one slot still open. Select the list of runner slots: `A2:A6`.",
+      "grid": [
+        [
+          "Runner",
+          null,
+          "Team"
+        ],
+        [
+          "Aarav",
+          null,
+          null
+        ],
+        [
+          "Diya",
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Elena",
+          null,
+          null
+        ],
+        [
+          "Tariq",
+          null,
+          null
+        ]
+      ],
+      "target": "A2:A6"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Join the runners into one list separated by a comma and a space, skipping the blank slot. In `C2`, type `=TEXTJOIN(\", \",TRUE,A2:A6)` and press Enter.",
+      "grid": [
+        [
+          "Runner",
+          null,
+          "Team"
+        ],
+        [
+          "Aarav",
+          null,
+          null
+        ],
+        [
+          "Diya",
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Elena",
+          null,
+          null
+        ],
+        [
+          "Tariq",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": "Aarav, Diya, Elena, Tariq",
+      "mustUse": [
+        "TEXTJOIN"
+      ],
+      "solution": "=TEXTJOIN(\", \",TRUE,A2:A6)",
+      "explain": "TEXTJOIN skips the blank cell in A4 because ignore_empty is TRUE, joining the four runners with a comma and space.",
+      "highlightCells": [
+        "A2:A6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ":"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "Setting `ignore_empty` to `FALSE` includes blank cells, leaving a gap where someone is missing. In `C3`, join `A2:A6` with a comma and space, but include the empty cell.",
+      "grid": [
+        [
+          "Runner",
+          null,
+          "Team"
+        ],
+        [
+          "Aarav",
+          null,
+          "Aarav, Diya, Elena, Tariq"
+        ],
+        [
+          "Diya",
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Elena",
+          null,
+          null
+        ],
+        [
+          "Tariq",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": "Aarav, Diya, , Elena, Tariq",
+      "mustUse": [
+        "TEXTJOIN"
+      ],
+      "solution": "=TEXTJOIN(\", \",FALSE,A2:A6)",
+      "explain": "With FALSE, TEXTJOIN keeps the blank cell in A4, placing two commas in a row to show the gap.",
+      "highlightCells": [
+        "A2:A6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ":"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "A tour bus itinerary in `A2:A6` has a cancelled stop in row 4. In `C2`, connect the stops using `\" - \"` as the delimiter, skipping the empty stop.",
+      "grid": [
+        [
+          "Stop",
+          null,
+          "Route"
+        ],
+        [
+          "Delhi",
+          null,
+          null
+        ],
+        [
+          "Jaipur",
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Agra",
+          null,
+          null
+        ],
+        [
+          "Kanpur",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": "Delhi - Jaipur - Agra - Kanpur",
+      "mustUse": [
+        "TEXTJOIN"
+      ],
+      "solution": "=TEXTJOIN(\" - \",TRUE,A2:A6)",
+      "explain": "The delimiter \" - \" is a space, a hyphen and a space, so the four cities become Delhi - Jaipur - Agra - Kanpur.",
+      "highlightCells": [
+        "A2:A6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ":",
+        "-"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "TEXTJOIN works across a row too. In `D2`, build Rohan's full name from `A2:C2` separated by a space `\" \"`, skipping his empty middle name.",
+      "grid": [
+        [
+          "First",
+          "Middle",
+          "Last",
+          "Full Name"
+        ],
+        [
+          "Rohan",
+          null,
+          "Sharma",
+          null
+        ],
+        [
+          "Priya",
+          "Devi",
+          "Patel",
+          null
+        ],
+        [
+          "Anya",
+          null,
+          "Roy",
+          null
+        ],
+        [
+          "Lucas",
+          "James",
+          "Miller",
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "Rohan Sharma",
+      "mustUse": [
+        "TEXTJOIN"
+      ],
+      "solution": "=TEXTJOIN(\" \",TRUE,A2:C2)",
+      "explain": "Because ignore_empty is TRUE, TEXTJOIN skips the empty cell in B2, leaving a single space between Rohan and Sharma.",
+      "highlightCells": [
+        "A2:C2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ":"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "`=TEXTJOIN(\", \",A2:A6)` returns an error. Why?",
+      "options": [
+        "The ignore_empty argument (TRUE or FALSE) is missing, so `A2:A6` is read as ignore_empty",
+        "The delimiter can't contain a space",
+        "TEXTJOIN can't take a range"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A community centre lists confirmed workshop topics in `A2:A6`, but row 4 was left open. In `C2`, combine all confirmed topics into a single summary separated by `\" / \"`, skipping any open spots.",
+      "grid": [
+        [
+          "Topic",
+          null,
+          "Schedule"
+        ],
+        [
+          "Coding",
+          null,
+          null
+        ],
+        [
+          "Robotics",
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          "Design",
+          null,
+          null
+        ],
+        [
+          "Gaming",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": "Coding / Robotics / Design / Gaming",
+      "mustUse": [
+        "TEXTJOIN"
+      ],
+      "solution": "=TEXTJOIN(\" / \",TRUE,A2:A6)",
+      "explain": "TEXTJOIN skips the empty cell in A4 and connects the four confirmed topics with slashes.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        ":",
+        "/"
+      ]
+    }
+  ]
+}

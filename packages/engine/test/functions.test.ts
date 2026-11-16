@@ -16,6 +16,52 @@ function ev(src: string, grid: CellValue[][] = []): CellValue | Matrix {
 
 const err = (code: ErrorCode): ExcelError => ({ error: code });
 
+describe("Excel text function differences", () => {
+  it("SEARCH supports case-insensitive wildcards", () => {
+    expect(ev('=SEARCH("w*d","hello world")')).toBe(7);
+    expect(ev('=SEARCH("?o","hello world")')).toBe(4);
+  });
+  it("SEARCH lets tilde escape wildcard characters", () => {
+    expect(ev('=SEARCH("~*","a*b")')).toBe(2);
+    expect(ev('=SEARCH("~?","a?b")')).toBe(2);
+  });
+  it("SEARCH returns VALUE when no match exists", () => {
+    expect(ev('=SEARCH("z","hello")')).toEqual(err("#VALUE!"));
+  });
+  it("SEARCH honors start_num", () => {
+    expect(ev('=SEARCH("a","banana",3)')).toBe(4);
+  });
+  it("FIND remains literal and case-sensitive", () => {
+    expect(ev('=FIND("A","aA")')).toBe(2);
+    expect(ev('=FIND("*","a*b")')).toBe(2);
+    expect(ev('=FIND("A","a")')).toEqual(err("#VALUE!"));
+  });
+  it("PROPER capitalizes after every non-letter and lowercases other letters", () => {
+    expect(ev('=PROPER("o\'neil smith")')).toBe("O'Neil Smith");
+    expect(ev('=PROPER("2nd place")')).toBe("2Nd Place");
+    expect(ev('=PROPER("e-mail")')).toBe("E-Mail");
+  });
+  it("PROPER treats punctuation and whitespace as word boundaries", () => {
+    expect(ev('=PROPER("HELLO\tWORLD!yes")')).toBe("Hello\tWorld!Yes");
+  });
+  it("LEFT and RIGHT return VALUE for negative lengths", () => {
+    expect(ev('=LEFT("hello",-1)')).toEqual(err("#VALUE!"));
+    expect(ev('=RIGHT("hello",-1)')).toEqual(err("#VALUE!"));
+  });
+  it("LEFT and RIGHT return empty text for zero length", () => {
+    expect(ev('=LEFT("hello",0)')).toBe("");
+    expect(ev('=RIGHT("hello",0)')).toBe("");
+  });
+  it("LEFT and RIGHT default omitted length to one", () => {
+    expect(ev('=LEFT("hello")')).toBe("h");
+    expect(ev('=RIGHT("hello")')).toBe("o");
+  });
+  it("LEFT and RIGHT return all text when length exceeds its size", () => {
+    expect(ev('=LEFT("hello",9)')).toBe("hello");
+    expect(ev('=RIGHT("hello",9)')).toBe("hello");
+  });
+});
+
 describe("MATCH", () => {
   it("finds exact text case-insensitively and exact numbers", () => {
     expect(ev('=MATCH("BEN",A1:A3,0)', [["Al"], ["Ben"], ["Cy"]])).toBe(2);

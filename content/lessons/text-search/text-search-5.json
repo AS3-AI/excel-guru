@@ -1,0 +1,194 @@
+{
+  "id": "text-search-5",
+  "module": "text-search",
+  "title": "FIND: locate characters in text",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**FIND** locates characters inside text and gives the position where they start: `=FIND(what to find, text)`. It is case-sensitive and returns `#VALUE!` when not found."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A courier company tracks shipments by route code. Select the first route code: `A2`.",
+      "grid": [
+        ["Code", "City", "Dash"],
+        ["AB-123", "Pune", null],
+        ["K-408", "Kochi", null],
+        ["DEL-551", "Delhi", null],
+        ["TN-902", "Salem", null],
+        ["B-774", "Bhopal", null]
+      ],
+      "target": "A2"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Where does the hyphen appear in code `A2`? In `C2`, type `=FIND(\"-\",A2)` and press Enter.",
+      "grid": [
+        ["Code", "City", "Dash"],
+        ["AB-123", "Pune", null],
+        ["K-408", "Kochi", null],
+        ["DEL-551", "Delhi", null],
+        ["TN-902", "Salem", null],
+        ["B-774", "Bhopal", null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 3,
+      "mustUse": [
+        "FIND"
+      ],
+      "solution": "=FIND(\"-\",A2)",
+      "explain": "The hyphen is the 3rd character in AB-123, so FIND returns 3.",
+      "highlightCells": [
+        "A2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "-"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "FIND is case-sensitive, so capital and lowercase letters differ. In `C2`, find the position of lowercase `\"b\"` in `B2`.",
+      "grid": [
+        ["Item", "Fruit", "Position"],
+        ["F-10", "Blueberry", null],
+        ["F-11", "Blackberry", null],
+        ["F-12", "Mulberry", null],
+        ["F-13", "Gooseberry", null],
+        ["F-14", "Strawberry", null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 5,
+      "mustUse": [
+        "FIND"
+      ],
+      "solution": "=FIND(\"b\",B2)",
+      "explain": "Blueberry starts with capital B, so FIND skips it and matches the lowercase b at position 5.",
+      "highlightCells": [
+        "B2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "A third argument tells FIND which character to start searching from. In `C2`, find the second hyphen in `A2` by starting your search at character `4`.",
+      "grid": [
+        ["Container", "Port", "Second Dash"],
+        ["AB-104-X", "Mumbai", null],
+        ["DL-92-M", "Kandla", null],
+        ["KA-3015-Z", "Chennai", null],
+        ["MH-12-R", "Goa", null],
+        ["TN-708-P", "Kolkata", null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 7,
+      "mustUse": [
+        "FIND"
+      ],
+      "solution": "=FIND(\"-\",A2,4)",
+      "explain": "Starting at character 4 skips the first hyphen, so FIND spots the second hyphen at position 7 in AB-104-X.",
+      "highlightCells": [
+        "A2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "-"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "You can use FIND inside LEFT to extract everything before a character. In `C2`, type `=LEFT(A2,FIND(\"-\",A2)-1)` to get the project name before the dash.",
+      "grid": [
+        ["Task", "Lead", "Project"],
+        ["PLAN-802", "Pooja", null],
+        ["DEV-114", "Aditya", null],
+        ["TEST-55", "Sanjay", null],
+        ["OPS-403", "Zara", null],
+        ["UX-29", "Farhan", null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": "PLAN",
+      "mustUse": [
+        "LEFT",
+        "FIND"
+      ],
+      "solution": "=LEFT(A2,FIND(\"-\",A2)-1)",
+      "explain": "FIND locates the hyphen at position 5, and subtracting 1 gives 4, so LEFT returns the 4 letters PLAN.",
+      "highlightCells": [
+        "A2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "-"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "`=FIND(\"x\",\"Box\")` returns `3`, but `=FIND(\"X\",\"Box\")` returns `#VALUE!`. Why?",
+      "options": [
+        "FIND is case-sensitive, so capital \"X\" does not match lowercase \"x\"",
+        "FIND only searches for words, so single letters cause an error",
+        "The text to search for must always be written in uppercase"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A community centre lists members by full name. What is the first name of the member in `A2`? Put it in `C2`.",
+      "grid": [
+        ["Member", "City", "First Name"],
+        ["Asha Rao", "Bengaluru", null],
+        ["Vikram Patel", "Ahmedabad", null],
+        ["Elena Rostova", "Kolkata", null],
+        ["Tariq Mansoor", "Hyderabad", null],
+        ["Meera Sen", "Chennai", null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": "Asha",
+      "mustUse": [
+        "LEFT",
+        "FIND"
+      ],
+      "solution": "=LEFT(A2,FIND(\" \",A2)-1)",
+      "explain": "FIND locates the space at position 5, and LEFT takes the first 4 characters to extract Asha.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "-"
+      ]
+    }
+  ]
+}

@@ -513,6 +513,50 @@ function toText(v: Scalar): string {
   return v ?? "";
 }
 
+function search(args: Arg[]): CellValue {
+  if (args.length < 2 || args.length > 3) return VALUE;
+  const needle = scalar(args[0]);
+  const haystack = scalar(args[1]);
+  if (isError(needle)) return needle;
+  if (isError(haystack)) return haystack;
+  const start = numberArg(args[2], 1);
+  if (isError(start)) return start;
+  if (start < 1) return VALUE;
+  const text = toText(haystack);
+  const source = wildcard(toText(needle)).source.slice(1, -1);
+  const re = new RegExp(`^(?:${source})`, "i");
+  for (let i = start - 1; i < text.length; i++) {
+    if (re.test(text.slice(i))) return i + 1;
+  }
+  return VALUE;
+}
+
+function proper(arg: Arg): CellValue {
+  const value = scalar(arg);
+  if (isError(value)) return value;
+  let atWordStart = true;
+  return [...toText(value)].map((ch) => {
+    if (/\p{L}/u.test(ch)) {
+      const capitalize = atWordStart;
+      atWordStart = false;
+      return capitalize ? ch.toUpperCase() : ch.toLowerCase();
+    }
+    atWordStart = true;
+    return ch;
+  }).join("");
+}
+
+function leftRight(args: Arg[], side: "left" | "right"): CellValue {
+  if (args.length < 1 || args.length > 2) return VALUE;
+  const value = scalar(args[0]);
+  if (isError(value)) return value;
+  const length = numberArg(args[1], 1);
+  if (isError(length)) return length;
+  if (length < 0) return VALUE;
+  const text = toText(value);
+  return side === "left" ? text.slice(0, length) : length === 0 ? "" : text.slice(-length);
+}
+
 // ---------------------------------------------------------------------------
 // Dynamic-array functions (T6). Their results spill from the formula's cell.
 // Where Excel returns #CALC! (an empty result), we return #VALUE!: #CALC! isn't in ErrorCode.
@@ -673,6 +717,10 @@ function index(args: Arg[]): CellValue | Matrix {
 }
 
 const OWN: Record<string, Impl> = {
+  SEARCH: (...args) => search(args),
+  PROPER: (arg) => proper(arg),
+  LEFT: (...args) => leftRight(args, "left"),
+  RIGHT: (...args) => leftRight(args, "right"),
   ISERROR: (arg) => errorPredicate(arg, isError),
   ISERR: (arg) => errorPredicate(arg, (value) => isError(value) && value.error !== "#N/A"),
   ISNA: (arg) => errorPredicate(arg, (value) => isError(value) && value.error === "#N/A"),
