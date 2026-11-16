@@ -1,0 +1,216 @@
+{
+  "id": "intro-to-shortcuts-5",
+  "module": "intro-to-shortcuts",
+  "title": "Cut, copy, and paste shortcuts",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**Clipboard shortcuts** duplicate, move, and restore cell contents without using the mouse: `Ctrl+C` copy, `Ctrl+X` cut, and `Ctrl+V` paste. Press `Ctrl+Z` to undo a mistake and `Ctrl+Y` to redo it. On a Mac, use `⌘` instead of Ctrl (`⌘C`, `⌘X`, `⌘V`, `⌘Z`, `⌘Y`)."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A bakery tracks its morning inventory. Select the croissant price you'll copy: `C2`.",
+      "grid": [
+        ["Item", "Category", "Price", "Stock"],
+        ["Croissant", "Pastry", 35, 12],
+        ["Muffin", "Pastry", null, 15],
+        ["Sourdough", "Bread", 45, 8],
+        ["Baguette", "Bread", 40, 10],
+        ["Roll", "Bread", null, 20],
+        [null, "Pastry", 30, "Danish"]
+      ],
+      "target": "C2"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Copy the price in `C2`: press `Ctrl+C` (Mac: `⌘C`).",
+      "keys": {
+        "win": "Ctrl+C",
+        "mac": "Cmd+C"
+      },
+      "activeCell": "C2",
+      "grid": [
+        ["Item", "Category", "Price", "Stock"],
+        ["Croissant", "Pastry", 35, 12],
+        ["Muffin", "Pastry", null, 15],
+        ["Sourdough", "Bread", 45, 8],
+        ["Baguette", "Bread", 40, 10],
+        ["Roll", "Bread", null, 20],
+        [null, "Pastry", 30, "Danish"]
+      ],
+      "postcondition": {
+        "selection": "C2"
+      }
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Muffins sell for the same price. Paste the copied value into `C3`: press `Ctrl+V` (Mac: `⌘V`).",
+      "keys": {
+        "win": "Ctrl+V",
+        "mac": "Cmd+V"
+      },
+      "activeCell": "C3",
+      "grid": [
+        ["Item", "Category", "Price", "Stock"],
+        ["Croissant", "Pastry", 35, 12],
+        ["Muffin", "Pastry", null, 15],
+        ["Sourdough", "Bread", 45, 8],
+        ["Baguette", "Bread", 40, 10],
+        ["Roll", "Bread", null, 20],
+        [null, "Pastry", 30, "Danish"]
+      ],
+      "postcondition": {
+        "selection": "C3",
+        "grid": [
+          ["Item", "Category", "Price", "Stock"],
+          ["Croissant", "Pastry", 35, 12],
+          ["Muffin", "Pastry", 35, 15],
+          ["Sourdough", "Bread", 45, 8],
+          ["Baguette", "Bread", 40, 10],
+          ["Roll", "Bread", null, 20],
+          [null, "Pastry", 30, "Danish"]
+        ]
+      }
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "The name Danish was typed in the Stock column by mistake. Cut `D7`: press `Ctrl+X` (Mac: `⌘X`).",
+      "keys": {
+        "win": "Ctrl+X",
+        "mac": "Cmd+X"
+      },
+      "activeCell": "D7",
+      "grid": [
+        ["Item", "Category", "Price", "Stock"],
+        ["Croissant", "Pastry", 35, 12],
+        ["Muffin", "Pastry", 35, 15],
+        ["Sourdough", "Bread", 45, 8],
+        ["Baguette", "Bread", 40, 10],
+        ["Roll", "Bread", null, 20],
+        [null, "Pastry", 30, "Danish"]
+      ],
+      "postcondition": {
+        "selection": "D7"
+      }
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Move the name to the empty item cell: press `Ctrl+V` (Mac: `⌘V`) in `A7`.",
+      "keys": {
+        "win": "Ctrl+V",
+        "mac": "Cmd+V"
+      },
+      "activeCell": "A7",
+      "grid": [
+        ["Item", "Category", "Price", "Stock"],
+        ["Croissant", "Pastry", 35, 12],
+        ["Muffin", "Pastry", 35, 15],
+        ["Sourdough", "Bread", 45, 8],
+        ["Baguette", "Bread", 40, 10],
+        ["Roll", "Bread", null, 20],
+        [null, "Pastry", 30, "Danish"]
+      ],
+      "postcondition": {
+        "selection": "A7",
+        "grid": [
+          ["Item", "Category", "Price", "Stock"],
+          ["Croissant", "Pastry", 35, 12],
+          ["Muffin", "Pastry", 35, 15],
+          ["Sourdough", "Bread", 45, 8],
+          ["Baguette", "Bread", 40, 10],
+          ["Roll", "Bread", null, 20],
+          ["Danish", "Pastry", 30, null]
+        ]
+      }
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "You pasted the item into `A7`, but it belongs on a different list. Undo the paste: press `Ctrl+Z` (Mac: `⌘Z`).",
+      "keys": {
+        "win": "Ctrl+Z",
+        "mac": "Cmd+Z"
+      },
+      "activeCell": "A7",
+      "grid": [
+        ["Item", "Category", "Price", "Stock"],
+        ["Croissant", "Pastry", 35, 12],
+        ["Muffin", "Pastry", 35, 15],
+        ["Sourdough", "Bread", 45, 8],
+        ["Baguette", "Bread", 40, 10],
+        ["Roll", "Bread", null, 20],
+        ["Danish", "Pastry", 30, null]
+      ],
+      "postcondition": {
+        "selection": "A7",
+        "grid": [
+          ["Item", "Category", "Price", "Stock"],
+          ["Croissant", "Pastry", 35, 12],
+          ["Muffin", "Pastry", 35, 15],
+          ["Sourdough", "Bread", 45, 8],
+          ["Baguette", "Bread", 40, 10],
+          ["Roll", "Bread", null, 20],
+          [null, "Pastry", 30, "Danish"]
+        ]
+      }
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "What is the difference between `Ctrl+C` (Copy) and `Ctrl+X` (Cut)?",
+      "options": [
+        "`Ctrl+X` removes content from the original cell when pasted, while `Ctrl+C` leaves the original intact",
+        "`Ctrl+C` removes content from the original cell, while `Ctrl+X` leaves the original intact",
+        "`Ctrl+X` deletes the entire row, while `Ctrl+C` only clears one cell"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Rolls also cost 35. Paste the copied price into `C6`.",
+      "keys": {
+        "win": "Ctrl+V",
+        "mac": "Cmd+V"
+      },
+      "activeCell": "C6",
+      "grid": [
+        ["Item", "Category", "Price", "Stock"],
+        ["Croissant", "Pastry", 35, 12],
+        ["Muffin", "Pastry", 35, 15],
+        ["Sourdough", "Bread", 45, 8],
+        ["Baguette", "Bread", 40, 10],
+        ["Roll", "Bread", null, 20],
+        [null, "Pastry", 30, "Danish"]
+      ],
+      "postcondition": {
+        "selection": "C6",
+        "grid": [
+          ["Item", "Category", "Price", "Stock"],
+          ["Croissant", "Pastry", 35, 12],
+          ["Muffin", "Pastry", 35, 15],
+          ["Sourdough", "Bread", 45, 8],
+          ["Baguette", "Bread", 40, 10],
+          ["Roll", "Bread", 35, 20],
+          [null, "Pastry", 30, "Danish"]
+        ]
+      }
+    }
+  ]
+}

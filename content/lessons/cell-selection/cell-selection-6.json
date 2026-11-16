@@ -1,0 +1,379 @@
+{
+  "id": "cell-selection-6",
+  "module": "cell-selection",
+  "title": "Larger selections 2: current region and last cell",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "The **current region** is the entire block of data surrounding your active cell, bounded by blank rows and columns. `Ctrl+Shift+8` selects the current region (Mac: `Ctrl+Shift+8`). `Ctrl+Shift+End` extends from the active cell to the sheet's last used cell (Mac: `⌘⇧End`). `F8` toggles Extend Selection mode (Mac: `fn+F8`)."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A community café tracks inventory. Click inside the menu items: `B2`.",
+      "grid": [
+        [
+          "Item",
+          "Category",
+          "Stock",
+          "Price"
+        ],
+        [
+          "Chai",
+          "Drink",
+          45,
+          20
+        ],
+        [
+          "Samosa",
+          "Snack",
+          30,
+          15
+        ],
+        [
+          "Muffin",
+          "Snack",
+          18,
+          40
+        ],
+        [
+          "Coffee",
+          "Drink",
+          25,
+          35
+        ],
+        [
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Napkins",
+          "Supply",
+          100,
+          5
+        ],
+        [
+          "Cups",
+          "Supply",
+          200,
+          3
+        ]
+      ],
+      "target": "B2"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Select the entire menu table around `B2`: press `Ctrl+Shift+8` (Mac: `Ctrl+Shift+8`).",
+      "keys": {
+        "win": "Ctrl+Shift+8",
+        "mac": "Ctrl+Shift+8"
+      },
+      "activeCell": "B2",
+      "grid": [
+        [
+          "Item",
+          "Category",
+          "Stock",
+          "Price"
+        ],
+        [
+          "Chai",
+          "Drink",
+          45,
+          20
+        ],
+        [
+          "Samosa",
+          "Snack",
+          30,
+          15
+        ],
+        [
+          "Muffin",
+          "Snack",
+          18,
+          40
+        ],
+        [
+          "Coffee",
+          "Drink",
+          25,
+          35
+        ],
+        [
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Napkins",
+          "Supply",
+          100,
+          5
+        ],
+        [
+          "Cups",
+          "Supply",
+          200,
+          3
+        ]
+      ],
+      "postcondition": {
+        "selection": "A1:D5"
+      }
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Row 6 is empty. From `B7` in the supplies table, select its current region: press `Ctrl+Shift+8` (Mac: `Ctrl+Shift+8`).",
+      "keys": {
+        "win": "Ctrl+Shift+8",
+        "mac": "Ctrl+Shift+8"
+      },
+      "activeCell": "B7",
+      "grid": [
+        [
+          "Item",
+          "Category",
+          "Stock",
+          "Price"
+        ],
+        [
+          "Chai",
+          "Drink",
+          45,
+          20
+        ],
+        [
+          "Samosa",
+          "Snack",
+          30,
+          15
+        ],
+        [
+          "Muffin",
+          "Snack",
+          18,
+          40
+        ],
+        [
+          "Coffee",
+          "Drink",
+          25,
+          35
+        ],
+        [
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Napkins",
+          "Supply",
+          100,
+          5
+        ],
+        [
+          "Cups",
+          "Supply",
+          200,
+          3
+        ]
+      ],
+      "postcondition": {
+        "selection": "A7:D8"
+      }
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Extend the selection across the blank row to the sheet's last cell: press `Ctrl+Shift+End` (Mac: `⌘⇧End`).",
+      "keys": {
+        "win": "Ctrl+Shift+End",
+        "mac": "Shift+Cmd+End"
+      },
+      "activeCell": "A2",
+      "grid": [
+        [
+          "Item",
+          "Category",
+          "Stock",
+          "Price"
+        ],
+        [
+          "Chai",
+          "Drink",
+          45,
+          20
+        ],
+        [
+          "Samosa",
+          "Snack",
+          30,
+          15
+        ],
+        [
+          "Muffin",
+          "Snack",
+          18,
+          40
+        ],
+        [
+          "Coffee",
+          "Drink",
+          25,
+          35
+        ],
+        [
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Napkins",
+          "Supply",
+          100,
+          5
+        ],
+        [
+          "Cups",
+          "Supply",
+          200,
+          3
+        ]
+      ],
+      "postcondition": {
+        "selection": "A2:D8"
+      }
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "A new order was inserted in row 4. From `A2`, extend your selection to the updated last cell: press `Ctrl+Shift+End` (Mac: `⌘⇧End`).",
+      "keys": {
+        "win": "Ctrl+Shift+End",
+        "mac": "Shift+Cmd+End"
+      },
+      "activeCell": "A2",
+      "grid": [
+        [
+          "Order",
+          "Driver",
+          "Stops",
+          "Distance"
+        ],
+        [
+          101,
+          "Aarav",
+          4,
+          15
+        ],
+        [
+          102,
+          "Diya",
+          6,
+          22
+        ],
+        [
+          103,
+          "Kavita",
+          3,
+          11
+        ],
+        [
+          104,
+          "Rohan",
+          5,
+          18
+        ],
+        [
+          105,
+          "Zara",
+          8,
+          30
+        ]
+      ],
+      "postcondition": {
+        "selection": "A2:D6"
+      }
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "How does `F8` (Extend Selection mode) differ from `Ctrl+Shift+8`?",
+      "options": [
+        "`F8` lets arrow keys stretch the selection step by step, while `Ctrl+Shift+8` selects the entire region at once",
+        "`F8` selects the whole worksheet, while `Ctrl+Shift+8` selects only one column",
+        "`F8` only works on numbers, while `Ctrl+Shift+8` only works on text"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "A school book fair tracks purchases. From `B2`, select the entire sales table at once.",
+      "keys": {
+        "win": "Ctrl+Shift+8",
+        "mac": "Ctrl+Shift+8"
+      },
+      "activeCell": "B2",
+      "grid": [
+        [
+          "Student",
+          "Grade",
+          "Books",
+          "Paid"
+        ],
+        [
+          "Ananya",
+          5,
+          3,
+          150
+        ],
+        [
+          "Bikram",
+          6,
+          2,
+          100
+        ],
+        [
+          "Charu",
+          5,
+          4,
+          200
+        ],
+        [
+          "Deepak",
+          7,
+          1,
+          50
+        ],
+        [
+          "Esha",
+          6,
+          5,
+          250
+        ]
+      ],
+      "postcondition": {
+        "selection": "A1:D6"
+      }
+    }
+  ]
+}
