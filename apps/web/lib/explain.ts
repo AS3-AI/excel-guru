@@ -1,5 +1,6 @@
 import type { Lesson, Step } from "@excel-guru/grader";
 import { gradeFormulaStep, gradeSelectStep, gradeSequenceStep, gradeShortcutStep } from "@excel-guru/grader";
+import { createHash } from "node:crypto";
 
 const INPUT_LIMIT = 200;
 
@@ -58,6 +59,13 @@ export function shouldAllowUncachedCall(todayCount: number, limit = 20): boolean
   return todayCount < limit;
 }
 
+/** Hash a stable user identity, or a salted address for signed-out callers. */
+export function callerKey(userId: string | null, ip: string | null, salt?: string): string | null {
+  if (userId) return createHash("sha256").update(`user:${userId}`).digest("hex");
+  if (!ip || !salt) return null;
+  return createHash("sha256").update(`ip:${ip}:${salt}`).digest("hex");
+}
+
 export function rateScore(score: number, helpful: boolean): number {
   return score + (helpful ? 1 : -1);
 }
@@ -102,5 +110,16 @@ export async function requestGeminiExplanation(prompt: string, apiKey: string | 
 
 export function istDayStart(now = new Date()): string {
   const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
-  return `${parts}T00:00:00+05:30`;
+  return new Date(`${parts}T00:00:00+05:30`).toISOString();
+}
+
+export async function countExplainCalls(admin: any, caller: string, since: string): Promise<number> {
+  const result = await admin.from("explain_calls").select("id", { count: "exact", head: true }).eq("caller", caller).gte("called_at", since);
+  if (result.error || typeof result.count !== "number") throw result.error ?? new Error("Explain call count unavailable");
+  return result.count;
+}
+
+export async function insertExplainCall(admin: any, caller: string): Promise<boolean> {
+  const result = await admin.from("explain_calls").insert({ caller });
+  return !result.error;
 }
