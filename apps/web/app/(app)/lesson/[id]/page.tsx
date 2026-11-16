@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getLesson, getOrder, nextLessonId, stepSequence } from "@/lib/lessons";
+import { lessonMetadata } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decideAndRecordLessonOpen, decideLessonAccess, loadLessonAccess } from "@/lib/access";
@@ -11,8 +12,9 @@ import type { LessonNavItem } from "./LessonList";
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const lesson = getLesson((await params).id);
-  return { title: lesson ? `${lesson.title} — Excel Guru` : "Lesson not found — Excel Guru" };
+  const { id } = await params;
+  const lesson = getLesson(id);
+  return lessonMetadata(lesson ? { id, title: lesson.title, module: lesson.module } : null);
 }
 
 export default async function LessonPage({ params }: Props) {

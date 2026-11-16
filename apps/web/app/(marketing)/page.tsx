@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { currencyForCountry, formatPrice, PLANS } from "@/lib/plans";
+import { STATIC_METADATA, buildMetadata } from "@/lib/seo";
 import { WaitlistForm } from "./WaitlistForm";
+
+export const metadata: Metadata = buildMetadata({
+  title: STATIC_METADATA.landing.title,
+  description: STATIC_METADATA.landing.description,
+  path: "/",
+});
 
 const MODULES = [
   "SUM",
@@ -147,7 +155,9 @@ export default async function Home() {
 
       <footer>
         <div className="wrap">
-          <nav>
+          <nav aria-label="Footer navigation">
+            <Link href="/pricing">Pricing</Link>
+            <Link href="/help">Help</Link>
             <Link href="/privacy">Privacy</Link>
             <Link href="/terms">Terms</Link>
           </nav>

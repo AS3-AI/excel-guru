@@ -1,10 +1,18 @@
+import type { Metadata } from "next";
 import { DashboardContent, TopNav } from "@/components/TopNav";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getLesson, getOrder } from "@/lib/lessons";
 import { getStatusTag } from "@/lib/progress";
 import { MODULES, type StatusTag } from "@/lib/modules";
+import { STATIC_METADATA, buildMetadata } from "@/lib/seo";
 import "./dashboard.css";
+
+export const metadata: Metadata = buildMetadata({
+  title: STATIC_METADATA.dashboard.title,
+  description: STATIC_METADATA.dashboard.description,
+  noIndex: true,
+});
 
 export default async function DashboardPage() {
   const order = getOrder();
