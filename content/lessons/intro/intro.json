@@ -16,14 +16,14 @@
       "id": "s2",
       "type": "select",
       "prompt": "Click the cell that holds the price of apples.",
-      "grid": [["Fruit", "Price"], ["Apples", 3], ["Bananas", 2], ["Cherries", 4]],
+      "grid": [["Fruit", "Price", "Total"], ["Apples", 3, null], ["Bananas", 2, null], ["Cherries", 4, null]],
       "target": "B2"
     },
     {
       "id": "s3",
       "type": "formula",
       "prompt": "Formulas start with =. In C2, type a formula that adds the price of apples and bananas.",
-      "grid": [["Fruit", "Price"], ["Apples", 3], ["Bananas", 2], ["Cherries", 4]],
+      "grid": [["Fruit", "Price", "Total"], ["Apples", 3, null], ["Bananas", 2, null], ["Cherries", 4, null]],
       "targetCell": "C2",
       "expectedValue": 5,
       "mustUse": [],
@@ -34,9 +34,16 @@
     },
     {
       "id": "s4",
+      "type": "mcq",
+      "prompt": "What does every Excel formula begin with?",
+      "options": ["A function name", "An equals sign (=)", "A cell address"],
+      "answer": 1
+    },
+    {
+      "id": "s5",
       "type": "formula",
       "prompt": "Now use the SUM function in C2 to total every price in B2:B4.",
-      "grid": [["Fruit", "Price"], ["Apples", 3], ["Bananas", 2], ["Cherries", 4]],
+      "grid": [["Fruit", "Price", "Total"], ["Apples", 3, null], ["Bananas", 2, null], ["Cherries", 4, null]],
       "targetCell": "C2",
       "expectedValue": 9,
       "mustUse": ["SUM"],
@@ -44,13 +51,6 @@
       "explain": "SUM adds every number in a range. B2:B4 means all the cells from B2 down to B4.",
       "highlightCells": ["B2:B4"],
       "mobileButtons": ["(", ")", ":"]
-    },
-    {
-      "id": "s5",
-      "type": "mcq",
-      "prompt": "What does every Excel formula begin with?",
-      "options": ["A function name", "An equals sign (=)", "A cell address"],
-      "answer": 1
     }
   ]
 }

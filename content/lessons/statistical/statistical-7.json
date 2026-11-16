@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**MODE** finds the number that appears most often in a range: `=MODE(B2:B7)`. Text, empty cells, and logical values are skipped, but at least one value must repeat."
+      "text": "**MODE** finds the number that appears most often in a range: `=MODE(B2:B7)`. Text, empty cells, and logical values are skipped, but at least one value must repeat. In newer Excel you may also see MODE.SNGL; it works the same way."
     },
     {
       "id": "s2",

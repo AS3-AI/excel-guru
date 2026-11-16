@@ -238,7 +238,7 @@
     {
       "id": "s6",
       "type": "formula",
-      "prompt": "Each member needs a login made of their first name, a dash and their ID number. In `D5`, build Omar's login from `A5` and `C5`.",
+      "prompt": "Each member needs a login made of their first name, a dash and their ID number. In `D5`, use CONCAT to build Omar's login from `A5` and `C5`.",
       "grid": [
         [
           "First",

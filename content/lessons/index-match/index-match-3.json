@@ -87,6 +87,11 @@
     },
     {
       "id": "s6",
+      "type": "info",
+      "text": "INDEX can take a row AND a column number. Use one MATCH to find the row and a second MATCH, across the header row, to find the column."
+    },
+    {
+      "id": "s7",
       "type": "formula",
       "prompt": "A workshop tracks repair times by mechanic and job. In `G4`, find the minutes for the mechanic in `G2` and job in `G3`, using the mechanic names in `A2:A6` and job names in `B1:E1`.",
       "grid": [
@@ -107,7 +112,7 @@
       "mobileButtons": ["=", "(", ")", ",", ":"]
     },
     {
-      "id": "s7",
+      "id": "s8",
       "type": "mcq",
       "prompt": "A code is in row 4 of `A2:A7`. Why does `=INDEX(C1:C6,MATCH(F2,A2:A7,0))` return the item from the row above?",
       "options": [
@@ -118,9 +123,9 @@
       "answer": 0
     },
     {
-      "id": "s8",
+      "id": "s9",
       "type": "formula",
-      "prompt": "A delivery team has a route code on each parcel. Which driver has the code shown in `F2`? Put the driver's name in `G2`.",
+      "prompt": "A delivery team has a route code on each parcel. Use INDEX and MATCH to find which driver has the code shown in `F2`. Put the driver's name in `G2`.",
       "grid": [
         ["Route", "Driver", "Van", "Stops", null, "Find", "Driver"],
         ["R-8", "Pia", "Violet", 6, null, "R-3", null],

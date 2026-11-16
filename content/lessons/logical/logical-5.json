@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**IFS** checks conditions in order and returns the result for the first TRUE condition: `=IFS(test1,result1,test2,result2,TRUE,default)`. Without it, a value that matches nothing gives #N/A."
+      "text": "**IFS** checks conditions in order and returns the result for the first TRUE condition: `=IFS(test1,result1,test2,result2,TRUE,default)`. Without the final TRUE, default pair, a value that matches nothing gives #N/A. IFS needs Excel 2019 or Microsoft 365; older Excel shows #NAME?."
     },
     {
       "id": "s2",

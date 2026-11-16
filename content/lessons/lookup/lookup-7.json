@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**XLOOKUP** can return several matching columns at once, search in either direction, and show a message when there is no match. The syntax is `=XLOOKUP(what to find, look in, return from, if not found)`."
+      "text": "**XLOOKUP** can return several matching columns at once, search in either direction, and show a message when there is no match. The syntax is `=XLOOKUP(what to find, look in, return from, if not found)`. When a formula returns several values, they spill into the cells next to it; if one of those cells is not empty you get #SPILL!. XLOOKUP needs Excel 2021 or Microsoft 365; older Excel shows #NAME?."
     },
     {
       "id": "s2",
@@ -318,7 +318,7 @@
     {
       "id": "s6",
       "type": "formula",
-      "prompt": "A canteen records daily visitors across row 1. How many came on the day named in `F2`? Put the count in `G2`.",
+      "prompt": "A canteen records daily visitors across row 1. Use XLOOKUP to find how many came on the day named in `F2`. Put the count in `G2`.",
       "grid": [
         [
           "Day",
@@ -373,7 +373,7 @@
     {
       "id": "s8",
       "type": "formula",
-      "prompt": "A volunteer coordinator records each person's name, shift, and check-in time. What shift is assigned to the name in `F2`? Put the answer in `G2`.",
+      "prompt": "A volunteer coordinator records each person's name, shift, and check-in time. Use XLOOKUP to find what shift is assigned to the name in `F2`. Put the answer in `G2`.",
       "grid": [
         [
           "Name",

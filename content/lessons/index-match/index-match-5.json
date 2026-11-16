@@ -530,7 +530,7 @@
     {
       "id": "s10",
       "type": "formula",
-      "prompt": "A library keeps book codes beside their titles. Which title belongs to the code in `E2`? Put the answer in `F2`.",
+      "prompt": "A library keeps book codes beside their titles. Use INDEX and MATCH to find which title belongs to the code in `E2`. Put the answer in `F2`.",
       "grid": [
         [
           "Code",

@@ -176,7 +176,7 @@
         [
           "Total",
           null,
-          null
+          "=SUMIFS(A2:A5,\"North\",C2:C5)"
         ]
       ],
       "targetCell": "C6",

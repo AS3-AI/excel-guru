@@ -395,7 +395,7 @@
     {
       "id": "s8",
       "type": "formula",
-      "prompt": "Which item has the code in `F2`? Put its name in `G2`.",
+      "prompt": "Use INDEX and MATCH to find which item has the code in `F2`. Put its name in `G2`.",
       "grid": [
         [
           "Code",
