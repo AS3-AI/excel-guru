@@ -6,6 +6,7 @@ import { pathToFileURL } from "node:url";
 import { Sheet } from "../packages/engine/src/index";
 import {
   gradeFormulaStep,
+  LESSON_TODAY,
   type FormulaStep,
   type Lesson,
   type Postcondition,
@@ -149,7 +150,7 @@ function checkArticle(data: unknown, fileSlug: string, lessonIds: Set<string>, a
           }
           if (targets.length !== 1) fail(`section ${i + 1}: a grid with a formula needs exactly one empty cell for the result`);
           else {
-            const sheet = new Sheet(grid);
+            const sheet = new Sheet(grid, { today: LESSON_TODAY });
             sheet.set(targets[0]!, section.formula);
             const value = sheet.get(targets[0]!);
             const expected = section.result;

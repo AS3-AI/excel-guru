@@ -1,6 +1,6 @@
 import type { Ast, BinaryOp } from "./parser";
 import { parseAddress, parseArea } from "./address";
-import { lookupFunction, liftingArgumentPositions, rangeArgumentPositions, type Arg } from "./functions";
+import { lookupFunction, liftingArgumentPositions, rangeArgumentPositions, parseDate, type Arg } from "./functions";
 
 export type ErrorCode = "#DIV/0!" | "#N/A" | "#VALUE!" | "#REF!" | "#NAME?" | "#NUM!" | "#SPILL!" | "#CIRC!";
 export type ExcelError = { error: ErrorCode };
@@ -128,7 +128,13 @@ class Evaluator {
   private call(name: string, args: Ast[]): Value {
     switch (name) {
       case "TODAY":
-      case "NOW": return this.ctx.today ?? (Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()) - Date.UTC(1899, 11, 30)) / 86400000;
+      case "NOW": {
+        if (this.ctx.today !== undefined) return this.ctx.today;
+        const d = new Date();
+        const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(today)!;
+        return (Date.UTC(+match[1]!, +match[2]! - 1, +match[3]!) - Date.UTC(1899, 11, 30)) / 86400000;
+      }
       case "IF":
         return this.if(args);
       case "IFERROR":
@@ -309,9 +315,18 @@ function binary(op: BinaryOp, l: CellValue, r: CellValue): CellValue {
     case "<=": return compare(l, r) <= 0;
     case ">=": return compare(l, r) >= 0;
   }
-  const a = toNumber(l);
+  const toOperand = (v: CellValue): number | ExcelError => {
+    const n = toNumber(v);
+    if (!isError(n)) return n;
+    if ((op === "+" || op === "-") && typeof v === "string") {
+      const d = parseDate(v);
+      if (d !== null) return d;
+    }
+    return n;
+  };
+  const a = toOperand(l);
   if (isError(a)) return a;
-  const b = toNumber(r);
+  const b = toOperand(r);
   if (isError(b)) return b;
   let result: number;
   switch (op) {
