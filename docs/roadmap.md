@@ -1,21 +1,51 @@
-# Roadmap — every phase and every card in one place
+# Roadmap
 
-One page that explains each phase, what "done" means for it, where it stands, and every task card in it.
-Existing cards live in full in `docs/tasks/Tn.md` and are listed here with their status. Cards that don't have
-a file yet are written out in full below; when work on one starts, copy it to `docs/tasks/` unchanged.
+## Start here (17 Nov 2026) — for the human review
 
-Sources: phases from `docs/plan.md` (Plan → phases), features from `docs/SPEC.md` (Product spec §6–§16),
-status from `docs/build-log.md`. Last updated 16 Nov 2026 (night): 86 of 86 lessons written; tables, other-skills and intro-to-shortcuts-1 on integrate/launch-content, 10 articles live.
+**In one sentence:** the product is built. All 86 lessons, the player, grading, progress, points, leaderboards,
+payments (test mode), AI explanations (code only, switched off), 10 `/learn` articles, help/privacy/terms, SEO,
+and the security pass are on `main`. What stands between us and a public launch is **switching things from test
+to live, filling in your details, and checking it by hand** — not more features.
 
-**Status keys:** ✅ live · 🟢 merged, not live · 🟡 in progress / waiting on the owner · ⏸ parked · ⬜ not started.
-**Card kinds:** `T` = code card (engine/grader tests first, Codex or agent builds, reviewer checks).
-`C` = content card (gold lesson by Claude, other lessons one Codex run each, lint + wrong-formula audit, one
-module review; process in `.claude/skills/codex-card/SKILL.md`). `O` = owner task (needs your accounts or eyes).
+### Launch checklist (in this order)
+| # | What | Who | Why it matters |
+|---|---|---|---|
+| 1 | Fill the legal placeholders `[LEGAL NAME]`, `[ADDRESS]`, `[CONTACT EMAIL]`, `[CITY/STATE]` on `/privacy`, `/terms`, `/help` | You send values, Claude edits | Razorpay live mode and the law both need real details. They show as brackets on the live site today. |
+| 2 | Check the payment bug: one test purchase, then read Razorpay → Webhooks → deliveries and the Vercel logs (T34 now logs ignored events) | You + Claude | The "Manage / cancel" button didn't appear after the 16 Nov test purchase. Cause not found yet. Must be fixed before real money. |
+| 3 | **O3** Pre-launch checklist: turn email confirmation back on (token_hash template), create test accounts, set production env vars in Vercel | You (Claude writes the steps) | Sign-up is wide open today; confirmation was switched off for testing. |
+| 4 | **O2** Payments to live mode: finish Razorpay activation, add live keys and webhook secret in Vercel, make one real ₹499 purchase and refund it | You | Until then no one can pay. Needs #2 fixed first. |
+| 5 | **T45** Landing page says "Start free"; email the waitlist | Claude builds, you approve copy and send | This is the actual launch switch. |
+| 6 | **O4** Play-through: first 2–3 lessons of each module in Chrome, Safari and one phone; try the shortcut lessons with real keys on your Mac | You + Claude | Shortcut keys and iOS touch are untested on real devices. |
+| 7 | Lighthouse SEO ≥ 90 on landing and one lesson; refund test in Razorpay | Claude (Lighthouse), You (refund) | Last checks from T46/T47. |
+| 8 | **O5** Launch posts (LinkedIn, X, Product Hunt) and 10 beta users | You (Claude drafts) | Gets the first users. |
 
-Rules for every card (from `CLAUDE.md`): touch only the card's files; lesson schema, API contracts and the
-PaymentProvider interface are frozen (propose changes, don't make them); secrets only via `process.env` on the
-server; prices only from `apps/web/lib/plans.ts`; never copy text, data or branding from `docs/teardown.md`;
-done = typecheck, test and validate-content pass, with the output pasted.
+### Decided, not for launch
+- **Projects (C11, T42), certificates (T40), daily challenge (T38), review mode (T37), profile (T39), group admin (T41):**
+  after launch. SPEC §16's cut order already allows this.
+- **Stripe / USD:** deferred; USD shows "Coming soon". No lifetime plan.
+- **AI explanations:** code is merged but stays off until you set the Gemini key (O1).
+- **Tables and Other Skills lessons** are formula + multiple-choice practice because the grid has no pivot, filter,
+  sheet-tab or formatting UI. A real UI is a later card if wanted.
+- **Analytics (T48):** only Vercel's cookieless page-view analytics for now; PostHog and a cookie banner come later.
+
+### Known open items (not blockers unless noted)
+- Payments: Manage/cancel button missing after a test purchase (launch blocker, see #2).
+- Engine, to confirm in real Excel: `=SUMIF(A1:A3,Hike,B1:B3)` unquoted; TEXTBEFORE on empty text; COUNTIF with an empty-cell criterion.
+- Rate limits never delete old rows (`rate_limits` grows slowly); add a daily cleanup later.
+- Free users can still open a third lesson (progress saving is blocked); T36 covers opening.
+- Not run on a live database before you applied them: migrations 0005 and 0006 (applied by you 17 Nov, no errors).
+
+### Database migrations (all applied)
+0000 waitlist · 0001 init · 0002 points once per day · 0003 explain calls · 0004 lesson opens ·
+0005 security (rate limits, leaderboard views) · 0006 one AI rating per user.
+
+### How to read the rest of this file
+Everything below is the reference: every phase, its goal, a table of cards with status, then the full text of
+cards that have no file in `docs/tasks/` yet. Status keys: ✅ done and on `main` · 🟡 waiting on you ·
+⏸ postponed on purpose · ⬜ not started. Card kinds: `T` code, `C` content, `O` owner task.
+Rules for every card are in `CLAUDE.md` (touch only the card's files; frozen schema/contracts; secrets only on
+the server; prices only from `apps/web/lib/plans.ts`; never copy from `docs/teardown.md`; done = typecheck, test
+and validate-content pass).
 
 ---
 
@@ -40,7 +70,7 @@ done = typecheck, test and validate-content pass, with the output pasted.
 
 ---
 
-## Phase 2 — The learning loop 🟡
+## Phase 2 — The learning loop ✅
 
 **Goal:** the full lesson experience: every step type graded, progress saved, dashboard with status tags, and
 the first half of the curriculum (Intro through Text Manipulation, plus Index Match).
@@ -73,7 +103,7 @@ the first half of the curriculum (Intro through Text Manipulation, plus Index Ma
 
 ---
 
-## Phase 3 — Engagement and money 🟡
+## Phase 3 — Engagement and money ✅ (payments bug open)
 
 **Goal:** reasons to come back (points, streaks, leaderboards, AI help, video) and a way to pay; every lesson in
 the repo.
@@ -95,15 +125,15 @@ per-user AI ratings deferred.
 | T53 | Dates display as dates; fixed lesson today | ✅ merged 16 Nov |
 | T54 | Shortcut steps show a real grid + `grid`/`postcondition.format` schema (owner-approved) | ✅ merged 16 Nov (browser check pending) |
 | **O1** | Turn on AI explanations | 🟡 owner — below |
-| **T34** | Payments: subscription row + Manage / cancel button | 🟢 tests + ignored-event logging on integrate/launch-content; root cause needs the owner's Razorpay webhook deliveries |
+| **T34** | Payments: subscription row + Manage / cancel button | 🟡 tests and logging of ignored events are on `main`; root cause still needs the Razorpay webhook deliveries |
 | **O2** | Payments to live mode | ⬜ owner — below (also listed in Phase 5) |
-| **T35** | One AI rating per user | 🟢 on integrate/launch-content; owner runs migration 0006 |
+| **T35** | One AI rating per user | ✅ on `main`; migration 0006 applied |
 | ~~T36~~ | moved up: done |
 | C5 Statistical (7) · C9 Array Formulas (2) · C10 Combined (2) | | ✅ live 16 Nov |
-| C3 Intro to Shortcuts 2–6 · C4 Cell Selection 1–7 | plan: docs/content/shortcuts-plan.md | ✅ merged 16 Nov (browser key test pending; intro-to-shortcuts-1 Alt key tips 🟢 on integrate/launch-content, Windows-only) |
+| C3 Intro to Shortcuts 2–6 · C4 Cell Selection 1–7 | plan: docs/content/shortcuts-plan.md | ✅ merged 16 Nov (browser key test pending; intro-to-shortcuts-1 Alt key tips ✅ on `main` (Windows-only)) |
 | C6 Dates (5) | | ✅ merged 16 Nov |
-| C7 Tables (4) · C8 Other Skills (2) | owner: formula + mcq steps, no new UI | 🟢 on integrate/launch-content |
-| **C11** | 4 project datasets + steps | ⏸ after launch with T42 (owner) |
+| C7 Tables (4) · C8 Other Skills (2) | formula + multiple-choice steps, no new UI (owner decision 16 Nov) | ✅ on `main` |
+| **C11** | 4 project datasets + steps | ⏸ after launch, together with T42 |
 
 ---
 
@@ -129,7 +159,7 @@ grading, the paywall or payments.
 
 ---
 
-## Phase 5 — Harden and launch ⬜
+## Phase 5 — Harden and launch 🟡 (in progress)
 
 **Goal:** nothing broken, nothing embarrassing, nothing insecure; then open the doors.
 **Done when:** public launch (landing says "Start free", payments live, posts out).
@@ -138,8 +168,8 @@ grading, the paywall or payments.
 |---|---|---|
 | **T44** | Error states, toasts, connection banner, one-column layout | ⬜ |
 | **T45** | Landing "Start free" + email the waitlist | ⬜ |
-| **T46** | Security pass: RLS on every table, rate limits, refunds | 🟢 on integrate/launch-content; owner runs 0005 + refund test |
-| **T47** | SEO basics + help / privacy / terms pages | 🟢 on integrate/launch-content; owner fills legal placeholders; Lighthouse pending |
+| **T46** | Security pass: RLS on every table, rate limits | ✅ on `main`, migration 0005 applied, audit in `docs/security-audit.md`; 🟡 Razorpay refund test is yours |
+| **T47** | SEO basics + help / privacy / terms pages | ✅ on `main`; 🟡 legal placeholders and the Lighthouse score still to do |
 | **T48** | Analytics (PostHog) + cookie banner | ⬜ |
 | **O2** | Payments to live mode | ⬜ owner |
 | **O3** | Pre-launch checklist (auth email, test accounts, dev project, Excel checks) | ⬜ owner + Claude |
@@ -190,9 +220,9 @@ webhook (`/api/webhooks/razorpay`, the five subscription events, a new secret); 
 and webhook secret in Vercel Production; redeploy; one real ₹499 purchase and refund to prove it.
 Done when: a live purchase unlocks premium and the refund shows in Razorpay. Requires T34 first.
 
-## T35: One AI rating per user (deferred)
+## T35: One AI rating per user (done)
 Goal: 👍/👎 counts once per signed-in user per explanation, atomically.
-Files: supabase/migrations/0004_explanation_ratings.sql, apps/web/app/api/explain/[id]/rate/route.ts, tests.
+Files: supabase/migrations/0006_explanation_ratings.sql (0004 was taken), apps/web/app/api/explain/[id]/rate/route.ts, tests.
 Schema: `explanation_ratings(explanation_id, user_id, helpful, primary key (explanation_id, user_id))`, RLS on, no
 policies; an RPC that inserts or updates the vote and adjusts `ai_explanations.score` by the difference in one transaction.
 Done when: repeat votes don't change the score; switching 👍→👎 moves it by 2; concurrent votes don't get lost.
@@ -231,9 +261,9 @@ Done when: lint none; tried by hand on Mac in Chrome and Safari; module review p
 Statistical: AVERAGE · MIN, MAX, LARGE, SMALL · FLOOR and CEILING · practice · ODD and EVEN · MEDIAN · MODE.
 Dates: DATE · TODAY · DATEDIF · DAYS · skill summary (TODAY needs a fixed "today" in grading — check how the
 engine handles volatile functions before writing; DATEDIF units).
-Tables: pivot tables 1 · pivot tables 2 · table filters · skill summary — needs a design decision first: the
-grid has no pivot or filter UI, so these may be `picture`/`project` steps or need a new engine/grid card.
-Other skills: worksheets · conditional formatting — same question (no multi-sheet or formatting UI yet).
+Tables: pivot tables 1 · pivot tables 2 · table filters · skill summary — done as formula + multiple-choice steps
+(the grid has no pivot or filter UI; owner decision 16 Nov).
+Other skills: worksheets · conditional formatting — same approach (no multi-sheet or formatting UI yet).
 Each: engine probe first; any missing behaviour becomes a T card before content; then the C1 process.
 
 ## C9: Array Formulas (2) · C10: Combined (2)
