@@ -1,0 +1,305 @@
+{
+  "id": "text-search-6",
+  "module": "text-search",
+  "title": "SEARCH: find text in any case",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**SEARCH** finds where a piece of text starts inside another cell: `=SEARCH(find_text, within_text)`. Unlike `FIND`, it ignores uppercase and lowercase letters and accepts wildcards like `*` for any run of characters and `?` for one character."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A delivery service needs to locate street types in customer addresses. Select the first address: `A2`.",
+      "grid": [
+        [
+          "Address",
+          "Area",
+          "Result"
+        ],
+        [
+          "12 Park Road",
+          "Central",
+          null
+        ],
+        [
+          "45 MG ROAD",
+          "North",
+          null
+        ],
+        [
+          "8 Park Lane",
+          "South",
+          null
+        ],
+        [
+          "24 Ring ROAD",
+          "West",
+          null
+        ]
+      ],
+      "target": "A2"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Where does the word road start in `A2`? In `C2`, type `=SEARCH(\"road\",A2)` and press Enter.",
+      "grid": [
+        [
+          "Address",
+          "Area",
+          "Result"
+        ],
+        [
+          "12 Park Road",
+          "Central",
+          null
+        ],
+        [
+          "45 MG ROAD",
+          "North",
+          null
+        ],
+        [
+          "8 Park Lane",
+          "South",
+          null
+        ],
+        [
+          "24 Ring ROAD",
+          "West",
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 9,
+      "mustUse": [
+        "SEARCH"
+      ],
+      "solution": "=SEARCH(\"road\",A2)",
+      "explain": "SEARCH finds road starting at character 9 of 12 Park Road, ignoring that Road begins with a capital R.",
+      "highlightCells": [
+        "A2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "Now for an all-caps address. In `C3`, find where `\"road\"` starts in address `A3`.",
+      "grid": [
+        [
+          "Address",
+          "Area",
+          "Result"
+        ],
+        [
+          "12 Park Road",
+          "Central",
+          9
+        ],
+        [
+          "45 MG ROAD",
+          "North",
+          null
+        ],
+        [
+          "8 Park Lane",
+          "South",
+          null
+        ],
+        [
+          "24 Ring ROAD",
+          "West",
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": 7,
+      "mustUse": [
+        "SEARCH"
+      ],
+      "solution": "=SEARCH(\"road\",A3)",
+      "explain": "SEARCH returns 7 because it ignores case, whereas FIND(\"road\",A3) would fail with an error on uppercase ROAD.",
+      "highlightCells": [
+        "A3"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "Wildcards work with SEARCH: `*` matches any run of characters. In `C4`, find where `\"p*k\"` starts in address `A4`.",
+      "grid": [
+        [
+          "Address",
+          "Area",
+          "Result"
+        ],
+        [
+          "12 Park Road",
+          "Central",
+          9
+        ],
+        [
+          "45 MG ROAD",
+          "North",
+          7
+        ],
+        [
+          "8 Park Lane",
+          "South",
+          null
+        ],
+        [
+          "24 Ring ROAD",
+          "West",
+          null
+        ]
+      ],
+      "targetCell": "C4",
+      "expectedValue": 3,
+      "mustUse": [
+        "SEARCH"
+      ],
+      "solution": "=SEARCH(\"p*k\",A4)",
+      "explain": "The * wildcard matches the letters ar between p and k, finding Park at character 3 of 8 Park Lane.",
+      "highlightCells": [
+        "A4"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "*"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "Combine LEFT and SEARCH to extract text before a word. In `C5`, get the street name from `A5` before road with `=LEFT(A5,SEARCH(\"road\",A5)-2)`.",
+      "grid": [
+        [
+          "Address",
+          "Area",
+          "Result"
+        ],
+        [
+          "12 Park Road",
+          "Central",
+          9
+        ],
+        [
+          "45 MG ROAD",
+          "North",
+          7
+        ],
+        [
+          "8 Park Lane",
+          "South",
+          3
+        ],
+        [
+          "24 Ring ROAD",
+          "West",
+          null
+        ]
+      ],
+      "targetCell": "C5",
+      "expectedValue": "24 Ring",
+      "mustUse": [
+        "LEFT",
+        "SEARCH"
+      ],
+      "solution": "=LEFT(A5,SEARCH(\"road\",A5)-2)",
+      "explain": "SEARCH finds uppercase ROAD at character 9, so LEFT takes the first 7 characters to extract 24 Ring.",
+      "highlightCells": [
+        "A5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\"",
+        "-"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "`=FIND(\"road\",A3)` on `45 MG ROAD` returns `#VALUE!`. What fixes it?",
+      "options": [
+        "`=SEARCH(\"road\",A3)`, because SEARCH ignores case",
+        "`=FIND(\"road\",A3,1)`",
+        "Put ROAD in brackets"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A hotel reception desk tracks guest payment methods. At what character position does card appear in the notes in `B2`? Put the result in `C2`.",
+      "grid": [
+        [
+          "Guest",
+          "Notes",
+          "Position"
+        ],
+        [
+          "Aarav Sharma",
+          "Paid by CARD",
+          null
+        ],
+        [
+          "Meera Patel",
+          "Needs cot in room",
+          null
+        ],
+        [
+          "David Chen",
+          "VIP GUEST arriving late",
+          null
+        ],
+        [
+          "Fatima Zahra",
+          "card payment confirmed",
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 9,
+      "mustUse": [
+        "SEARCH"
+      ],
+      "solution": "=SEARCH(\"card\",B2)",
+      "explain": "SEARCH finds CARD at character 9 of Paid by CARD, ignoring that it is written in all-caps.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        "\""
+      ]
+    }
+  ]
+}
