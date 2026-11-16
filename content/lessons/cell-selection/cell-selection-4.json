@@ -52,10 +52,10 @@
       "id": "s4",
       "type": "shortcut",
       "mode": "chord",
-      "prompt": "Select the entire Hours column from `D3`: press `Ctrl+Space`. (Mac: macOS reserves `Ctrl+Space` for switching input sources, so Mac Excel has no default shortcut here.)",
+      "prompt": "Select the entire Hours column from `D3`: press `Ctrl+Space`. (Mac: `⌃Space` — if macOS switches keyboard language instead, turn off that shortcut in System Settings → Keyboard.)",
       "keys": {
         "win": "Ctrl+Space",
-        "mac": null
+        "mac": "Ctrl+Space"
       },
       "activeCell": "D3",
       "grid": [
@@ -74,12 +74,12 @@
       "id": "s5",
       "type": "shortcut",
       "mode": "chord",
-      "prompt": "A new shift is needed before Wednesday. Insert a blank row above row 4: press `Ctrl+Shift+=` (Mac: `⌘⇧=`).",
+      "prompt": "With row 4 selected (`Shift+Space`), insert a row above it: press `Ctrl+Shift+=` (Mac: `⌘⇧=`).",
       "keys": {
         "win": "Ctrl+Shift+=",
         "mac": "Shift+Cmd+="
       },
-      "activeCell": "A4",
+      "activeCell": "A4:D4",
       "grid": [
         ["Day", "Shift", "Staff", "Hours"],
         ["Mon", "Morning", "Asha", 6],
@@ -105,12 +105,12 @@
       "id": "s6",
       "type": "shortcut",
       "mode": "chord",
-      "prompt": "The extra shift was cancelled. Delete the empty row at row 4: press `Ctrl+-` (Mac: `⌘-`).",
+      "prompt": "With row 4 selected (`Shift+Space`), delete it: press `Ctrl+-` (Mac: `⌘-`).",
       "keys": {
         "win": "Ctrl+-",
         "mac": "Cmd+-"
       },
-      "activeCell": "A4",
+      "activeCell": "A4:D4",
       "grid": [
         ["Day", "Shift", "Staff", "Hours"],
         ["Mon", "Morning", "Asha", 6],

@@ -184,12 +184,12 @@
       "id": "s9",
       "type": "shortcut",
       "mode": "chord",
-      "prompt": "Rolls also cost 35. Paste the copied price into `C6`.",
+      "prompt": "Copy Muffin's price in `C3` so you can paste it later.",
       "keys": {
-        "win": "Ctrl+V",
-        "mac": "Cmd+V"
+        "win": "Ctrl+C",
+        "mac": "Cmd+C"
       },
-      "activeCell": "C6",
+      "activeCell": "C3",
       "grid": [
         ["Item", "Category", "Price", "Stock"],
         ["Croissant", "Pastry", 35, 12],
@@ -200,16 +200,7 @@
         [null, "Pastry", 30, "Danish"]
       ],
       "postcondition": {
-        "selection": "C6",
-        "grid": [
-          ["Item", "Category", "Price", "Stock"],
-          ["Croissant", "Pastry", 35, 12],
-          ["Muffin", "Pastry", 35, 15],
-          ["Sourdough", "Bread", 45, 8],
-          ["Baguette", "Bread", 40, 10],
-          ["Roll", "Bread", 35, 20],
-          [null, "Pastry", 30, "Danish"]
-        ]
+        "selection": "C3"
       }
     }
   ]

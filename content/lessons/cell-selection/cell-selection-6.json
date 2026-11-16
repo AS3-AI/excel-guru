@@ -315,11 +315,11 @@
     {
       "id": "s7",
       "type": "mcq",
-      "prompt": "How does `F8` (Extend Selection mode) differ from `Ctrl+Shift+8`?",
+      "prompt": "In the café inventory with a blank row, which shortcut selects only the block around the active cell?",
       "options": [
-        "`F8` lets arrow keys stretch the selection step by step, while `Ctrl+Shift+8` selects the entire region at once",
-        "`F8` selects the whole worksheet, while `Ctrl+Shift+8` selects only one column",
-        "`F8` only works on numbers, while `Ctrl+Shift+8` only works on text"
+        "`Ctrl+Shift+8` (the current region)",
+        "`Ctrl+Shift+End` (to the last used cell)",
+        "`Shift+Space` (the whole row)"
       ],
       "answer": 0
     },
