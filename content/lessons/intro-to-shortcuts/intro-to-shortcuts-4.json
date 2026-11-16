@@ -1,0 +1,204 @@
+{
+  "id": "intro-to-shortcuts-4",
+  "module": "intro-to-shortcuts",
+  "title": "Fill right and down",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**Fill shortcuts** copy formulas or values into neighbouring cells instantly: `Ctrl+D` (Mac: `⌘D`) fills down, and `Ctrl+R` (Mac: `⌘R`) fills right. Select the cell you want to copy along with the empty cells next to it, then press the shortcut."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A bakery calculates morning sales. Click the first total formula you'll copy down: `D2`.",
+      "grid": [
+        ["Item", "Price", "Qty", "Total"],
+        ["Muffin", 3, 4, 12],
+        ["Scone", 4, 5, null],
+        ["Cookie", 2, 8, null],
+        ["Bagel", 3, 6, null]
+      ],
+      "target": "D2"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Fill the formula down through the selected cells: press `Ctrl+D` (Mac: `⌘D`).",
+      "keys": {
+        "win": "Ctrl+D",
+        "mac": "Cmd+D"
+      },
+      "activeCell": "D2:D5",
+      "grid": [
+        ["Item", "Price", "Qty", "Total"],
+        ["Muffin", 3, 4, 12],
+        ["Scone", 4, 5, null],
+        ["Cookie", 2, 8, null],
+        ["Bagel", 3, 6, null]
+      ],
+      "postcondition": {
+        "selection": "D2:D5",
+        "grid": [
+          ["Item", "Price", "Qty", "Total"],
+          ["Muffin", 3, 4, 12],
+          ["Scone", 4, 5, 20],
+          ["Cookie", 2, 8, 16],
+          ["Bagel", 3, 6, 18]
+        ]
+      }
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Fill the monthly sales target in `B2` across into `B2:E2`: press `Ctrl+R` (Mac: `⌘R`).",
+      "keys": {
+        "win": "Ctrl+R",
+        "mac": "Cmd+R"
+      },
+      "activeCell": "B2:E2",
+      "grid": [
+        ["Metric", "Jan", "Feb", "Mar", "Apr"],
+        ["Target", 500, null, null, null],
+        ["Actual", 520, 480, 560, 510]
+      ],
+      "postcondition": {
+        "selection": "B2:E2",
+        "grid": [
+          ["Metric", "Jan", "Feb", "Mar", "Apr"],
+          ["Target", 500, 500, 500, 500],
+          ["Actual", 520, 480, 560, 510]
+        ]
+      }
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Fill shortcuts also copy text. Fill the zone label in `C2` down into `C2:C5`: press `Ctrl+D` (Mac: `⌘D`).",
+      "keys": {
+        "win": "Ctrl+D",
+        "mac": "Cmd+D"
+      },
+      "activeCell": "C2:C5",
+      "grid": [
+        ["Order", "Customer", "Zone"],
+        ["#101", "Amara", "North"],
+        ["#102", "Bikram", null],
+        ["#103", "Chetan", null],
+        ["#104", "Deepa", null]
+      ],
+      "postcondition": {
+        "selection": "C2:C5",
+        "grid": [
+          ["Order", "Customer", "Zone"],
+          ["#101", "Amara", "North"],
+          ["#102", "Bikram", "North"],
+          ["#103", "Chetan", "North"],
+          ["#104", "Deepa", "North"]
+        ]
+      }
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Calculate the 10% tax across row 3 for the remaining months: press `Ctrl+R` (Mac: `⌘R`).",
+      "keys": {
+        "win": "Ctrl+R",
+        "mac": "Cmd+R"
+      },
+      "activeCell": "B3:E3",
+      "grid": [
+        ["Category", "Apr", "May", "Jun", "Jul"],
+        ["Sales", 400, 500, 600, 700],
+        ["Tax", 40, null, null, null]
+      ],
+      "postcondition": {
+        "selection": "B3:E3",
+        "grid": [
+          ["Category", "Apr", "May", "Jun", "Jul"],
+          ["Sales", 400, 500, 600, 700],
+          ["Tax", 40, 50, 60, 70]
+        ]
+      }
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Copy the net fee formula in `D2` down through `D2:D6`: press `Ctrl+D` (Mac: `⌘D`).",
+      "keys": {
+        "win": "Ctrl+D",
+        "mac": "Cmd+D"
+      },
+      "activeCell": "D2:D6",
+      "grid": [
+        ["Member", "Fee", "Discount", "Net"],
+        ["Elena", 50, 10, 40],
+        ["Farhan", 60, 15, null],
+        ["Gita", 50, 5, null],
+        ["Hari", 70, 20, null],
+        ["Ira", 60, 10, null]
+      ],
+      "postcondition": {
+        "selection": "D2:D6",
+        "grid": [
+          ["Member", "Fee", "Discount", "Net"],
+          ["Elena", 50, 10, 40],
+          ["Farhan", 60, 15, 45],
+          ["Gita", 50, 5, 45],
+          ["Hari", 70, 20, 50],
+          ["Ira", 60, 10, 50]
+        ]
+      }
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "You selected `B2:E2` with a formula in `B2`. You want to copy it across row 2 into the cells to the right. Which shortcut should you use?",
+      "options": [
+        "`Ctrl+R` (Mac: `⌘R`)",
+        "`Ctrl+D` (Mac: `⌘D`)",
+        "`Ctrl+F` (Mac: `⌘F`)"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "The profit formula is ready in `D2`. Copy it down through the selected cells `D2:D6`.",
+      "keys": {
+        "win": "Ctrl+D",
+        "mac": "Cmd+D"
+      },
+      "activeCell": "D2:D6",
+      "grid": [
+        ["Book", "Revenue", "Cost", "Profit"],
+        ["Novels", 80, 50, 30],
+        ["Comics", 60, 35, null],
+        ["Poetry", 40, 25, null],
+        ["Art", 90, 60, null],
+        ["History", 75, 45, null]
+      ],
+      "postcondition": {
+        "selection": "D2:D6",
+        "grid": [
+          ["Book", "Revenue", "Cost", "Profit"],
+          ["Novels", 80, 50, 30],
+          ["Comics", 60, 35, 25],
+          ["Poetry", 40, 25, 15],
+          ["Art", 90, 60, 30],
+          ["History", 75, 45, 30]
+        ]
+      }
+    }
+  ]
+}

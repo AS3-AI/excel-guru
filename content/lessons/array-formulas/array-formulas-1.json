@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**UNIQUE** lists each different value once: `=UNIQUE(range)`. The values spill down into the cells below automatically, and uppercase or lowercase letters count as the same."
+      "text": "**UNIQUE** lists each different value once: `=UNIQUE(range)`. The values spill down into the cells below automatically, and uppercase or lowercase letters count as the same. UNIQUE and SORT need Excel 2021 or Microsoft 365; older Excel shows #NAME?."
     },
     {
       "id": "s2",

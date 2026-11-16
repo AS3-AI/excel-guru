@@ -6,6 +6,7 @@ import { lessonMetadata } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decideAndRecordLessonOpen, decideLessonAccess, loadLessonAccess } from "@/lib/access";
+import { DASHBOARD_HREF, moduleHref } from "@/lib/nav-links";
 import { Player } from "./Player";
 import type { LessonNavItem } from "./LessonList";
 
@@ -53,7 +54,7 @@ export default async function LessonPage({ params }: Props) {
 
   return (
     <div className="wrap pl-page">
-      <nav className="pl-breadcrumb"><Link href="/">Dashboard</Link><span>›</span><span>{lesson.module}</span><span>›</span><strong>{lesson.title}</strong></nav>
+      <nav className="pl-breadcrumb"><Link href={DASHBOARD_HREF}>Dashboard</Link><span>›</span><Link href={moduleHref(lesson.module)}>{lesson.module}</Link><span>›</span><strong>{lesson.title}</strong></nav>
       <Player lesson={lesson} next={stepSequence(lesson.steps.length)} nextLessonId={nextLessonId(id)} lessons={lessons} signedOutIntro={!user && id === "intro"} signedIn={!!user} />
     </div>
   );

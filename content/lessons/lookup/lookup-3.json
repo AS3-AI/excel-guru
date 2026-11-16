@@ -287,6 +287,11 @@
     },
     {
       "id": "s6",
+      "type": "info",
+      "text": "A $ locks a reference: when you copy a formula down, A2 becomes A3, but $A$2 stays $A$2. Lock the table so every copied lookup searches the same range."
+    },
+    {
+      "id": "s7",
       "type": "formula",
       "prompt": "You may copy the formula down. In `G2`, type `=VLOOKUP(E2,$A$2:$C$6,3,FALSE)*F2`. The dollar signs keep the table fixed when the formula is copied down.",
       "grid": [
@@ -368,7 +373,7 @@
       ]
     },
     {
-      "id": "s7",
+      "id": "s8",
       "type": "formula",
       "prompt": "In `G3`, find row 3's total using the same locked table.",
       "grid": [
@@ -450,7 +455,7 @@
       ]
     },
     {
-      "id": "s8",
+      "id": "s9",
       "type": "mcq",
       "prompt": "Why does `=VLOOKUP(P-204,A2:C6,2,FALSE)` fail when `P-204` is a text code?",
       "options": [
@@ -461,7 +466,7 @@
       "answer": 0
     },
     {
-      "id": "s9",
+      "id": "s10",
       "type": "formula",
       "prompt": "A school shop lists items by code. How much do the 3 items with the code in `E2` cost? Put the total in `G2`.",
       "grid": [

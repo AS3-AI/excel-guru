@@ -1,0 +1,186 @@
+{
+  "id": "cell-selection-2",
+  "module": "cell-selection",
+  "title": "Selection shortcuts: expand your range",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**Selection shortcuts** highlight ranges without dragging: `Shift+↓` extends one cell · `Ctrl+Shift+↓` (Mac: `⌘⇧↓`) extends to data edge · `Shift+Home` (Mac: `fn+⇧←`) extends to row start. Hold Shift whenever you want to expand your selection."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A bakery tracks weekly bread orders. Click the first Monday order: `B2`.",
+      "grid": [
+        ["Item", "Mon", "Tue", "Wed"],
+        ["Sourdough", 18, 20, 22],
+        ["Baguette", 25, 28, 30],
+        ["Brioche", 12, 15, 14],
+        ["Ciabatta", 16, 18, 20],
+        [null, null, null, null],
+        ["Rye", 10, 12, 11],
+        ["Focaccia", 14, 16, 15]
+      ],
+      "target": "B2"
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Extend your selection down by one cell to include Baguette: press `Shift+↓` (Mac: `⇧↓`).",
+      "keys": {
+        "win": "Shift+ArrowDown",
+        "mac": "Shift+ArrowDown"
+      },
+      "activeCell": "B2",
+      "grid": [
+        ["Item", "Mon", "Tue", "Wed"],
+        ["Sourdough", 18, 20, 22],
+        ["Baguette", 25, 28, 30],
+        ["Brioche", 12, 15, 14],
+        ["Ciabatta", 16, 18, 20],
+        [null, null, null, null],
+        ["Rye", 10, 12, 11],
+        ["Focaccia", 14, 16, 15]
+      ],
+      "postcondition": {
+        "selection": "B2:B3"
+      }
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Extend the selection one cell to the right to include Tuesday: press `Shift+→` (Mac: `⇧→`).",
+      "keys": {
+        "win": "Shift+ArrowRight",
+        "mac": "Shift+ArrowRight"
+      },
+      "activeCell": "B2",
+      "grid": [
+        ["Item", "Mon", "Tue", "Wed"],
+        ["Sourdough", 18, 20, 22],
+        ["Baguette", 25, 28, 30],
+        ["Brioche", 12, 15, 14],
+        ["Ciabatta", 16, 18, 20],
+        [null, null, null, null],
+        ["Rye", 10, 12, 11],
+        ["Focaccia", 14, 16, 15]
+      ],
+      "postcondition": {
+        "selection": "B2:C2"
+      }
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "Select all orders down to the empty row: from `B2`, press `Ctrl+Shift+↓` (Mac: `⌘⇧↓`).",
+      "keys": {
+        "win": "Ctrl+Shift+ArrowDown",
+        "mac": "Shift+Cmd+ArrowDown"
+      },
+      "activeCell": "B2",
+      "grid": [
+        ["Item", "Mon", "Tue", "Wed"],
+        ["Sourdough", 18, 20, 22],
+        ["Baguette", 25, 28, 30],
+        ["Brioche", 12, 15, 14],
+        ["Ciabatta", 16, 18, 20],
+        [null, null, null, null],
+        ["Rye", 10, 12, 11],
+        ["Focaccia", 14, 16, 15]
+      ],
+      "postcondition": {
+        "selection": "B2:B5"
+      }
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "From `B2`, extend your selection across all weekday columns: press `Ctrl+Shift+→` (Mac: `⌘⇧→`).",
+      "keys": {
+        "win": "Ctrl+Shift+ArrowRight",
+        "mac": "Shift+Cmd+ArrowRight"
+      },
+      "activeCell": "B2",
+      "grid": [
+        ["Item", "Mon", "Tue", "Wed"],
+        ["Sourdough", 18, 20, 22],
+        ["Baguette", 25, 28, 30],
+        ["Brioche", 12, 15, 14],
+        ["Ciabatta", 16, 18, 20],
+        [null, null, null, null],
+        ["Rye", 10, 12, 11],
+        ["Focaccia", 14, 16, 15]
+      ],
+      "postcondition": {
+        "selection": "B2:D2"
+      }
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "From Wednesday's order in `D4`, extend your selection to the row start: press `Shift+Home` (Mac: `fn+⇧←`).",
+      "keys": {
+        "win": "Shift+Home",
+        "mac": "Shift+Home"
+      },
+      "activeCell": "D4",
+      "grid": [
+        ["Item", "Mon", "Tue", "Wed"],
+        ["Sourdough", 18, 20, 22],
+        ["Baguette", 25, 28, 30],
+        ["Brioche", 12, 15, 14],
+        ["Ciabatta", 16, 18, 20],
+        [null, null, null, null],
+        ["Rye", 10, 12, 11],
+        ["Focaccia", 14, 16, 15]
+      ],
+      "postcondition": {
+        "selection": "A4:D4"
+      }
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "You are in `B2` and press `Ctrl+↓` instead of `Ctrl+Shift+↓`. What happens?",
+      "options": [
+        "The active cell jumps to `B5` without selecting the cells in between",
+        "The cells from `B2:B5` are all selected",
+        "The selection extends down by only one cell to `B3`"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "prompt": "A café logs today's drink orders with no gaps. Starting in `B2`, select all the order numbers down column B.",
+      "keys": {
+        "win": "Ctrl+Shift+ArrowDown",
+        "mac": "Shift+Cmd+ArrowDown"
+      },
+      "activeCell": "B2",
+      "grid": [
+        ["Drink", "Orders", "Revenue"],
+        ["Espresso", 24, 72],
+        ["Latte", 38, 152],
+        ["Cappuccino", 31, 124],
+        ["Mocha", 19, 95],
+        ["Chai", 45, 135],
+        ["Americano", 28, 84]
+      ],
+      "postcondition": {
+        "selection": "B2:B7"
+      }
+    }
+  ]
+}

@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**AutoSum** adds nearby numbers and writes a `SUM` formula for you. It checks the numbers above first; if there are none, it checks to the left, stopping at a blank cell. Press `Enter` to accept the suggested range."
+      "text": "**AutoSum** adds nearby numbers and writes a `SUM` formula for you (Windows `Alt+=`, Mac `⌘⇧T`). It checks the numbers above first; if there are none, it checks to the left, stopping at a blank cell. Press `Enter` to accept the suggested range."
     },
     {
       "id": "s2",
@@ -59,7 +59,7 @@
       "id": "s3",
       "type": "shortcut",
       "mode": "chord",
-      "prompt": "Select `B7` below the coffee numbers and press the AutoSum shortcut. Check the suggested formula, then press `Enter` to accept it.",
+      "prompt": "Select `B7` below the coffee numbers and press the AutoSum shortcut (Windows `Alt+=`, Mac `⌘⇧T`). Check the suggested formula, then press `Enter` to accept it.",
       "keys": {
         "win": "Alt+=",
         "mac": null

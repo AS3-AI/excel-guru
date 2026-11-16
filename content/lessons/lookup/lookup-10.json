@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**XLOOKUP** can use wildcard match mode `2` to find text patterns. `*` stands for any number of characters and `?` stands for exactly one: `=XLOOKUP(pattern, look in, return, if not found, 2)`."
+      "text": "**XLOOKUP** can use wildcard match mode `2` to find text patterns. `*` stands for any number of characters and `?` stands for exactly one: `=XLOOKUP(pattern, look in, return, if not found, 2)`. XLOOKUP needs Excel 2021 or Microsoft 365; older Excel shows #NAME?."
     },
     {
       "id": "s2",

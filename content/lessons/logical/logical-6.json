@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**SWITCH** compares one value with exact cases, using the pattern `=SWITCH(value,case1,result1,case2,result2,default)`. Add a default result for values with no match; it is clearer than IFS when every test checks the same cell for an exact value."
+      "text": "**SWITCH** compares one value with exact cases, using the pattern `=SWITCH(value,case1,result1,case2,result2,default)`. Add a default result for values with no match; it is clearer than IFS when every test checks the same cell for an exact value. SWITCH needs Excel 2019 or Microsoft 365; older Excel shows #NAME?."
     },
     {
       "id": "s2",

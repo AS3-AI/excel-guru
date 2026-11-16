@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { FormulaStep, Lesson, Os } from "@excel-guru/grader";
 import { gradeAcceptStep, gradeFormulaStep, gradeMcqStep, gradeSelectStep, gradeSequenceStep, gradeShortcutStep, LESSON_TODAY } from "@excel-guru/grader";
@@ -17,6 +18,7 @@ import { Leaderboards } from "@/components/Leaderboards";
 import { ShareBonus } from "@/components/ShareBonus";
 import { VideoModal } from "@/components/VideoModal";
 import { answerPointsVisible, celebrationStats } from "@/lib/leaderboard";
+import { DASHBOARD_HREF } from "@/lib/nav-links";
 import "./player.css";
 
 type Props = { lesson: Lesson; next: number[]; nextLessonId: string | null; lessons: LessonNavItem[]; signedOutIntro?: boolean; signedIn?: boolean };
@@ -284,7 +286,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     }
   };
 
-  if (keyboardUnavailable) return <div className="pl-layout"><LessonList items={lessons} currentId={lesson.id} /><main className="pl"><section className="pl-card"><p>This lesson needs a keyboard — continue on a computer.</p><a className="btn pl-continue" href="/">Go to dashboard</a></section></main></div>;
+  if (keyboardUnavailable) return <div className="pl-layout"><LessonList items={lessons} currentId={lesson.id} /><main className="pl"><section className="pl-card"><p>This lesson needs a keyboard — continue on a computer.</p><Link className="btn pl-continue" href={DASHBOARD_HREF}>Go to dashboard</Link></section></main></div>;
   return <div className="pl-layout">
     <LessonList items={lessons} currentId={lesson.id} />
     <main className="pl">
