@@ -1,4 +1,6 @@
 import { join } from "node:path";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { validateContent } from "./validate-content";
@@ -27,6 +29,80 @@ function expectEveryErrorNamesItsFile(name: string) {
 describe("validateContent: valid content", () => {
   it("accepts a valid lesson set (formula, select in all four shapes, shortcuts, mcq, info)", () => {
     expect(validateContent(fixture("valid"))).toEqual([]);
+  });
+
+  it("accepts the repository's learning articles", () => {
+    expect(validateContent(join(fileURLToPath(new URL("..", import.meta.url)), "content"))).toEqual([]);
+  });
+
+  it("validates article shape, lesson links, related links and evaluated examples", () => {
+    const dir = mkdtempSync(join(tmpdir(), "excel-guru-content-"));
+    try {
+      mkdirSync(join(dir, "lessons"));
+      mkdirSync(join(dir, "learn"));
+      writeFileSync(join(dir, "order.json"), "[]");
+      const base = {
+        slug: "sum", fn: "SUM", title: "SUM guide", description: "A guide", syntax: "=SUM(number1)",
+        args: [{ name: "number1", required: true, text: "Numbers to add." }],
+        sections: [{ heading: "Example", text: "Add these values.", grid: [[1, 2], [null, 0]], formula: "=SUM(A1:B1)", result: 3 }],
+        lessonId: "missing", related: ["absent"],
+      };
+      writeFileSync(join(dir, "learn", "sum.json"), JSON.stringify(base));
+      const errors = validateContent(dir).flatMap((entry) => entry.errors);
+      expect(errors.some((error) => error.includes("lessonId \"missing\" does not exist"))).toBe(true);
+      expect(errors.some((error) => error.includes("related slug \"absent\" does not exist"))).toBe(true);
+      const bad = { ...base, description: "x".repeat(161), sections: [{ ...base.sections[0], result: 4 }] };
+      writeFileSync(join(dir, "learn", "sum.json"), JSON.stringify(bad));
+      const badErrors = validateContent(dir).flatMap((entry) => entry.errors);
+      expect(badErrors.some((error) => error.includes("description must be 160 characters or fewer"))).toBe(true);
+      expect(badErrors.some((error) => error.includes("does not evaluate to result"))).toBe(true);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects invalid article fields and formula grids", () => {
+    const dir = mkdtempSync(join(tmpdir(), "excel-guru-article-") );
+    try {
+      mkdirSync(join(dir, "lessons"));
+      mkdirSync(join(dir, "learn"));
+      writeFileSync(join(dir, "order.json"), "[]");
+      const article = {
+        slug: "sum", fn: "SUM", title: "SUM guide", description: "A guide", syntax: "=SUM(number1)",
+        args: [], sections: [{ heading: "Example", text: "Add values.", grid: [[1, null]], formula: "=SUM(A1:A1)", result: 1 }],
+        lessonId: "unused", related: [],
+      };
+      const write = (value: unknown, filename = "sum.json") => writeFileSync(join(dir, "learn", filename), JSON.stringify(value));
+      const messages = (value: unknown, filename = "sum.json") => {
+        write(value, filename);
+        return validateContent(dir).flatMap((entry) => entry.errors);
+      };
+
+      expect(messages({ ...article, sections: [{ ...article.sections[0], grid: Array.from({ length: 8 }, () => Array(9).fill(1)) }] })).toEqual(
+        expect.arrayContaining([expect.stringMatching(/grid must be no larger than 7 rows by 8 columns/)]),
+      );
+      expect(messages({ ...article, sections: [{ heading: "Example", text: "Add values.", grid: [[1, null]], formula: "=SUM(A1:A1)" }] })).toEqual(
+        expect.arrayContaining([expect.stringMatching(/formula and result must be provided together/)]),
+      );
+      expect(messages({ ...article, sections: [{ heading: "Example", text: "Add values.", grid: [[1, null]], result: 1 }] })).toEqual(
+        expect.arrayContaining([expect.stringMatching(/formula and result must be provided together/)]),
+      );
+      expect(messages({ ...article, slug: "other" })).toEqual(
+        expect.arrayContaining([expect.stringMatching(/slug "other" must match file name "sum"/)]),
+      );
+      const { title: _title, ...missingTitle } = article;
+      expect(messages(missingTitle)).toEqual(expect.arrayContaining([expect.stringMatching(/title must be a non-empty string/)]));
+      expect(messages({ ...article, unexpected: true })).toEqual(
+        expect.arrayContaining([expect.stringMatching(/unknown field "unexpected"/)]),
+      );
+      for (const grid of [[[1]], [[1, null, null]]]) {
+        expect(messages({ ...article, sections: [{ ...article.sections[0], grid }] })).toEqual(
+          expect.arrayContaining([expect.stringMatching(/section 1: a grid with a formula needs exactly one empty cell for the result/)]),
+        );
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
 
