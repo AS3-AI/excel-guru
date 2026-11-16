@@ -1,0 +1,352 @@
+{
+  "id": "text-search-1",
+  "module": "text-search",
+  "title": "LEFT, RIGHT and LEN: pieces of text",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**LEFT** takes characters from the start of some text and `RIGHT` takes them from the end: `=LEFT(text, how many)`. `LEN` counts the characters, and spaces count too."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A courier's order codes start with a city and end with a number. Select the first order code: `A2`.",
+      "grid": [
+        [
+          "Code",
+          "Customer",
+          null,
+          "Part"
+        ],
+        [
+          "DEL-0425",
+          "Riya Sen",
+          null,
+          null
+        ],
+        [
+          "MUM-1183",
+          "Arjun Mehta",
+          null,
+          null
+        ],
+        [
+          "BLR-0907",
+          "Anu Das",
+          null,
+          null
+        ],
+        [
+          "HYD-2210",
+          "Kavya Nair",
+          null,
+          null
+        ],
+        [
+          "PUN-0031",
+          "Omar Ali",
+          null,
+          null
+        ]
+      ],
+      "target": "A2"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Which city is order `A2` from? In `D2`, type `=LEFT(A2,3)` and press Enter.",
+      "grid": [
+        [
+          "Code",
+          "Customer",
+          null,
+          "Part"
+        ],
+        [
+          "DEL-0425",
+          "Riya Sen",
+          null,
+          null
+        ],
+        [
+          "MUM-1183",
+          "Arjun Mehta",
+          null,
+          null
+        ],
+        [
+          "BLR-0907",
+          "Anu Das",
+          null,
+          null
+        ],
+        [
+          "HYD-2210",
+          "Kavya Nair",
+          null,
+          null
+        ],
+        [
+          "PUN-0031",
+          "Omar Ali",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "DEL",
+      "mustUse": [
+        "LEFT"
+      ],
+      "solution": "=LEFT(A2,3)",
+      "explain": "LEFT took the first 3 characters of DEL-0425, the city code DEL.",
+      "highlightCells": [
+        "A2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ","
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "Now the end of the code. In `D3`, take the last 4 characters of `A3`, the order number, with `=RIGHT(A3,4)`.",
+      "grid": [
+        [
+          "Code",
+          "Customer",
+          null,
+          "Part"
+        ],
+        [
+          "DEL-0425",
+          "Riya Sen",
+          null,
+          "DEL"
+        ],
+        [
+          "MUM-1183",
+          "Arjun Mehta",
+          null,
+          null
+        ],
+        [
+          "BLR-0907",
+          "Anu Das",
+          null,
+          null
+        ],
+        [
+          "HYD-2210",
+          "Kavya Nair",
+          null,
+          null
+        ],
+        [
+          "PUN-0031",
+          "Omar Ali",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": "1183",
+      "mustUse": [
+        "RIGHT"
+      ],
+      "solution": "=RIGHT(A3,4)",
+      "explain": "RIGHT counts from the end, so the last 4 characters of MUM-1183 are 1183.",
+      "highlightCells": [
+        "A3"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ","
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "How many characters long is the customer name in `B4`? In `D4`, count them.",
+      "grid": [
+        [
+          "Code",
+          "Customer",
+          null,
+          "Part"
+        ],
+        [
+          "DEL-0425",
+          "Riya Sen",
+          null,
+          "DEL"
+        ],
+        [
+          "MUM-1183",
+          "Arjun Mehta",
+          null,
+          "1183"
+        ],
+        [
+          "BLR-0907",
+          "Anu Das",
+          null,
+          null
+        ],
+        [
+          "HYD-2210",
+          "Kavya Nair",
+          null,
+          null
+        ],
+        [
+          "PUN-0031",
+          "Omar Ali",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D4",
+      "expectedValue": 7,
+      "mustUse": [
+        "LEN"
+      ],
+      "solution": "=LEN(B4)",
+      "explain": "Anu Das has 6 letters and 1 space, and LEN counts the space too: 7.",
+      "highlightCells": [
+        "B4"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ","
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "With no number, LEFT takes just one character. In `D5`, get the first letter of the customer name in `B5`.",
+      "grid": [
+        [
+          "Code",
+          "Customer",
+          null,
+          "Part"
+        ],
+        [
+          "DEL-0425",
+          "Riya Sen",
+          null,
+          "DEL"
+        ],
+        [
+          "MUM-1183",
+          "Arjun Mehta",
+          null,
+          "1183"
+        ],
+        [
+          "BLR-0907",
+          "Anu Das",
+          null,
+          7
+        ],
+        [
+          "HYD-2210",
+          "Kavya Nair",
+          null,
+          null
+        ],
+        [
+          "PUN-0031",
+          "Omar Ali",
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D5",
+      "expectedValue": "K",
+      "mustUse": [
+        "LEFT"
+      ],
+      "solution": "=LEFT(B5)",
+      "explain": "LEFT(B5) is the same as LEFT(B5,1): the first character of Kavya Nair, K.",
+      "highlightCells": [
+        "B5"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ","
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "Which formula gets the city code MUM from `MUM-1183` in `A3`?",
+      "options": [
+        "`=LEFT(A3,3)`",
+        "`=RIGHT(A3,3)`",
+        "`=LEFT(A3,4)`"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A cinema's ticket codes end with a two-letter seat row. Which row is the ticket in `A3` for? Put it in `C3`.",
+      "grid": [
+        [
+          "Ticket",
+          "Film",
+          null
+        ],
+        [
+          "T-1043-AC",
+          "Comet",
+          null
+        ],
+        [
+          "T-2210-BD",
+          "Monsoon",
+          null
+        ],
+        [
+          "T-0098-AF",
+          "Comet",
+          null
+        ],
+        [
+          "T-3301-BB",
+          "Harbour",
+          null
+        ]
+      ],
+      "targetCell": "C3",
+      "expectedValue": "BD",
+      "mustUse": [
+        "RIGHT"
+      ],
+      "solution": "=RIGHT(A3,2)",
+      "explain": "The last 2 characters of T-2210-BD are BD, the seat row.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ","
+      ]
+    }
+  ]
+}
