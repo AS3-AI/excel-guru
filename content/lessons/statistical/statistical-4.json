@@ -1,0 +1,470 @@
+{
+  "id": "statistical-4",
+  "module": "statistical",
+  "title": "Statistics practice",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**Statistical** functions can be nested: `=CEILING(AVERAGE(B2:B7),10)` calculates an average and rounds it up to the next multiple of 10 in one step."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A cricket team records the runs scored by six batters in the final. Select the runs: `B2:B7`.",
+      "grid": [
+        [
+          "Player",
+          "Runs",
+          null,
+          "Stats"
+        ],
+        [
+          "Rohit",
+          88,
+          null,
+          null
+        ],
+        [
+          "Virat",
+          68,
+          null,
+          null
+        ],
+        [
+          "Surya",
+          45,
+          null,
+          null
+        ],
+        [
+          "Rahul",
+          62,
+          null,
+          null
+        ],
+        [
+          "Rinku",
+          29,
+          null,
+          null
+        ],
+        [
+          "Hardik",
+          80,
+          null,
+          null
+        ]
+      ],
+      "target": "B2:B7"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "To set a target, round the batters' average score up to the nearest multiple of 10. In `D2`, type `=CEILING(AVERAGE(B2:B7),10)` and press Enter.",
+      "grid": [
+        [
+          "Player",
+          "Runs",
+          null,
+          "Stats"
+        ],
+        [
+          "Rohit",
+          88,
+          null,
+          null
+        ],
+        [
+          "Virat",
+          68,
+          null,
+          null
+        ],
+        [
+          "Surya",
+          45,
+          null,
+          null
+        ],
+        [
+          "Rahul",
+          62,
+          null,
+          null
+        ],
+        [
+          "Rinku",
+          29,
+          null,
+          null
+        ],
+        [
+          "Hardik",
+          80,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 70,
+      "mustUse": [
+        "CEILING",
+        "AVERAGE"
+      ],
+      "solution": "=CEILING(AVERAGE(B2:B7),10)",
+      "explain": "The six scores average 62, and CEILING rounds 62 up to 70.",
+      "highlightCells": [
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "What was the second-highest score among the batters? In `D3`, find it in `B2:B7`.",
+      "grid": [
+        [
+          "Player",
+          "Runs",
+          null,
+          "Stats"
+        ],
+        [
+          "Rohit",
+          88,
+          null,
+          null
+        ],
+        [
+          "Virat",
+          68,
+          null,
+          null
+        ],
+        [
+          "Surya",
+          45,
+          null,
+          null
+        ],
+        [
+          "Rahul",
+          62,
+          null,
+          null
+        ],
+        [
+          "Rinku",
+          29,
+          null,
+          null
+        ],
+        [
+          "Hardik",
+          80,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": 80,
+      "mustUse": [
+        "LARGE"
+      ],
+      "solution": "=LARGE(B2:B7,2)",
+      "explain": "LARGE with 2 finds the second-highest score, which is 80.",
+      "highlightCells": [
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "What was the team's highest score? In `D4`, find the highest score in `B2:B7`.",
+      "grid": [
+        [
+          "Player",
+          "Runs",
+          null,
+          "Stats"
+        ],
+        [
+          "Rohit",
+          88,
+          null,
+          null
+        ],
+        [
+          "Virat",
+          68,
+          null,
+          null
+        ],
+        [
+          "Surya",
+          45,
+          null,
+          null
+        ],
+        [
+          "Rahul",
+          62,
+          null,
+          null
+        ],
+        [
+          "Rinku",
+          29,
+          null,
+          null
+        ],
+        [
+          "Hardik",
+          80,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D4",
+      "expectedValue": 88,
+      "mustUse": [
+        "MAX"
+      ],
+      "solution": "=MAX(B2:B7)",
+      "explain": "MAX returns the single highest value in the range, which is 88.",
+      "highlightCells": [
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A household tracks its monthly electricity bills. What was the cheapest month's bill? In `D2`, find the lowest bill in `B2:B7`.",
+      "grid": [
+        [
+          "Month",
+          "Bill",
+          null,
+          "Stats"
+        ],
+        [
+          "Jan",
+          310,
+          null,
+          null
+        ],
+        [
+          "Feb",
+          490,
+          null,
+          null
+        ],
+        [
+          "Mar",
+          420,
+          null,
+          null
+        ],
+        [
+          "Apr",
+          580,
+          null,
+          null
+        ],
+        [
+          "May",
+          510,
+          null,
+          null
+        ],
+        [
+          "Jun",
+          360,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 310,
+      "mustUse": [
+        "MIN"
+      ],
+      "solution": "=MIN(B2:B7)",
+      "explain": "MIN returns the lowest bill in the range, which is 310.",
+      "highlightCells": [
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "What was the second-cheapest month's bill? In `D3`, find the second-lowest bill in `B2:B7`.",
+      "grid": [
+        [
+          "Month",
+          "Bill",
+          null,
+          "Stats"
+        ],
+        [
+          "Jan",
+          310,
+          null,
+          null
+        ],
+        [
+          "Feb",
+          490,
+          null,
+          null
+        ],
+        [
+          "Mar",
+          420,
+          null,
+          null
+        ],
+        [
+          "Apr",
+          580,
+          null,
+          null
+        ],
+        [
+          "May",
+          510,
+          null,
+          null
+        ],
+        [
+          "Jun",
+          360,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D3",
+      "expectedValue": 360,
+      "mustUse": [
+        "SMALL"
+      ],
+      "solution": "=SMALL(B2:B7,2)",
+      "explain": "SMALL with 2 returns the second-lowest bill in the range, which is 360.",
+      "highlightCells": [
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "A learner wants the average rounded up to the next 10 and types `=AVERAGE(CEILING(B2:B7,10))`. What is wrong?",
+      "options": [
+        "The functions are nested the wrong way round: round the average with `=CEILING(AVERAGE(B2:B7),10)`",
+        "CEILING can't be used with AVERAGE",
+        "The 10 should go inside AVERAGE"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A courier service logs delivery times in minutes. To set standard driver pay, the dispatcher rounds the average delivery time down to the nearest multiple of 5. How many minutes is that? Put the answer in `D2`.",
+      "grid": [
+        [
+          "Driver",
+          "Minutes",
+          null,
+          "Standard"
+        ],
+        [
+          "Dev",
+          14,
+          null,
+          null
+        ],
+        [
+          "Zara",
+          38,
+          null,
+          null
+        ],
+        [
+          "Karan",
+          26,
+          null,
+          null
+        ],
+        [
+          "Maya",
+          42,
+          null,
+          null
+        ],
+        [
+          "Leo",
+          32,
+          null,
+          null
+        ],
+        [
+          "Pooja",
+          16,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 25,
+      "mustUse": [
+        "FLOOR",
+        "AVERAGE"
+      ],
+      "solution": "=FLOOR(AVERAGE(B2:B7),5)",
+      "explain": "The six delivery times average 28 minutes, and FLOOR rounds 28 down to 25.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    }
+  ]
+}

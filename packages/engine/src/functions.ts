@@ -219,6 +219,55 @@ function average(cells: CellValue[] | ExcelError): CellValue {
   return nums.length === 0 ? { error: "#DIV/0!" } : (total as number) / nums.length;
 }
 
+/** Numbers from ranges skip non-numeric cells; explicitly supplied text is an error. */
+function statisticalNumbers(args: Arg[]): number[] | ExcelError {
+  const nums: number[] = [];
+  for (const arg of args) {
+    const values = Array.isArray(arg) ? arg.flat() : [arg ?? null];
+    for (const value of values) {
+      if (isError(value)) return value;
+      if (typeof value === "number") nums.push(value);
+      else if (!Array.isArray(arg) && typeof value === "string") {
+        const n = toNumber(value);
+        if (n === null) return VALUE;
+        nums.push(n);
+      }
+    }
+  }
+  return nums;
+}
+
+function median(args: Arg[]): CellValue {
+  const nums = statisticalNumbers(args);
+  if (!Array.isArray(nums)) return nums;
+  if (nums.length === 0) return { error: "#NUM!" };
+  nums.sort((a, b) => a - b);
+  const mid = Math.floor(nums.length / 2);
+  return nums.length % 2 ? nums[mid]! : (nums[mid - 1]! + nums[mid]!) / 2;
+}
+
+function orderStatistic(args: Arg[], largest: boolean): CellValue {
+  if (args.length !== 2) return VALUE;
+  const nums = statisticalNumbers([args[0]]);
+  if (!Array.isArray(nums)) return nums;
+  const k = numberArg(args[1], 0);
+  if (isError(k)) return k;
+  if (k < 1 || k > nums.length) return { error: "#NUM!" };
+  nums.sort((a, b) => largest ? b - a : a - b);
+  return nums[k - 1]!;
+}
+
+function modes(args: Arg[], multi: boolean): CellValue | Matrix {
+  const nums = statisticalNumbers(args);
+  if (!Array.isArray(nums)) return nums;
+  const counts = new Map<number, number>();
+  for (const n of nums) counts.set(n, (counts.get(n) ?? 0) + 1);
+  const max = Math.max(0, ...counts.values());
+  if (max < 2) return NA;
+  const result = [...counts].filter(([, count]) => count === max).map(([n]) => n);
+  return multi ? result.map((n) => [n]) : result[0]!;
+}
+
 function count(cells: CellValue[] | ExcelError): CellValue {
   return Array.isArray(cells) ? cells.length : cells;
 }
@@ -736,4 +785,10 @@ const OWN: Record<string, Impl> = {
   SUMIFS: (sumRange, ...pairs) => sum(selected(sumRange, pairs)),
   AVERAGEIF: (range, crit, avgRange) => average(selected(avgRange ?? range, [range, crit])),
   AVERAGEIFS: (avgRange, ...pairs) => average(selected(avgRange, pairs)),
+  MEDIAN: (...args) => median(args),
+  SMALL: (...args) => orderStatistic(args, false),
+  LARGE: (...args) => orderStatistic(args, true),
+  MODE: (...args) => modes(args, false),
+  "MODE.SNGL": (...args) => modes(args, false),
+  "MODE.MULT": (...args) => modes(args, true),
 };

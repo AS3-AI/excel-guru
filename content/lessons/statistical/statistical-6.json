@@ -1,0 +1,374 @@
+{
+  "id": "statistical-6",
+  "module": "statistical",
+  "title": "MEDIAN: the middle value",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**MEDIAN** finds the middle number in a range when values are sorted: `=MEDIAN(B2:B6)`. With an even count, it averages the middle two; text and empty cells are skipped."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A housing agency lists monthly apartment rents in thousands; one penthouse has an unusually high rent. Select the rent amounts: `B2:B6`.",
+      "grid": [
+        [
+          "Apartment",
+          "Rent",
+          null,
+          "Median"
+        ],
+        [
+          "Studio A",
+          28,
+          null,
+          null
+        ],
+        [
+          "Studio B",
+          45,
+          null,
+          null
+        ],
+        [
+          "Studio C",
+          32,
+          null,
+          null
+        ],
+        [
+          "Penthouse",
+          220,
+          null,
+          null
+        ],
+        [
+          "Studio D",
+          35,
+          null,
+          null
+        ]
+      ],
+      "target": "B2:B6"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Because the penthouse rent is an outlier, the median best shows the typical rent. In `D2`, type `=MEDIAN(B2:B6)` and press Enter.",
+      "grid": [
+        [
+          "Apartment",
+          "Rent",
+          null,
+          "Median"
+        ],
+        [
+          "Studio A",
+          28,
+          null,
+          null
+        ],
+        [
+          "Studio B",
+          45,
+          null,
+          null
+        ],
+        [
+          "Studio C",
+          32,
+          null,
+          null
+        ],
+        [
+          "Penthouse",
+          220,
+          null,
+          null
+        ],
+        [
+          "Studio D",
+          35,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 35,
+      "mustUse": [
+        "MEDIAN"
+      ],
+      "solution": "=MEDIAN(B2:B6)",
+      "explain": "The median is 35 because it is the middle value when sorted, whereas the penthouse rent of 220 pulls the average up to 72.",
+      "highlightCells": [
+        "B2:B6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "A courier logs delivery times across six trips. In `D2`, find the median delivery time for `B2:B7`.",
+      "grid": [
+        [
+          "Trip",
+          "Minutes",
+          null,
+          "Median"
+        ],
+        [
+          "Trip 1",
+          28,
+          null,
+          null
+        ],
+        [
+          "Trip 2",
+          16,
+          null,
+          null
+        ],
+        [
+          "Trip 3",
+          32,
+          null,
+          null
+        ],
+        [
+          "Trip 4",
+          19,
+          null,
+          null
+        ],
+        [
+          "Trip 5",
+          14,
+          null,
+          null
+        ],
+        [
+          "Trip 6",
+          23,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 21,
+      "mustUse": [
+        "MEDIAN"
+      ],
+      "solution": "=MEDIAN(B2:B7)",
+      "explain": "With an even count of six trips, the median is the average of the two middle values, 19 and 23: (19 + 23) ÷ 2 = 21.",
+      "highlightCells": [
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "A workshop tracks daily attendance; Thursday was cancelled and logged as \"n/a\". In `D2`, find the median attendance for `B2:B7`.",
+      "grid": [
+        [
+          "Day",
+          "Attendees",
+          null,
+          "Median"
+        ],
+        [
+          "Mon",
+          48,
+          null,
+          null
+        ],
+        [
+          "Tue",
+          36,
+          null,
+          null
+        ],
+        [
+          "Wed",
+          55,
+          null,
+          null
+        ],
+        [
+          "Thu",
+          "n/a",
+          null,
+          null
+        ],
+        [
+          "Fri",
+          42,
+          null,
+          null
+        ],
+        [
+          "Sat",
+          64,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 48,
+      "mustUse": [
+        "MEDIAN"
+      ],
+      "solution": "=MEDIAN(B2:B7)",
+      "explain": "The text \"n/a\" is skipped, leaving five numbers whose sorted middle value is 48.",
+      "highlightCells": [
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "MEDIAN can also take separate cells separated by commas. In `D2`, find the median score for Maya, Priya, and Ananya with `B2`, `B4`, and `B6`.",
+      "grid": [
+        [
+          "Student",
+          "Score",
+          null,
+          "Median"
+        ],
+        [
+          "Maya",
+          52,
+          null,
+          null
+        ],
+        [
+          "Arjun",
+          65,
+          null,
+          null
+        ],
+        [
+          "Priya",
+          88,
+          null,
+          null
+        ],
+        [
+          "Dev",
+          74,
+          null,
+          null
+        ],
+        [
+          "Ananya",
+          41,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 52,
+      "mustUse": [
+        "MEDIAN"
+      ],
+      "solution": "=MEDIAN(B2,B4,B6)",
+      "explain": "Sorting the three chosen scores gives 41, 52, and 88, making 52 the middle value.",
+      "highlightCells": [
+        "B2",
+        "B4",
+        "B6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ":"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "Why can MEDIAN describe a \"typical\" salary better than AVERAGE when an executive earns millions?",
+      "options": [
+        "One huge salary pulls AVERAGE up, but MEDIAN stays centered on what most people earn",
+        "AVERAGE gives a #NUM! error whenever a number is ten times larger than the rest",
+        "MEDIAN automatically deletes the highest and lowest numbers from the range"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "prompt": "A cricket team logs runs scored across five tournament matches. What was the middle score? Put the answer in `B7`.",
+      "grid": [
+        [
+          "Match",
+          "Runs"
+        ],
+        [
+          "Match 1",
+          68
+        ],
+        [
+          "Match 2",
+          35
+        ],
+        [
+          "Match 3",
+          81
+        ],
+        [
+          "Match 4",
+          54
+        ],
+        [
+          "Match 5",
+          42
+        ],
+        [
+          "Middle",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 54,
+      "mustUse": [
+        "MEDIAN"
+      ],
+      "solution": "=MEDIAN(B2:B6)",
+      "explain": "The five scores sorted from lowest to highest are 35, 42, 54, 68, and 81, so the middle score is 54.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    }
+  ]
+}

@@ -1,0 +1,304 @@
+{
+  "id": "statistical-5",
+  "module": "statistical",
+  "title": "EVEN and ODD: round up to pairs",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**EVEN** rounds a positive number up to the nearest even whole number: `=EVEN(number)`. Its partner `=ODD(number)` rounds up to the nearest odd whole number."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "Concert tickets are sold only in pairs. Select the group size in cell `A2`.",
+      "grid": [
+        [
+          "Group Size",
+          "Seats"
+        ],
+        [
+          7,
+          null
+        ],
+        [
+          3,
+          null
+        ],
+        [
+          5,
+          null
+        ],
+        [
+          9,
+          null
+        ]
+      ],
+      "target": "A2"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "How many seats does a group of 7 need? In `B2`, type `=EVEN(A2)` and press Enter.",
+      "grid": [
+        [
+          "Group Size",
+          "Seats"
+        ],
+        [
+          7,
+          null
+        ],
+        [
+          3,
+          null
+        ],
+        [
+          5,
+          null
+        ],
+        [
+          9,
+          null
+        ]
+      ],
+      "targetCell": "B2",
+      "expectedValue": 8,
+      "mustUse": [
+        "EVEN"
+      ],
+      "solution": "=EVEN(A2)",
+      "explain": "7 is an odd number, so EVEN rounds it up to the next even number, 8.",
+      "highlightCells": [
+        "A2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "To prevent tie votes, a debate panel must have an odd number of judges. In `C2`, use ODD to round the judge count in `B2` up to an odd number.",
+      "grid": [
+        [
+          "Event",
+          "Judges",
+          "Panel Needed"
+        ],
+        [
+          "Debate",
+          6,
+          null
+        ],
+        [
+          "Quiz",
+          4,
+          null
+        ],
+        [
+          "Mock Trial",
+          8,
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 7,
+      "mustUse": [
+        "ODD"
+      ],
+      "solution": "=ODD(B2)",
+      "explain": "6 is an even number, so ODD rounds it up to the next odd number, 7.",
+      "highlightCells": [
+        "B2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "A workshop buys timber sold only in even whole meters. In `C2`, use EVEN to round the length in `B2` up to an even whole number.",
+      "grid": [
+        [
+          "Item",
+          "Meters",
+          "Order"
+        ],
+        [
+          "Moulding",
+          2.3,
+          null
+        ],
+        [
+          "Trim",
+          1.4,
+          null
+        ],
+        [
+          "Batten",
+          4.1,
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 4,
+      "mustUse": [
+        "EVEN"
+      ],
+      "solution": "=EVEN(B2)",
+      "explain": "EVEN rounds 2.3 up past 3 to the nearest even whole number, 4.",
+      "highlightCells": [
+        "B2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "A shuttle van seats passengers in pairs. In `C2`, use EVEN to find the seats needed for the 4 riders in `B2`.",
+      "grid": [
+        [
+          "Group",
+          "Riders",
+          "Seats"
+        ],
+        [
+          "Group A",
+          4,
+          null
+        ],
+        [
+          "Group B",
+          7,
+          null
+        ],
+        [
+          "Group C",
+          10,
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 4,
+      "mustUse": [
+        "EVEN"
+      ],
+      "solution": "=EVEN(B2)",
+      "explain": "4 is already an even number, so EVEN leaves it unchanged at 4.",
+      "highlightCells": [
+        "B2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "In `C2`, use ODD to round the value in `B2` up to the next odd whole number.",
+      "grid": [
+        [
+          "Family",
+          "Visitors",
+          "Seats"
+        ],
+        [
+          "Kapoor",
+          4.2,
+          null
+        ],
+        [
+          "Shah",
+          3,
+          null
+        ],
+        [
+          "Patel",
+          9,
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 5,
+      "mustUse": [
+        "ODD"
+      ],
+      "solution": "=ODD(B2)",
+      "explain": "ODD rounds 4.2 up to the next odd whole number, 5.",
+      "highlightCells": [
+        "B2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "A learner enters `=EVEN(5)` expecting 4 because 4 is also an even number close to 5. Why does Excel return 6 instead?",
+      "options": [
+        "EVEN always rounds up away from zero, not to the nearest even number",
+        "EVEN rounds to whichever even number is nearest",
+        "EVEN always adds 1 to make any number even"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A school debate league requires each judging panel to have an odd number of judges to prevent tie votes. The finals division currently has 8 judges registered in `B2`. How many judge seats should the panel have? Put your answer in `C2`.",
+      "grid": [
+        [
+          "Division",
+          "Judges",
+          "Panel Size"
+        ],
+        [
+          "Finals",
+          8,
+          null
+        ],
+        [
+          "Semis",
+          4,
+          null
+        ],
+        [
+          "Quarters",
+          6,
+          null
+        ]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 9,
+      "mustUse": [
+        "ODD"
+      ],
+      "solution": "=ODD(B2)",
+      "explain": "8 is an even number, so ODD rounds it up to 9 to guarantee an odd-sized panel.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")"
+      ]
+    }
+  ]
+}
