@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "**XLOOKUP** searches one range and returns a value from another: `=XLOOKUP(what, look in, return from)`. Its optional fourth argument is the message to show when no match is found."
+      "text": "**XLOOKUP** searches one range and returns a value from another: `=XLOOKUP(what, look in, return from)`. Its optional fourth argument is the message to show when no match is found. XLOOKUP needs Excel 2021 or Microsoft 365; older Excel shows #NAME?."
     },
     {
       "id": "s2",
@@ -329,7 +329,7 @@
     {
       "id": "s7",
       "type": "formula",
-      "prompt": "Which desk belongs to Nia? Find her name in `F2` and put the desk in `G2`.",
+      "prompt": "Use XLOOKUP to find which desk belongs to Nia. Find her name in `F2` and put the desk in `G2`.",
       "grid": [
         [
           "Name",
