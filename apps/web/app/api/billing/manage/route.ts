@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { paymentsEnabled } from "@/lib/payments-config";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST() {
   if (!paymentsEnabled(process.env.PAYMENTS_ENABLED)) return NextResponse.json({ error: "payments_disabled" }, { status: 503 });
@@ -10,6 +11,9 @@ export async function POST() {
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const admin = createAdminClient();
   if (!admin) return NextResponse.json({ error: "billing_unavailable" }, { status: 503 });
+  if (!(await rateLimit(admin, `billing/manage:${user.id}`, 5, 60))) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
   const { data: rows, error } = await admin.from("subscriptions").select("provider_ref,period_end").eq("user_id", user.id).eq("provider", "razorpay").eq("status", "active");
   if (error) return NextResponse.json({ error: "billing_unavailable" }, { status: 500 });
   const subscription = rows?.find((row) => !row.period_end || Date.parse(row.period_end) > Date.now());

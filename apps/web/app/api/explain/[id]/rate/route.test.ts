@@ -10,6 +10,7 @@ vi.mock("@/lib/supabase/server", () => ({ createClient }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 vi.mock("../../../../../lib/supabase/server", () => ({ createClient }));
 vi.mock("../../../../../lib/supabase/admin", () => ({ createAdminClient }));
+vi.mock("@/lib/rate-limit", () => ({ rateLimit: async () => true }));
 
 import { POST } from "./route";
 

@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { parseWaitlistBody, UNIQUE_VIOLATION } from "@/lib/waitlist";
+import { hashIp, rateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   let body: unknown;
@@ -20,6 +21,11 @@ export async function POST(req: Request) {
   }
 
   const supabase = createClient(url, key, { auth: { persistSession: false } });
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
+  const ipHash = hashIp(ip);
+  if (!(await rateLimit(supabase, `waitlist:${ipHash}`, 5, 60))) {
+    return Response.json({ error: "rate_limited" }, { status: 429 });
+  }
   const country = req.headers.get("x-vercel-ip-country");
   const { error } = await supabase
     .from("waitlist")

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { rateLimit } from "@/lib/rate-limit";
 import { claimShareBonus } from "@/lib/leaderboard";
 
 export async function POST() {
@@ -9,6 +10,9 @@ export async function POST() {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const admin = createAdminClient();
   if (!admin) return NextResponse.json({ error: "Share bonus unavailable" }, { status: 503 });
+  if (!(await rateLimit(admin, `share-bonus:${user.id}`, 5, 60))) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
 
   let result: { status: 401 | 409 | 200 };
   try {

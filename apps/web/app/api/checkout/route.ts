@@ -3,6 +3,7 @@ import { isEntitled, providerFor, validateCheckoutInput } from "@excel-guru/paym
 import { createClient } from "../../../lib/supabase/server";
 import { createAdminClient } from "../../../lib/supabase/admin";
 import { paymentsEnabled } from "../../../lib/payments-config";
+import { rateLimit } from "../../../lib/rate-limit";
 
 export async function GET() {
   const session = await createClient();
@@ -26,6 +27,11 @@ export async function POST(request: Request) {
   const session = await createClient();
   const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const admin = createAdminClient();
+  if (!admin) return NextResponse.json({ error: "checkout_unavailable" }, { status: 503 });
+  if (!(await rateLimit(admin, `checkout:${user.id}`, 10, 60))) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
   let body: unknown;
   try { body = await request.json(); } catch { return NextResponse.json({ error: "invalid_request" }, { status: 400 }); }
   if (!body || typeof body !== "object") return NextResponse.json({ error: "invalid_request" }, { status: 400 });
@@ -33,8 +39,6 @@ export async function POST(request: Request) {
   const validationError = validateCheckoutInput(plan, currency);
   if (validationError) return NextResponse.json({ error: validationError }, { status: validationError === "region_unavailable" ? 409 : 400 });
   const validPlan = plan as "monthly" | "annual";
-  const admin = createAdminClient();
-  if (!admin) return NextResponse.json({ error: "checkout_unavailable" }, { status: 503 });
   const { data: profile, error: profileError } = await admin.from("profiles").select("email,group_id").eq("user_id", user.id).maybeSingle();
   if (profileError) return NextResponse.json({ error: "checkout_unavailable" }, { status: 503 });
   const { data: subscriptions, error: subscriptionError } = await admin.from("subscriptions").select("status,period_end").eq("user_id", user.id);
