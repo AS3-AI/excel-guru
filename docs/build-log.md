@@ -36,7 +36,7 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | Content: Array Formulas (1..2) + Combined (1..2) | antigravity from Claude plans | 8fcfaaf | 2 reviews + fixes | pushed | Combined after Statistical in order |
 | T43 /learn template + 10 articles | codex + antigravity | e449db4 | 2 reviews + fixes | pushed | phone layout judged from CSS |
 | T53 Dates display + fixed today | codex + antigravity | 7bf4c09 | checks pass (no separate review) | merged | lesson today 15 Jan 2026
-| T54 Shortcut grid + format schema | codex + antigravity | t54-codex | review round 2 found 4 issues | fix round 3 | owner approved grid + postcondition.format
+| T54 Shortcut grid + format schema | codex + antigravity | 5a6a2bf | passed (3 rounds); browser check on sum-2 pending (needs sign-in) | merged | owner approved grid + postcondition.format
 | Content: Text modules, Statistical, Array, Combined | | | | pushed | 62 of 86 lessons live (16 Nov) |
 | T26 AI explanations | codex | 46400a7 | passed (2 rounds + Claude fixes) | merged | 20-a-day limit + per-user ratings pending schema approval; keep GEMINI_API_KEY unset in prod
 | Content: Logical (logical-1..7) | claude gold + codex drafts | 749ae67 | pedagogy review 2 rounds + coincidence audit (9 accepted TRUE/FALSE trade-offs) | merged | |
