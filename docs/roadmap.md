@@ -92,7 +92,7 @@ per-user AI ratings deferred.
 | T33 | 20 new Gemini calls a day (migration 0003) | ✅ code; 🟡 owner runs 0003 |
 | T36 | Free tier counts lessons opened (migration 0004) | ✅ (owner ran 0004; browser check with a free account pending) |
 | T52 | Statistical functions follow Excel | ✅ |
-| T53 | Dates display as dates; fixed lesson today | 🟢 built, review pending |
+| T53 | Dates display as dates; fixed lesson today | ✅ merged 16 Nov |
 | T54 | Shortcut steps show a real grid + `grid`/`postcondition.format` schema (owner-approved) | 🟡 fix round 3 |
 | **O1** | Turn on AI explanations | 🟡 owner — below |
 | **T34** | Payments: subscription row + Manage / cancel button | ⬜ — below |
@@ -101,7 +101,7 @@ per-user AI ratings deferred.
 | ~~T36~~ | moved up: done |
 | C5 Statistical (7) · C9 Array Formulas (2) · C10 Combined (2) | | ✅ live 16 Nov |
 | C3 Intro to Shortcuts (6) · C4 Cell Selection (7) | plan: docs/content/shortcuts-plan.md | 🟡 waiting for T54 |
-| C6 Dates (5) | | 🟡 waiting for T53 |
+| C6 Dates (5) | | ⬜ ready to write |
 | C7 Tables (4) · C8 Other Skills (2) | | ⏸ owner design decision |
 | **C11** | 4 project datasets + steps | ⬜ — below |
 
