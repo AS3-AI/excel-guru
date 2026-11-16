@@ -58,33 +58,10 @@ begin
 
   v_delta := v_new_val - v_old_val;
 
-  -- Upsert rating row
-  if v_old_helpful is not null then
-    update public.explanation_ratings
-    set helpful = p_helpful,
-        updated_at = now()
-    where explanation_id = p_explanation_id
-      and user_id = p_user_id;
-  else
-    insert into public.explanation_ratings (
-      explanation_id,
-      user_id,
-      helpful,
-      created_at,
-      updated_at
-    )
-    values (
-      p_explanation_id,
-      p_user_id,
-      p_helpful,
-      now(),
-      now()
-    )
-    on conflict (explanation_id, user_id)
-    do update set
-      helpful = excluded.helpful,
-      updated_at = now();
-  end if;
+  insert into public.explanation_ratings (explanation_id, user_id, helpful)
+  values (p_explanation_id, p_user_id, p_helpful)
+  on conflict (explanation_id, user_id)
+  do update set helpful = excluded.helpful, updated_at = now();
 
   -- Atomic update of score
   update public.ai_explanations

@@ -37,11 +37,6 @@ begin
     return false;
   end if;
 
-  -- Occasionally (approx 1% of calls) purge entries older than 1 day
-  if random() < 0.01 then
-    delete from public.rate_limits where window_start < now() - interval '1 day';
-  end if;
-
   v_window_start := to_timestamp(floor(extract(epoch from now()) / p_window_seconds) * p_window_seconds);
 
   insert into public.rate_limits (key, window_start, count)
