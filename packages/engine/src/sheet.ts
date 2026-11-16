@@ -58,7 +58,8 @@ export class Sheet {
 
   /** grid[0][0] is A1. Values are literal, except strings starting with "=", which are formulas. */
   constructor(grid: Literal[][], options: { today?: string } = {}) {
-    const today = options.today ?? new Date().toISOString().slice(0, 10);
+    const d = new Date();
+    const today = options.today ?? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(today);
     if (!match) throw new RangeError("today must be an ISO date");
     this.todaySerial = (Date.UTC(+match[1]!, +match[2]! - 1, +match[3]!) - Date.UTC(1899, 11, 30)) / 86400000;
