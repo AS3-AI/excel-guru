@@ -1,0 +1,211 @@
+{
+  "id": "other-skills-2",
+  "module": "other-skills",
+  "title": "Conditional formatting",
+  "difficulty": 2,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**Conditional formatting** automatically colours cells that meet a rule you set. When you create a formula rule, you write a TRUE or FALSE test for the first cell, and Excel applies it down the range."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A tutor wants to colour passing scores of 40 or more. Select the score range to format: `B2:B8`.",
+      "grid": [
+        ["Student", "Score", "Highlight?"],
+        ["Aarav", 40, null],
+        ["Bina", 34, null],
+        ["Cyrus", 65, null],
+        ["Diya", 39, null],
+        ["Eshan", 78, null],
+        ["Farah", 82, null],
+        ["Gita", 52, null]
+      ],
+      "target": "B2:B8"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "In `C2`, test the first score with `=B2>=40` and press Enter.",
+      "grid": [
+        ["Student", "Score", "Highlight?"],
+        ["Aarav", 40, null],
+        ["Bina", 34, null],
+        ["Cyrus", 65, null],
+        ["Diya", 39, null],
+        ["Eshan", 78, null],
+        ["Farah", 82, null],
+        ["Gita", 52, null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": true,
+      "mustUse": [],
+      "solution": "=B2>=40",
+      "explain": "Aarav scored exactly 40, and `>=` includes the boundary value so the rule returns TRUE.",
+      "highlightCells": [
+        "B2"
+      ],
+      "mobileButtons": [
+        "=",
+        ">",
+        "<"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "Highlight stock between 20 and 50 units. In `C2`, write a rule for the first item using `=AND(B2>=20,B2<=50)`.",
+      "grid": [
+        ["Item", "Stock", "Medium?"],
+        ["Pens", 20, null],
+        ["Rulers", 14, null],
+        ["Notebooks", 35, null],
+        ["Erasers", 50, null],
+        ["Markers", 8, null],
+        ["Folders", 62, null],
+        ["Tape", 25, null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": true,
+      "mustUse": [
+        "AND"
+      ],
+      "solution": "=AND(B2>=20,B2<=50)",
+      "explain": "Pens have 20 units, which meets both conditions so the rule returns TRUE.",
+      "highlightCells": [
+        "B2"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ",",
+        ">",
+        "<"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "To format scores above the class average, the average range must stay locked. In `C3`, check Bikram with `=B3>AVERAGE($B$2:$B$8)`.",
+      "grid": [
+        ["Name", "Score", "Above avg?"],
+        ["Asha", 30, false],
+        ["Bikram", 52, null],
+        ["Chaya", 65, null],
+        ["Deepak", 58, null],
+        ["Esha", 70, null],
+        ["Faisal", 45, null],
+        ["Gauri", 30, null]
+      ],
+      "targetCell": "C3",
+      "expectedValue": true,
+      "mustUse": [
+        "AVERAGE"
+      ],
+      "solution": "=B3>AVERAGE($B$2:$B$8)",
+      "explain": "Bikram scored 52, which is higher than the class average of 50.",
+      "highlightCells": [
+        "B3",
+        "B2:B8"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        "$",
+        ">",
+        "<"
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "Highlight rows where a delivery is delayed. In `D4`, check whether Chetan's delivery is late with `=C4=\"Late\"`.",
+      "grid": [
+        ["Order", "Driver", "Status", "Highlight?"],
+        [101, "Amit", "On time", false],
+        [102, "Bina", "On time", false],
+        [103, "Chetan", "Late", null],
+        [104, "Divya", "On time", null],
+        [105, "Esha", "Pending", null],
+        [106, "Farhan", "Late", null],
+        [107, "Geeta", "On time", null]
+      ],
+      "targetCell": "D4",
+      "expectedValue": true,
+      "mustUse": [],
+      "solution": "=C4=\"Late\"",
+      "explain": "Order 103 has a status of Late, so the rule returns TRUE and applies the format.",
+      "highlightCells": [
+        "C4"
+      ],
+      "mobileButtons": [
+        "=",
+        "\"",
+        "<",
+        ">"
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "prompt": "In `=B2>AVERAGE($B$2:$B$8)`, why does the average range use `$` signs while `B2` does not?",
+      "options": [
+        "Each row must check its own score against the same fixed average range.",
+        "The AVERAGE function always requires dollar signs to work in Excel.",
+        "Conditional formatting only allows dollar signs inside function brackets."
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "You want to highlight every invoice amount greater than 500 without writing a custom formula. Which built-in rule should you choose?",
+      "options": [
+        "Highlight Cells Rules > Greater Than",
+        "Top/Bottom Rules > Top 10 Items",
+        "Data Bars"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "How many scores would the `>=40` rule highlight? In `C2`, find the count.",
+      "grid": [
+        ["Student", "Score", "Pass count"],
+        ["Aarav", 40, null],
+        ["Bina", 34, null],
+        ["Cyrus", 65, null],
+        ["Diya", 39, null],
+        ["Eshan", 78, null],
+        ["Farah", 82, null],
+        ["Gita", 52, null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 5,
+      "mustUse": [
+        "COUNTIF"
+      ],
+      "solution": "=COUNTIF(B2:B8,\">=40\")",
+      "explain": "Five scores are 40 or higher, so the rule highlights five cells.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ",",
+        "\"",
+        ">",
+        "<"
+      ]
+    }
+  ]
+}
