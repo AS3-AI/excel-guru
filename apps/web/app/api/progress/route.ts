@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { rateLimit } from "@/lib/rate-limit";
 import { getLesson } from "@/lib/lessons";
 import { loadLessonAccess } from "@/lib/access";
 import { calculateProgress, getIstDate, getIstDayUtcBounds, getStreak, pointsAllowedForCompletion, progressAttemptRows, readBodyAfterAuthentication, shouldRetryCompletionWithZeroPoints, type ProgressAttempt, type StreakRow } from "@/lib/progress";
@@ -10,6 +11,11 @@ export async function POST(request: Request) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { data: { user } } = await session.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const admin = createAdminClient();
+  if (!admin) return NextResponse.json({ error: "Progress unavailable" }, { status: 503 });
+  if (!(await rateLimit(admin, `progress:${user.id}`, 60, 60))) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
   let body: unknown;
   try {
     const parsed = await readBodyAfterAuthentication(user, () => request.json());
@@ -20,8 +26,6 @@ export async function POST(request: Request) {
   const { lessonId, attempts } = body as { lessonId: string; attempts: ProgressAttempt[] };
   const lesson = getLesson(lessonId);
   if (!lesson) return NextResponse.json({ error: "Unknown lesson" }, { status: 400 });
-  const admin = createAdminClient();
-  if (!admin) return NextResponse.json({ error: "Progress unavailable" }, { status: 503 });
   try {
     const { decision } = await loadLessonAccess(admin, user.id, lessonId);
     if (!decision.allowed) return NextResponse.json({ error: "paywall" }, { status: 403 });

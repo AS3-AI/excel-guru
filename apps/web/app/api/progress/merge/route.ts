@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { rateLimit } from "@/lib/rate-limit";
 import { getLesson } from "@/lib/lessons";
 import { decideLessonAccess, loadLessonAccess } from "@/lib/access";
 import { calculateProgress, getIstDate, getIstDayUtcBounds, getStreak, pointsAllowedForCompletion, progressAttemptRows, readBodyAfterAuthentication, shouldRetryCompletionWithZeroPoints, type ProgressAttempt, type StreakRow } from "@/lib/progress";
@@ -9,6 +10,11 @@ export async function POST(request: Request) {
   const session = await createClient();
   const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const admin = createAdminClient();
+  if (!admin) return NextResponse.json({ error: "Progress unavailable" }, { status: 503 });
+  if (!(await rateLimit(admin, `progress/merge:${user.id}`, 20, 60))) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
   let body: unknown;
   try {
     const parsed = await readBodyAfterAuthentication(user, () => request.json());
@@ -16,8 +22,6 @@ export async function POST(request: Request) {
     body = parsed.body;
   } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
   if (!body || typeof body !== "object" || !Array.isArray((body as { lessons?: unknown }).lessons)) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  const admin = createAdminClient();
-  if (!admin) return NextResponse.json({ error: "Progress unavailable" }, { status: 503 });
   let completedLessonIds: string[];
   let openedLessonIds: string[];
   let premium: boolean;
