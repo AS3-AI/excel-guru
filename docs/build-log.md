@@ -23,7 +23,8 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T24 Points + leaderboards | codex | t24 branch | passed (2 rounds), live-tested on Supabase | pushed | share bonus once-only verified |
 | T27 Video + workbook | codex | fbd7154 | passed, focus guards added | merged | keyboard check of the modal pending a lesson with a video |
 | T25 Payments (Razorpay) | codex | merged | passed (3 rounds) | merged | Stripe deferred (option 2); no lifetime |
-| T30 Payments switch | codex | 9fa43d2 | self-review (small diff) + prod-build check | merged | PAYMENTS_ENABLED unset = off; set "true" after live Razorpay test |
+| T30 Payments switch | codex | 9fa43d2 | self-review (small diff) + prod-build check | pushed | PAYMENTS_ENABLED unset = off; set "true" after live Razorpay test |
+| T32 Razorpay total_count | claude | 2de0f88 | tests first; live test purchase passed (test mode) | pushed | PAYMENTS_ENABLED=true in prod with test keys |
 | T26 AI explanations | codex | 46400a7 | passed (2 rounds + Claude fixes) | merged | 20-a-day limit + per-user ratings pending schema approval; keep GEMINI_API_KEY unset in prod
 | Content: Logical (logical-1..7) | claude gold + codex drafts | 749ae67 | pedagogy review 2 rounds + coincidence audit (9 accepted TRUE/FALSE trade-offs) | merged | |
 | Content: Lookup (lookup-1..10) | claude gold + codex (per-lesson runs) | a4ba6e2 | pedagogy review 2 rounds + lint + lookup audit (accepted: not-found-message steps, one band edge) | merged | |
@@ -34,5 +35,6 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T20 Dashboard + access | codex | bf568cf | passed (2 rounds) | pushed | progress routes paywall-gated; free users can still *open* extra lessons (migration later); live free-tier flow verified 15 Nov (sign-up → merge → 2nd lesson → 3rd = /pricing, 403 on save) |
 
 ## Open bugs
+- Payments (16 Nov, test mode): purchase works and premium unlocks, but "Manage / cancel subscription" does not show, so the subscriptions row is likely not saved as active with a future period_end. Check Razorpay webhook deliveries + the Supabase subscriptions row before the first real renewal (renewal/cancel/halt may not update premium correctly until fixed).
 - ~~Merge race~~ fixed by T22 (single-flight + unique index). Was: two concurrent `/api/progress/merge` calls for the same lesson both award points (seen: 90 instead of 45 after sign-up; React StrictMode double-runs the merge effect in dev, and dashboard + player both call it). Fix: single-flight `mergeLocalProgress()` on the client + a DB unique index on (user, lesson, IST day) where points > 0.
 - Engine, to confirm in real Excel: `=SUMIF(A1:A3,Hike,B1:B3)` (unquoted) gives 0 here — Excel may give 0 (error criteria match errors, as `=COUNTIF(r,#N/A)` does) or `#NAME?`. Also pending: TEXTBEFORE on empty text, COUNTIF with an empty-cell criterion.
