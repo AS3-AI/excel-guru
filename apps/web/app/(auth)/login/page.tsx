@@ -3,7 +3,14 @@ import Link from "next/link";
 import { safeNext } from "@/lib/auth";
 import { GoogleButton, LoginForm } from "../AuthForms";
 
-export const metadata: Metadata = { title: "Log in — Excel Guru", robots: { index: false } };
+export const metadata: Metadata = {
+  title: "Log in",
+  description: "Log in to your Excel Guru account to continue your interactive spreadsheet lessons.",
+  openGraph: {
+    title: "Log in",
+    description: "Log in to your Excel Guru account to continue your interactive spreadsheet lessons.",
+  },
+};
 
 const ERRORS: Record<string, string> = {
   link: "That sign-in link is invalid or has expired. Log in or request a new link.",

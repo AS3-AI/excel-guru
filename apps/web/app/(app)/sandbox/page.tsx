@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Grid } from "@/components/grid/Grid";
 
-export const metadata: Metadata = { title: "Sandbox — Excel Guru", robots: { index: false } };
+export const metadata: Metadata = {
+  title: "Sandbox",
+  description: "Practice spreadsheet formulas freely in the Excel Guru sandbox.",
+  robots: { index: false },
+};
 
 export default function SandboxPage() {
   return (

@@ -12,8 +12,16 @@ import type { LessonNavItem } from "./LessonList";
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const lesson = getLesson((await params).id);
-  return { title: lesson ? `${lesson.title} — Excel Guru` : "Lesson not found — Excel Guru" };
+  const { id } = await params;
+  const lesson = getLesson(id);
+  if (!lesson) return {};
+  const title = lesson.title;
+  const description = `Practice ${lesson.title} in Excel with interactive browser-based spreadsheet exercises, real-time formula evaluation, and instant grading.`;
+  return {
+    title,
+    description,
+    openGraph: { title, description },
+  };
 }
 
 export default async function LessonPage({ params }: Props) {

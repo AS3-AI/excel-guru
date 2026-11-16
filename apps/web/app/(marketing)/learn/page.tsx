@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getArticles } from "@/lib/learn";
 import "./learn.css";
 
-export const metadata = { title: "Excel function guides | Excel Guru", description: "Clear guides to Excel functions, with examples and hands-on practice." };
+export const metadata: Metadata = {
+  title: "Excel Function Guides",
+  description: "Clear guides to Excel functions, with examples and hands-on practice.",
+  openGraph: {
+    title: "Excel Function Guides",
+    description: "Clear guides to Excel functions, with examples and hands-on practice.",
+  },
+};
 
 export default function LearnIndex() {
   const articles = getArticles();
