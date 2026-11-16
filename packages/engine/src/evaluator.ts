@@ -10,6 +10,7 @@ export type Matrix = CellValue[][];
 
 /** What the evaluator needs from a sheet. */
 export interface EvalContext {
+  today?: number;
   cell(row: number, col: number): CellValue;
   /** Rows in use, so whole columns (B:C) can be clipped to them. */
   usedRows(): number;
@@ -126,6 +127,8 @@ class Evaluator {
 
   private call(name: string, args: Ast[]): Value {
     switch (name) {
+      case "TODAY":
+      case "NOW": return this.ctx.today ?? (Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()) - Date.UTC(1899, 11, 30)) / 86400000;
       case "IF":
         return this.if(args);
       case "IFERROR":

@@ -34,6 +34,65 @@ const LIBRARY = formulajs as unknown as Record<string, unknown>;
 // Day 0 of Excel's 1900 date system, so 1900-03-01 onwards matches Excel's serials.
 const EPOCH = Date.UTC(1899, 11, 30);
 const DAY_MS = 86_400_000;
+const serialDay = (n: number) => new Date(EPOCH + Math.floor(n) * DAY_MS);
+const serial = (d: Date) => (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - EPOCH) / DAY_MS;
+function dateArgs(args: Arg[]): number[] | ExcelError {
+  const out: number[] = [];
+  for (const a of args) {
+    const v = scalar(a);
+    if (isError(v)) return v;
+    const n = typeof v === "number" ? v : typeof v === "string" && v.trim() ? Number(v) : NaN;
+    if (!Number.isFinite(n)) return { error: "#VALUE!" };
+    out.push(Math.trunc(n));
+  }
+  return out;
+}
+function dateFunction(args: Arg[]): CellValue {
+  if (args.length !== 3) return VALUE;
+  const a = dateArgs(args); if (isError(a)) return a;
+  let [year, month, day] = a;
+  if (year! >= 0 && year! < 1900) year! += 1900;
+  const t = new Date(Date.UTC(year!, month! - 1, day!));
+  return Number.isNaN(t.getTime()) ? { error: "#NUM!" } : serial(t);
+}
+function datedif(args: Arg[]): CellValue {
+  if (args.length !== 3) return VALUE;
+  const a = dateArgs(args.slice(0, 2)); if (isError(a)) return a;
+  const unitArg = scalar(args[2]);
+  if (isError(unitArg)) return unitArg;
+  if (typeof unitArg !== "string") return VALUE;
+  const [start, end] = a!; if (start! > end!) return { error: "#NUM!" };
+  const s = serialDay(start!), e = serialDay(end!);
+  const years = e.getUTCFullYear() - s.getUTCFullYear();
+  const months = years * 12 + e.getUTCMonth() - s.getUTCMonth();
+  const anniversary = (m: number) => { const d = new Date(Date.UTC(s.getUTCFullYear(), s.getUTCMonth() + m, 1)); const last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate(); d.setUTCDate(Math.min(s.getUTCDate(), last)); return d; };
+  const completedMonths = months - (e < anniversary(months) ? 1 : 0);
+  const completedYears = Math.floor(completedMonths / 12);
+  switch (unitArg.toUpperCase()) {
+    case "D": return end! - start!;
+    case "M": return completedMonths;
+    case "Y": return completedYears;
+    case "YM": return ((completedMonths % 12) + 12) % 12;
+    case "YD": { const endInStartYear = new Date(Date.UTC(s.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate())); return (endInStartYear.getTime() - s.getTime()) / DAY_MS; }
+    case "MD": { const lib = libraryFunction("DATEDIF"); return lib ? fromLibrary(lib(...args.map((x) => Array.isArray(x) ? x : x ?? null))) as CellValue : VALUE; }
+    default: return VALUE;
+  }
+}
+function dateShift(a: Arg, monthsArg: Arg, endOfMonth = false): CellValue {
+  const vals = dateArgs([a, monthsArg]); if (isError(vals)) return vals;
+  const [day, months] = vals!; const src = serialDay(day!);
+  const target = new Date(Date.UTC(src.getUTCFullYear(), src.getUTCMonth() + months!, 1));
+  const last = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate();
+  target.setUTCDate(endOfMonth ? last : Math.min(src.getUTCDate(), last));
+  return serial(target);
+}
+function workday(args: Arg[]): CellValue {
+  if (args.length < 2 || args.length > 3) return VALUE;
+  const vals = dateArgs(args.slice(0, 2)); if (isError(vals)) return vals;
+  let day = vals![0]!, left = Math.abs(vals![1]!), direction = Math.sign(vals![1]!);
+  while (left > 0) { day += direction; const wd = serialDay(day).getUTCDay(); if (wd !== 0 && wd !== 6) left--; }
+  return day;
+}
 
 /** The implementation behind a (case-insensitive) function name, or null → #NAME?. */
 export function lookupFunction(name: string): Impl | null {
@@ -776,6 +835,11 @@ function index(args: Arg[]): CellValue | Matrix {
 }
 
 const OWN: Record<string, Impl> = {
+  DATE: (...args) => dateFunction(args),
+  DATEDIF: (...args) => datedif(args),
+  EDATE: (start, months) => dateShift(start, months),
+  EOMONTH: (start, months) => dateShift(start, months, true),
+  WORKDAY: (...args) => workday(args),
   SEARCH: (...args) => search(args),
   PROPER: (arg) => proper(arg),
   LEFT: (...args) => leftRight(args, "left"),
