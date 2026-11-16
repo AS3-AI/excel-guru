@@ -19,6 +19,7 @@ export type GridProps = {
    * learner's edits; a different one resets the sheet, selection, editor and error, and refreshes sheetRef.
    */
   grid: GridLiteral[][];
+  today?: string;
   /** The cell the learner should answer in, e.g. "C2". */
   targetCell?: string;
   /** Cells or ranges to tint, e.g. ["B2:B6"]. */
@@ -112,11 +113,14 @@ export const inRects = (rects: Rect[], row: number, col: number): boolean =>
 const isErr = (v: CellValue): v is ExcelError => typeof v === "object" && v !== null;
 
 /** What a cell shows: errors as their code, booleans as TRUE/FALSE, numbers to 10 significant digits. */
-export function formatValue(v: CellValue): string {
+export function formatValue(v: CellValue, date = false): string {
   if (v === null) return "";
   if (isErr(v)) return v.error;
   if (typeof v === "boolean") return v ? "TRUE" : "FALSE";
-  if (typeof v === "number") return Number.isInteger(v) ? String(v) : String(Number(v.toPrecision(10)));
+  if (typeof v === "number") {
+    if (date) { const d = new Date(Date.UTC(1899, 11, 30) + Math.floor(v) * 86400000); return `${d.getUTCDate()} ${d.toLocaleString("en", { month: "short", timeZone: "UTC" })} ${d.getUTCFullYear()}`; }
+    return Number.isInteger(v) ? String(v) : String(Number(v.toPrecision(10)));
+  }
   return v;
 }
 
@@ -164,7 +168,7 @@ export function editOutcome(draft: string, current: string): "close" | "commit" 
 export function colMinChars(sheet: Sheet, { rows, cols }: { rows: number; cols: number }, cap = 14): number[] {
   return Array.from({ length: cols }, (_, col) => {
     let longest = 0;
-    for (let row = 0; row < rows; row++) longest = Math.max(longest, formatValue(sheet.get(addressOf({ row, col }))).length);
+    for (let row = 0; row < rows; row++) { const addr = addressOf({ row, col }); longest = Math.max(longest, formatValue(sheet.get(addr), sheet.isDate(addr)).length); }
     return Math.min(cap, longest);
   });
 }
@@ -310,16 +314,16 @@ type Loaded = {
   literals: Set<string>;
 };
 
-const load = (grid: GridLiteral[][]): Loaded => {
-  const sheet = new Sheet(grid);
+const load = (grid: GridLiteral[][], today?: string): Loaded => {
+  const sheet = new Sheet(grid, { today });
   const size = gridSize(grid);
   // Sized once from the lesson's data, so columns don't jump while the learner types.
   return { grid, sheet, size, minChars: colMinChars(sheet, size), literals: literalCells(grid) };
 };
 const ORIGIN: Pos = { row: 0, col: 0 };
 
-export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, sheetRef, selectMode = false, onSelectionChange }: GridProps) {
-  const [loaded, setLoaded] = useState(() => load(grid));
+export function Grid({ grid, today, targetCell, highlightCells, onCommit, onEditStart, sheetRef, selectMode = false, onSelectionChange }: GridProps) {
+  const [loaded, setLoaded] = useState(() => load(grid, today));
   const [, rerender] = useReducer((n: number) => n + 1, 0);
   const [active, setActive] = useState<Pos>(ORIGIN);
   const [selection, setSelection] = useState<{ anchor: Pos; cursor: Pos; whole?: "row" | "column" } | null>(null);
@@ -349,7 +353,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
   // A different `grid` (by value) is a new exercise: fresh Sheet, size, selection, editor and error.
   // Adjusting state during render is React's documented pattern for resetting on a prop change.
   if (!sameGrid(grid, loaded.grid)) {
-    setLoaded(load(grid));
+    setLoaded(load(grid, today));
     setActive(ORIGIN);
     editingRef.current = null;
     setEditingState(null);
@@ -828,7 +832,7 @@ export function Grid({ grid, targetCell, highlightCells, onCommit, onEditStart, 
                       <span className="eg-val">
                         {isActive && editing
                           ? coloured ? <RefText text={editing.draft} refs={coloured} /> : editing.draft
-                          : formatValue(value)}
+                          : formatValue(value, loaded.sheet.isDate(a))}
                       </span>
                     )}
                   </div>

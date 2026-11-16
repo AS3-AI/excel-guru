@@ -7,6 +7,7 @@ export type GradeResult = {
 };
 
 const TOLERANCE = 1e-9;
+export const LESSON_TODAY = "2026-01-15";
 
 /**
  * Grades a learner's formula on a fresh sheet built from the step's grid.
@@ -15,7 +16,7 @@ const TOLERANCE = 1e-9;
 export function gradeFormulaStep(step: FormulaStep, input: string): GradeResult {
   if (!input.startsWith("=")) return { correct: false, reason: "not_formula" };
 
-  const sheet = new Sheet(step.grid);
+  const sheet = new Sheet(step.grid, { today: LESSON_TODAY });
   try {
     sheet.set(step.targetCell, input);
   } catch (e) {

@@ -50,6 +50,9 @@ const countLesson = {
 const countStep = countLesson.steps[1] as FormulaStep;
 
 describe("gradeFormulaStep: Done-when cases", () => {
+  it("grades TODAY against the lesson's fixed date", () => {
+    expect(gradeFormulaStep(step({ grid: [], expectedValue: 46037 }), "=TODAY()")).toEqual(pass);
+  });
   it("=SUM(B2:B4) passes a step with no mustUse", () => {
     expect(gradeFormulaStep(step(), "=SUM(B2:B4)")).toEqual(pass);
   });

@@ -36,7 +36,11 @@ export class Sheet {
   /** During one recalc: anchors whose spills never settled, shown as #CIRC! (see recalc). */
   private readonly stuck = new Set<string>();
 
-  private readonly ctx: EvalContext = {
+  private readonly todaySerial: number;
+  private readonly ctx: EvalContext;
+
+  private makeContext(): EvalContext { return {
+    today: this.todaySerial,
     cell: (row, col) => this.valueAt(formatAddress({ row, col })),
     usedRows: () => {
       let rows = 0;
@@ -50,10 +54,15 @@ export class Sheet {
       for (const key of this.spilled.keys()) cols = Math.max(cols, parseAddress(key)!.col + 1);
       return cols;
     },
-  };
+  }; }
 
   /** grid[0][0] is A1. Values are literal, except strings starting with "=", which are formulas. */
-  constructor(grid: Literal[][]) {
+  constructor(grid: Literal[][], options: { today?: string } = {}) {
+    const today = options.today ?? new Date().toISOString().slice(0, 10);
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(today);
+    if (!match) throw new RangeError("today must be an ISO date");
+    this.todaySerial = (Date.UTC(+match[1]!, +match[2]! - 1, +match[3]!) - Date.UTC(1899, 11, 30)) / 86400000;
+    this.ctx = this.makeContext();
     const formulas: [string, string][] = [];
     grid.forEach((row, r) =>
       row.forEach((v, c) => {
@@ -112,6 +121,29 @@ export class Sheet {
   functionsUsed(addr: string): string[] {
     const ast = this.cells.get(keyOf(addr))?.ast;
     return ast ? functionNames(ast) : [];
+  }
+
+  isDate(addr: string): boolean { return this.dateAt(keyOf(addr), new Set()); }
+
+  private dateAt(key: string, seen: Set<string>): boolean {
+    if (seen.has(key)) return false;
+    seen.add(key);
+    const ast = this.cells.get(key)?.ast;
+    if (!ast) return false;
+    const dateExpr = (node: Ast): boolean => {
+      if (node.type === "call") return ["DATE", "DATEVALUE", "TODAY", "NOW", "EDATE", "EOMONTH", "WORKDAY"].includes(node.name.toUpperCase());
+      if (node.type === "ref") return this.dateAt(keyOf(node.ref), new Set(seen));
+      if (node.type === "binary" && (node.op === "+" || node.op === "-")) {
+        const leftDate = dateExpr(node.left), rightDate = dateExpr(node.right);
+        if (leftDate && rightDate) return false;
+        if (node.op === "-" && rightDate) return false;
+        const other = leftDate ? node.right : node.left;
+        const numeric = other.type === "num" || other.type === "ref" && typeof this.valueAt(keyOf(other.ref)) === "number" || other.type === "binary" || other.type === "call";
+        return (leftDate || rightDate) && numeric;
+      }
+      return false;
+    };
+    return dateExpr(ast);
   }
 
   private valueAt(key: string): CellValue {

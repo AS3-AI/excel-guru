@@ -79,6 +79,7 @@ describe("formatValue / rawInput", () => {
   it("shows values the way a cell does", () => {
     expect(formatValue(null)).toBe("");
     expect(formatValue(6)).toBe("6");
+    expect(formatValue(45366, true)).toBe("15 Mar 2024");
     expect(formatValue(0.1 + 0.2)).toBe("0.3");
     expect(formatValue(true)).toBe("TRUE");
     expect(formatValue(false)).toBe("FALSE");

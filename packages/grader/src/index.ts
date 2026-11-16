@@ -1,4 +1,4 @@
-export { gradeFormulaStep, type GradeResult } from "./formula";
+export { gradeFormulaStep, LESSON_TODAY, type GradeResult } from "./formula";
 export { normaliseKeys, type KeyEventLike } from "./keys";
 export {
   gradeAcceptStep,
