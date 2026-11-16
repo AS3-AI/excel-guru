@@ -79,7 +79,7 @@ describe("validateContent: valid content", () => {
       };
 
       expect(messages({ ...article, sections: [{ ...article.sections[0], grid: Array.from({ length: 8 }, () => Array(9).fill(1)) }] })).toEqual(
-        expect.arrayContaining([expect.stringMatching(/grid must be no larger than 7 rows by 8 columns/)]),
+        expect.arrayContaining([expect.stringMatching(/grid must be no larger than 8 rows by 7 columns/)]),
       );
       expect(messages({ ...article, sections: [{ heading: "Example", text: "Add values.", grid: [[1, null]], formula: "=SUM(A1:A1)" }] })).toEqual(
         expect.arrayContaining([expect.stringMatching(/formula and result must be provided together/)]),

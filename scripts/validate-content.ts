@@ -134,7 +134,7 @@ function checkArticle(data: unknown, fileSlug: string, lessonIds: Set<string>, a
     checkFields(section, { heading: true, text: true, grid: true, formula: true, result: true }, `sections[${i}].`, fail);
     if (section.grid !== undefined && !isGrid(section.grid)) fail(`sections[${i}].grid must be an array of rows of strings, numbers, booleans or null`);
     if (Array.isArray(section.grid)) {
-      if (section.grid.length > 7 || section.grid.some((row) => Array.isArray(row) && row.length > 8)) fail(`sections[${i}].grid must be no larger than 7 rows by 8 columns`);
+      if (section.grid.length > 8 || section.grid.some((row) => Array.isArray(row) && row.length > 7)) fail(`sections[${i}].grid must be no larger than 8 rows by 7 columns`);
     }
     if ((section.formula === undefined) !== (section.result === undefined)) fail(`sections[${i}] formula and result must be provided together`);
     if (section.formula !== undefined) {
