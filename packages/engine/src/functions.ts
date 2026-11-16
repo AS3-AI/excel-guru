@@ -5,6 +5,19 @@ import type { CellValue, ErrorCode, ExcelError, Matrix } from "./evaluator";
 export type Arg = CellValue | Matrix | undefined;
 type Impl = (...args: Arg[]) => CellValue | Matrix;
 
+/** Argument positions that consume complete ranges. Unlisted positions are scalar-lifted. */
+export const rangeArgumentPositions: Readonly<Record<string, readonly number[]>> = {
+  SUM: [-1], SUMSQ: [-1], PRODUCT: [-1], AVERAGE: [-1], MIN: [-1], MAX: [-1], COUNT: [-1], COUNTA: [-1], COUNTBLANK: [0],
+  SUMPRODUCT: [-1],
+  COUNTIF: [0, 1], COUNTIFS: [0, 1, 2, 3, 4, 5, 6, 7, 8], SUMIF: [0, 2], SUMIFS: [0, 1, 3, 5, 7],
+  AVERAGEIF: [0, 2], AVERAGEIFS: [0, 1, 3, 5, 7],
+  VLOOKUP: [1], HLOOKUP: [1], XLOOKUP: [1, 2], INDEX: [0], MATCH: [1],
+  UNIQUE: [0], FILTER: [0, 1], SORT: [0], TEXTJOIN: [2], CONCAT: [0], CONCATENATE: [-1],
+  CORREL: [0, 1], PEARSON: [0, 1], COVAR: [0, 1], "COVARIANCE.P": [0, 1], "COVARIANCE.S": [0, 1],
+  STDEV: [0], STDEVP: [0], "STDEV.S": [0], "STDEV.P": [0], VAR: [0], VARP: [0], "VAR.S": [0], "VAR.P": [0],
+  LARGE: [0], SMALL: [0], RANK: [1], "RANK.EQ": [1], FREQUENCY: [0, 1], TRANSPOSE: [0],
+};
+
 const CODES: ErrorCode[] = ["#DIV/0!", "#N/A", "#VALUE!", "#REF!", "#NAME?", "#NUM!", "#SPILL!", "#CIRC!"];
 const LIBRARY = formulajs as unknown as Record<string, unknown>;
 

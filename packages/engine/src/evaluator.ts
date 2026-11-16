@@ -1,6 +1,6 @@
 import type { Ast, BinaryOp } from "./parser";
 import { parseAddress, parseArea } from "./address";
-import { lookupFunction, type Arg } from "./functions";
+import { lookupFunction, rangeArgumentPositions, type Arg } from "./functions";
 
 export type ErrorCode = "#DIV/0!" | "#N/A" | "#VALUE!" | "#REF!" | "#NAME?" | "#NUM!" | "#SPILL!" | "#CIRC!";
 export type ExcelError = { error: ErrorCode };
@@ -141,20 +141,77 @@ class Evaluator {
     if (!fn) return err("#NAME?");
     const values: Arg[] = args.map((a) => (a.type === "empty" ? undefined : this.eval(a)));
     try {
-      return fn(...values);
+      return this.liftFunction(name, fn, args, values);
     } catch {
       return err("#VALUE!");
     }
   }
 
+  /** Positions that consume a complete array. Every other function argument is scalar-lifted. */
+  private liftFunction(name: string, fn: (...args: Arg[]) => Value, asts: Ast[], values: Arg[]): Value {
+    const ranges = rangeArgumentPositions[name] ?? [];
+    const arraySlots = values.map((v, i) => !ranges.includes(i) && !ranges.includes(-1) && Array.isArray(v));
+    if (!arraySlots.some(Boolean)) return fn(...values);
+    const singles = values.map((v, i) => arraySlots[i] ? v as Matrix : null);
+    const arrays = singles.filter((v): v is Matrix => v !== null);
+    const rows = Math.max(...arrays.map((m) => m.length));
+    const cols = Math.max(...arrays.map((m) => m[0]?.length ?? 0));
+    const at = (m: Matrix, r: number, c: number): CellValue | undefined => {
+      const row = m.length === 1 ? m[0] : m[r];
+      return row ? (row.length === 1 ? row[0] : row[c]) : undefined;
+    };
+    const matrix: Matrix = [];
+    for (let r = 0; r < rows; r++) {
+      const row: CellValue[] = [];
+      for (let c = 0; c < cols; c++) {
+        const cellArgs = values.map((v, i) => {
+          if (!arraySlots[i]) return v;
+          const cell = at(v as Matrix, r, c);
+          return cell === undefined ? err("#N/A") : cell;
+        });
+        // For IF, do not evaluate a branch unless at least one element needs it.
+        if (name === "IF") {
+          const cond = toBoolean(cellArgs[0] as CellValue);
+          if (isError(cond)) { row.push(cond); continue; }
+          const branchIndex = cond ? 1 : 2;
+          if (!asts[branchIndex]) { row.push(false); continue; }
+          const ast = asts[branchIndex]!;
+          const branchValue = ast.type === "empty" ? 0 : this.eval(ast);
+          row.push(Array.isArray(branchValue) ? (branchValue[0]?.[0] ?? 0) : branchValue);
+          continue;
+        }
+        row.push(fn(...cellArgs) as CellValue);
+      }
+      matrix.push(row);
+    }
+    return matrix;
+  }
+
   // Lazy: only the branch taken is evaluated, so IF(TRUE,1,1/0) = 1.
   private if(args: Ast[]): Value {
     if (args.length < 2 || args.length > 3) return err("#VALUE!");
-    const cond = toBoolean(this.scalar(args[0]!));
-    if (isError(cond)) return cond;
-    const branch = cond ? args[1] : args[2];
-    if (!branch) return false; // IF(FALSE,1) is FALSE
-    return branch.type === "empty" ? 0 : this.eval(branch);
+    const condition = this.eval(args[0]!);
+    if (!Array.isArray(condition)) {
+      const cond = toBoolean(condition);
+      if (isError(cond)) return cond;
+      const branch = cond ? args[1] : args[2];
+      if (!branch) return false;
+      return branch.type === "empty" ? 0 : this.eval(branch);
+    }
+    const truth = condition.map((row) => row.map((v) => toBoolean(v)));
+    const needs = [truth.some((row) => row.some((v) => v === true)), truth.some((row) => row.some((v) => v === false))];
+    const branches = [args[1], args[2]].map((branch, i) => {
+      if (!needs[i]) return undefined;
+      if (!branch) return false;
+      return branch.type === "empty" ? 0 : this.eval(branch);
+    });
+    return truth.map((row) => row.map((v, r) => {
+      if (isError(v)) return v;
+      const branch = branches[v ? 0 : 1];
+      if (!Array.isArray(branch)) return branch ?? false;
+      const cell = branch.length === 1 ? branch[0]?.[0] : branch[r]?.[0];
+      return cell ?? err("#N/A");
+    }));
   }
 
   /**
@@ -196,6 +253,7 @@ class Evaluator {
     return seen ? !stopOn : err("#VALUE!");
   }
 }
+
 
 // Operators on arrays work element by element (Excel 365): =A1:A3*2, =A1:A3=B1:B3.
 // A side with one row (or column) is repeated along that direction, so a column times a row
