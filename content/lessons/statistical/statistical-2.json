@@ -1,0 +1,423 @@
+{
+  "id": "statistical-2",
+  "module": "statistical",
+  "title": "MIN, MAX, LARGE and SMALL: extremes and ranks",
+  "difficulty": 1,
+  "requiredCorrect": 6,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "text": "**MAX** finds the largest value in a range, and `MIN` finds the smallest: `=MAX(B2:B6)`. For rankings, `=LARGE(range, k)` and `=SMALL(range, k)` pick the k-th item; text and blanks are skipped."
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "prompt": "A school quiz bowl records final scores for five finalists. Select the scores: `B2:B6`.",
+      "grid": [
+        [
+          "Finalist",
+          "Score",
+          null,
+          "Top score"
+        ],
+        [
+          "Aarav",
+          78,
+          null,
+          null
+        ],
+        [
+          "Elena",
+          92,
+          null,
+          null
+        ],
+        [
+          "Kavya",
+          85,
+          null,
+          null
+        ],
+        [
+          "Liam",
+          64,
+          null,
+          null
+        ],
+        [
+          "Pooja",
+          96,
+          null,
+          null
+        ]
+      ],
+      "target": "B2:B6"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "prompt": "Who won the quiz? In `D2`, type `=MAX(B2:B6)` and press Enter.",
+      "grid": [
+        [
+          "Finalist",
+          "Score",
+          null,
+          "Top score"
+        ],
+        [
+          "Aarav",
+          78,
+          null,
+          null
+        ],
+        [
+          "Elena",
+          92,
+          null,
+          null
+        ],
+        [
+          "Kavya",
+          85,
+          null,
+          null
+        ],
+        [
+          "Liam",
+          64,
+          null,
+          null
+        ],
+        [
+          "Pooja",
+          96,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 96,
+      "mustUse": [
+        "MAX"
+      ],
+      "solution": "=MAX(B2:B6)",
+      "explain": "Pooja's 96 is the highest score in B2:B6, so MAX returns 96.",
+      "highlightCells": [
+        "B2:B6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "prompt": "In swimming, the lowest time wins. In `D2`, find the fastest time in `B2:B6`.",
+      "grid": [
+        [
+          "Swimmer",
+          "Seconds",
+          null,
+          "Fastest"
+        ],
+        [
+          "Noah",
+          35,
+          null,
+          null
+        ],
+        [
+          "Lucas",
+          42,
+          null,
+          null
+        ],
+        [
+          "Priya",
+          31,
+          null,
+          null
+        ],
+        [
+          "Maya",
+          38,
+          null,
+          null
+        ],
+        [
+          "Zara",
+          28,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 28,
+      "mustUse": [
+        "MIN"
+      ],
+      "solution": "=MIN(B2:B6)",
+      "explain": "Zara's 28 seconds is the lowest time in B2:B6, so MIN returns 28.",
+      "highlightCells": [
+        "B2:B6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "prompt": "The runner-up takes second place. In `D2`, find the second highest score in `B2:B6` using `=LARGE(B2:B6,2)`.",
+      "grid": [
+        [
+          "Player",
+          "Points",
+          null,
+          "Runner-up"
+        ],
+        [
+          "Farah",
+          25,
+          null,
+          null
+        ],
+        [
+          "Arjun",
+          14,
+          null,
+          null
+        ],
+        [
+          "Deepak",
+          18,
+          null,
+          null
+        ],
+        [
+          "Leo",
+          11,
+          null,
+          null
+        ],
+        [
+          "Chloe",
+          21,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 21,
+      "mustUse": [
+        "LARGE"
+      ],
+      "solution": "=LARGE(B2:B6,2)",
+      "explain": "Chloe's 21 points is the second highest score after Farah's 25, so LARGE returns 21.",
+      "highlightCells": [
+        "B2:B6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "prompt": "In golf, the lowest score wins. In `D2`, find the 3rd lowest score in `B2:B7`.",
+      "grid": [
+        [
+          "Golfer",
+          "Score",
+          null,
+          "3rd place"
+        ],
+        [
+          "Aditi",
+          34,
+          null,
+          null
+        ],
+        [
+          "Ben",
+          44,
+          null,
+          null
+        ],
+        [
+          "Dev",
+          39,
+          null,
+          null
+        ],
+        [
+          "Grace",
+          48,
+          null,
+          null
+        ],
+        [
+          "Kabir",
+          41,
+          null,
+          null
+        ],
+        [
+          "Sara",
+          36,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 39,
+      "mustUse": [
+        "SMALL"
+      ],
+      "solution": "=SMALL(B2:B7,3)",
+      "explain": "The three lowest scores are 34, 36, and 39, so the 3rd lowest is Dev's 39.",
+      "highlightCells": [
+        "B2:B7"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "prompt": "Text in a range is skipped automatically. In `D2`, find the winning (lowest) time in `B2:B6`.",
+      "grid": [
+        [
+          "Runner",
+          "Minutes",
+          null,
+          "Winner"
+        ],
+        [
+          "Rohan",
+          52,
+          null,
+          null
+        ],
+        [
+          "Clara",
+          "DNF",
+          null,
+          null
+        ],
+        [
+          "Tariq",
+          45,
+          null,
+          null
+        ],
+        [
+          "Mei",
+          49,
+          null,
+          null
+        ],
+        [
+          "Vikram",
+          41,
+          null,
+          null
+        ]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 41,
+      "mustUse": [
+        "MIN"
+      ],
+      "solution": "=MIN(B2:B6)",
+      "explain": "Clara's \"DNF\" is text so MIN skips it, returning Vikram's winning time of 41 minutes.",
+      "highlightCells": [
+        "B2:B6"
+      ],
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":"
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "prompt": "Which formula gives the second-place score from a list of results in `B2:B10`?",
+      "options": [
+        "=LARGE(B2:B10,2)",
+        "=MAX(B2:B10,2)",
+        "=MAX(B2:B10)"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "prompt": "A local science fair awards a trophy to the runner-up. What was the second highest score? Put the answer in `B7`.",
+      "grid": [
+        [
+          "Student",
+          "Score"
+        ],
+        [
+          "Ananya",
+          95
+        ],
+        [
+          "Dev",
+          74
+        ],
+        [
+          "Fatima",
+          88
+        ],
+        [
+          "Karan",
+          82
+        ],
+        [
+          "Meera",
+          91
+        ],
+        [
+          "Runner-up",
+          null
+        ]
+      ],
+      "targetCell": "B7",
+      "expectedValue": 91,
+      "mustUse": [
+        "LARGE"
+      ],
+      "solution": "=LARGE(B2:B6,2)",
+      "explain": "Meera's 91 is the second highest score behind Ananya's 95, so LARGE returns 91.",
+      "mobileButtons": [
+        "=",
+        "(",
+        ")",
+        ":",
+        ","
+      ]
+    }
+  ]
+}
