@@ -102,3 +102,11 @@ update the card's line in docs/build-log.md; merge and push only when the user s
   step repeated 5×, generic prompts, "" for empty cells) and stopped a rewrite round half done. For content,
   run ONE lesson per Codex run (parallel runs are fine — disjoint files), give a step plan per lesson, hand it
   an audit script with a pass condition (`coincidences: 0` for its lesson), and grep for `""` cells afterwards.
+
+## Antigravity CLI (`agy`) for lessons (owner approved 16 Nov)
+- Use it like Codex for content: one lesson per run, same prompt (head + lesson plan), run from the worktree:
+  `agy -p "$(cat prompt)" --mode accept-edits --print-timeout 900s < /dev/null > log 2>&1` (background).
+- Headless agy edits files but cannot run shell commands (auto-denied; never use --dangerously-skip-permissions).
+  So drop the "Done when … run" lines from its prompt: Claude runs lesson-digest, the audit and validate-content
+  afterwards and sends a numbered fix prompt with the exact LINT/audit lines.
+- Codex and agy can work in parallel on different lesson files; never two tools on the same file.
