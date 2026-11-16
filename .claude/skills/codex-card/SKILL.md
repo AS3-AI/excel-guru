@@ -147,3 +147,7 @@ that worktree's engine.
 append ids to `order.json` in curriculum order, add build-log lines. If code slots touched neighbouring areas,
 review the combined diff once. Merge `integrate/<batch>` into main and push only on the owner's word, then remove
 the worktrees and branches.
+- Codex usage limit (16 Nov, until Dec 13): code cards moved to Antigravity. Loop: agy edits → Claude runs
+  typecheck, test, validate-content, build (and TZ engine tests) in the slot → numbered fix prompt with the exact
+  failing test names and error lines → repeat. Prompts for agy code work list every file, every rule as a
+  numbered checklist, the must-keep behaviours, and ask for a per-item "already correct / changed" reply.
