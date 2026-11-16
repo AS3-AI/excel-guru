@@ -10,7 +10,7 @@
     {
       "id": "s1",
       "type": "info",
-      "text": "In a weekly report, you often **combine** functions to calculate and format answers in a single cell: nest one inside another, like `=ROUND(AVERAGEIF(range, criteria, average_range), 1)` or `=IF(SUMIF(range, criteria, sum_range) >= target, \"Goal met\", \"Below goal\")`. The inner function runs first and passes its result to the outer function."
+      "text": "In a weekly report, you often **combine** functions to calculate and format answers in a single cell: nest one inside another, like `=IF(SUMIF(range, criteria, sum_range) >= target, \"Goal met\", \"Below goal\")`. The inner function runs first and passes its result to the outer function."
     },
     {
       "id": "s2",
@@ -87,7 +87,7 @@
     {
       "id": "s3",
       "type": "formula",
-      "prompt": "What is the average quantity of drinks sold, rounded to 1 decimal place? In `B8`, type `=ROUND(AVERAGEIF(C2:C7,\"Drink\",D2:D7),1)` and press Enter.",
+      "prompt": "What is the total quantity of drinks sold? In `B8`, type `=SUMIF(C2:C7,\"Drink\",D2:D7)` and press Enter.",
       "grid": [
         [
           "Day",
@@ -155,13 +155,12 @@
         ]
       ],
       "targetCell": "B8",
-      "expectedValue": 33.7,
+      "expectedValue": 101,
       "mustUse": [
-        "ROUND",
-        "AVERAGEIF"
+        "SUMIF"
       ],
-      "solution": "=ROUND(AVERAGEIF(C2:C7,\"Drink\",D2:D7),1)",
-      "explain": "AVERAGEIF calculates the average quantity of the three drink orders (33.67), and ROUND rounds it to 33.7.",
+      "solution": "=SUMIF(C2:C7,\"Drink\",D2:D7)",
+      "explain": "SUMIF checks C2:C7 for Drink and adds the quantities 35, 22, and 44 to get 101.",
       "highlightCells": [
         "C2:C7",
         "D2:D7"
@@ -631,11 +630,11 @@
     {
       "id": "s9",
       "type": "mcq",
-      "prompt": "A manager wants to round the average quantity of drinks to 1 decimal place. Which formula combines `ROUND` and `AVERAGEIF` correctly?",
+      "prompt": "A manager wants to check if total snack sales reached at least 45. Which formula combines `IF` and `SUMIF` correctly?",
       "options": [
-        "`=ROUND(AVERAGEIF(C2:C7,\"Drink\",D2:D7),1)`",
-        "`=ROUND(=AVERAGEIF(C2:C7,\"Drink\",D2:D7),1)`",
-        "`=ROUND(AVERAGEIF(C2:C7,\"Drink\",D2:D7,1))`"
+        "`=IF(SUMIF(C2:C7,\"Snack\",D2:D7)>=45,\"Goal met\",\"Below goal\")`",
+        "`=IF(=SUMIF(C2:C7,\"Snack\",D2:D7)>=45,\"Goal met\",\"Below goal\")`",
+        "`=IF(SUMIF(C2:C7,\"Snack\",D2:D7>=45),\"Goal met\",\"Below goal\")`"
       ],
       "answer": 0
     },

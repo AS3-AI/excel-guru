@@ -210,9 +210,9 @@
     {
       "id": "s9",
       "type": "formula",
-      "prompt": "A café manager wants to see total revenue from the bakery counter. In `E2`, calculate the total revenue from `C2:C7` for all items where the category in `B2:B7` is \"Bakery\".",
+      "prompt": "Which bakery items does the café sell? In `E2`, list them from `A2:A7`.",
       "grid": [
-        ["Item", "Category", "Revenue", null, "Total"],
+        ["Item", "Category", "Revenue", null, "Bakery items"],
         ["Sourdough", "Bakery", 450, null, null],
         ["Espresso", "Drink", 320, null, null],
         ["Croissant", "Bakery", 280, null, null],
@@ -221,12 +221,12 @@
         ["Green tea", "Drink", 150, null, null]
       ],
       "targetCell": "E2",
-      "expectedValue": 920,
+      "expectedValue": "Sourdough",
       "mustUse": [
         "FILTER"
       ],
-      "solution": "=SUM(FILTER(C2:C7,B2:B7=\"Bakery\"))",
-      "explain": "FILTER gathers the revenue for Sourdough, Croissant and Muffin (450, 280 and 190), and SUM totals them to 920.",
+      "solution": "=FILTER(A2:A7,B2:B7=\"Bakery\")",
+      "explain": "FILTER checks B2:B7 for \"Bakery\" and returns the matching items from A2:A7: Sourdough, Croissant and Muffin.",
       "mobileButtons": [
         "=",
         "(",

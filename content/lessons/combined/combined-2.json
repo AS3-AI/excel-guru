@@ -627,45 +627,88 @@
     {
       "id": "s10",
       "type": "formula",
-      "prompt": "A volunteer typed student names for the sports day certificates in all lowercase. In `C2`, fix the capitalization of Priya's name in `A2` so each word begins with a capital letter.",
+      "prompt": "Did Red house score enough points for the trophy (25 or more)? In `G2`, return `\"Trophy\"` if the total points for Red house is 25 or more, otherwise return `\"No trophy\"`.",
       "grid": [
         [
           "Student",
           "House",
-          "Certificate"
+          "Age",
+          "Time",
+          "Points",
+          null,
+          "Trophy"
         ],
         [
-          "priya sharma",
+          "Aarav",
           "Red",
+          "U14",
+          12.7,
+          8,
+          null,
           null
         ],
         [
-          "liam o'connor",
+          "Diya",
           "Blue",
+          "U14",
+          13.4,
+          5,
+          null,
           null
         ],
         [
-          "ananya sen",
-          "Green",
-          null
-        ],
-        [
-          "david chen",
+          "Karan",
           "Red",
+          "U16",
+          12.1,
+          10,
+          null,
+          null
+        ],
+        [
+          "Maya",
+          "Blue",
+          "U16",
+          14.5,
+          4,
+          null,
+          null
+        ],
+        [
+          "Rohan",
+          "Green",
+          "U14",
+          13.1,
+          6,
+          null,
+          null
+        ],
+        [
+          "Zara",
+          "Red",
+          "U16",
+          12.5,
+          9,
+          null,
           null
         ]
       ],
-      "targetCell": "C2",
-      "expectedValue": "Priya Sharma",
+      "targetCell": "G2",
+      "expectedValue": "Trophy",
       "mustUse": [
-        "PROPER"
+        "IF",
+        "SUMIF"
       ],
-      "solution": "=PROPER(A2)",
-      "explain": "PROPER capitalises the first letter of each word in priya sharma, producing Priya Sharma for the printed certificate.",
+      "solution": "=IF(SUMIF(B2:B7,\"Red\",E2:E7)>=25,\"Trophy\",\"No trophy\")",
+      "explain": "Red house runners scored 8, 10, and 9 points totaling 27, so the condition is met and IF returns Trophy.",
       "mobileButtons": [
         "=",
         "(",
-        ")"
+        ")",
+        ",",
+        "\"",
+        ":",
+        ">"
       ]
     }
   ]
