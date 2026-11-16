@@ -97,7 +97,7 @@ per-user AI ratings deferred.
 | **O1** | Turn on AI explanations | 🟡 owner — below |
 | **T34** | Payments: subscription row + Manage / cancel button | 🟢 tests + ignored-event logging on integrate/launch-content; root cause needs the owner's Razorpay webhook deliveries |
 | **O2** | Payments to live mode | ⬜ owner — below (also listed in Phase 5) |
-| **T35** | One AI rating per user | ⏸ deferred by owner — below |
+| **T35** | One AI rating per user | 🟢 on integrate/launch-content; owner runs migration 0006 |
 | ~~T36~~ | moved up: done |
 | C5 Statistical (7) · C9 Array Formulas (2) · C10 Combined (2) | | ✅ live 16 Nov |
 | C3 Intro to Shortcuts 2–6 · C4 Cell Selection 1–7 | plan: docs/content/shortcuts-plan.md | ✅ merged 16 Nov (browser key test pending; intro-to-shortcuts-1 Alt key tips 🟢 on integrate/launch-content, Windows-only) |
@@ -139,7 +139,7 @@ grading, the paywall or payments.
 | **T44** | Error states, toasts, connection banner, one-column layout | ⬜ |
 | **T45** | Landing "Start free" + email the waitlist | ⬜ |
 | **T46** | Security pass: RLS on every table, rate limits, refunds | ⬜ |
-| **T47** | SEO basics + help / privacy / terms pages | ⬜ |
+| **T47** | SEO basics + help / privacy / terms pages | 🟢 on integrate/launch-content; owner fills legal placeholders; Lighthouse pending |
 | **T48** | Analytics (PostHog) + cookie banner | ⬜ |
 | **O2** | Payments to live mode | ⬜ owner |
 | **O3** | Pre-launch checklist (auth email, test accounts, dev project, Excel checks) | ⬜ owner + Claude |
