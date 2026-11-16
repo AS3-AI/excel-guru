@@ -1,0 +1,42 @@
+{
+  "slug": "average",
+  "fn": "AVERAGE",
+  "title": "How to use AVERAGE in Excel",
+  "description": "Learn how to calculate averages in Excel with the AVERAGE function. See clear examples, avoid common mistakes, and practice hands-on.",
+  "syntax": "=AVERAGE(number1, [number2], …)",
+  "args": [
+    { "name": "number1", "required": true, "text": "The first number, cell reference, or range to average." },
+    { "name": "number2", "required": false, "text": "More numbers, references, or ranges to include in the average." }
+  ],
+  "sections": [
+    {
+      "heading": "What AVERAGE does",
+      "text": "**AVERAGE** calculates the mean of a group of numbers. Give it individual numbers or a range such as `B2:B6`, and it returns their average. Text and completely empty cells in the range are ignored."
+    },
+    {
+      "heading": "A small example",
+      "text": "Here are daily volunteer hours. The formula in the blank result cell calculates the average hours worked across the three days.",
+      "grid": [
+        ["Day", "Hours"],
+        ["Mon", 6],
+        ["Tue", 8],
+        ["Wed", 7],
+        ["Average", null]
+      ],
+      "formula": "=AVERAGE(B2:B4)",
+      "result": 7
+    },
+    {
+      "heading": "Average separate ranges",
+      "text": "You can include multiple ranges by separating them with commas: `=AVERAGE(B2:B4,D2:D4)`. Excel combines all the numbers and divides by the total count."
+    },
+    {
+      "heading": "Common mistake: blank cells versus zeros",
+      "text": "Excel ignores empty cells, but it counts cells that contain `0`. If you enter `0` for a missed day, it pulls the average down. Leave the cell blank if you want Excel to skip it. Also note that a range with no numbers returns a `#DIV/0!` error."
+    }
+  ],
+  "lessonId": "statistical-1",
+  "related": [
+    "sum"
+  ]
+}

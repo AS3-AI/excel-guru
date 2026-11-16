@@ -35,11 +35,26 @@
       "heading": "A small example",
       "text": "Here is a list of workshop sessions and speakers. The formula in the blank result cell joins all speaker names into one comma-separated list.",
       "grid": [
-        ["Session", "Speaker"],
-        ["Morning", "Alex"],
-        ["Keynote", "Priya"],
-        ["Closing", "Elena"],
-        ["All Speakers", null]
+        [
+          "Session",
+          "Speaker"
+        ],
+        [
+          "Morning",
+          "Alex"
+        ],
+        [
+          "Keynote",
+          "Priya"
+        ],
+        [
+          "Closing",
+          "Elena"
+        ],
+        [
+          "All Speakers",
+          null
+        ]
       ],
       "formula": "=TEXTJOIN(\", \", TRUE, B2:B4)",
       "result": "Alex, Priya, Elena"
@@ -49,8 +64,8 @@
       "text": "Set `ignore_empty` to `TRUE` to ignore blank cells in your range. If you set it to `FALSE`, Excel includes those empty cells, leaving repeated delimiters such as `Alex, , Elena`."
     },
     {
-      "heading": "Common mistakes",
-      "text": "Always enclose text delimiters in quotation marks, such as `\"-\"`. Typing `=TEXTJOIN(-, TRUE, B2:B4)` causes a `#NAME?` error. Also keep the argument order in mind: delimiter first, then `ignore_empty`, then your text range."
+      "heading": "Common mistake: delimiter without quotes",
+      "text": "Always enclose text delimiters in quotation marks, such as `\"-\"`. Typing `=TEXTJOIN(-, TRUE, B2:B4)` won't be accepted: Excel shows a formula error message and the formula is never entered. Also keep the argument order in mind: delimiter first, then `ignore_empty`, then your text range."
     }
   ],
   "lessonId": "text-manipulation-2",
