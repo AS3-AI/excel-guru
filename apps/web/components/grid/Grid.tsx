@@ -33,6 +33,12 @@ export type GridProps = {
   /** Read-only worksheet that reports cell or range selections instead of editing cells. */
   selectMode?: boolean;
   onSelectionChange?: (ref: string) => void;
+  /** Static worksheet for demonstrations: no editing, focus, or keyboard handling. */
+  displayOnly?: boolean;
+  activeCell?: string;
+  selection?: string;
+  format?: Record<string, string[]>;
+  onDisplayClick?: () => void;
 };
 
 const MIN_COLS = 7;
@@ -322,7 +328,7 @@ const load = (grid: GridLiteral[][], today?: string): Loaded => {
 };
 const ORIGIN: Pos = { row: 0, col: 0 };
 
-export function Grid({ grid, today, targetCell, highlightCells, onCommit, onEditStart, sheetRef, selectMode = false, onSelectionChange }: GridProps) {
+export function Grid({ grid, today, targetCell, highlightCells, onCommit, onEditStart, sheetRef, selectMode = false, onSelectionChange, displayOnly = false, activeCell, selection: selectionProp, format, onDisplayClick }: GridProps) {
   const [loaded, setLoaded] = useState(() => load(grid, today));
   const [, rerender] = useReducer((n: number) => n + 1, 0);
   const [active, setActive] = useState<Pos>(ORIGIN);
@@ -360,6 +366,10 @@ export function Grid({ grid, today, targetCell, highlightCells, onCommit, onEdit
     setError(null);
   }
   const { sheet, literals } = loaded;
+  const displayPos = (activeCell ? parseRef(activeCell) : null) ?? (selectionProp ? parseRef(selectionProp) : null);
+  const shownActive = displayOnly && displayPos
+    ? { row: displayPos.r1, col: displayPos.c1 } : active;
+  const headActive = displayOnly ? shownActive : active;
   // Grows past the lesson's size when a spill runs off the edge; new columns start flexible.
   const size = sizeWithSpills(sheet, loaded.size, active);
   const columns = gridColumns([...loaded.minChars, ...Array<number>(size.cols - loaded.size.cols).fill(0)]);
@@ -418,17 +428,18 @@ export function Grid({ grid, today, targetCell, highlightCells, onCommit, onEdit
   // Only the grid's own scroller moves: scrollIntoView could scroll the page too.
   useEffect(() => {
     const sc = scrollEl.current;
-    const cell = sc && document.getElementById(`${idBase}-${addressOf(active)}`);
+    const cell = sc && document.getElementById(`${idBase}-${addressOf(shownActive)}`);
     if (!sc || !cell || sc.scrollWidth <= sc.clientWidth) return;
     const box = sc.getBoundingClientRect(), c = cell.getBoundingClientRect();
     const rowhead = gridEl.current?.querySelector(".eg-rowhead")?.getBoundingClientRect().width ?? 0;
     if (c.left < box.left + rowhead) sc.scrollLeft -= box.left + rowhead - c.left;
     else if (c.right > box.right) sc.scrollLeft += c.right - box.right;
-  }, [active, idBase]);
+  }, [shownActive.row, shownActive.col, idBase]);
 
-  const addr = addressOf(active);
+  const addr = addressOf(shownActive);
   const target = targetCell ? parseRef(targetCell) : null;
   const highlights = (highlightCells ?? []).map(parseRef).filter((r): r is Rect => r !== null);
+  const formatRects = displayOnly ? Object.entries(format ?? {}).map(([ref, styles]) => ({ rect: parseRef(ref), styles })).filter((x): x is { rect: Rect; styles: string[] } => x.rect !== null) : [];
 
   /** The formula, or the literal, the active cell holds. A spilled cell holds nothing of its own. */
   const contentOf = (a: string) => (spills.has(a) ? "" : sheet.getFormula(a) ?? rawInput(sheet.get(a)));
@@ -693,14 +704,14 @@ export function Grid({ grid, today, targetCell, highlightCells, onCommit, onEdit
     const area = rect && refArea(rect, size);
     return area ? [{ area, colour: colours[i]!, key: `${i}-${r.text}` }] : [];
   });
-  const selectedRect = selectMode && selection ? parseRef(selectionRef(selection.anchor, selection.cursor, selection.whole)) : null;
+  const selectedRect = displayOnly && selectionProp ? parseRef(selectionProp) : selectMode && selection ? parseRef(selectionRef(selection.anchor, selection.cursor, selection.whole)) : null;
 
   const cols = Array.from({ length: size.cols }, (_, c) => c);
   const rows = Array.from({ length: size.rows }, (_, r) => r);
 
   return (
     <div className={`eg-sheet${spillAnchor && !editing ? " is-spill-ref" : ""}${selectMode ? " is-select-mode" : ""}`} ref={sheetEl}>
-      <FormulaBar
+      {!displayOnly && <FormulaBar
         address={addr}
         value={barValue}
         editing={editing !== null}
@@ -715,7 +726,7 @@ export function Grid({ grid, today, targetCell, highlightCells, onCommit, onEdit
         onConfirm={() => commit()}
         onCancel={cancel}
         onFx={onFx}
-      />
+      />}
       {/* If the lesson's text needs more width than a phone has, the grid scrolls here, never the page. */}
       <div className="eg-scroll" ref={scrollEl}>
         <div
@@ -725,12 +736,16 @@ export function Grid({ grid, today, targetCell, highlightCells, onCommit, onEdit
           aria-label="Spreadsheet"
           aria-rowcount={size.rows + 1}
           aria-colcount={size.cols + 1}
-          aria-activedescendant={cellId(active)}
-          tabIndex={0}
+          aria-activedescendant={displayOnly ? undefined : cellId(active)}
+          tabIndex={displayOnly ? undefined : 0}
+          aria-readonly={displayOnly || undefined}
           style={{ gridTemplateColumns: columns }}
-          onKeyDown={onGridKeyDown}
+          onKeyDown={displayOnly ? undefined : onGridKeyDown}
+          onClick={displayOnly ? onDisplayClick : undefined}
+          onMouseDown={displayOnly ? (e) => e.preventDefault() : undefined}
           onPointerDown={(e) => {
             lastPointer.current = e.pointerType;
+            if (displayOnly) { e.preventDefault(); return; }
             if (!selectMode) return;
             const el = e.target instanceof HTMLElement ? e.target : null;
             const cell = el?.closest<HTMLElement>("[role=gridcell]");
@@ -762,18 +777,18 @@ export function Grid({ grid, today, targetCell, highlightCells, onCommit, onEdit
           <div className="eg-row" role="row">
             <div className="eg-corner" aria-hidden="true" />
             {cols.map((c) => (
-              <div key={c} role="columnheader" className={`eg-head${c === active.col ? " is-on" : ""}`}>
+              <div key={c} role="columnheader" className={`eg-head${c === headActive.col ? " is-on" : ""}`}>
                 {colLetter(c)}
               </div>
             ))}
           </div>
           {rows.map((r) => (
             <div key={r} className="eg-row" role="row">
-              <div role="rowheader" className={`eg-head eg-rowhead${r === active.row ? " is-on" : ""}`}>{r + 1}</div>
+              <div role="rowheader" className={`eg-head eg-rowhead${r === headActive.row ? " is-on" : ""}`}>{r + 1}</div>
               {cols.map((c) => {
                 const pos = { row: r, col: c };
                 const a = addressOf(pos);
-                const isActive = r === active.row && c === active.col;
+                const isActive = r === shownActive.row && c === shownActive.col;
                 const value = sheet.get(a);
                 const cls = ["eg-cell"];
                 if (typeof value === "number") cls.push("is-num");
@@ -797,18 +812,28 @@ export function Grid({ grid, today, targetCell, highlightCells, onCommit, onEdit
                 if (target && inRects([target], r, c)) cls.push("is-target");
                 if (isActive) cls.push("is-active");
                 const isSelected = selectedRect ? inRects([selectedRect], r, c) : isActive;
-                if (selectMode && isSelected) cls.push("is-selection");
+                if ((selectMode || displayOnly) && isSelected) cls.push("is-selection");
+                const cellStyles = formatRects.filter(({ rect }) => inRects([rect], r, c)).flatMap(({ styles }) => styles);
+                const cellStyle: React.CSSProperties = {};
+                if (cellStyles.includes("bold")) cellStyle.fontWeight = 700;
+                if (cellStyles.includes("italic")) cellStyle.fontStyle = "italic";
+                if (cellStyles.includes("center")) cellStyle.textAlign = "center";
+                const decorations = [cellStyles.includes("underline") ? "underline" : "", cellStyles.includes("strikethrough") ? "line-through" : ""].filter(Boolean);
+                if (decorations.length) cellStyle.textDecoration = decorations.join(" ");
+                if (cellStyles.includes("border")) cellStyle.border = "1px solid var(--border)";
                 return (
                   <div
                     key={c}
                     id={cellId(pos)}
                     role="gridcell"
-                    aria-selected={selectMode ? isSelected : isActive}
+                    aria-selected={selectMode || displayOnly ? isSelected : isActive}
                     className={cls.join(" ")}
+                    style={cellStyle}
                     title={spills.has(a) ? `Spilled from ${spills.get(a)}` : undefined}
-                    onMouseDown={(e) => onCellMouseDown(e, pos)}
-                    onMouseEnter={(e) => onCellEnter(e, pos)}
-                    onDoubleClick={() => { if (!selectMode && !editing) startEdit(contentOf(a), "cell"); }}
+                    onPointerDown={displayOnly ? (e) => e.preventDefault() : undefined}
+                    onMouseDown={(e) => { if (displayOnly) { e.preventDefault(); onDisplayClick?.(); } else onCellMouseDown(e, pos); }}
+                    onMouseEnter={displayOnly ? undefined : (e) => onCellEnter(e, pos)}
+                    onDoubleClick={() => { if (!displayOnly && !selectMode && !editing) startEdit(contentOf(a), "cell"); }}
                   >
                     {isActive && editing?.from === "cell" ? (<>
                       <input
@@ -829,7 +854,7 @@ export function Grid({ grid, today, targetCell, highlightCells, onCommit, onEdit
                         <RefMirror text={editing.draft} refs={coloured} inputRef={cellInput} className="eg-cell-mirror" />
                       )}
                     </>) : (
-                      <span className="eg-val">
+                      <span className="eg-val" style={cellStyles.includes("center") ? { textAlign: "center" } : undefined}>
                         {isActive && editing
                           ? coloured ? <RefText text={editing.draft} refs={coloured} /> : editing.draft
                           : formatValue(value, loaded.sheet.isDate(a))}

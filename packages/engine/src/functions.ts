@@ -34,14 +34,41 @@ const LIBRARY = formulajs as unknown as Record<string, unknown>;
 // Day 0 of Excel's 1900 date system, so 1900-03-01 onwards matches Excel's serials.
 const EPOCH = Date.UTC(1899, 11, 30);
 const DAY_MS = 86_400_000;
+const ISO_DATE_RE = /^\s*(\d{4})-(\d\d?)-(\d\d?)\s*$/;
 const serialDay = (n: number) => new Date(EPOCH + Math.floor(n) * DAY_MS);
 const serial = (d: Date) => (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - EPOCH) / DAY_MS;
+
+export function parseDate(text: unknown): number | null {
+  if (typeof text !== "string") return null;
+  const s = text.trim();
+  if (!s) return null;
+  const iso = ISO_DATE_RE.exec(s);
+  let day: number;
+  if (iso) {
+    const y = Number(iso[1]), m = Number(iso[2]), d = Number(iso[3]);
+    if (m < 1 || m > 12 || d < 1 || d > 31) return null;
+    const utc = new Date(Date.UTC(y, m - 1, d));
+    if (utc.getUTCFullYear() !== y || utc.getUTCMonth() !== m - 1 || utc.getUTCDate() !== d) return null;
+    day = utc.getTime();
+  } else {
+    if (/^[+-]?\d+(\.\d+)?$/.test(s)) return null;
+    const local = new Date(s);
+    if (Number.isNaN(local.getTime())) return null;
+    day = Date.UTC(local.getFullYear(), local.getMonth(), local.getDate());
+  }
+  return Number.isNaN(day) ? null : Math.round((day - EPOCH) / DAY_MS);
+}
+
 function dateArgs(args: Arg[]): number[] | ExcelError {
   const out: number[] = [];
   for (const a of args) {
     const v = scalar(a);
     if (isError(v)) return v;
-    const n = typeof v === "number" ? v : typeof v === "string" && v.trim() ? Number(v) : NaN;
+    let n = typeof v === "number" ? v : typeof v === "string" && v.trim() ? Number(v) : NaN;
+    if (!Number.isFinite(n) && typeof v === "string") {
+      const d = parseDate(v);
+      if (d !== null) n = d;
+    }
     if (!Number.isFinite(n)) return { error: "#VALUE!" };
     out.push(Math.trunc(n));
   }
@@ -73,7 +100,7 @@ function datedif(args: Arg[]): CellValue {
     case "M": return completedMonths;
     case "Y": return completedYears;
     case "YM": return ((completedMonths % 12) + 12) % 12;
-    case "YD": { const endInStartYear = new Date(Date.UTC(s.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate())); return (endInStartYear.getTime() - s.getTime()) / DAY_MS; }
+    case "YD": { const endInStartYear = new Date(Date.UTC(s.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate())); const target = endInStartYear < s ? new Date(Date.UTC(s.getUTCFullYear() + 1, e.getUTCMonth(), e.getUTCDate())) : endInStartYear; return (target.getTime() - s.getTime()) / DAY_MS; }
     case "MD": { const lib = libraryFunction("DATEDIF"); return lib ? fromLibrary(lib(...args.map((x) => Array.isArray(x) ? x : x ?? null))) as CellValue : VALUE; }
     default: return VALUE;
   }
@@ -359,21 +386,11 @@ function count(cells: CellValue[] | ExcelError): CellValue {
 // midnight, so formula.js's result drifts by the timezone offset. Take the
 // calendar day each form names and build the serial in UTC.
 
-const ISO_DATE_RE = /^\s*(\d{4})-(\d\d?)-(\d\d?)\s*$/;
-
 function datevalue(text: Arg): CellValue {
   if (isError(text)) return text;
   if (typeof text !== "string") return { error: "#VALUE!" };
-  const iso = ISO_DATE_RE.exec(text);
-  let day: number;
-  if (iso) {
-    day = Date.UTC(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
-  } else {
-    const local = new Date(text);
-    if (Number.isNaN(local.getTime())) return { error: "#VALUE!" };
-    day = Date.UTC(local.getFullYear(), local.getMonth(), local.getDate());
-  }
-  return Number.isNaN(day) ? { error: "#VALUE!" } : (day - EPOCH) / DAY_MS;
+  const d = parseDate(text);
+  return d !== null ? d : { error: "#VALUE!" };
 }
 
 // ---------------------------------------------------------------------------
