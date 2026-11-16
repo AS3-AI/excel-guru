@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { rateScore } from "@/lib/explain";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -15,10 +14,12 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   if (!/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "not_found" }, { status: 404 });
   const admin = createAdminClient();
   if (!admin) return NextResponse.json({ error: "unavailable" }, { status: 503 });
-  const row = await admin.from("ai_explanations").select("id,score").eq("id", id).maybeSingle();
-  if (row.error || !row.data) return NextResponse.json({ error: "not_found" }, { status: 404 });
-  // Known gap pending the owner's schema decision: there is no per-user rating record, so this read-modify-write can race.
-  const update = await admin.from("ai_explanations").update({ score: rateScore(row.data.score, (body as { helpful: boolean }).helpful) }).eq("id", id);
-  if (update.error) return NextResponse.json({ error: "unavailable" }, { status: 503 });
+  const { data, error } = await admin.rpc("rate_explanation", {
+    p_explanation_id: id,
+    p_user_id: user.id,
+    p_helpful: (body as { helpful: boolean }).helpful,
+  });
+  if (error) return NextResponse.json({ error: "unavailable" }, { status: 503 });
+  if (data === null) return NextResponse.json({ error: "not_found" }, { status: 404 });
   return NextResponse.json({ ok: true });
 }
