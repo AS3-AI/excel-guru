@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { getLesson, getOrder, nextLessonId, stepSequence } from "@/lib/lessons";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { decideLessonAccess, loadLessonAccess } from "@/lib/access";
+import { decideAndRecordLessonOpen, decideLessonAccess, loadLessonAccess } from "@/lib/access";
 import { Player } from "./Player";
 import type { LessonNavItem } from "./LessonList";
 
@@ -22,10 +22,16 @@ export default async function LessonPage({ params }: Props) {
   const session = await createClient();
   const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
   let decision = decideLessonAccess({ lessonId: id, userId: user?.id ?? null, completedLessonIds: [] });
+  let access: Awaited<ReturnType<typeof loadLessonAccess>> | null = null;
   if (user) {
     const admin = createAdminClient();
     if (!admin) throw new Error("Lesson access is temporarily unavailable");
-    decision = (await loadLessonAccess(admin, user.id, id)).decision;
+    access = await loadLessonAccess(admin, user.id, id);
+    decision = access.decision;
+  }
+  if (user) {
+    const admin = createAdminClient();
+    decision = await decideAndRecordLessonOpen({ admin, lessonId: id, userId: user.id, completedLessonIds: access!.completedLessonIds, openedLessonIds: access!.openedLessonIds, premium: access!.premium, groupPremium: access!.groupPremium });
   }
   if (!decision.allowed) redirect(decision.reason === "signup" ? `/signup?next=${encodeURIComponent(`/lesson/${id}`)}` : "/pricing");
   let completedRows: { lesson_id: string; completed_at: string; first_try_accuracy: number | null }[] = [];
