@@ -39,6 +39,7 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T54 Shortcut grid + format schema | codex + antigravity | 5a6a2bf | passed (3 rounds); browser check on sum-2 pending (needs sign-in) | merged | owner approved grid + postcondition.format
 | Content: Dates (1..5) | claude gold + antigravity | 1fa40ea | review + fixes | merged | T53 follow-up: date text in DATEDIF and +/− |
 | Content: Intro to Shortcuts (2..6) + Cell Selection (1..7) | claude gold + antigravity | 4538d08 | review + fixes | merged | browser key test pending |
+| T55 Lesson Dashboard link | antigravity | t55-agy | self-review | merged | owner-reported bug |
 | Content: Text modules, Statistical, Array, Combined | | | | pushed | 62 of 86 lessons live (16 Nov) |
 | T26 AI explanations | codex | 46400a7 | passed (2 rounds + Claude fixes) | merged | 20-a-day limit + per-user ratings pending schema approval; keep GEMINI_API_KEY unset in prod
 | Content: Logical (logical-1..7) | claude gold + codex drafts | 749ae67 | pedagogy review 2 rounds + coincidence audit (9 accepted TRUE/FALSE trade-offs) | merged | |
