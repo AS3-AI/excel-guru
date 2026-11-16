@@ -1,0 +1,60 @@
+{
+  "slug": "textjoin",
+  "fn": "TEXTJOIN",
+  "title": "How to use TEXTJOIN in Excel",
+  "description": "Learn how Excel TEXTJOIN combines text across cells and ranges with a delimiter, with a worked example and a link to hands-on practice.",
+  "syntax": "=TEXTJOIN(delimiter, ignore_empty, text1, [text2], …)",
+  "args": [
+    {
+      "name": "delimiter",
+      "required": true,
+      "text": "The character or string to place between each text item, enclosed in double quotes (such as \", \" or \"-\")."
+    },
+    {
+      "name": "ignore_empty",
+      "required": true,
+      "text": "Set to TRUE to skip empty cells, or FALSE to include them and retain extra delimiters."
+    },
+    {
+      "name": "text1",
+      "required": true,
+      "text": "The first text item, cell reference, or range to merge."
+    },
+    {
+      "name": "text2",
+      "required": false,
+      "text": "Additional text items, cell references, or ranges to include in the combined result."
+    }
+  ],
+  "sections": [
+    {
+      "heading": "What TEXTJOIN does",
+      "text": "**TEXTJOIN** merges text from multiple cells or ranges into a single string. You provide a delimiter—such as a comma or space—and Excel inserts it between each value. You can also tell it to skip empty cells automatically."
+    },
+    {
+      "heading": "A small example",
+      "text": "Here is a list of workshop sessions and speakers. The formula in the blank result cell joins all speaker names into one comma-separated list.",
+      "grid": [
+        ["Session", "Speaker"],
+        ["Morning", "Alex"],
+        ["Keynote", "Priya"],
+        ["Closing", "Elena"],
+        ["All Speakers", null]
+      ],
+      "formula": "=TEXTJOIN(\", \", TRUE, B2:B4)",
+      "result": "Alex, Priya, Elena"
+    },
+    {
+      "heading": "Skip blank cells",
+      "text": "Set `ignore_empty` to `TRUE` to ignore blank cells in your range. If you set it to `FALSE`, Excel includes those empty cells, leaving repeated delimiters such as `Alex, , Elena`."
+    },
+    {
+      "heading": "Common mistakes",
+      "text": "Always enclose text delimiters in quotation marks, such as `\"-\"`. Typing `=TEXTJOIN(-, TRUE, B2:B4)` causes a `#NAME?` error. Also keep the argument order in mind: delimiter first, then `ignore_empty`, then your text range."
+    }
+  ],
+  "lessonId": "text-manipulation-2",
+  "related": [
+    "sum"
+  ]
+}

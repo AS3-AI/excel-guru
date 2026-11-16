@@ -153,6 +153,7 @@
   ],
   "lessonId": "lookup-6",
   "related": [
-    "vlookup"
+    "vlookup",
+    "index-match"
   ]
 }
