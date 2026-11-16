@@ -3,6 +3,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { Sheet } from "../packages/engine/src/index";
 import {
   gradeFormulaStep,
   type FormulaStep,
@@ -85,7 +86,89 @@ export function validateContent(dir: string): FileResult[] {
     }
   }
 
+  // Public learning articles live beside lessons and are checked against the same course order.
+  const learnDir = join(dir, "learn");
+  const articleFiles = new Map<string, string>();
+  const articles: { file: string; data: unknown }[] = [];
+  for (const name of listDir(learnDir)) {
+    const file = join(learnDir, name);
+    const fail = failFor(file);
+    if (statSync(file).isDirectory()) { fail("unexpected folder: articles must be <slug>.json files"); continue; }
+    if (!name.endsWith(".json")) { fail("unexpected file: only <slug>.json article files belong in learn/"); continue; }
+    const slug = basename(name, ".json");
+    articleFiles.set(slug, file);
+    const data = readJson(file, fail);
+    if (data !== undefined) articles.push({ file, data });
+  }
+  const slugs = new Set(articleFiles.keys());
+  const knownLessons = new Set((order ?? []).filter((id) => firstFile.has(id)));
+  for (const { file, data } of articles) checkArticle(data, basename(file, ".json"), knownLessons, slugs, failFor(file));
+
   return [...report].map(([file, errors]) => ({ file, errors }));
+}
+
+function checkArticle(data: unknown, fileSlug: string, lessonIds: Set<string>, articleSlugs: Set<string>, fail: Fail) {
+  if (!isObj(data)) return fail("article must be a JSON object");
+  const fields = ["slug", "fn", "title", "description", "syntax", "args", "sections", "lessonId", "related"];
+  checkFields(data, Object.fromEntries(fields.map((field) => [field, true])), "", (m) => fail(`article: ${m}`));
+  const { slug, fn, title, description, syntax, args, sections, lessonId, related } = data;
+  for (const key of ["slug", "fn", "title", "description", "syntax", "lessonId"] as const) {
+    if (!isText(data[key])) fail(`${key} must be a non-empty string`);
+  }
+  if (isText(slug) && slug !== fileSlug) fail(`slug "${slug}" must match file name "${fileSlug}"`);
+  if (typeof description === "string" && description.length > 160) fail("description must be 160 characters or fewer");
+  if (isText(lessonId) && !lessonIds.has(lessonId)) fail(`lessonId "${lessonId}" does not exist in content/order.json`);
+  if (!Array.isArray(args)) fail("args must be an array");
+  else args.forEach((arg: unknown, i) => {
+    if (!isObj(arg)) return fail(`args[${i}] must be an object`);
+    if (!isText(arg.name)) fail(`args[${i}].name must be a non-empty string`);
+    if (typeof arg.required !== "boolean") fail(`args[${i}].required must be a boolean`);
+    if (!isText(arg.text)) fail(`args[${i}].text must be a non-empty string`);
+    checkFields(arg, { name: true, required: true, text: true }, `args[${i}].`, fail);
+  });
+  if (!Array.isArray(sections) || sections.length === 0) fail("sections must be a non-empty array");
+  else sections.forEach((section: unknown, i) => {
+    if (!isObj(section)) return fail(`sections[${i}] must be an object`);
+    if (!isText(section.heading)) fail(`sections[${i}].heading must be a non-empty string`);
+    if (!isText(section.text)) fail(`sections[${i}].text must be a non-empty string`);
+    checkFields(section, { heading: true, text: true, grid: true, formula: true, result: true }, `sections[${i}].`, fail);
+    if (section.grid !== undefined && !isGrid(section.grid)) fail(`sections[${i}].grid must be an array of rows of strings, numbers, booleans or null`);
+    if (Array.isArray(section.grid)) {
+      if (section.grid.length > 8 || section.grid.some((row) => Array.isArray(row) && row.length > 7)) fail(`sections[${i}].grid must be no larger than 8 rows by 7 columns`);
+    }
+    if ((section.formula === undefined) !== (section.result === undefined)) fail(`sections[${i}] formula and result must be provided together`);
+    if (section.formula !== undefined) {
+      if (typeof section.formula !== "string" || !section.formula.startsWith("=")) fail(`sections[${i}].formula must start with "="`);
+      else if (!isGrid(section.grid)) fail(`sections[${i}] formula requires a valid grid`);
+      else {
+        try {
+          const grid = (section.grid as (string | number | boolean | null)[][]).map((row) => [...row]);
+          const targets: string[] = [];
+          for (let r = 0; r < grid.length; r++) for (let c = 0; c < (grid[r]?.length ?? 0); c++) {
+            if (grid[r]?.[c] === null) targets.push(`${columnName(c + 1)}${r + 1}`);
+          }
+          if (targets.length !== 1) fail(`section ${i + 1}: a grid with a formula needs exactly one empty cell for the result`);
+          else {
+            const sheet = new Sheet(grid);
+            sheet.set(targets[0]!, section.formula);
+            const value = sheet.get(targets[0]!);
+            const expected = section.result;
+            if (typeof expected === "number" && typeof value === "number" ? Math.abs(value - expected) > 1e-9 : value !== expected) {
+              fail(`sections[${i}] formula does not evaluate to result ${show(expected)}`);
+            }
+          }
+        } catch { fail(`sections[${i}] formula does not evaluate to result ${show(section.result)}`); }
+      }
+    }
+  });
+  if (!isStrings(related)) fail("related must be an array of slugs");
+  else related.forEach((relatedSlug) => { if (!articleSlugs.has(relatedSlug)) fail(`related slug "${relatedSlug}" does not exist`); });
+}
+
+function columnName(n: number): string {
+  let name = "";
+  for (; n > 0; n = Math.floor((n - 1) / 26)) name = String.fromCharCode(65 + (n - 1) % 26) + name;
+  return name;
 }
 
 /** Sorted entries, without dotfiles (.DS_Store, .gitkeep); [] if the folder is missing. */

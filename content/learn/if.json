@@ -1,0 +1,62 @@
+{
+  "slug": "if",
+  "fn": "IF",
+  "title": "How to use IF in Excel",
+  "description": "Learn how Excel IF tests a condition and returns one value when TRUE and another when FALSE, with clear examples and practice.",
+  "syntax": "=IF(logical_test, value_if_true, [value_if_false])",
+  "args": [
+    {
+      "name": "logical_test",
+      "required": true,
+      "text": "A condition that evaluates to TRUE or FALSE, such as `B2>=50` or `A2=\"Done\"`."
+    },
+    {
+      "name": "value_if_true",
+      "required": true,
+      "text": "The value or text to return when the condition is TRUE."
+    },
+    {
+      "name": "value_if_false",
+      "required": false,
+      "text": "The value or text to return when the condition is FALSE. If omitted, Excel returns FALSE."
+    }
+  ],
+  "sections": [
+    {
+      "heading": "What IF does",
+      "text": "**IF** checks whether a condition is true or false, then returns one result if it is true and another if it is false. You use it to make decisions in your spreadsheet, such as flagging late tasks or calculating bulk discounts."
+    },
+    {
+      "heading": "Return text based on a condition",
+      "text": "To return words from an IF formula, wrap each text output in double quotes. In this table, an invoice unpaid after 30 days is overdue. The formula checks whether the days in `B4` are 30 or fewer.",
+      "grid": [
+        ["Invoice", "Days", "Status"],
+        ["INV-101", 14, "On time"],
+        ["INV-102", 35, "Overdue"],
+        ["INV-103", 21, null]
+      ],
+      "formula": "=IF(B4<=30,\"On time\",\"Overdue\")",
+      "result": "On time"
+    },
+    {
+      "heading": "Return numbers from a formula",
+      "text": "When returning numbers, do not use quotes. If you put quotes around a number, Excel treats it as text instead of a number. Here, orders of 5 or more units get free shipping (a 0 fee), while smaller orders pay 5.",
+      "grid": [
+        ["Order", "Units", "Shipping"],
+        ["#201", 6, 0],
+        ["#202", 2, 5],
+        ["#203", 3, null]
+      ],
+      "formula": "=IF(B4>=5,0,5)",
+      "result": 5
+    },
+    {
+      "heading": "Common mistake: missing quotes around text",
+      "text": "If you write `=IF(B2>=50,Pass,Fail)` without quotes, Excel looks for named ranges called `Pass` and `Fail`. When it cannot find them, it returns a `#NAME?` error. Always put text outputs in double quotes, such as `\"Pass\"` and `\"Fail\"`. Cell references and numbers do not use quotes."
+    }
+  ],
+  "lessonId": "logical-3",
+  "related": [
+    "sum"
+  ]
+}
