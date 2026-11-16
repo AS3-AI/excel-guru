@@ -26,6 +26,7 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T30 Payments switch | codex | 9fa43d2 | self-review (small diff) + prod-build check | pushed | PAYMENTS_ENABLED unset = off; set "true" after live Razorpay test |
 | T32 Razorpay total_count | claude | 2de0f88 | tests first; live test purchase passed (test mode) | pushed | PAYMENTS_ENABLED=true in prod with test keys |
 | T33 Explain call limit | codex | 4569c5c | passed (1 round) | pushed | migration 0003; needs GEMINI_API_KEY, GEMINI_MODEL, EXPLAIN_IP_SALT in prod |
+| T36 Free tier counts opens | codex | 28f25f0 | passed (2 rounds) | pushed | migration 0004; parallel-tab race accepted |
 | T26 AI explanations | codex | 46400a7 | passed (2 rounds + Claude fixes) | merged | 20-a-day limit + per-user ratings pending schema approval; keep GEMINI_API_KEY unset in prod
 | Content: Logical (logical-1..7) | claude gold + codex drafts | 749ae67 | pedagogy review 2 rounds + coincidence audit (9 accepted TRUE/FALSE trade-offs) | merged | |
 | Content: Lookup (lookup-1..10) | claude gold + codex (per-lesson runs) | a4ba6e2 | pedagogy review 2 rounds + lint + lookup audit (accepted: not-found-message steps, one band edge) | merged | |
