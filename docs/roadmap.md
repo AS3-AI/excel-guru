@@ -155,7 +155,7 @@ grading, the paywall or payments.
 | **T41** | Group admin portal + invites | ⬜ |
 | **T42** | Projects: modal, page, player | ⬜ (needs C11) |
 | **T43** + **C14** | `/learn/[function]` article template + 10 articles | ✅ live 16 Nov |
-| **C15** | Landing copy + pricing FAQ | ⬜ |
+| **C15** | Landing copy + pricing FAQ | 🟡 draft 1 in `docs/content/landing-copy.md`, waiting on owner review |
 
 ---
 
