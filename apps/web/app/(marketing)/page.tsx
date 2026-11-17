@@ -3,7 +3,6 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { currencyForCountry, formatPrice, PLANS } from "@/lib/plans";
 import { STATIC_METADATA } from "@/lib/seo";
-import { WaitlistForm } from "./WaitlistForm";
 
 export const metadata: Metadata = {
   title: {
@@ -153,11 +152,6 @@ export default async function Home() {
               <p>{f.a}</p>
             </details>
           ))}
-        </section>
-
-        <section aria-labelledby="cta">
-          <h2 id="cta">Be first in line</h2>
-          <WaitlistForm source="footer" />
         </section>
       </div>
 
