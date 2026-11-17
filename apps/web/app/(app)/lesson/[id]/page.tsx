@@ -60,7 +60,21 @@ export default async function LessonPage({ params }: Props) {
 
   return (
     <div className="wrap pl-page">
-      <nav className="pl-breadcrumb"><Link href={DASHBOARD_HREF}>Dashboard</Link><span>›</span><Link href={moduleHref(lesson.module)}>{lesson.module}</Link><span>›</span><strong>{lesson.title}</strong></nav>
+      <header className="pl-header">
+        <div className="pl-header-wrap">
+          <Link className="brand pl-brand" href="/">
+            <span className="mark pl-mark" aria-hidden="true">fx</span>
+            Excel Guru
+          </Link>
+          <nav className="pl-breadcrumb" aria-label="Breadcrumb">
+            <Link href={DASHBOARD_HREF}>Dashboard</Link>
+            <span className="pl-breadcrumb-sep" aria-hidden="true">›</span>
+            <Link className="pl-breadcrumb-module" href={moduleHref(lesson.module)}>{lesson.module}</Link>
+            <span className="pl-breadcrumb-sep" aria-hidden="true">›</span>
+            <strong className="pl-breadcrumb-current">{lesson.title}</strong>
+          </nav>
+        </div>
+      </header>
       <Player lesson={lesson} next={stepSequence(lesson.steps.length)} nextLessonId={nextLessonId(id)} lessons={lessons} signedOutIntro={!user && id === "intro"} signedIn={!!user} />
     </div>
   );
