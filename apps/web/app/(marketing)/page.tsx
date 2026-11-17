@@ -98,15 +98,6 @@ export default async function Home() {
           </ul>
         </section>
 
-        <section aria-labelledby="see">
-          <h2 id="see">Try one lesson. Then decide.</h2>
-          <p className="lead">
-            This is the whole product. A task, a real grid, your formula, an instant check. If it&apos;s wrong,
-            you&apos;re told why.
-          </p>
-          <Link className="btn" href="/lesson/intro">Try the first lesson</Link>
-        </section>
-
         <section aria-labelledby="how">
           <h2 id="how">How it works</h2>
           <div className="grid">
@@ -118,6 +109,8 @@ export default async function Home() {
               </div>
             ))}
           </div>
+          <p className="lead">A task, a real grid, your formula, an instant check.</p>
+          <Link className="btn" href="/lesson/intro">Try your first lesson</Link>
         </section>
 
         <section aria-labelledby="learn">

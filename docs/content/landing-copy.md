@@ -52,13 +52,13 @@ Written with the copywriting skill. Original wording; nothing copied from `docs/
 
 ## 2. See it (new section)
 
-**Heading:** Try one lesson. Then decide.
+**Heading:** Try your first lesson
 
 **Visual:** a short looping clip or 3 stills of one lesson: the task, the formula typed into the grid, the green
 check with the one-sentence explanation. *(Owner/Claude to capture from a real lesson; no mock-ups.)*
 
 **Caption:**
-> This is the whole product. A task, a real grid, your formula, an instant check. If it's wrong, you're told why.
+> A task, a real grid, your formula, an instant check.
 
 *Source: "proof before belief" section from `landing-copy-india.md` (draft 3). Only this block was taken from it.*
 
