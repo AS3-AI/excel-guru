@@ -6,11 +6,9 @@ Claude builds it into `apps/web/app/(marketing)/page.tsx` (with T45, the "Start 
 Written with the copywriting skill. Original wording; nothing copied from `docs/teardown.md`.
 
 ## Assumptions (change any of these and the copy changes)
-- **Reader (confirmed by the owner):** an Excel beginner who doesn't feel good at it, probably learning for a new
-  job they just got, or getting ready for one. They worry about looking slow in front of new colleagues. India and
-  international. They don't know Excel terms yet, so the copy avoids words like "lookup" without explaining them.
-- **Goal of the page (confirmed):** get them to start the first lesson (free, no sign-up). Payment comes later,
-  inside the product.
+- **Reader:** someone who uses Excel at work or study, can already type a sum, and feels slow or unsure beyond
+  that. India and international.
+- **Goal of the page:** get them to start the first lesson (free, no sign-up). Payment comes later, inside the product.
 - **Big idea:** you learn by typing real formulas into a real spreadsheet, and every answer is checked at once.
   No videos to sit through, no Excel to install.
 - **Proof we have today:** a demo of a lesson, the real numbers (86 lessons, 15 modules), and the refund promise.
@@ -32,12 +30,10 @@ Written with the copywriting skill. Original wording; nothing copied from `docs/
 **Alternatives to test later (A/B):**
 - Stop watching Excel videos. Start typing formulas.
 - Learn Excel by doing it, not by watching.
-- Be ready for Excel before your first day. *(Speaks to the new-job reader; only use if the owner is happy to
-  aim the page at them directly.)*
 
 **Lead (replaces the current paragraph and drops the waitlist sentence):**
-> Starting a new job and nervous about Excel? Learn it by doing it. Type a formula, and you know straight away
-> if it's right. If it isn't, you see why. One small step at a time, in your browser, until it feels easy.
+> Type a formula, get an answer, and know straight away if it's right. If it isn't, you see why.
+> You build real skill one small step at a time, right in your browser.
 
 **Button:** `Start the first lesson — free`
 
@@ -48,7 +44,7 @@ Written with the copywriting skill. Original wording; nothing copied from `docs/
 | Number | Label |
 |---|---|
 | 86 | hands-on lessons |
-| 15 | modules, from your first sum upwards |
+| 15 | modules, SUM to INDEX/MATCH |
 | 4 | real-data projects |
 | 1 | certificate you can verify |
 
@@ -106,11 +102,10 @@ Each line is an outcome; the function names are small print underneath.
 
 ## 5. Who it's for (new, short)
 
-**Heading:** Made for people who are new to Excel
+**Heading:** Made for people who use Excel but don't feel good at it
 
-> Just got a job that uses spreadsheets? Getting ready for one? Never felt sure what a formula does? Start from
-> the very first lesson. Nobody is watching, you can't break anything, and you can repeat any step until it
-> clicks. By the time you're at your desk, adding, counting, looking things up and tidying text won't scare you.
+> If you can add up a column but freeze at a lookup, this is for you. If you're starting from zero, lesson one
+> starts with the very basics. If you're studying or job hunting, you'll learn the formulas people are asked about.
 
 ---
 
@@ -146,12 +141,8 @@ Each line is an outcome; the function names are small print underneath.
 ## 7. FAQ (rewritten; objections answered first)
 
 **I'm a total beginner. Will I keep up?**
-> Yes. That's who it's made for. The first lesson starts with a single sum. Every lesson adds one idea, and you
-> can repeat any step as often as you like.
-
-**I start a new job soon. Will this help?**
-> It teaches the everyday spreadsheet moves people use at work: adding up, counting what matches, finding
-> something in a big table, tidying names and dates. You practise each one until you can do it yourself.
+> Yes. The first lesson starts with a single sum. Every lesson adds one idea, and you never go on until you've
+> done it.
 
 **How is this different from watching videos?**
 > You do it. Every step has you type a formula, and it's checked straight away, so you find out what you don't
@@ -178,11 +169,10 @@ Each line is an outcome; the function names are small print underneath.
 
 ## 8. Closing
 
-**Heading:** Walk into your new job knowing Excel.
-*(Alternative: "Your first formula is two minutes away." Only use that one if the intro lesson really takes about that long; I'll time it.)*
+**Heading:** Your first formula is two minutes away.
 *(Check this is true by timing the intro lesson; if it isn't, use "Your first formula is one click away.")*
 
-> Start with one free lesson. Type a formula, see it checked, and you'll know if this works for you.
+> Type it, see it checked, and you'll know if this works for you.
 
 **Button:** `Start the first lesson — free`
 
@@ -202,12 +192,11 @@ Links: **Guides** (new) · Pricing · Help · Privacy · Terms
 `[TESTIMONIAL]` — one real sentence from a beta user, with their first name and what they do, placed between
 sections 3 and 4. Ask the first 10 beta users for one.
 
-## Questions still open for the owner
-1. Is the closing heading "Walk into your new job knowing Excel." too strong a promise? Safer: "Start your first Excel
-   lesson in one click."
-2. Free-tier rule in the FAQ: intro with no sign-up, then one more lesson with a free account?
-3. Will the AI explanations be on at launch? If not they stay out of the pricing list.
-4. Do you want the headline test (Be ready for Excel before your first day) as the main headline instead?
+## Questions for the owner before this is built
+1. Reader and goal as assumed at the top — right?
+2. Is "Your first formula is two minutes away" true? (I'll time the intro lesson.)
+3. Free-tier rule in the FAQ: intro with no sign-up, then one more lesson with a free account?
+4. Are the AI explanations going to be on at launch (affects the pricing list)?
 5. Any wording you want changed. Reply with block numbers.
 
 ## How we judge it afterwards
