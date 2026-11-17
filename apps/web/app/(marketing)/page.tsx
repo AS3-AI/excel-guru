@@ -109,8 +109,6 @@ export default async function Home() {
               </div>
             ))}
           </div>
-          <p className="lead">A task, a real grid, your formula, an instant check.</p>
-          <Link className="btn" href="/lesson/intro">Try your first lesson</Link>
         </section>
 
         <section aria-labelledby="learn">
@@ -120,6 +118,7 @@ export default async function Home() {
               <li key={m}>{m}</li>
             ))}
           </ul>
+          <Link className="btn" href="/lesson/intro">Try your first lesson</Link>
         </section>
 
         <section aria-labelledby="pricing">

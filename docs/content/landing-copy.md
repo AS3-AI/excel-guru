@@ -58,7 +58,7 @@ Written with the copywriting skill. Original wording; nothing copied from `docs/
 check with the one-sentence explanation. *(Owner/Claude to capture from a real lesson; no mock-ups.)*
 
 **Caption:**
-> A task, a real grid, your formula, an instant check.
+> *(No caption. Button only, placed at the bottom of "What you'll learn".)*
 
 *Source: "proof before belief" section from `landing-copy-india.md` (draft 3). Only this block was taken from it.*
 
