@@ -4,6 +4,7 @@ import Link from "next/link";
 import { currencyForCountry, formatPrice, PLANS } from "@/lib/plans";
 import { STATIC_METADATA } from "@/lib/seo";
 import "./landing.css";
+import { HeroSheet } from "./HeroSheet";
 
 export const metadata: Metadata = {
   title: {
@@ -113,30 +114,7 @@ export default async function Home() {
             </ul>
           </div>
 
-          <figure className="sheet" aria-label="A lesson: type =SUM(B2:B5) into cell B6 and the answer is marked correct" style={{ margin: 0 }}>
-            <div className="sheet-bar" aria-hidden="true"><i /><i /><i /><span>Lesson 3 · SUM</span></div>
-            <div className="sheet-task" aria-hidden="true">
-              <p>Total the four regions in B6.</p>
-              <small>Type a formula, then press Enter.</small>
-            </div>
-            <div className="fx" aria-hidden="true">
-              <b>fx</b>
-              <span><span className="typed">=SUM(B2:B5)</span><i className="caret" /></span>
-            </div>
-            <div className="grid-sheet" aria-hidden="true">
-              <div className="h" /><div className="h">A</div><div className="h">B</div>
-              <div className="h">1</div><div><b>Region</b></div><div className="n"><b>Sales</b></div>
-              <div className="h">2</div><div>North</div><div className="n">1,240</div>
-              <div className="h">3</div><div>South</div><div className="n">980</div>
-              <div className="h">4</div><div>East</div><div className="n">1,410</div>
-              <div className="h">5</div><div>West</div><div className="n">1,190</div>
-              <div className="h">6</div><div><b>Total</b></div><div className="sel"><span>4,820</span></div>
-            </div>
-            <div className="feedback" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="currentColor" opacity=".18" /><path d="m6 10.5 3 3 5-6.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              <span><strong>Correct.</strong> SUM adds every cell from B2 to B5.</span>
-            </div>
-          </figure>
+          <HeroSheet />
         </section>
 
         <section aria-labelledby="how">
