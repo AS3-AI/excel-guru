@@ -118,7 +118,9 @@ export default async function Home() {
               <li key={m}>{m}</li>
             ))}
           </ul>
-          <Link className="btn" href="/lesson/intro">Try your first lesson</Link>
+          <div className="cta-row">
+            <Link className="btn" href="/lesson/intro">Try your first lesson</Link>
+          </div>
         </section>
 
         <section aria-labelledby="pricing">
