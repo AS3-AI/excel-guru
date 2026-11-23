@@ -1,9 +1,9 @@
 /* Landing page only. Everything is scoped under .landing so shared rules in globals.css stay untouched. */
-.landing { --ease: cubic-bezier(0.22, 1, 0.36, 1); --radius: 12px; }
+.landing { --ease: cubic-bezier(0.22, 1, 0.36, 1); --radius: 20px; }
 .landing .wrap { max-width: 1120px; padding: 0 24px; }
 .landing section { border-top: 0; padding: 96px 0; }
 .landing section + section { border-top: 1px solid var(--border); }
-.landing h2 { font-size: clamp(1.6rem, 3.4vw, 2.25rem); line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 12px; text-wrap: balance; }
+.landing h2 { font-size: clamp(1.6rem, 3.4vw, 2.25rem); line-height: 1.15; letter-spacing: -0.01em; font-weight: 700; color: var(--ink); margin: 0 0 12px; text-wrap: balance; }
 .landing .section-lead { color: var(--muted); max-width: 36rem; margin: 0 0 40px; }
 .landing .eyebrow { font: 600 0.8rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-strong); margin: 0 0 14px; }
 .landing { --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; }
@@ -15,23 +15,24 @@
 .nav .mark { width: 22px; height: 22px; border-radius: 6px; background: var(--primary); display: grid; place-items: center; color: var(--primary-ink); font: 700 0.8rem/1 var(--mono); }
 .nav a:not(.btn):not(.brand) { color: var(--muted); text-decoration: none; font-size: 0.95rem; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: color .2s, background-size .3s var(--ease); padding: 4px 0; }
 .nav a:not(.btn):not(.brand):hover { color: var(--ink); background-size: 100% 1px; }
-.nav .btn { padding: 8px 16px; font-size: 0.92rem; }
+.nav .btn { padding: 8px 16px; font-size: 15px; }
 
 /* buttons */
-.landing .btn { display: inline-block; text-decoration: none; transition: transform .2s var(--ease), background-color .2s, box-shadow .2s; box-shadow: 0 1px 0 rgb(0 0 0 / .08), inset 0 1px 0 rgb(255 255 255 / .12); }
-.landing .btn:hover { background: var(--primary-strong); transform: translateY(-1px); box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--primary) 70%, transparent); }
+.landing .btn { display: inline-block; text-decoration: none; font-family: var(--font); font-size: 15px; font-weight: 600; border-radius: 8px; transition: transform .2s var(--ease), background-color .2s; box-shadow: none; }
+.landing .btn:hover { background: var(--primary-strong); transform: translateY(-1px); box-shadow: none; }
 .landing .btn:active { transform: translateY(1px) scale(.985); box-shadow: none; }
 .landing .btn:focus-visible, .landing summary:focus-visible, .landing a:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 6px; }
-.landing .btn-quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--border); }
-.landing .btn-quiet:hover { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--muted); }
+.landing .btn-quiet { background: transparent; color: var(--ink); border: 1px solid var(--ink); border-radius: 999px; box-shadow: none; }
+.landing .btn-quiet:hover { background: var(--surface); color: var(--ink); border-color: var(--ink); box-shadow: none; }
 
 /* hero */
 .landing .hero { padding: 72px 0 88px; display: grid; gap: 56px; align-items: center; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 960px) { .landing .hero { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); min-height: calc(100svh - 61px); padding: 48px 0; } }
-.landing h1 { font-size: clamp(2.4rem, 5.2vw, 4rem); line-height: 1.02; letter-spacing: -0.035em; margin: 0 0 20px; text-wrap: balance; }
+.landing h1 { font-size: clamp(2.4rem, 5.2vw, 4rem); line-height: 1.02; letter-spacing: -0.01em; font-weight: 700; color: var(--ink); margin: 0 0 20px; text-wrap: balance; }
+.landing h1 mark { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: inherit; font-size: 1.1em; background: none; }
 .landing .lead { font-size: 1.15rem; max-width: 30rem; margin: 0 0 32px; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-.hero-actions .btn { padding: 14px 24px; font-size: 1.02rem; }
+.hero-actions .btn { padding: 14px 24px; font-size: 15px; }
 .landing .stats { margin-top: 48px; gap: 0; display: grid; grid-template-columns: repeat(4, auto); justify-content: start; }
 .landing .stats li { padding: 0 24px; border-left: 1px solid var(--border); font-size: 0.85rem; }
 .landing .stats li:first-child { padding-left: 0; border-left: 0; }
@@ -47,7 +48,7 @@
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 
 /* the spreadsheet demo */
-.sheet { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: 0 1px 0 rgb(255 255 255 / .04) inset, 0 30px 60px -30px rgb(10 40 25 / .35), 0 2px 6px rgb(0 0 0 / .05); font-size: 0.9rem; }
+.sheet { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: none; font-size: 0.9rem; }
 .sheet-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--surface-warm); }
 .sheet-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
 .sheet-bar span { margin-left: 8px; color: var(--muted); font: 500 0.78rem var(--mono); }
@@ -80,10 +81,10 @@
 /* how it works */
 .steps { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 .landing .card { padding: 0; border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: transform .25s var(--ease), border-color .25s, box-shadow .25s; }
-.landing .card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--primary) 45%, var(--border)); box-shadow: 0 14px 30px -18px rgb(10 40 25 / .35); }
+.landing .card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--primary) 45%, var(--border)); box-shadow: none; }
 .card-body { padding: 24px; }
 .landing .card .step { font: 600 0.78rem var(--mono); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; }
-.landing .card h3 { font-size: 1.15rem; letter-spacing: -0.01em; color: var(--ink); }
+.landing .card h3 { font-size: 1.15rem; letter-spacing: -0.01em; font-weight: 700; color: var(--ink); }
 .mini { height: 148px; padding: 18px 20px; background: var(--surface-warm); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; gap: 8px; font: 500 0.82rem var(--mono); overflow: hidden; }
 .mini .row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
 .mini .row.on { border-color: var(--primary); color: var(--ink); }
@@ -102,7 +103,7 @@
 .landing .modules li::before { content: counter(m, decimal-leading-zero); font: 500 0.72rem var(--mono); color: var(--muted); }
 .landing .modules li:hover { border-color: var(--primary); }
 .landing .cta-row { margin-top: 40px; }
-.landing .cta-row .btn { padding: 14px 24px; font-size: 1rem; }
+.landing .cta-row .btn { padding: 14px 24px; font-size: 15px; }
 
 /* pricing */
 .landing .price { font: 600 2.75rem/1.1 var(--mono); letter-spacing: -0.04em; color: var(--ink); font-variant-numeric: tabular-nums; margin: 12px 0 14px; }

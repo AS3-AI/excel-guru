@@ -63,7 +63,6 @@
 .pl-step-image { display:block; max-width:100%; height:auto; margin:0 auto 14px; }
 .pl-drawer { position:fixed; z-index:5; top:0; right:0; bottom:0; width:min(380px, 92vw); padding:20px; overflow:auto; background:var(--surface); border-left:1px solid var(--border); box-shadow:0 0 24px color-mix(in srgb, var(--ink) 18%, transparent); }
 .pl-drawer header { display:flex; align-items:center; justify-content:space-between; margin:-20px -20px 20px; padding:18px 20px; color:var(--ink); background:var(--warning); }
-@media (prefers-color-scheme:dark) { .pl-drawer header { color:var(--primary-ink); } }
 .pl-drawer header button { border:0; background:transparent; color:inherit; font-size:1.6rem; cursor:pointer; }
 .pl-show-answer { margin-bottom:16px; }
 .pl-solution { padding:12px; border-radius:8px; background:var(--surface-warm); color:var(--text); overflow-wrap:anywhere; }

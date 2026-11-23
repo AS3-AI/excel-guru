@@ -1,32 +1,18 @@
-/* apps/web/lib/tokens.css — design tokens (Product spec §14). Our own palette, never theirs. */
+/* apps/web/lib/tokens.css — design tokens (Product spec §14). Preview theme: Substack-style light (docs/substack-theme.md). Light only. */
 :root {
   --primary: #107c41;
   --primary-strong: #0b5c30;
   --primary-ink: #ffffff;
-  --ink: #16302a;
-  --surface-warm: #f7f6f2;
-  --surface: #ffffff;
-  --text: #2b2f2d;
-  --muted: #5b6660;
-  --border: #dde4e0;
+  --ink: #363737;
+  --surface-warm: #ffffff;
+  --surface: #f5f5f5;
+  --text: #363737;
+  --muted: #757575;
+  --faint: #b6b6b6;
+  --border: #dddddd;
   --warning: #d97a1e;
   --danger: #c0392b;
   --track-sql: #3b6fd8;
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary: #2fa866;
-    --primary-strong: #5cc48a;
-    --primary-ink: #08130d;
-    --ink: #e9eeeb;
-    --surface-warm: #111513;
-    --surface: #1a201d;
-    --text: #d9e0dc;
-    --muted: #a3ada7;
-    --border: #2a332e;
-    --warning: #f0a04b;
-    --danger: #e5675a;
-    --track-sql: #7aa2f0;
-  }
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, sans-serif;
+  --font-serif: ui-serif, Georgia, "Times New Roman", serif;
 }
