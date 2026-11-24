@@ -8,6 +8,11 @@ import { supabasePublicEnv } from "./env";
  * then applies the signed-in / onboarding redirects from lib/auth.ts.
  */
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
+  const { pathname, search } = request.nextUrl;
+  if (request.nextUrl.searchParams.has("code") && !pathname.startsWith("/auth")) {
+    return NextResponse.redirect(new URL(`/auth/callback${search}`, request.url));
+  }
+
   let response = NextResponse.next({ request });
   const env = supabasePublicEnv();
   if (!env) return response; // Supabase not configured: everything is public.
@@ -32,7 +37,6 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   const { data } = await supabase.auth.getClaims();
   const userId = typeof data?.claims?.sub === "string" ? data.claims.sub : null;
 
-  const { pathname, search } = request.nextUrl;
   let hasProfile = false;
   if (userId && needsProfileCheck(pathname)) {
     const { data: profile } = await supabase

@@ -520,7 +520,7 @@ describe("validateContent: order.json", () => {
     expect(results).toHaveLength(1);
     expect(results[0]!.file).toBe(lessonFile("duplicate-lesson-id", "sum/count-1.json"));
     expect(results[0]!.errors).toEqual([
-      expect.stringMatching(/lesson id "count-1" is also used by .*lessons\/count\/count-1\.json/),
+      expect.stringMatching(/lesson id "count-1" is also used by .*lessons[\\/]count[\\/]count-1\.json/),
     ]);
     expectEveryErrorNamesItsFile("duplicate-lesson-id");
   });
