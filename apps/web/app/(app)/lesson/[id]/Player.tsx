@@ -271,6 +271,26 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     skipShortcutStep();
   };
   const practiceReady = useCallback((node: HTMLElement | null) => { if (node) node.focus({ preventScroll: true }); }, []);
+  const goPrevious = () => { invalidateExplain(); setAiLoading(false); dispatch({ type: "previous" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); setSelectTouched(false); };
+  const skipQuestion = () => { invalidateExplain(); setAiLoading(false); dispatch({ type: "skip" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); setSelectTouched(false); };
+  const canGoBack = state.history.length > 0, canSkip = step.type !== "info" && step.type !== "shortcut" && feedback !== "correct" && !celebrate;
+  useEffect(() => {
+    // Tab = skip (also from the grid); Right/Left arrow = skip/previous outside the grid, where arrows move cells.
+    // Never while typing in a field, on shortcut steps, in the sidebar, or with modifiers (Shift+Tab still navigates).
+    const onKey = (e: KeyboardEvent) => {
+      if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey || step.type === "shortcut") return;
+      const t = e.target as HTMLElement | null;
+      if (t?.closest("input:not([type=radio]):not([type=checkbox]), textarea, select, [contenteditable=true], .pl-lessons, nav, header")) return;
+      const outsideGrid = !t?.closest("[role=grid], input");
+      if (e.key === "Tab" && canSkip) { e.preventDefault(); e.stopPropagation(); skipQuestion(); }
+      else if (e.key === "ArrowRight" && canSkip && outsideGrid) { e.preventDefault(); skipQuestion(); }
+      else if (e.key === "ArrowLeft" && canGoBack && outsideGrid) { e.preventDefault(); goPrevious(); }
+      // Enter presses Continue wherever focus is; a focused button already handles its own Enter.
+      else if (e.key === "Enter" && continueRef.current && !t?.closest("button, a")) { e.preventDefault(); e.stopPropagation(); continueRef.current.click(); }
+    };
+    window.addEventListener("keydown", onKey, true); // capture: run before the grid's own Tab handling
+    return () => window.removeEventListener("keydown", onKey, true);
+  });
   const onStageCapture = (e: React.KeyboardEvent<HTMLDivElement>) => {
     commitRef.current = false;
     if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
@@ -288,24 +308,24 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     }
   };
 
-  if (keyboardUnavailable) return <div className="pl-layout"><LessonList items={lessons} currentId={lesson.id} /><main className="pl"><section className="pl-card"><p>This lesson needs a keyboard — continue on a computer.</p><Link className="btn pl-continue" href={DASHBOARD_HREF}>Go to dashboard</Link></section></main></div>;
+  if (keyboardUnavailable) return <div className="pl-layout"><LessonList items={lessons} currentId={lesson.id} /><main className="pl"><section className="pl-card"><p>This lesson needs a keyboard — continue on a computer.</p><Link className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" href={DASHBOARD_HREF}>Go to dashboard</Link></section></main></div>;
   return <div className="pl-layout">
     <LessonList items={lessons} currentId={lesson.id} />
     <main className="pl">
       <h1 className="pl-title">{lesson.title}</h1>
       <div className="pl-progress"><span className="pl-pct">{pct}%</span><div className="pl-bar" role="progressbar" aria-label="Lesson progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><div className="pl-bar-fill" style={{ width: `${pct}%` }} /></div></div>
-      {celebrate ? <section className="pl-card pl-complete"><h2>Lesson complete!</h2><p>First-try accuracy: {firstTry}%</p><p>You answered {state.correct} questions correctly.</p>{savedCelebrationStats && <p>+{celebrationPoints} pts · {savedCelebrationStats.streak}-day streak</p>}{saveNote && <p role="status">{saveNote}</p>}<button ref={continueRef} className="btn pl-continue" onClick={() => router.push(completionDestination)}>Continue →</button></section> : <>
+      {celebrate ? <section className="pl-card pl-complete"><h2>Lesson complete!</h2><p>First-try accuracy: {firstTry}%</p><p>You answered {state.correct} questions correctly.</p>{savedCelebrationStats && <p>+{celebrationPoints} pts · {savedCelebrationStats.streak}-day streak</p>}{saveNote && <p role="status">{saveNote}</p>}<button ref={continueRef} className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" onClick={() => router.push(completionDestination)}>Continue <span aria-hidden="true">⏎</span></button></section> : <>
         {(step.type === "formula" || step.type === "select") && <section className="pl-card"><p className="pl-prompt"><RichText text={step.prompt} /></p></section>}
         <div ref={stageRef} className="pl-stage" onKeyDownCapture={onStageCapture} onKeyDown={onStageKey}>
           {step.type === "formula" ? <Grid key={`${step.id}-${state.visit}`} grid={step.grid} today={LESSON_TODAY} targetCell={step.targetCell} highlightCells={step.highlightCells} sheetRef={sheetRef} onEditStart={() => { setFormulaReady(true); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onCommit={() => { commitRef.current = true; setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} /> : step.type === "shortcut" ? <ShortcutPractice key={`${step.id}-${state.visit}`} step={step} os={platform.os} touch={platform.touch} showPostcondition={feedback === "correct"} onAttempt={shortcutAttempt} onSkip={skipShortcutStep} onSkipSection={skipShortcutSection} onPracticeReady={practiceReady} /> : <StepView key={`${step.id}-${state.visit}`} step={step} setSelectRef={(ref) => { if (selectedRef) setSelectTouched(true); setSelectedRef(ref); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onReady={(input) => setStepReady({ input })} onEditStart={() => setFeedback((f) => f === "wrong" && !showSolution ? null : f)} />}
         </div>
         <div className={`pl-actions${feedback === "correct" ? " is-correct" : ""}`}>
-          {feedback === "correct" ? <><strong className="pl-correct-label">Correct!</strong>{answerPointsVisible(signedIn) && <span className="pl-points-earned" aria-live="polite">+{shownPoints} pts</span>}{step.type === "formula" && step.explain ? <span><RichText text={step.explain} /></span> : null}<button ref={continueRef} className="btn pl-continue" onClick={nextStep}>Continue →</button><span className="pl-hint">or press Enter</span></> : <>
-            {state.history.length > 0 && <button className="btn pl-key" aria-label="Previous" onClick={() => { invalidateExplain(); setAiLoading(false); dispatch({ type: "previous" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); setSelectTouched(false); }}><span aria-hidden="true">←</span> Prev</button>}
+          {feedback === "correct" ? <><strong className="pl-correct-label">Correct!</strong>{answerPointsVisible(signedIn) && <span className="pl-points-earned" aria-live="polite">+{shownPoints} pts</span>}{step.type === "formula" && step.explain ? <span><RichText text={step.explain} /></span> : null}<button ref={continueRef} className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" onClick={nextStep}>Continue <span aria-hidden="true">⏎</span></button></> : <>
+            {canGoBack && <button className="btn pl-key" aria-label="Previous" aria-keyshortcuts="ArrowLeft" onClick={goPrevious}><span aria-hidden="true">←</span> Prev</button>}
             <span className="pl-actions-end">
-            {step.type === "info" ? <button ref={continueRef} className="btn pl-skip" onClick={nextStep}>Continue →</button>
+            {step.type === "info" ? <button ref={continueRef} className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" onClick={nextStep}>Continue <span aria-hidden="true">⏎</span></button>
               : (step.type === "formula" && formulaReady || (step.type === "select" && selectTouched) || (step.type === "mcq" && stepReady) || ((step.type === "picture" || step.type === "project") && !!stepReady?.input.trim())) ? <button className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" onMouseDown={(e) => e.preventDefault()} onClick={() => step.type === "formula" ? check(step) : checkStep()}>Check <span aria-hidden="true">⏎</span></button>
-              : <button className="btn pl-skip" onClick={() => { invalidateExplain(); setAiLoading(false); dispatch({ type: "skip" }); setFeedback(null); setShowSolution(false); setStepReady(null); setSelectedRef(""); setSelectTouched(false); }}>Skip question</button>}
+              : <button className="btn pl-key" aria-keyshortcuts="Tab ArrowRight" onClick={skipQuestion}>Skip question <span aria-hidden="true">⇥</span></button>}
             </span>
           </>}
         </div>
