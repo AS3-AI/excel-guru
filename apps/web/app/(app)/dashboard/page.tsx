@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { DashboardContent, TopNav } from "@/components/TopNav";
+import { DashboardContent } from "@/components/DashboardContent";
+import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getLesson, getOrder } from "@/lib/lessons";
@@ -31,5 +32,5 @@ export default async function DashboardPage() {
     }
   }
   const moduleDone = MODULES.map((module) => [module.title.toLowerCase(), order.filter((id) => lessonModules[id]?.toLowerCase() === module.title.toLowerCase() && completedIds.includes(id)).length] as [string, number]);
-  return <><TopNav signedIn={!!user} /><DashboardContent signedIn={!!user} completedIds={completedIds} tags={tags} moduleDone={Object.fromEntries(moduleDone)} order={order} lessonModules={lessonModules} /></>;
+  return <><SiteHeader signedIn={!!user} current="dashboard" /><DashboardContent signedIn={!!user} completedIds={completedIds} tags={tags} moduleDone={Object.fromEntries(moduleDone)} order={order} lessonModules={lessonModules} /><SiteFooter /></>;
 }
