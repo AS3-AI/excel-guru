@@ -30,7 +30,7 @@ html[data-motion="on"] .landing [data-reveal]:not([data-shown]) .doodle path { s
   .hero-grid { grid-template-columns: minmax(0, 11fr) minmax(0, 10fr); }
   .landing .hero { min-height: min(calc(100svh - 62px), 880px); display: flex; align-items: center; padding: var(--s7) 0; }
 }
-.landing h1 { position: relative; font-size: var(--fs-2xl); line-height: 0.98; letter-spacing: -0.035em; font-weight: 750; margin: 0 0 var(--s5); font-variation-settings: "opsz" 96; }
+.landing h1 { position: relative; font-size: var(--fs-2xl); line-height: 0.98; letter-spacing: -0.035em; font-weight: 750; margin: 0 0 var(--s5); }
 .landing h1 mark {
   color: inherit; background: none; white-space: nowrap;
   background-image: linear-gradient(var(--highlight), var(--highlight));
@@ -46,7 +46,9 @@ html[data-motion="on"] .landing [data-reveal]:not([data-shown]) .doodle path { s
 .facts > div { min-width: 96px; padding: var(--s3) var(--s4); border: var(--line); border-radius: var(--r); background: var(--surface); box-shadow: var(--shadow-1); }
 .facts dt { font-size: 1.7rem; font-weight: 700; color: var(--ink); line-height: 1.1; }
 .facts dd { margin: 2px 0 0; color: var(--text); font-size: var(--fs-sm); }
-.hero-copy > * { animation: rise 0.7s var(--ease) backwards; }
+/* Hero copy slides in without fading: the h1 is the LCP element, so it must paint on the first frame. */
+.hero-copy > * { animation: nudge 0.7s var(--ease) backwards; }
+@keyframes nudge { from { transform: translateY(14px); } }
 .hero-copy > :nth-child(2) { animation-delay: 0.06s; }
 .hero-copy > :nth-child(3) { animation-delay: 0.12s; }
 .hero-copy > :nth-child(4) { animation-delay: 0.18s; }

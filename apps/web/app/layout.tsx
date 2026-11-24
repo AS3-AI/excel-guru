@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" },
 };
 
-const display = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-disp", display: "swap", axes: ["opsz"] });
+const display = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-disp", display: "swap" });
 const ui = Instrument_Sans({ subsets: ["latin"], variable: "--font-ui", display: "swap" });
 const code = JetBrains_Mono({ subsets: ["latin"], variable: "--font-code", display: "swap" });
 

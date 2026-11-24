@@ -11,7 +11,7 @@
   --surface: #ffffff;        /* raised surfaces: cards, sheets, inputs */
   --surface-sunk: #f2f1ec;   /* wells, headers, quiet fills */
   --text: #29332d;
-  --muted: #5f6963;          /* 5.4:1 on paper */
+  --muted: #4a524d;          /* ≥4.5:1 on paper and every pastel */
   --faint: #9aa29d;          /* decoration only, never body text */
   --border: #e3e1da;
   --border-strong: #14201a;  /* component outlines are ink */
@@ -23,9 +23,9 @@
   --lilac: #cdc6ff;
   --rose: #ffc9c2;
   --sky: #c4e4ff;
-  --warning: #b86a12;
+  --warning: #8f530c;
   --danger: #b42318;
-  --track-sql: #3b6fd8;
+  --track-sql: #2a56b8;
 
   /* type (families come from next/font in app/layout.tsx; fallbacks keep metrics close) */
   --font: var(--font-ui, system-ui), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
