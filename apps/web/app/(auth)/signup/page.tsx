@@ -19,6 +19,7 @@ export default async function SignupPage({
 }) {
   const sp = await searchParams;
   const next = safeNext(sp.next);
+  const invite = typeof sp.invite === "string" ? sp.invite : "";
   // ?completed=<lessonId> only changes the copy (Product spec §2.2).
   const completed = typeof sp.completed === "string" && sp.completed.length > 0;
   const loginHref = next === safeNext(undefined) ? "/login" : `/login?next=${encodeURIComponent(next)}`;
@@ -36,9 +37,12 @@ export default async function SignupPage({
           <p className="lead">Save your progress, keep your streak and appear on the leaderboard.</p>
         </>
       )}
-      <GoogleButton next={next} />
+      <p className="hint">
+        Excel Guru is invite-only for now. No code? <Link href="/">Join the waitlist</Link>.
+      </p>
+      <GoogleButton next={next} invite={invite} />
       <div className="auth-or">or</div>
-      <SignupForm next={next} />
+      <SignupForm next={next} invite={invite} />
       <p className="auth-switch">
         Already have an account? <Link href={loginHref}>Log in</Link>
       </p>

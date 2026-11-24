@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   authRedirect,
   firstNameFromMetadata,
+  isValidInvite,
   needsProfileCheck,
   originFrom,
   safeNext,
@@ -244,5 +245,20 @@ describe("firstNameFromMetadata", () => {
   it("returns empty when nothing usable", () => {
     expect(firstNameFromMetadata(undefined)).toBe("");
     expect(firstNameFromMetadata({ full_name: 3 })).toBe("");
+  });
+});
+
+describe("isValidInvite", () => {
+  it("matches ignoring case and whitespace", () => {
+    expect(isValidInvite(" Excel-2026 ", "excel-2026")).toBe(true);
+  });
+  it("rejects a wrong or missing code", () => {
+    expect(isValidInvite("nope", "excel-2026")).toBe(false);
+    expect(isValidInvite("", "excel-2026")).toBe(false);
+    expect(isValidInvite(undefined, "excel-2026")).toBe(false);
+  });
+  it("is closed when no code is configured", () => {
+    expect(isValidInvite("", "")).toBe(false);
+    expect(isValidInvite("anything", undefined)).toBe(false);
   });
 });

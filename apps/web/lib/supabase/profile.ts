@@ -1,6 +1,6 @@
 import "server-only";
 import type { User } from "@supabase/supabase-js";
-import { firstNameFromMetadata, normalizeUsername, UNIQUE_VIOLATION, validateProfile } from "@/lib/auth";
+import { firstNameFromMetadata, normalizeUsername, UNIQUE_VIOLATION, validateProfile, isValidInvite } from "@/lib/auth";
 import { createAdminClient } from "./admin";
 
 export type CreateProfileResult =
@@ -52,6 +52,8 @@ export async function isUsernameTaken(username: string): Promise<boolean> {
 export async function ensureProfile(user: User): Promise<boolean> {
   if (await hasProfile(user.id)) return true;
   const meta = user.user_metadata ?? {};
+  // Only auto-create for users who signed up with a valid invite; others go through onboarding.
+  if (!isValidInvite(meta.invite)) return false;
   const parsed = validateProfile({
     firstName: firstNameFromMetadata(meta),
     username: typeof meta.username === "string" ? normalizeUsername(meta.username) : "",

@@ -61,10 +61,11 @@ function GoogleSubmit() {
   );
 }
 
-export function GoogleButton({ next }: { next: string }) {
+export function GoogleButton({ next, invite = "" }: { next: string; invite?: string }) {
   return (
     <form action={signInWithGoogle}>
       <input type="hidden" name="next" value={next} />
+      <input type="hidden" name="invite" value={invite} />
       <GoogleSubmit />
     </form>
   );
@@ -83,12 +84,13 @@ export function LoginForm({ next }: { next: string }) {
   );
 }
 
-export function SignupForm({ next }: { next: string }) {
+export function SignupForm({ next, invite }: { next: string; invite: string }) {
   const [state, action] = useActionState(signup, initial);
   if (state.notice) return <FormAlert state={state} />;
   return (
     <form className="auth-form" action={action} noValidate>
       <input type="hidden" name="next" value={next} />
+      <Field name="invite" label="Invite code" autoComplete="off" defaultValue={invite} state={state} />
       <Field name="firstName" label="First name" autoComplete="given-name" state={state} />
       <Field
         name="username"
@@ -114,12 +116,13 @@ export function SignupForm({ next }: { next: string }) {
 }
 
 export function OnboardingForm({
-  next, firstName, username,
-}: { next: string; firstName: string; username: string }) {
+  next, firstName, username, invite,
+}: { next: string; firstName: string; username: string; invite: string }) {
   const [state, action] = useActionState(completeOnboarding, initial);
   return (
     <form className="auth-form" action={action} noValidate>
       <input type="hidden" name="next" value={next} />
+      <Field name="invite" label="Invite code" autoComplete="off" defaultValue={invite} state={state} />
       <Field name="firstName" label="First name" autoComplete="given-name" defaultValue={firstName} state={state} />
       <Field
         name="username"

@@ -18,6 +18,7 @@ export default async function OnboardingPage({
 }) {
   const sp = await searchParams;
   const next = safeNext(sp.next);
+  const invite = typeof sp.invite === "string" ? sp.invite : "";
 
   const supabase = await createClient();
   if (!supabase) redirect("/login?error=unavailable");
@@ -39,6 +40,7 @@ export default async function OnboardingPage({
         next={next}
         firstName={firstNameFromMetadata(meta)}
         username={usernameError(suggested) ? "" : suggested}
+        invite={invite}
       />
       <form className="auth-signout" action="/auth/signout" method="post">
         <span className="hint">Signed in as {user.email}. </span>

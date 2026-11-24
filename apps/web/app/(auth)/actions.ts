@@ -3,6 +3,8 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
+  INVITE_ERROR,
+  isValidInvite,
   ONBOARDING,
   originFrom,
   safeNext,
@@ -65,11 +67,15 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
     email: field(formData, "email"),
     confirmEmail: field(formData, "confirmEmail"),
     password: field(formData, "password"),
+    invite: field(formData, "invite"),
   };
   const { password: _pw, ...values } = raw;
   const next = safeNext(field(formData, "next"));
   const parsed = validateSignup(raw);
-  if (!parsed.ok) return { errors: parsed.errors, values };
+  const inviteOk = isValidInvite(raw.invite);
+  if (!parsed.ok || !inviteOk) {
+    return { errors: { ...(parsed.ok ? {} : parsed.errors), ...(inviteOk ? {} : { invite: INVITE_ERROR }) }, values };
+  }
 
   const supabase = await createClient();
   if (!supabase) return { message: UNAVAILABLE, values };
@@ -84,7 +90,7 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
     password,
     options: {
       emailRedirectTo: callbackUrl(await origin(), next),
-      data: { first_name: firstName, username },
+      data: { first_name: firstName, username, invite: raw.invite.trim() },
     },
   });
   if (error) {
@@ -111,11 +117,13 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
 
 export async function signInWithGoogle(formData: FormData): Promise<void> {
   const next = safeNext(field(formData, "next"));
+  const invite = field(formData, "invite").trim();
   const supabase = await createClient();
   if (!supabase) redirect(`/login?error=unavailable`);
+  const redirectTo = callbackUrl(await origin(), next) + (invite ? `&invite=${encodeURIComponent(invite)}` : "");
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: callbackUrl(await origin(), next) },
+    options: { redirectTo },
   });
   if (error || !data.url) {
     console.error("google sign-in failed", error?.code, error?.message);
@@ -125,10 +133,17 @@ export async function signInWithGoogle(formData: FormData): Promise<void> {
 }
 
 export async function completeOnboarding(_prev: FormState, formData: FormData): Promise<FormState> {
-  const values = { firstName: field(formData, "firstName"), username: field(formData, "username") };
+  const values = {
+    firstName: field(formData, "firstName"),
+    username: field(formData, "username"),
+    invite: field(formData, "invite"),
+  };
   const next = safeNext(field(formData, "next"));
   const parsed = validateProfile(values);
-  if (!parsed.ok) return { errors: parsed.errors, values };
+  const inviteOk = isValidInvite(values.invite);
+  if (!parsed.ok || !inviteOk) {
+    return { errors: { ...(parsed.ok ? {} : parsed.errors), ...(inviteOk ? {} : { invite: INVITE_ERROR }) }, values };
+  }
 
   const supabase = await createClient();
   if (!supabase) return { message: UNAVAILABLE, values };
