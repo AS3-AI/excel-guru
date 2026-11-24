@@ -56,6 +56,7 @@ Status: built → reviewed → merged → pushed (live). Checks = typecheck, tes
 | T35 One rating per user | antigravity | t35-agy | Claude added row lock; SQL not run on a live Postgres (none local) | integrate | migration 0006 |
 | T46 Security pass | antigravity (2nd run; 1st blocked on a shell call) | t46-agy | Claude-run checks; client-bundle secret grep: 0 hits (17 Nov) | integrate | migration 0005; rate route merged with T35 |
 | Release: integrate/launch-content → main | Claude | 17 Nov | typecheck, 584 web tests + engine/grader/payments, validate-content, build all pass on the merge | pushed | 86 lessons, T34, T35, T46, T47; migrations 0005 + 0006 applied by owner first |
+| Route loading indicator (`app/loading.tsx`) | antigravity | route-loading-agy | typecheck, all tests, validate-content pass; spinner seen within 25 ms of "Start free" | PR AS3-AI/excel-guru#3 (24 Nov) | no card; Claude-scoped 2-file change |
 
 ## Open bugs
 - Payments (16 Nov, test mode): purchase works and premium unlocks, but "Manage / cancel subscription" does not show, so the subscriptions row is likely not saved as active with a future period_end. Check Razorpay webhook deliveries + the Supabase subscriptions row before the first real renewal (renewal/cancel/halt may not update premium correctly until fixed).
