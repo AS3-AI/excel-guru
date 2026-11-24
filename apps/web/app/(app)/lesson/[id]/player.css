@@ -20,6 +20,12 @@
 .pl-actions.is-correct .pl-hint { color:var(--surface-warm); }
 .pl-actions.is-correct .pl-correct-label { color:var(--surface); }
 .pl-actions.is-correct .btn { color:var(--ink); }
+.pl-actions-end { margin-left:auto; display:flex; gap:8px; }
+/* Keycap look: raised bottom edge that presses down. */
+.pl-key { background:var(--surface); color:var(--ink); border:1px solid var(--border); border-bottom-width:4px; border-radius:8px; font-family:var(--font); }
+.pl-key:active { border-bottom-width:1px; transform:translateY(3px); }
+.pl-key-enter { min-width:7em; border-color:var(--primary-strong); background:var(--primary); color:var(--primary-ink); }
+@media (prefers-reduced-motion: reduce) { .pl-key:active { transform:none; } }
 .pl-hint { color:var(--muted); font-size:.95rem; }
 .pl-continue { font-size:1.1rem; padding:12px 24px; text-decoration:none; display:inline-block; }
 .pl-skip { background:var(--surface); color:var(--ink); border:1px solid var(--border); }
