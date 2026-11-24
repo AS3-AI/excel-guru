@@ -196,6 +196,64 @@ p { text-wrap: pretty; }
 @keyframes bob { 50% { transform: translateY(-8px) rotate(-3deg); } }
 @keyframes twinkle { 50% { transform: scale(0.75) rotate(20deg); } }
 
+/* ---------- mascot "Cel" (components/Mascot.tsx) ---------- */
+.mascot { display: block; height: auto; overflow: visible; }
+.mascot * { transform-box: fill-box; }
+.mascot-body { transform-origin: 50% 100%; animation: cel-idle 3.2s ease-in-out infinite; }
+.mascot-eyes { transform-origin: center; animation: cel-blink 4.6s infinite; }
+.mascot-arm { transition: transform 300ms var(--ease); }
+.mascot-arm-l { transform-origin: 100% 0%; }
+.mascot-arm-r { transform-origin: 0% 0%; }
+.mascot-happy .mascot-body { animation: cel-jump 650ms var(--ease); }
+.mascot-happy .mascot-arm-l, .mascot-party .mascot-arm-l { transform: rotate(130deg); }
+.mascot-happy .mascot-arm-r, .mascot-party .mascot-arm-r { transform: rotate(-130deg); }
+.mascot-oops .mascot-body { animation: cel-wobble 600ms var(--ease); }
+.mascot-oops .mascot-eyes { transform: scaleY(0.6) translateY(2px); animation: none; }
+.mascot-sweat { animation: cel-drip 1.4s ease-in infinite; }
+.mascot-party .mascot-body { animation: cel-party 900ms var(--ease) infinite; }
+.mascot-party .mascot-arm-l { animation: cel-wave-l 450ms ease-in-out infinite alternate; }
+.mascot-party .mascot-arm-r { animation: cel-wave-r 450ms ease-in-out infinite alternate; }
+.mascot-sparks path { transform-origin: center; animation: twinkle 1.2s ease-in-out infinite; }
+.mascot-sparks path:nth-child(2) { animation-delay: 0.3s; }
+.mascot-shadow { transform-origin: center; animation: cel-shadow 3.2s ease-in-out infinite; }
+@keyframes cel-idle { 50% { transform: translateY(-3px); } }
+@keyframes cel-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+@keyframes cel-jump { 0% { transform: none; } 30% { transform: translateY(-16px) scale(1.04, 0.96); } 55% { transform: translateY(0) scale(1.06, 0.92); } 75% { transform: translateY(-4px); } }
+@keyframes cel-wobble { 20% { transform: rotate(-7deg); } 45% { transform: rotate(6deg); } 70% { transform: rotate(-3deg); } }
+@keyframes cel-drip { 0% { transform: translateY(-4px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(10px); opacity: 0; } }
+@keyframes cel-party { 0%, 100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-12px) rotate(-4deg); } 75% { transform: translateY(-12px) rotate(4deg); } }
+@keyframes cel-wave-l { from { transform: rotate(110deg); } to { transform: rotate(150deg); } }
+@keyframes cel-wave-r { from { transform: rotate(-110deg); } to { transform: rotate(-150deg); } }
+@keyframes cel-shadow { 50% { transform: scaleX(0.9); } }
+
+/* ---------- activity graph (components/ActivityGraph.tsx) ---------- */
+.activity { padding: var(--s5); background: var(--surface); border: var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-2); }
+.activity-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--s2) var(--s4); margin-bottom: var(--s4); }
+.activity-head h2 { margin: 0; font-size: var(--fs-md); }
+.activity-head p { margin: 0; color: var(--muted); font-size: var(--fs-sm); }
+.activity-head b { color: var(--ink); }
+.activity-scroll { overflow-x: auto; padding-bottom: 4px; }
+.activity-grid { --cell: 13px; --gap: 3px; display: grid; grid-template-columns: 30px auto; grid-template-rows: auto auto; gap: 4px 6px; width: max-content; }
+.activity-months { grid-column: 2; display: grid; grid-template-columns: repeat(var(--weeks), var(--cell)); gap: var(--gap); font: 500 0.68rem/1 var(--mono); color: var(--muted); }
+.activity-months span { white-space: nowrap; }
+.activity-days { display: grid; grid-template-rows: repeat(7, var(--cell)); gap: var(--gap); font: 500 0.66rem/var(--cell) var(--mono); color: var(--muted); }
+.activity-cells { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, var(--cell)); grid-auto-columns: var(--cell); gap: var(--gap); }
+.activity-cells i, .activity-legend i { display: block; width: var(--cell, 13px); height: var(--cell, 13px); border-radius: 3px; border: 1px solid rgb(20 32 26 / 0.18); }
+.activity-cells i { animation: act-in 420ms var(--ease) backwards; animation-delay: calc(var(--c) * 22ms + var(--r) * 14ms); }
+.lv0 { background: var(--surface-sunk); }
+.lv1 { background: var(--mint); border-color: rgb(20 32 26 / 0.35) !important; }
+.lv2 { background: #86d67c; border-color: var(--ink) !important; }
+.lv3 { background: var(--primary); border-color: var(--ink) !important; }
+.lv4 { background: var(--primary-strong); border-color: var(--ink) !important; }
+.activity-cells i.is-future { visibility: hidden; }
+.activity-cells i.is-today { outline: 2px solid var(--ink); outline-offset: 1px; animation: act-in 420ms var(--ease) backwards, act-today 2s ease-in-out 1s infinite; animation-delay: calc(var(--c) * 22ms + var(--r) * 14ms), 1.4s; }
+.activity-cells i:not(.is-future):hover { transform: scale(1.35); box-shadow: 2px 2px 0 var(--ink); position: relative; z-index: 1; }
+.activity-cells i { transition: transform var(--d1) var(--ease); }
+.activity-legend { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: var(--s3); font: 500 0.7rem var(--mono); color: var(--muted); }
+.activity-legend i { --cell: 11px; }
+@keyframes act-in { from { opacity: 0; transform: scale(0.3); } }
+@keyframes act-today { 50% { outline-color: var(--primary); } }
+
 /* ---------- modal ---------- */
 .modal-backdrop { position: fixed; inset: 0; z-index: var(--z-modal); display: grid; place-items: center; padding: var(--s4); background: rgb(20 32 26 / 0.55); animation: fade-in var(--d2) var(--ease); }
 .modal { width: min(440px, 100%); padding: var(--s5); background: var(--surface); border: var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-pop); animation: modal-in var(--d3) var(--ease); }

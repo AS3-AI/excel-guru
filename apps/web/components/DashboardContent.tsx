@@ -7,10 +7,11 @@ import { mergeLocalProgress, readLocalProgress } from "@/lib/local-progress";
 import { Leaderboards } from "@/components/Leaderboards";
 import { ShareBonus } from "@/components/ShareBonus";
 import { Icon } from "@/components/icons";
+import { ActivityGraph } from "@/components/ActivityGraph";
 
-type DashboardProps = { signedIn: boolean; completedIds: string[]; tags: StatusTag[]; moduleDone: Record<string, number>; order: string[]; lessonModules: Record<string, string> };
+type DashboardProps = { signedIn: boolean; activity?: string[]; completedIds: string[]; tags: StatusTag[]; moduleDone: Record<string, number>; order: string[]; lessonModules: Record<string, string> };
 
-export function DashboardContent({ signedIn: initiallySignedIn, completedIds: initialDone, tags, moduleDone: initialModuleDone, order, lessonModules }: DashboardProps) {
+export function DashboardContent({ activity = [], signedIn: initiallySignedIn, completedIds: initialDone, tags, moduleDone: initialModuleDone, order, lessonModules }: DashboardProps) {
   const [signedIn, setSignedIn] = useState(initiallySignedIn);
   const [done, setDone] = useState(initialDone);
   const [completedCount, setCompletedCount] = useState(initialDone.length);
@@ -76,6 +77,7 @@ export function DashboardContent({ signedIn: initiallySignedIn, completedIds: in
         <ul className="dash-legend">{legend.map((l) => <li key={l.key}><i style={{ background: l.color }} aria-hidden="true" />{l.label}<b className="num">{l.n}</b></li>)}</ul>
       </div>
     </section>
+    {signedIn && <div className="dash-block"><ActivityGraph dates={activity} weeks={26} /></div>}
     <section className="dash-block" aria-labelledby="modules-title">
       <div className="dash-block-head"><h2 id="modules-title">Modules</h2><span className="dash-sub">{modules.filter((m) => m.done >= m.total).length} of {modules.length} complete</span></div>
       <ol className="module-grid">{modules.map((module) => { const complete = module.done >= module.total; return <li key={module.slug}><Link className={`module-card${complete ? " is-done" : ""}`} href={`/modules/${module.slug}`}>

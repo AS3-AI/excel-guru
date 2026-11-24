@@ -63,7 +63,7 @@ export default async function LessonPage({ params }: Props) {
   return (
     <div className="wrap pl-page">
       <header className="pl-top"><Logo /><nav className="pl-breadcrumb" aria-label="Breadcrumb"><Link href={DASHBOARD_HREF}>Dashboard</Link><Icon name="chevronRight" size={14} /><Link href={moduleHref(lesson.module)}>{lesson.module}</Link><Icon name="chevronRight" size={14} /><span aria-current="page">{lesson.title}</span></nav></header>
-      <Player lesson={lesson} next={stepSequence(lesson.steps.length)} nextLessonId={nextLessonId(id)} lessons={lessons} signedOutIntro={!user && id === "intro"} signedIn={!!user} />
+      <Player lesson={lesson} next={stepSequence(lesson.steps.length)} nextLessonId={nextLessonId(id)} lessons={lessons} signedOutIntro={!user && id === "intro"} signedIn={!!user} activity={completedRows.map((row) => row.completed_at)} />
     </div>
   );
 }

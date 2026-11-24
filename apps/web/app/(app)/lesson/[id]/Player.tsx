@@ -20,10 +20,11 @@ import { VideoModal } from "@/components/VideoModal";
 import { answerPointsVisible, celebrationStats } from "@/lib/leaderboard";
 import { DASHBOARD_HREF } from "@/lib/nav-links";
 import { Icon } from "@/components/icons";
-import { Doodle } from "@/components/Doodles";
+import { Mascot, type MascotMood } from "@/components/Mascot";
+import { ActivityGraph } from "@/components/ActivityGraph";
 import "./player.css";
 
-type Props = { lesson: Lesson; next: number[]; nextLessonId: string | null; lessons: LessonNavItem[]; signedOutIntro?: boolean; signedIn?: boolean };
+type Props = { lesson: Lesson; next: number[]; nextLessonId: string | null; lessons: LessonNavItem[]; signedOutIntro?: boolean; signedIn?: boolean; activity?: string[] };
 // Only formula, select and shortcut mistakes get an AI explanation; a value without "=" already has a fixed message.
 function explainable(step: Lesson["steps"][number], input: string): boolean {
   if (step.type === "formula") return gradeFormulaStep(step, input).reason !== "not_formula";
@@ -42,7 +43,7 @@ function formulaWrongMessage(reason: string | undefined, step: FormulaStep, inpu
   if (reason === "missing_function") return `Your formula needs to use ${(step.mustUse ?? []).join(", ")}.`;
   return `Not quite. Your answer was ${input || "blank"}.`;
 }
-export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIntro = false, signedIn = false }: Props) {
+export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIntro = false, signedIn = false, activity = [] }: Props) {
   const router = useRouter();
   const completionDestination = signedOutIntro ? "/signup?completed=intro" : nextLessonId ? `/lesson/${nextLessonId}` : "/";
   const [boardsReady, setBoardsReady] = useState(!signedIn);
@@ -66,6 +67,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   const [saveNote, setSaveNote] = useState("");
   const [answerPoints, setAnswerPoints] = useState(0);
   const [shownPoints, setShownPoints] = useState(0);
+  const [sessionPoints, setSessionPoints] = useState(0);
   const [celebrationPoints, setCelebrationPoints] = useState(0);
   const [platform, setPlatform] = useState<{ os: Os; touch: boolean }>({ os: "win", touch: false });
   const [mobileSkippedShortcutIds, setMobileSkippedShortcutIds] = useState<Set<string>>(() => new Set());
@@ -222,6 +224,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     if (correct) {
       const points = showSolution ? 0 : Math.round(10 * lesson.difficulty * (state.firstTry[step.id] === undefined ? 1.5 : 1));
       setAnswerPoints(points);
+      setSessionPoints((total) => total + points);
     }
   };
   const rateExplanation = async (helpful: boolean) => {
@@ -311,46 +314,49 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     }
   };
 
-  const KIND: Record<string, string> = { formula: "Write a formula", select: "Select the cells", shortcut: "Keyboard shortcut", mcq: "Quick check", picture: "Read the picture", project: "Project question", info: "Read this" };
-  const hasBrief = step.type === "formula" || step.type === "select";
-  // Same rule as answer(): first try is worth 1.5×, nothing once the answer has been shown.
-  const stakes = answerPointsVisible(signedIn) ? (showSolution ? 0 : Math.round(10 * lesson.difficulty * (state.firstTry[step.id] === undefined ? 1.5 : 1))) : null;
-  const firstTryRun = (() => { let n = 0; for (const ok of Object.values(state.firstTry).reverse()) { if (!ok) break; n++; } return n; })();
-  const answered = Object.keys(state.firstTry).length;
-  // The counter only moves on once the learner continues, not the moment they answer.
-  const challengeNo = String(Math.min(state.correct + (feedback === "correct" ? 0 : 1), lesson.requiredCorrect)).padStart(2, "0");
+  // What the guide says above the sheet. Formula and select prompts live here; other step types render their own prompt.
+  const ASK: Record<string, string> = { info: "Have a read, then press Continue.", mcq: "Pick the one answer you think is right.", shortcut: "Press the keys on your keyboard.", picture: "Look closely, then type your answer.", project: "Open the file, then type your answer." };
+  const PRAISE = ["Nice one!", "Spot on!", "You got it!", "That's it!", "Great work!"];
+  const hasPrompt = step.type === "formula" || step.type === "select";
+  const pointsOn = answerPointsVisible(signedIn);
+  const stakes = pointsOn ? (showSolution ? 0 : Math.round(10 * lesson.difficulty * (state.firstTry[step.id] === undefined ? 1.5 : 1))) : null;
+  const questionNo = Math.min(state.correct + (feedback === "correct" ? 0 : 1), lesson.requiredCorrect);
+  const mood: MascotMood = celebrate ? "party" : feedback === "correct" ? "happy" : feedback === "wrong" ? "oops" : "idle";
   const openList = () => listRef.current?.showModal();
   const closeList = () => listRef.current?.close();
   const hud = <header className="pl-hud">
-    <button type="button" className="pl-hud-btn" onClick={openList} aria-haspopup="dialog"><Icon name="menu" size={16} /><span>Lessons</span></button>
+    <button type="button" className="pl-hud-btn" onClick={openList} aria-haspopup="dialog" aria-label="All lessons"><Icon name="menu" size={18} /></button>
     <div className="pl-hud-title"><span>{lesson.module}</span><h1 className="pl-title">{lesson.title}</h1></div>
-    <div className="pl-progress"><ol className="pl-cells" role="progressbar" aria-label="Lesson progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>{Array.from({ length: lesson.requiredCorrect }, (_, i) => <li key={i} className={i < state.correct ? "is-on" : i === state.correct && !state.complete ? "is-next" : undefined} />)}</ol><span className="pl-pct num">{state.correct}/{lesson.requiredCorrect}</span></div>
+    <ol className="pl-cells" role="progressbar" aria-label="Lesson progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>{Array.from({ length: lesson.requiredCorrect }, (_, i) => <li key={i} className={i < state.correct ? "is-on" : i === state.correct && !state.complete ? "is-next" : undefined} />)}</ol>
+    <span className="pl-score" aria-live="polite">{pointsOn ? <><Icon name="sparkle" size={16} /><b className="num" key={sessionPoints}>{sessionPoints}</b><span>pts</span></> : <><Icon name="check" size={16} strokeWidth={2.5} /><b className="num" key={state.correct}>{state.correct}</b><span>/ {lesson.requiredCorrect}</span></>}</span>
   </header>;
   const list = <dialog ref={listRef} className="pl-list-dialog" aria-label="All lessons" onClick={(e) => { if (e.target === e.currentTarget) closeList(); }}><header><strong>All lessons</strong><button type="button" aria-label="Close lessons" onClick={closeList}><Icon name="x" size={18} /></button></header><LessonList items={lessons} currentId={lesson.id} /></dialog>;
 
-  if (keyboardUnavailable) return <div className="pl-board">{hud}<main className="pl-arena is-solo" id="main"><section className="pl-card"><p className="pl-prompt">This lesson needs a keyboard — continue on a computer.</p><Link className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" href={DASHBOARD_HREF}>Go to dashboard</Link></section></main>{list}</div>;
+  if (keyboardUnavailable) return <div className="pl-board">{hud}<main className="pl-flow" id="main"><div className="pl-coach"><Mascot mood="oops" /><div className="pl-bubble"><p className="pl-prompt">This lesson needs a keyboard — continue on a computer.</p></div></div><div className="pl-actions"><Link className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" href={DASHBOARD_HREF}>Go to dashboard</Link></div></main>{list}</div>;
   return <div className="pl-board">
     {hud}
     {celebrate ? <main className="pl-complete" id="main" aria-labelledby="pl-done-title">
-      <div className="pl-complete-cells" aria-hidden="true">{Array.from({ length: 24 }, (_, i) => <i key={i} style={{ animationDelay: `${(i % 8) * 40 + Math.floor(i / 8) * 60}ms` }} />)}</div>
-      <p className="eyebrow"><span className="ref">✓</span>{lesson.module}</p>
+      <Mascot mood="party" className="pl-complete-mascot" />
+      <div className="pl-confetti" aria-hidden="true">{Array.from({ length: 18 }, (_, i) => <i key={i} style={{ "--i": i } as React.CSSProperties} />)}</div>
       <h2 id="pl-done-title">Lesson complete!</h2>
-      <Doodle name="trophy" className="pl-trophy draw" fill="var(--highlight)" />
       <dl className="pl-stats">
-        <div><dt>First-try accuracy</dt><dd className="num">{firstTry}%</dd></div>
-        <div><dt>Questions correct</dt><dd className="num">{state.correct}</dd></div>
-        {savedCelebrationStats && <><div className="is-gold"><dt>Points earned</dt><dd className="num">+{celebrationPoints}</dd></div><div><dt>Day streak</dt><dd className="num">{savedCelebrationStats.streak}</dd></div></>}
+        <div><dt>First try</dt><dd className="num">{firstTry}%</dd></div>
+        <div><dt>Correct</dt><dd className="num">{state.correct}</dd></div>
+        {savedCelebrationStats && <><div className="is-gold"><dt>Points</dt><dd className="num">+{celebrationPoints}</dd></div><div><dt>Day streak</dt><dd className="num">{savedCelebrationStats.streak}</dd></div></>}
       </dl>
       {saveNote && <p role="status" className="pl-save-note">{saveNote}</p>}
-      <button ref={continueRef} className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" onClick={() => router.push(completionDestination)}>Continue <span aria-hidden="true">⏎</span></button>
-    </main> : <main className={`pl-arena${hasBrief ? "" : " is-solo"}`} id="main" data-feedback={feedback ?? undefined}>
-      {hasBrief && <section className="pl-brief" key={`brief-${state.visit}`} aria-label="Challenge">
-        <p className="pl-brief-kicker"><span className="num">Challenge {challengeNo}</span><span className="pl-brief-kind">{KIND[step.type]}</span></p>
-        <p className="pl-prompt"><RichText text={step.prompt} /></p>
-        {(stakes !== null || firstTryRun >= 2) && feedback !== "correct" && <div className="pl-brief-chips">{stakes !== null && <span className="pl-chip-pts">{stakes > 0 ? <>+<span className="num">{stakes}</span> pts{state.firstTry[step.id] === undefined ? " on first try" : ""}</> : "Answer shown · no points"}</span>}{firstTryRun >= 2 && <span className="pl-chip-run"><Icon name="sparkle" size={13} />{firstTryRun} in a row</span>}</div>}
-        <p className="pl-brief-tip">{step.type === "formula" ? <>Click <code className="chip">{step.targetCell}</code>, type a formula starting with <code className="chip">=</code>, then press Enter.</> : <>Click or drag across the cells, then press Enter.</>}</p>
-      </section>}
-      {!hasBrief && step.type !== "info" && <p className="pl-solo-head" key={`head-${state.visit}`}><span className="num">Challenge {challengeNo}</span><span>{KIND[step.type]}</span>{stakes !== null && feedback !== "correct" && <span className="pl-chip-pts">{stakes > 0 ? `+${stakes} pts` : "No points"}</span>}</p>}
+      <button ref={continueRef} className="btn btn-lg pl-key pl-key-enter" aria-keyshortcuts="Enter" onClick={() => router.push(completionDestination)}>Continue <span aria-hidden="true">⏎</span></button>
+    </main> : <main className="pl-flow" id="main" data-feedback={feedback ?? undefined}>
+      <div className="pl-coach">
+        <Mascot mood={mood} />
+        <div className="pl-bubble" key={`bubble-${state.visit}-${feedback ?? ""}`}>
+          {feedback === "wrong" && <p className="pl-oops">Not quite — have another go. There&apos;s a hint on the side.</p>}
+          <p className="pl-bubble-meta"><span className="num">Question {questionNo} of {lesson.requiredCorrect}</span>{stakes !== null && feedback !== "correct" && <span className="pl-chip-pts">{stakes > 0 ? `+${stakes} pts` : "No points"}</span>}</p>
+          {feedback === "correct" ? <p className="pl-prompt pl-praise">{PRAISE[(state.correct - 1 + PRAISE.length) % PRAISE.length]}{pointsOn && answerPoints > 0 ? <> <b className="num">+{shownPoints}</b> pts</> : null}</p>
+            : hasPrompt ? <><p className="pl-prompt"><RichText text={(step as { prompt: string }).prompt} /></p><p className="pl-bubble-tip">{step.type === "formula" ? <>Click <code className="chip">{step.targetCell}</code>, type a formula starting with <code className="chip">=</code>, then press Enter.</> : <>Click or drag across the cells, then press Enter.</>}</p></>
+            : <p className="pl-prompt">{ASK[step.type] ?? "Let's go."}</p>}
+        </div>
+      </div>
       <div ref={stageRef} className="pl-stage" onKeyDownCapture={onStageCapture} onKeyDown={onStageKey}>
         <div className="pl-stage-in" key={`stage-${state.visit}`}>
           {step.type === "formula" ? <Grid key={`${step.id}-${state.visit}`} grid={step.grid} today={LESSON_TODAY} targetCell={step.targetCell} highlightCells={step.highlightCells} sheetRef={sheetRef} onEditStart={() => { setFormulaReady(true); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onCommit={() => { commitRef.current = true; setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} /> : step.type === "shortcut" ? <ShortcutPractice key={`${step.id}-${state.visit}`} step={step} os={platform.os} touch={platform.touch} showPostcondition={feedback === "correct"} onAttempt={shortcutAttempt} onSkip={skipShortcutStep} onSkipSection={skipShortcutSection} onPracticeReady={practiceReady} /> : <StepView key={`${step.id}-${state.visit}`} step={step} setSelectRef={(ref) => { if (selectedRef) setSelectTouched(true); setSelectedRef(ref); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onReady={(input) => setStepReady({ input })} onEditStart={() => setFeedback((f) => f === "wrong" && !showSolution ? null : f)} />}
@@ -369,11 +375,11 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
       <div ref={feedbackRef} className="pl-feedback" aria-live="polite">{feedback === "wrong" && <p className="pl-wrong-summary">{wrongText}</p>}</div>
       {feedback === "wrong" && <aside className="pl-drawer" aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect (<span className="num">{state.wrongCount}</span>)</strong><button aria-label="Close" onClick={closeWrong}><Icon name="x" size={18} /></button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution">{step.type === "formula" ? <code className="chip">{step.solution}</code> : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : step.type === "shortcut" ? step.mode === "sequence" ? step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac" : step.keys[platform.os] ?? "Unavailable on Mac" : ""}</p>}{aiShown && <div className="pl-ai-slot">{aiLoading ? <span className="pl-ai-loading" role="status" aria-label="Loading explanation"><i /><i /><i /></span> : <><p>{aiExplanation?.text ?? "An explanation isn't available right now. Please try again in a moment."}</p>{signedIn && aiExplanation?.id && (aiThanks ? <p role="status">Thanks for your feedback!</p> : <div className="pl-ai-rating"><button type="button" aria-label="Helpful" disabled={aiRated} onClick={() => void rateExplanation(true)}><Icon name="thumbUp" size={18} /></button><button type="button" aria-label="Not helpful" disabled={aiRated} onClick={() => void rateExplanation(false)}><Icon name="thumbDown" size={18} /></button></div>)}<small>AI can be wrong. Check the answer before relying on it.</small></>}</div>}</aside>}
     </main>}
-    <section className="pl-tiles" aria-label="Your session">
-      <div className="pl-tile pl-tile-stat"><span>First-try accuracy</span><b className="num">{answered ? `${firstTry}%` : "—"}</b><small>{answered ? `${answered} answered this lesson` : "Answer a question to start"}</small></div>
-      <div className="pl-tile pl-tile-stat"><span>In a row</span><b className="num">{firstTryRun}</b><small>first-try answers</small></div>
-      {boardsReady && <><div className="pl-tile pl-tile-board"><Leaderboards type="points" /></div><div className="pl-tile pl-tile-board"><Leaderboards type="streak" /></div><div className="pl-tile pl-tile-wide"><ShareBonus signedIn={signedIn} /></div></>}
-      <div className="pl-tile pl-tile-extras"><span>Extras</span><VideoModal videoId={lesson.video} /><a className="btn btn-quiet pl-workbook-link" href={`/api/lessons/${encodeURIComponent(lesson.id)}/workbook`}><Icon name="download" size={16} />Practice workbook</a><div className="pl-share" aria-label="Share"><a href="https://www.linkedin.com/">LinkedIn</a><a href="https://www.facebook.com/">Facebook</a><a href="https://x.com/">X</a><a href="mailto:?subject=Excel%20Guru">Email</a></div></div>
+    <section className="pl-below" aria-label="Your progress">
+      {signedIn ? <ActivityGraph dates={activity} /> : <div className="pl-nudge"><Mascot mood="idle" /><div><h2>Keep your streak</h2><p>Create a free account to save progress, earn points and fill in your activity graph.</p><Link className="btn" href={`/signup?next=${encodeURIComponent(`/lesson/${lesson.id}`)}`}>Sign up free</Link></div></div>}
+      {boardsReady && <div className="pl-boards"><Leaderboards type="points" /><Leaderboards type="streak" /></div>}
+      {boardsReady && <ShareBonus signedIn={signedIn} />}
+      <div className="pl-extras"><VideoModal videoId={lesson.video} /><a className="btn btn-quiet" href={`/api/lessons/${encodeURIComponent(lesson.id)}/workbook`}><Icon name="download" size={16} />Practice workbook</a><span className="pl-share" aria-label="Share"><a href="https://www.linkedin.com/">LinkedIn</a><a href="https://www.facebook.com/">Facebook</a><a href="https://x.com/">X</a><a href="mailto:?subject=Excel%20Guru">Email</a></span></div>
     </section>
     {list}
   </div>;
