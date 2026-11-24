@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decideAndRecordLessonOpen, decideLessonAccess, loadLessonAccess } from "@/lib/access";
 import { DASHBOARD_HREF, moduleHref } from "@/lib/nav-links";
+import { Logo } from "@/components/SiteChrome";
+import { Icon } from "@/components/icons";
 import { Player } from "./Player";
 import type { LessonNavItem } from "./LessonList";
 
@@ -60,7 +62,7 @@ export default async function LessonPage({ params }: Props) {
 
   return (
     <div className="wrap pl-page">
-      <nav className="pl-breadcrumb"><Link href={DASHBOARD_HREF}>Dashboard</Link><span>›</span><Link href={moduleHref(lesson.module)}>{lesson.module}</Link><span>›</span><strong>{lesson.title}</strong></nav>
+      <header className="pl-top"><Logo /><nav className="pl-breadcrumb" aria-label="Breadcrumb"><Link href={DASHBOARD_HREF}>Dashboard</Link><Icon name="chevronRight" size={14} /><Link href={moduleHref(lesson.module)}>{lesson.module}</Link><Icon name="chevronRight" size={14} /><span aria-current="page">{lesson.title}</span></nav></header>
       <Player lesson={lesson} next={stepSequence(lesson.steps.length)} nextLessonId={nextLessonId(id)} lessons={lessons} signedOutIntro={!user && id === "intro"} signedIn={!!user} />
     </div>
   );

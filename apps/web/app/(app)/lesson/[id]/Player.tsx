@@ -19,6 +19,8 @@ import { ShareBonus } from "@/components/ShareBonus";
 import { VideoModal } from "@/components/VideoModal";
 import { answerPointsVisible, celebrationStats } from "@/lib/leaderboard";
 import { DASHBOARD_HREF } from "@/lib/nav-links";
+import { Icon } from "@/components/icons";
+import { Doodle } from "@/components/Doodles";
 import "./player.css";
 
 type Props = { lesson: Lesson; next: number[]; nextLessonId: string | null; lessons: LessonNavItem[]; signedOutIntro?: boolean; signedIn?: boolean };
@@ -76,6 +78,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   const feedbackRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<Sheet | null>(null);
   const commitRef = useRef(false);
+  const listRef = useRef<HTMLDialogElement>(null);
   const step = lesson.steps[state.index]!;
   const pct = Math.min(100, Math.round(state.correct / lesson.requiredCorrect * 100));
   const savedCelebrationStats = celebrationStats(savedStats);
@@ -308,19 +311,53 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
     }
   };
 
-  if (keyboardUnavailable) return <div className="pl-layout"><LessonList items={lessons} currentId={lesson.id} /><main className="pl"><section className="pl-card"><p>This lesson needs a keyboard — continue on a computer.</p><Link className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" href={DASHBOARD_HREF}>Go to dashboard</Link></section></main></div>;
-  return <div className="pl-layout">
-    <LessonList items={lessons} currentId={lesson.id} />
-    <main className="pl">
-      <h1 className="pl-title">{lesson.title}</h1>
-      <div className="pl-progress"><span className="pl-pct">{pct}%</span><div className="pl-bar" role="progressbar" aria-label="Lesson progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><div className="pl-bar-fill" style={{ width: `${pct}%` }} /></div></div>
-      {celebrate ? <section className="pl-card pl-complete"><h2>Lesson complete!</h2><p>First-try accuracy: {firstTry}%</p><p>You answered {state.correct} questions correctly.</p>{savedCelebrationStats && <p>+{celebrationPoints} pts · {savedCelebrationStats.streak}-day streak</p>}{saveNote && <p role="status">{saveNote}</p>}<button ref={continueRef} className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" onClick={() => router.push(completionDestination)}>Continue <span aria-hidden="true">⏎</span></button></section> : <>
-        {(step.type === "formula" || step.type === "select") && <section className="pl-card"><p className="pl-prompt"><RichText text={step.prompt} /></p></section>}
-        <div ref={stageRef} className="pl-stage" onKeyDownCapture={onStageCapture} onKeyDown={onStageKey}>
+  const KIND: Record<string, string> = { formula: "Write a formula", select: "Select the cells", shortcut: "Keyboard shortcut", mcq: "Quick check", picture: "Read the picture", project: "Project question", info: "Read this" };
+  const hasBrief = step.type === "formula" || step.type === "select";
+  // Same rule as answer(): first try is worth 1.5×, nothing once the answer has been shown.
+  const stakes = answerPointsVisible(signedIn) ? (showSolution ? 0 : Math.round(10 * lesson.difficulty * (state.firstTry[step.id] === undefined ? 1.5 : 1))) : null;
+  const firstTryRun = (() => { let n = 0; for (const ok of Object.values(state.firstTry).reverse()) { if (!ok) break; n++; } return n; })();
+  const answered = Object.keys(state.firstTry).length;
+  // The counter only moves on once the learner continues, not the moment they answer.
+  const challengeNo = String(Math.min(state.correct + (feedback === "correct" ? 0 : 1), lesson.requiredCorrect)).padStart(2, "0");
+  const openList = () => listRef.current?.showModal();
+  const closeList = () => listRef.current?.close();
+  const hud = <header className="pl-hud">
+    <button type="button" className="pl-hud-btn" onClick={openList} aria-haspopup="dialog"><Icon name="menu" size={16} /><span>Lessons</span></button>
+    <div className="pl-hud-title"><span>{lesson.module}</span><h1 className="pl-title">{lesson.title}</h1></div>
+    <div className="pl-progress"><ol className="pl-cells" role="progressbar" aria-label="Lesson progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>{Array.from({ length: lesson.requiredCorrect }, (_, i) => <li key={i} className={i < state.correct ? "is-on" : i === state.correct && !state.complete ? "is-next" : undefined} />)}</ol><span className="pl-pct num">{state.correct}/{lesson.requiredCorrect}</span></div>
+  </header>;
+  const list = <dialog ref={listRef} className="pl-list-dialog" aria-label="All lessons" onClick={(e) => { if (e.target === e.currentTarget) closeList(); }}><header><strong>All lessons</strong><button type="button" aria-label="Close lessons" onClick={closeList}><Icon name="x" size={18} /></button></header><LessonList items={lessons} currentId={lesson.id} /></dialog>;
+
+  if (keyboardUnavailable) return <div className="pl-board">{hud}<main className="pl-arena is-solo" id="main"><section className="pl-card"><p className="pl-prompt">This lesson needs a keyboard — continue on a computer.</p><Link className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" href={DASHBOARD_HREF}>Go to dashboard</Link></section></main>{list}</div>;
+  return <div className="pl-board">
+    {hud}
+    {celebrate ? <main className="pl-complete" id="main" aria-labelledby="pl-done-title">
+      <div className="pl-complete-cells" aria-hidden="true">{Array.from({ length: 24 }, (_, i) => <i key={i} style={{ animationDelay: `${(i % 8) * 40 + Math.floor(i / 8) * 60}ms` }} />)}</div>
+      <p className="eyebrow"><span className="ref">✓</span>{lesson.module}</p>
+      <h2 id="pl-done-title">Lesson complete!</h2>
+      <Doodle name="trophy" className="pl-trophy draw" fill="var(--highlight)" />
+      <dl className="pl-stats">
+        <div><dt>First-try accuracy</dt><dd className="num">{firstTry}%</dd></div>
+        <div><dt>Questions correct</dt><dd className="num">{state.correct}</dd></div>
+        {savedCelebrationStats && <><div className="is-gold"><dt>Points earned</dt><dd className="num">+{celebrationPoints}</dd></div><div><dt>Day streak</dt><dd className="num">{savedCelebrationStats.streak}</dd></div></>}
+      </dl>
+      {saveNote && <p role="status" className="pl-save-note">{saveNote}</p>}
+      <button ref={continueRef} className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" onClick={() => router.push(completionDestination)}>Continue <span aria-hidden="true">⏎</span></button>
+    </main> : <main className={`pl-arena${hasBrief ? "" : " is-solo"}`} id="main" data-feedback={feedback ?? undefined}>
+      {hasBrief && <section className="pl-brief" key={`brief-${state.visit}`} aria-label="Challenge">
+        <p className="pl-brief-kicker"><span className="num">Challenge {challengeNo}</span><span className="pl-brief-kind">{KIND[step.type]}</span></p>
+        <p className="pl-prompt"><RichText text={step.prompt} /></p>
+        {(stakes !== null || firstTryRun >= 2) && feedback !== "correct" && <div className="pl-brief-chips">{stakes !== null && <span className="pl-chip-pts">{stakes > 0 ? <>+<span className="num">{stakes}</span> pts{state.firstTry[step.id] === undefined ? " on first try" : ""}</> : "Answer shown · no points"}</span>}{firstTryRun >= 2 && <span className="pl-chip-run"><Icon name="sparkle" size={13} />{firstTryRun} in a row</span>}</div>}
+        <p className="pl-brief-tip">{step.type === "formula" ? <>Click <code className="chip">{step.targetCell}</code>, type a formula starting with <code className="chip">=</code>, then press Enter.</> : <>Click or drag across the cells, then press Enter.</>}</p>
+      </section>}
+      {!hasBrief && step.type !== "info" && <p className="pl-solo-head" key={`head-${state.visit}`}><span className="num">Challenge {challengeNo}</span><span>{KIND[step.type]}</span>{stakes !== null && feedback !== "correct" && <span className="pl-chip-pts">{stakes > 0 ? `+${stakes} pts` : "No points"}</span>}</p>}
+      <div ref={stageRef} className="pl-stage" onKeyDownCapture={onStageCapture} onKeyDown={onStageKey}>
+        <div className="pl-stage-in" key={`stage-${state.visit}`}>
           {step.type === "formula" ? <Grid key={`${step.id}-${state.visit}`} grid={step.grid} today={LESSON_TODAY} targetCell={step.targetCell} highlightCells={step.highlightCells} sheetRef={sheetRef} onEditStart={() => { setFormulaReady(true); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onCommit={() => { commitRef.current = true; setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} /> : step.type === "shortcut" ? <ShortcutPractice key={`${step.id}-${state.visit}`} step={step} os={platform.os} touch={platform.touch} showPostcondition={feedback === "correct"} onAttempt={shortcutAttempt} onSkip={skipShortcutStep} onSkipSection={skipShortcutSection} onPracticeReady={practiceReady} /> : <StepView key={`${step.id}-${state.visit}`} step={step} setSelectRef={(ref) => { if (selectedRef) setSelectTouched(true); setSelectedRef(ref); setFeedback((f) => f === "wrong" && !showSolution ? null : f); }} onReady={(input) => setStepReady({ input })} onEditStart={() => setFeedback((f) => f === "wrong" && !showSolution ? null : f)} />}
         </div>
-        <div className={`pl-actions${feedback === "correct" ? " is-correct" : ""}`}>
-          {feedback === "correct" ? <><strong className="pl-correct-label">Correct!</strong>{answerPointsVisible(signedIn) && <span className="pl-points-earned" aria-live="polite">+{shownPoints} pts</span>}{step.type === "formula" && step.explain ? <span><RichText text={step.explain} /></span> : null}<button ref={continueRef} className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" onClick={nextStep}>Continue <span aria-hidden="true">⏎</span></button></> : <>
+      </div>
+      <div className={`pl-actions${feedback === "correct" ? " is-correct" : ""}`}>
+        {feedback === "correct" ? <><strong className="pl-correct-label"><span className="pl-correct-icon" aria-hidden="true"><Icon name="check" size={14} strokeWidth={3} /></span>Correct!</strong>{answerPointsVisible(signedIn) && <span className="pl-points-earned" aria-live="polite">+{shownPoints} pts</span>}{step.type === "formula" && step.explain ? <span><RichText text={step.explain} /></span> : null}<button ref={continueRef} className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" onClick={nextStep}>Continue <span aria-hidden="true">⏎</span></button></> : <>
             {canGoBack && <button className="btn pl-key" aria-label="Previous" aria-keyshortcuts="ArrowLeft" onClick={goPrevious}><span aria-hidden="true">←</span> Prev</button>}
             <span className="pl-actions-end">
             {step.type === "info" ? <button ref={continueRef} className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" onClick={nextStep}>Continue <span aria-hidden="true">⏎</span></button>
@@ -328,11 +365,16 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
               : <button className="btn pl-key" aria-keyshortcuts="Tab ArrowRight" onClick={skipQuestion}>Skip question <span aria-hidden="true">⇥</span></button>}
             </span>
           </>}
-        </div>
-        <div ref={feedbackRef} className="pl-feedback" aria-live="polite">{feedback === "wrong" && <p className="pl-wrong-summary">{wrongText}</p>}</div>
-        {feedback === "wrong" && <aside className="pl-drawer" aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect ({state.wrongCount})</strong><button aria-label="Close" onClick={closeWrong}>×</button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution">{step.type === "formula" ? <code className="chip">{step.solution}</code> : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : step.type === "shortcut" ? step.mode === "sequence" ? step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac" : step.keys[platform.os] ?? "Unavailable on Mac" : ""}</p>}{aiShown && <div className="pl-ai-slot">{aiLoading ? <span className="pl-ai-loading" role="status" aria-label="Loading explanation"><i /><i /><i /></span> : <><p>{aiExplanation?.text ?? "An explanation isn't available right now. Please try again in a moment."}</p>{signedIn && aiExplanation?.id && (aiThanks ? <p role="status">Thanks for your feedback!</p> : <div className="pl-ai-rating"><button type="button" aria-label="Helpful" disabled={aiRated} onClick={() => void rateExplanation(true)}>👍</button><button type="button" aria-label="Not helpful" disabled={aiRated} onClick={() => void rateExplanation(false)}>👎</button></div>)}<small>AI can be wrong. Check the answer before relying on it.</small></>}</div>}</aside>}
-      </>}
-    </main>
-    <aside className="pl-right">{boardsReady && <><Leaderboards type="points" /><Leaderboards type="streak" /><ShareBonus signedIn={signedIn} /></>}<section><h2>Share</h2><div className="pl-share"><a href="https://www.linkedin.com/">LinkedIn</a><a href="https://www.facebook.com/">Facebook</a><a href="https://x.com/">X</a><a href="mailto:?subject=Excel%20Guru">Email</a></div></section><VideoModal videoId={lesson.video} /><a className="btn pl-workbook-link" href={`/api/lessons/${encodeURIComponent(lesson.id)}/workbook`}>Download practice workbook</a></aside>
+      </div>
+      <div ref={feedbackRef} className="pl-feedback" aria-live="polite">{feedback === "wrong" && <p className="pl-wrong-summary">{wrongText}</p>}</div>
+      {feedback === "wrong" && <aside className="pl-drawer" aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect (<span className="num">{state.wrongCount}</span>)</strong><button aria-label="Close" onClick={closeWrong}><Icon name="x" size={18} /></button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution">{step.type === "formula" ? <code className="chip">{step.solution}</code> : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : step.type === "shortcut" ? step.mode === "sequence" ? step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac" : step.keys[platform.os] ?? "Unavailable on Mac" : ""}</p>}{aiShown && <div className="pl-ai-slot">{aiLoading ? <span className="pl-ai-loading" role="status" aria-label="Loading explanation"><i /><i /><i /></span> : <><p>{aiExplanation?.text ?? "An explanation isn't available right now. Please try again in a moment."}</p>{signedIn && aiExplanation?.id && (aiThanks ? <p role="status">Thanks for your feedback!</p> : <div className="pl-ai-rating"><button type="button" aria-label="Helpful" disabled={aiRated} onClick={() => void rateExplanation(true)}><Icon name="thumbUp" size={18} /></button><button type="button" aria-label="Not helpful" disabled={aiRated} onClick={() => void rateExplanation(false)}><Icon name="thumbDown" size={18} /></button></div>)}<small>AI can be wrong. Check the answer before relying on it.</small></>}</div>}</aside>}
+    </main>}
+    <section className="pl-tiles" aria-label="Your session">
+      <div className="pl-tile pl-tile-stat"><span>First-try accuracy</span><b className="num">{answered ? `${firstTry}%` : "—"}</b><small>{answered ? `${answered} answered this lesson` : "Answer a question to start"}</small></div>
+      <div className="pl-tile pl-tile-stat"><span>In a row</span><b className="num">{firstTryRun}</b><small>first-try answers</small></div>
+      {boardsReady && <><div className="pl-tile pl-tile-board"><Leaderboards type="points" /></div><div className="pl-tile pl-tile-board"><Leaderboards type="streak" /></div><div className="pl-tile pl-tile-wide"><ShareBonus signedIn={signedIn} /></div></>}
+      <div className="pl-tile pl-tile-extras"><span>Extras</span><VideoModal videoId={lesson.video} /><a className="btn btn-quiet pl-workbook-link" href={`/api/lessons/${encodeURIComponent(lesson.id)}/workbook`}><Icon name="download" size={16} />Practice workbook</a><div className="pl-share" aria-label="Share"><a href="https://www.linkedin.com/">LinkedIn</a><a href="https://www.facebook.com/">Facebook</a><a href="https://x.com/">X</a><a href="mailto:?subject=Excel%20Guru">Email</a></div></div>
+    </section>
+    {list}
   </div>;
 }

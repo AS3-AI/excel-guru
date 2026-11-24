@@ -49,11 +49,16 @@ export function HeroSheet() {
     return () => clearTimeout(t);
   }, [still, paused, done, typed, s.formula.length]);
 
+  const shown = s.formula.slice(0, typed);
+  const refAt = shown.indexOf("B2:B5");
+  const refOn = refAt >= 0;
+  const n = (v: string) => <div className={`n${refOn ? " in-ref" : ""}`}>{v}</div>;
+
   return (
     <figure className="sheet" aria-label="A lesson that loops through formulas: SUM, AVERAGE, MAX and COUNTIF, each typed into the formula bar and marked correct" style={{ margin: 0 }}>
       <div className="sheet-bar">
-        <i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" />
-        <span aria-hidden="true">Lesson · {s.lesson}</span>
+        <span className="sheet-file" aria-hidden="true">sales.xlsx</span>
+        <span className="sheet-lesson" aria-hidden="true">Lesson · {s.lesson}</span>
         {!still && (
           <button type="button" className="sheet-pause" aria-pressed={paused} aria-label={paused ? "Play demo" : "Pause demo"} onClick={() => setPaused((v) => !v)}>
             {paused ? (
@@ -69,19 +74,20 @@ export function HeroSheet() {
         <small>Type a formula, then press Enter.</small>
       </div>
       <div className="fx" aria-hidden="true">
+        <em>B6</em>
         <b>fx</b>
         <span>
-          {s.formula.slice(0, typed)}
+          {refOn ? <>{shown.slice(0, refAt)}<span className="ref-text">B2:B5</span>{shown.slice(refAt + 5)}</> : shown}
           <i className="caret" data-idle={done || undefined} />
         </span>
       </div>
       <div className="grid-sheet" aria-hidden="true">
         <div className="h" /><div className="h">A</div><div className="h">B</div>
         <div className="h">1</div><div><b>Region</b></div><div className="n"><b>Sales</b></div>
-        <div className="h">2</div><div>North</div><div className="n">1,240</div>
-        <div className="h">3</div><div>South</div><div className="n">980</div>
-        <div className="h">4</div><div>East</div><div className="n">1,410</div>
-        <div className="h">5</div><div>West</div><div className="n">1,190</div>
+        <div className="h">2</div><div>North</div>{n("1,240")}
+        <div className="h">3</div><div>South</div>{n("980")}
+        <div className="h">4</div><div>East</div>{n("1,410")}
+        <div className="h">5</div><div>West</div>{n("1,190")}
         <div className="h">6</div><div><b>{s.label}</b></div>
         <div className="sel"><span data-show={done || undefined}>{s.result}</span></div>
       </div>

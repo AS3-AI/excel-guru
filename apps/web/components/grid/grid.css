@@ -11,14 +11,14 @@
 /* ---------- formula bar ---------- */
 .eg-fbar {
   display: flex; align-items: stretch; gap: 6px;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 8px 8px 0 0;
-  padding: 4px;
+  background: var(--surface-sunk); border: var(--line); border-bottom: 0; border-radius: var(--r) var(--r) 0 0;
+  padding: 5px;
 }
 .eg-namebox {
   flex: 0 0 auto; min-width: 3.5em; padding: 0 8px;
   display: flex; align-items: center; justify-content: center;
   border: 1px solid var(--border); border-radius: 4px;
-  font-weight: 600; color: var(--ink); background: var(--surface-warm);
+  font: 600 13px/1 var(--mono); color: var(--ink); background: var(--surface);
 }
 .eg-fbar-btns { display: flex; flex: 0 0 auto; }
 .eg-fbtn {
@@ -27,15 +27,15 @@
 }
 .eg-fbtn:hover:not(:disabled) { background: var(--surface-warm); color: var(--ink); }
 .eg-fbtn:disabled { opacity: 0.4; cursor: default; }
-.eg-fx { font-family: Georgia, serif; }
+.eg-fx { font-family: var(--mono); font-style: italic; color: var(--primary-strong); }
 .eg-finput {
   flex: 1 1 auto; min-width: 0; padding: 4px 8px;
-  font: 14px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font: 14px/1.2 var(--mono);
   color: var(--text); background: var(--surface);
   border: 1px solid var(--border); border-radius: 4px;
 }
 .eg-finput-wrap { position: relative; flex: 1 1 auto; min-width: 0; display: flex; }
-.eg-finput:focus { outline: 2px solid var(--primary); outline-offset: -1px; }
+.eg-finput:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-tint); }
 .eg-finput[aria-invalid="true"] { border-color: var(--danger); }
 .eg-fbar-error {
   margin: 0; min-height: 1.4em; padding: 2px 4px;
@@ -57,7 +57,7 @@
   position: relative; /* the containing block for the reference outlines (.eg-refbox) */
   min-width: min-content; /* never narrower than the text columns' minimums (see gridColumns) */
   display: grid;
-  border: 1px solid var(--border);
+  border: var(--line);
   background: var(--surface);
   user-select: none;
   -webkit-user-select: none;
@@ -69,7 +69,7 @@
 
 .eg-corner, .eg-head {
   height: var(--eg-row-h);
-  background: var(--surface-warm); color: var(--muted);
+  background: var(--surface-sunk); color: var(--muted);
   border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
 }
 .eg-head {
@@ -157,7 +157,7 @@
 /* The clip-paths keep scrolled-away text out of the padding, as the input itself does. */
 .eg-finput-mirror {
   padding: 5px 9px; clip-path: inset(0 9px);
-  font: 14px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font: 14px/1.2 var(--mono);
 }
 .eg-cell-mirror { z-index: 3; padding: 0 4px; clip-path: inset(0 4px); font: inherit; }
 

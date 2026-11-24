@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { currencyForCountry } from "@/lib/plans";
 import { paymentsEnabled } from "@/lib/payments-config";
 import { STATIC_METADATA } from "@/lib/seo";
+import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { PricingClient } from "./pricing-client";
 import "./pricing.css";
 
@@ -36,5 +37,5 @@ export default async function PricingPage() {
       endsAt = active?.period_end ?? null;
     }
   }
-  return <PricingClient currency={currency} paymentsEnabled={paymentsEnabled(process.env.PAYMENTS_ENABLED)} signedIn={!!user} premium={premium} canCancel={canCancel} endsAt={endsAt} />;
+  return <><SiteHeader signedIn={!!user} current="pricing" /><PricingClient currency={currency} paymentsEnabled={paymentsEnabled(process.env.PAYMENTS_ENABLED)} signedIn={!!user} premium={premium} canCancel={canCancel} endsAt={endsAt} /><SiteFooter /></>;
 }

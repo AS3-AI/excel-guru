@@ -48,9 +48,10 @@ describe("validateContent: valid content", () => {
     expect(validateContent(fixture("valid"))).toEqual([]);
   });
 
+  // Runs every lesson solution through the engine (~6s locally); the 5s default is too tight.
   it("accepts the repository's learning articles", () => {
     expect(validateContent(join(fileURLToPath(new URL("..", import.meta.url)), "content"))).toEqual([]);
-  });
+  }, 30_000);
 
   it("validates article shape, lesson links, related links and evaluated examples", () => {
     const dir = mkdtempSync(join(tmpdir(), "excel-guru-content-"));

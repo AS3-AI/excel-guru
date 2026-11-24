@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { TopNav } from "@/components/TopNav";
+import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import { Icon } from "@/components/icons";
 import { getLesson, getOrder } from "@/lib/lessons";
 import { MODULES } from "@/lib/modules";
 import { createClient } from "@/lib/supabase/server";
@@ -39,5 +40,24 @@ export default async function ModulePage({ params }: { params: Promise<{ slug: s
     }
   }
   const done = lessons.filter((lesson) => completed.has(lesson.id)).length;
-  return <><TopNav signedIn={!!user} /><main className="dashboard wrap"><nav aria-label="Breadcrumb"><Link href="/dashboard">Dashboard</Link> › <span>{module.title}</span></nav><h1>{module.title}</h1><p>{done}/{module.total} Lessons Completed</p><ol>{lessons.map((lesson) => <li key={lesson.id} style={{ padding: "12px 0", color: completed.has(lesson.id) ? "var(--text)" : "var(--muted)" }}><Link href={`/lesson/${lesson.id}`} style={{ color: "inherit" }}>{lesson.title}</Link>{completed.has(lesson.id) ? ` · Complete · ${badges.get(lesson.id) ?? ""}` : " · Incomplete"}</li>)}</ol></main></>;
+  const next = lessons.find((lesson) => !completed.has(lesson.id)) ?? lessons[0];
+  const pct = Math.round(done / Math.max(1, lessons.length) * 100);
+  return <><SiteHeader signedIn={!!user} current="dashboard" /><main className="dashboard module-page wrap" id="main">
+    <nav className="crumbs" aria-label="Breadcrumb"><Link href="/dashboard">Dashboard</Link><Icon name="chevronRight" size={14} /><span aria-current="page">{module.title}</span></nav>
+    <header className="dash-head">
+      <div>
+        <p className="eyebrow"><span className="ref">M{module.order}</span>Module {module.order} of {MODULES.length}</p>
+        <h1>{module.title}</h1>
+        <div className="module-progress"><div className="meter" role="progressbar" aria-label="Module progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><i style={{ width: `${pct}%` }} /></div><span className="num">{done}/{lessons.length}</span> lessons completed</div>
+      </div>
+      {next && <Link className="btn btn-lg" href={`/lesson/${next.id}`}>{done === 0 ? "Start module" : done >= lessons.length ? "Review module" : "Continue"} <Icon name="arrowRight" size={18} /></Link>}
+    </header>
+    {lessons.length === 0 ? <p className="dash-empty">Lessons for this module are on their way.</p> : <ol className="lesson-rows">{lessons.map((lesson, i) => { const isDone = completed.has(lesson.id); return <li key={lesson.id}><Link href={`/lesson/${lesson.id}`} className={isDone ? "is-done" : undefined}>
+      <span className="lr-num num" aria-hidden="true">{i + 1}</span>
+      <span className="lr-status" aria-hidden="true">{isDone ? <Icon name="check" size={13} strokeWidth={2.75} /> : null}</span>
+      <span className="lr-title">{lesson.title}<span className="sr-only">{isDone ? " — complete" : " — not started"}</span></span>
+      <span className="lr-meta">{isDone ? badges.get(lesson.id) ?? "Complete" : ""}</span>
+      <Icon name="chevronRight" size={16} className="lr-go" />
+    </Link></li>; })}</ol>}
+  </main><SiteFooter /></>;
 }

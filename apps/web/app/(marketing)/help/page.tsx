@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { HELP_SECTIONS } from "@/lib/help";
 import { STATIC_METADATA } from "@/lib/seo";
+import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import "./help.css";
 
 export const metadata: Metadata = {
@@ -15,49 +15,40 @@ export const metadata: Metadata = {
 
 export default function HelpPage() {
   return (
-    <main className="wrap prose help-page">
-      <nav className="help-nav" aria-label="Breadcrumb">
-        <Link href="/">← Back to Excel Guru</Link>
-      </nav>
-
-      <h1>Help &amp; FAQ</h1>
-      <p className="lead">
-        Find answers to frequently asked questions about interactive lessons, spreadsheet mechanics,
-        keyboard shortcuts, subscriptions, and accounts.
-      </p>
-
-      {HELP_SECTIONS.map((section) => (
-        <section key={section.id} id={section.id} className="help-section">
-          <h2>{section.category}</h2>
-          {section.items.map((item) => (
-            <details key={item.q} className="help-item">
-              <summary className="help-summary">{item.q}</summary>
-              <p className="help-answer">{item.a}</p>
-            </details>
-          ))}
-        </section>
-      ))}
-
-      <section id="contact-support" className="help-section">
-        <h2>Still need help?</h2>
-        <div className="help-contact-card">
-          <h3>Contact our team</h3>
-          <p>
-            Have a question, feedback, or need help with your account or billing? Email us at:
-          </p>
-          <span className="help-contact-email">[CONTACT EMAIL]</span>
-        </div>
-      </section>
-
-      <footer className="help-footer">
-        <nav className="help-footer-nav" aria-label="Footer navigation">
-          <Link href="/">Home</Link>
-          <Link href="/pricing">Pricing</Link>
-          <Link href="/privacy">Privacy</Link>
-          <Link href="/terms">Terms</Link>
+    <>
+      <SiteHeader current="help" />
+      <main className="doc help-page" id="main">
+        <p className="eyebrow"><span className="ref">?</span>Help</p>
+        <h1>Help &amp; FAQ</h1>
+        <p className="lead">
+          Answers about lessons, the spreadsheet, keyboard shortcuts, subscriptions and your account.
+        </p>
+        <nav className="help-toc" aria-label="Help topics">
+          {HELP_SECTIONS.map((section) => <a key={section.id} href={`#${section.id}`}>{section.category}</a>)}
+          <a href="#contact-support">Contact</a>
         </nav>
-        <p className="help-copyright">© {new Date().getFullYear()} Excel Guru</p>
-      </footer>
-    </main>
+
+        {HELP_SECTIONS.map((section) => (
+          <section key={section.id} id={section.id} className="doc-section">
+            <h2>{section.category}</h2>
+            {section.items.map((item) => (
+              <details key={item.q} className="faq-item">
+                <summary>{item.q}</summary>
+                <p>{item.a}</p>
+              </details>
+            ))}
+          </section>
+        ))}
+
+        <section id="contact-support" className="doc-section">
+          <h2>Still need help?</h2>
+          <div className="help-contact-card">
+            <p>Questions, feedback, or something wrong with your account or billing? Email us at</p>
+            <span className="help-contact-email">[CONTACT EMAIL]</span>
+          </div>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
   );
 }
