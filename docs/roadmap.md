@@ -1,5 +1,7 @@
 # Roadmap
 
+Last updated: 24 Nov 2026 (route loading indicator PR #3)
+
 ## Start here (17 Nov 2026) — for the human review
 
 **In one sentence:** the product is built. All 86 lessons, the player, grading, progress, points, leaderboards,
@@ -170,6 +172,7 @@ grading, the paywall or payments.
 | **T45** | Landing "Start free" + email the waitlist | ⬜ |
 | **T46** | Security pass: RLS on every table, rate limits | ✅ on `main`, migration 0005 applied, audit in `docs/security-audit.md`; 🟡 Razorpay refund test is yours |
 | **T47** | SEO basics + help / privacy / terms pages | ✅ on `main`; 🟡 legal placeholders and the Lighthouse score still to do |
+| — | Route loading indicator between pages | 🟡 PR #3 open (24 Nov) |
 | **T48** | Analytics (PostHog) + cookie banner | ⬜ |
 | **O2** | Payments to live mode | ⬜ owner |
 | **O3** | Pre-launch checklist (auth email, test accounts, dev project, Excel checks) | ⬜ owner + Claude |
