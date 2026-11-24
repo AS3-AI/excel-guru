@@ -32,7 +32,7 @@ export default async function LoginPage({
     <div className="auth-card">
       <h1>Welcome back</h1>
       <p className="lead">Log in to pick up where you left off.</p>
-      {error && <p className="auth-alert err" role="alert" style={{ marginBottom: 16 }}>{error}</p>}
+      {error && <p className="auth-alert err" role="alert">{error}</p>}
       <GoogleButton next={next} />
       <div className="auth-or">or</div>
       <LoginForm next={next} />
