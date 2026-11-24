@@ -50,8 +50,8 @@ export function PricingClient({ currency: initialCurrency, paymentsEnabled, sign
     catch { setMessage("Could not manage your subscription right now."); }
     finally { setBusy(false); }
   }
-  return <main className="pricing-page">
-    <section className="pricing-intro"><p className="pricing-eyebrow">Excel Guru Premium</p><h1>Learn Excel without limits</h1><p>Build practical spreadsheet skills with a clear path from your first formula to advanced projects.</p>
+  return <main className="pricing-page" id="main">
+    <section className="pricing-intro"><p className="eyebrow"><span className="ref">D1</span>Excel Guru Premium</p><h1>Learn Excel without limits</h1><p>Build practical spreadsheet skills with a clear path from your first formula to advanced projects.</p>
       <ul><li>Unlock every lesson and guided practice</li><li>Learn with projects that mirror real work</li><li>Earn a certificate when you complete the curriculum</li></ul>
     </section>
     <section className="pricing-card" aria-labelledby="pricing-title">
@@ -61,6 +61,6 @@ export function PricingClient({ currency: initialCurrency, paymentsEnabled, sign
       {premium ? <div className="premium-state"><p>You're premium</p>{canCancel && paymentsEnabled ? <button className="pricing-button secondary" type="button" onClick={() => void manage()} disabled={busy}>Manage / cancel subscription</button> : endsAt ? <p>Your plan ends on {new Date(endsAt).toLocaleDateString()}</p> : null}</div> : !paymentsEnabled ? <p className="region-message" role="status">Upgrade coming soon</p> : currency === "USD" ? <p className="region-message" role="status">Coming soon in your region. Switch to INR to pay with Razorpay.</p> : <button className="pricing-button" type="button" onClick={() => void upgrade()} disabled={busy}>{busy ? "Please wait…" : "Upgrade"}</button>}
       <p className="refund-copy">Cancel any time · full refund if unhappy</p>{!signedIn && currency === "INR" && !premium && <p className="signin-copy">You'll create an account before checkout.</p>}{message && <p className="pricing-status" role="status">{message}</p>}
     </section>
-    <p className="pricing-back"><Link href="/dashboard">← Back to dashboard</Link></p>
+    <p className="pricing-back"><Link href="/dashboard">Back to dashboard</Link></p>
   </main>;
 }
