@@ -11,7 +11,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ premium: false }, { status: 401 });
   const admin = createAdminClient();
   if (!admin) return NextResponse.json({ error: "status_unavailable" }, { status: 503 });
-  const { data: profile } = await admin.from("profiles").select("is_premium,group_id").eq("user_id", user.id).maybeSingle();
+  const { data: profile } = await admin.from("profiles").select("is_premium,group_id,invited").eq("user_id", user.id).maybeSingle();
   const { data: subscriptions } = await admin.from("subscriptions").select("status,period_end").eq("user_id", user.id);
   const active = (subscriptions ?? []).find((row) => row.status === "active" && (!row.period_end || Date.parse(row.period_end) > Date.now()));
   let groupPremium = false;
@@ -19,7 +19,7 @@ export async function GET() {
     const { data: group } = await admin.from("groups").select("has_paid_access").eq("id", profile.group_id).maybeSingle();
     groupPremium = group?.has_paid_access === true;
   }
-  return NextResponse.json({ premium: profile?.is_premium === true, canCancel: !!active, endsAt: active?.period_end ?? null, groupPremium });
+  return NextResponse.json({ premium: profile?.is_premium === true, canCancel: !!active, endsAt: active?.period_end ?? null, groupPremium, invited: profile?.invited === true });
 }
 
 export async function POST(request: Request) {
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
   const validationError = validateCheckoutInput(plan, currency);
   if (validationError) return NextResponse.json({ error: validationError }, { status: validationError === "region_unavailable" ? 409 : 400 });
   const validPlan = plan as "monthly" | "annual";
-  const { data: profile, error: profileError } = await admin.from("profiles").select("email,group_id").eq("user_id", user.id).maybeSingle();
+  const { data: profile, error: profileError } = await admin.from("profiles").select("email,group_id,invited").eq("user_id", user.id).maybeSingle();
   if (profileError) return NextResponse.json({ error: "checkout_unavailable" }, { status: 503 });
   const { data: subscriptions, error: subscriptionError } = await admin.from("subscriptions").select("status,period_end").eq("user_id", user.id);
   if (subscriptionError) return NextResponse.json({ error: "checkout_unavailable" }, { status: 503 });
@@ -49,6 +49,7 @@ export async function POST(request: Request) {
     if (error) return NextResponse.json({ error: "checkout_unavailable" }, { status: 503 });
     groupPremium = group?.has_paid_access === true;
   }
+  if (profile?.invited === true) return NextResponse.json({ error: "invited" }, { status: 409 }); // invited learners never pay
   if (isEntitled(subscriptions ?? [], Date.now(), groupPremium)) return NextResponse.json({ error: "already_premium" }, { status: 409 });
   try {
     const result = await providerFor("INR").createCheckout({ userId: user.id, email: profile?.email ?? user.email ?? "", plan: validPlan });

@@ -120,6 +120,30 @@ describe("recording lesson opens", () => {
     expect(openWrites).not.toHaveBeenCalled();
   });
 
+  it("lets an invited learner past the two-lesson limit", async () => {
+    const rows: Record<string, unknown> = {
+      profiles: { group_id: null, invited: true },
+      lesson_progress: [{ lesson_id: "intro" }, { lesson_id: "sum" }],
+      lesson_opens: [],
+      subscriptions: [],
+    };
+    const admin = { from: vi.fn((table: string) => {
+      const result = { data: rows[table], error: null };
+      const builder = {
+        select: vi.fn(() => builder),
+        eq: vi.fn(() => builder),
+        maybeSingle: vi.fn(async () => result),
+        then: (resolve: (value: typeof result) => unknown) => Promise.resolve(result).then(resolve),
+      };
+      return builder;
+    }) };
+    const access = await loadLessonAccess(admin as never, "u", "count");
+    expect(access.invited).toBe(true);
+    expect(access.decision).toEqual({ allowed: true, reason: "ok" });
+    rows.profiles = { group_id: null, invited: false };
+    expect((await loadLessonAccess(admin as never, "u", "count")).decision.reason).toBe("paywall");
+  });
+
   it("keeps progress merge under two used lessons for a free learner", () => {
     const used = ["intro"];
     const candidates = ["sum", "count", "lookup"];

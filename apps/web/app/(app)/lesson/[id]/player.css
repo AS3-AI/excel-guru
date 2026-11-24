@@ -281,3 +281,4 @@
 @media (max-width: 640px) { .pl-stats > div + div { border-left: 0; border-top: var(--line); } }
 .pl-trophy { width: 120px; right: var(--s6); bottom: var(--s6); }
 @media (max-width: 640px) { .pl-trophy { width: 72px; right: var(--s4); bottom: var(--s4); } }
+.pl-invite-note { position: relative; width: 100%; margin: 0 0 var(--s3); padding: var(--s3) var(--s4); background: var(--mint); border: var(--line); border-radius: var(--r); font-size: var(--fs-sm); text-align: left; }
