@@ -1,4 +1,6 @@
-import Link from "next/link";
+"use client";
+
+import Link, { useLinkStatus } from "next/link";
 import { Icon } from "@/components/icons";
 
 export type LessonNavItem = { id: string; title: string; lastCompletedAt?: string; firstTryAccuracy?: number };
@@ -10,8 +12,15 @@ export function LessonList({ items, currentId }: { items: LessonNavItem[]; curre
       <Link href={`/lesson/${item.id}`} aria-current={current ? "page" : undefined}>
         <span className="pl-lesson-num num">{i + 1}</span>
         <span className="pl-lesson-title">{item.title}{item.lastCompletedAt && <small>{new Date(item.lastCompletedAt).toLocaleDateString()} · {Math.round((item.firstTryAccuracy ?? 0) * 100)}% first try</small>}{current && <b>In progress</b>}</span>
-        <span className="pl-lesson-dot" aria-hidden="true">{item.lastCompletedAt ? <Icon name="check" size={10} strokeWidth={3} /> : null}</span>
+        <LessonDot done={!!item.lastCompletedAt} />
       </Link>
     </li>;
   })}</ol></nav>;
+}
+
+/** Swaps the status dot for a spinner while this link's navigation is pending. */
+function LessonDot({ done }: { done: boolean }) {
+  const { pending } = useLinkStatus();
+  if (pending) return <span className="pl-lesson-dot is-loading" role="status" aria-label="Loading lesson" />;
+  return <span className="pl-lesson-dot" aria-hidden="true">{done ? <Icon name="check" size={10} strokeWidth={3} /> : null}</span>;
 }
