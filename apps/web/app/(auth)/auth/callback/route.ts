@@ -63,6 +63,9 @@ export async function GET(request: NextRequest) {
   if (!data.user) return fail(code ? "oauth" : "link");
 
   const profiled = await ensureProfile(data.user);
-  const target = profiled ? next : `${ONBOARDING}?next=${encodeURIComponent(next)}`;
+  const invite = searchParams.get("invite");
+  const target = profiled
+    ? next
+    : `${ONBOARDING}?next=${encodeURIComponent(next)}${invite ? `&invite=${encodeURIComponent(invite)}` : ""}`;
   return sendRedirect(target);
 }

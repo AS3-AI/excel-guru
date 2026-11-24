@@ -20,6 +20,14 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_EMAIL = 254;
 const MAX_FIRST_NAME = 50;
 export const MIN_PASSWORD = 8;
+
+/** Invite-only signup: the shared code lives in the server-only INVITE_CODE env var. Unset = closed. */
+export function isValidInvite(code: unknown, expected = process.env.INVITE_CODE): boolean {
+  if (typeof code !== "string" || !expected?.trim()) return false;
+  return code.trim().toLowerCase() === expected.trim().toLowerCase();
+}
+
+export const INVITE_ERROR = "That invite code isn't valid";
 const MAX_PASSWORD = 72; // bcrypt limit used by Supabase Auth
 
 export type FieldErrors<K extends string> = Partial<Record<K, string>>;
