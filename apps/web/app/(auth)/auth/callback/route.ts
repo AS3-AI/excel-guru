@@ -1,8 +1,9 @@
 import type { EmailOtpType } from "@supabase/supabase-js";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { ONBOARDING, safeNext } from "@/lib/auth";
+import { ONBOARDING, originFrom, safeNext } from "@/lib/auth";
+import { supabasePublicEnv } from "@/lib/supabase/env";
 import { ensureProfile } from "@/lib/supabase/profile";
-import { createClient } from "@/lib/supabase/server";
 
 const OTP_TYPES: readonly EmailOtpType[] = ["signup", "invite", "magiclink", "recovery", "email_change", "email"];
 
@@ -11,10 +12,38 @@ const OTP_TYPES: readonly EmailOtpType[] = ["signup", "invite", "magiclink", "re
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const next = safeNext(searchParams.get("next"));
-  const fail = (reason: string) => NextResponse.redirect(new URL(`/login?error=${reason}`, request.url));
+  const origin = originFrom((n) => request.headers.get(n), process.env.NEXT_PUBLIC_BASE_URL);
 
-  const supabase = await createClient();
-  if (!supabase) return fail("unavailable");
+  let cookiesToSet: { name: string; value: string; options: CookieOptions }[] = [];
+  let cacheHeaders: Record<string, string> = {};
+
+  const sendRedirect = (path: string) => {
+    const res = NextResponse.redirect(new URL(path, origin));
+    for (const { name, value, options } of cookiesToSet) {
+      res.cookies.set(name, value, options);
+    }
+    for (const [k, v] of Object.entries(cacheHeaders)) {
+      res.headers.set(k, v);
+    }
+    return res;
+  };
+
+  const fail = (reason: string) => sendRedirect(`/login?error=${reason}`);
+
+  const env = supabasePublicEnv();
+  if (!env) return fail("unavailable");
+
+  const supabase = createServerClient(env.url, env.key, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(newCookies, headers) {
+        cookiesToSet = newCookies;
+        if (headers) cacheHeaders = { ...cacheHeaders, ...headers };
+      },
+    },
+  });
 
   const code = searchParams.get("code");
   const tokenHash = searchParams.get("token_hash");
@@ -28,15 +57,15 @@ export async function GET(request: NextRequest) {
   } else {
     return fail(searchParams.get("error") ? "oauth" : "link");
   }
-  if (error) return fail("link");
+  if (error) return fail(code ? "oauth" : "link");
 
   const { data } = await supabase.auth.getUser();
-  if (!data.user) return fail("link");
+  if (!data.user) return fail(code ? "oauth" : "link");
 
   const profiled = await ensureProfile(data.user);
   const invite = searchParams.get("invite");
   const target = profiled
     ? next
     : `${ONBOARDING}?next=${encodeURIComponent(next)}${invite ? `&invite=${encodeURIComponent(invite)}` : ""}`;
-  return NextResponse.redirect(new URL(target, request.url));
+  return sendRedirect(target);
 }
