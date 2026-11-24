@@ -7,7 +7,7 @@ export async function loadLessonAccess(admin: import("@supabase/supabase-js").Su
     admin.from("lesson_progress").select("lesson_id").eq("user_id", userId),
     admin.from("lesson_opens").select("lesson_id").eq("user_id", userId),
     admin.from("subscriptions").select("period_end").eq("user_id", userId).eq("status", "active"),
-    admin.from("profiles").select("group_id").eq("user_id", userId).maybeSingle(),
+    admin.from("profiles").select("group_id,invited").eq("user_id", userId).maybeSingle(),
   ]);
   if (progress.error || opens.error || subscriptions.error || profile.error) throw new Error("Lesson access is temporarily unavailable");
   const completedLessonIds = (progress.data ?? []).map((row) => row.lesson_id);
@@ -19,7 +19,10 @@ export async function loadLessonAccess(admin: import("@supabase/supabase-js").Su
     if (error) throw new Error("Lesson access is temporarily unavailable");
     groupPremium = data?.has_paid_access === true;
   }
-  return { decision: decideLessonAccess({ lessonId, userId, completedLessonIds, openedLessonIds, premium, groupPremium }), completedLessonIds, openedLessonIds, premium, groupPremium };
+  const invited = profile.data?.invited === true;
+  // Invited learners are treated like a paid group: no paywall.
+  groupPremium = groupPremium || invited;
+  return { decision: decideLessonAccess({ lessonId, userId, completedLessonIds, openedLessonIds, premium, groupPremium }), completedLessonIds, openedLessonIds, premium, groupPremium, invited };
 }
 
 /** Record a page open idempotently. A logging failure never blocks rendering. */

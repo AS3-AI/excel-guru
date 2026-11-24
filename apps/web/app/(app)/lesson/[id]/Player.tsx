@@ -23,7 +23,7 @@ import { Icon } from "@/components/icons";
 import { Doodle } from "@/components/Doodles";
 import "./player.css";
 
-type Props = { lesson: Lesson; next: number[]; nextLessonId: string | null; lessons: LessonNavItem[]; signedOutIntro?: boolean; signedIn?: boolean };
+type Props = { lesson: Lesson; next: number[]; nextLessonId: string | null; lessons: LessonNavItem[]; signedOutIntro?: boolean; signedIn?: boolean; inviteNotice?: boolean };
 // Only formula, select and shortcut mistakes get an AI explanation; a value without "=" already has a fixed message.
 function explainable(step: Lesson["steps"][number], input: string): boolean {
   if (step.type === "formula") return gradeFormulaStep(step, input).reason !== "not_formula";
@@ -42,7 +42,7 @@ function formulaWrongMessage(reason: string | undefined, step: FormulaStep, inpu
   if (reason === "missing_function") return `Your formula needs to use ${(step.mustUse ?? []).join(", ")}.`;
   return `Not quite. Your answer was ${input || "blank"}.`;
 }
-export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIntro = false, signedIn = false }: Props) {
+export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIntro = false, signedIn = false, inviteNotice = false }: Props) {
   const router = useRouter();
   const completionDestination = signedOutIntro ? "/signup?completed=intro" : nextLessonId ? `/lesson/${nextLessonId}` : "/";
   const [boardsReady, setBoardsReady] = useState(!signedIn);
@@ -351,6 +351,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
         <div><dt>Questions correct</dt><dd className="num">{state.correct}</dd></div>
         {savedCelebrationStats && <><div className="is-gold"><dt>Points earned</dt><dd className="num">+{celebrationPoints}</dd></div><div><dt>Day streak</dt><dd className="num">{savedCelebrationStats.streak}</dd></div></>}
       </dl>
+      {inviteNotice && <p className="pl-invite-note" role="note"><strong>No payment needed.</strong> You joined with an invite code, so every lesson is unlocked. Keep going!</p>}
       {saveNote && <p role="status" className="pl-save-note">{saveNote}</p>}
       <button ref={continueRef} className="btn pl-key pl-key-enter" aria-keyshortcuts="Enter" onClick={() => router.push(completionDestination)}>Continue <span aria-hidden="true">⏎</span></button>
     </main> : <main className={`pl-arena${hasBrief ? "" : " is-solo"}`} id="main" data-feedback={feedback ?? undefined}>

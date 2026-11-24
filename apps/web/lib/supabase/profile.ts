@@ -19,6 +19,7 @@ export async function createProfile(
     email: user.email?.toLowerCase() ?? null,
     first_name: input.firstName,
     username: input.username,
+    invited: true, // every caller has already checked the invite code
   });
   if (!error) return { ok: true };
   if (error.code === UNIQUE_VIOLATION) {

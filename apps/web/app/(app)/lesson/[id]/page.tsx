@@ -53,6 +53,8 @@ export default async function LessonPage({ params }: Props) {
       completedRows = data ?? [];
     }
   }
+  // Where the paywall would start (2nd lesson done), invited learners see a "no payment needed" note instead.
+  const inviteNotice = !!access?.invited && access.completedLessonIds.length === 1 && !access.completedLessonIds.includes(id);
   const completionById = new Map(completedRows.map((row) => [row.lesson_id, row]));
   const lessons: LessonNavItem[] = getOrder().flatMap((lessonId) => {
     const item = getLesson(lessonId);
@@ -63,7 +65,7 @@ export default async function LessonPage({ params }: Props) {
   return (
     <div className="wrap pl-page">
       <header className="pl-top"><Logo /><nav className="pl-breadcrumb" aria-label="Breadcrumb"><Link href={DASHBOARD_HREF}>Dashboard</Link><Icon name="chevronRight" size={14} /><Link href={moduleHref(lesson.module)}>{lesson.module}</Link><Icon name="chevronRight" size={14} /><span aria-current="page">{lesson.title}</span></nav></header>
-      <Player lesson={lesson} next={stepSequence(lesson.steps.length)} nextLessonId={nextLessonId(id)} lessons={lessons} signedOutIntro={!user && id === "intro"} signedIn={!!user} />
+      <Player lesson={lesson} next={stepSequence(lesson.steps.length)} nextLessonId={nextLessonId(id)} lessons={lessons} signedOutIntro={!user && id === "intro"} signedIn={!!user} inviteNotice={inviteNotice} />
     </div>
   );
 }
