@@ -4,6 +4,7 @@ import Link from "next/link";
 import { currencyForCountry, formatPrice, PLANS } from "@/lib/plans";
 import { STATIC_METADATA } from "@/lib/seo";
 import { MODULES } from "@/lib/modules";
+import { createClient } from "@/lib/supabase/server";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { Icon } from "@/components/icons";
 import { Reveal } from "@/components/Reveal";
@@ -64,6 +65,10 @@ const FAQ = [
 ];
 
 export default async function Home() {
+  const session = await createClient();
+  const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
+  const signedIn = !!user;
+
   const country = (await headers()).get("x-vercel-ip-country");
   const currency = currencyForCountry(country);
   const plan = PLANS[currency];
@@ -73,7 +78,7 @@ export default async function Home() {
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader signedIn={signedIn} />
       <main className="landing" id="main">
         <section className="hero block-mint">
           <div className="hero-paper" aria-hidden="true">
@@ -84,12 +89,24 @@ export default async function Home() {
               <p className="eyebrow"><span className="ref">A1</span>Interactive Excel lessons</p>
               <h1>Learn Excel by typing <mark>real formulas</mark>.<Doodle name="squiggle" className="d-squiggle" /></h1>
               <p className="lead">
-                A spreadsheet that runs in your browser, with every answer checked the moment you press Enter.
-                Start with the intro lesson. No account needed.
+                {signedIn ? (
+                  "Welcome back! Continue your streak and pick up right where you left off, or review your formulas."
+                ) : (
+                  "A spreadsheet that runs in your browser, with every answer checked the moment you press Enter. Start with the intro lesson. No account needed."
+                )}
               </p>
               <div className="hero-actions">
-                <Link className="btn btn-lg" href="/lesson/intro">Start the free lesson <Icon name="arrowRight" size={18} /></Link>
-                <Link className="btn btn-lg btn-quiet" href="#curriculum">Browse the curriculum</Link>
+                {signedIn ? (
+                  <>
+                    <Link className="btn btn-lg" href="/dashboard">Go to Dashboard <Icon name="arrowRight" size={18} /></Link>
+                    <Link className="btn btn-lg btn-quiet" href="/profile">View Profile</Link>
+                  </>
+                ) : (
+                  <>
+                    <Link className="btn btn-lg" href="/lesson/intro">Start the free lesson <Icon name="arrowRight" size={18} /></Link>
+                    <Link className="btn btn-lg btn-quiet" href="#curriculum">Browse the curriculum</Link>
+                  </>
+                )}
               </div>
               <dl className="facts" data-reveal>
                 {FACTS.map((f) => (

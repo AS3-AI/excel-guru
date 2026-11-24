@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import { createClient } from "@/lib/supabase/server";
 import { Doodle } from "@/components/Doodles";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const session = await createClient();
+  const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
+
   return (
     <>
-      <SiteHeader />
+      <SiteHeader signedIn={!!user} />
       <main className="state" id="main">
         <Doodle name="arrow" className="nf-arrow draw" />
         <span className="state-code" aria-hidden="true">#REF!</span>

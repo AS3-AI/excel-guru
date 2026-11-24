@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import { createClient } from "@/lib/supabase/server";
 import { PRIVACY_SECTIONS } from "@/lib/legal";
 import { STATIC_METADATA } from "@/lib/seo";
 
@@ -12,10 +13,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const session = await createClient();
+  const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
+
   return (
     <>
-      <SiteHeader />
+      <SiteHeader signedIn={!!user} />
       <main className="doc" id="main">
         <p className="eyebrow"><span className="ref">§</span>Legal</p>
         <h1>Privacy Policy</h1>

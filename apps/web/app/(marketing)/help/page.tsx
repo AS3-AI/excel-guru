@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { HELP_SECTIONS } from "@/lib/help";
 import { STATIC_METADATA } from "@/lib/seo";
+import { createClient } from "@/lib/supabase/server";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import "./help.css";
 
@@ -13,10 +14,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HelpPage() {
+export default async function HelpPage() {
+  const session = await createClient();
+  const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
+
   return (
     <>
-      <SiteHeader current="help" />
+      <SiteHeader signedIn={!!user} current="help" />
       <main className="doc help-page" id="main">
         <p className="eyebrow"><span className="ref">?</span>Help</p>
         <h1>Help &amp; FAQ</h1>

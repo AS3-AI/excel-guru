@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Icon } from "./icons";
 
-type NavKey = "dashboard" | "learn" | "pricing" | "help";
+type NavKey = "dashboard" | "learn" | "pricing" | "help" | "profile";
 
 const MARKETING: { key: NavKey; href: string; label: string }[] = [
   { key: "learn", href: "/learn", label: "Guides" },
@@ -41,7 +41,12 @@ export function SiteHeader({ signedIn = false, current, minimal = false }: { sig
             <details className="menu">
               <summary aria-label="Account menu"><span className="avatar" aria-hidden="true"><Icon name="grid" size={13} /></span>Account<Icon name="chevronDown" size={14} className="chev" /></summary>
               <div className="menu-panel">
-                {links.map((l) => <Link key={l.key} href={l.href}>{l.label}</Link>)}
+                <Link href="/profile"><Icon name="user" size={16} />Profile</Link>
+                <Link href="/dashboard"><Icon name="grid" size={16} />Dashboard</Link>
+                <hr />
+                <Link href="/learn">Guides</Link>
+                <Link href="/pricing">Pricing</Link>
+                <Link href="/help">Help</Link>
                 <hr />
                 <form action="/auth/signout" method="post">
                   <button type="submit"><Icon name="logOut" size={16} />Log out</button>

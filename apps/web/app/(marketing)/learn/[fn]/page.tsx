@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { RichText } from "@/components/RichText";
 import { getArticle, getArticles } from "@/lib/learn";
+import { createClient } from "@/lib/supabase/server";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { Icon } from "@/components/icons";
 import "../learn.css";
@@ -28,11 +29,13 @@ function Grid({ grid }: { grid: NonNullable<ReturnType<typeof getArticle>>["sect
 }
 
 export default async function LearnArticlePage({ params }: { params: Promise<{ fn: string }> }) {
+  const session = await createClient();
+  const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
   const { fn } = await params;
   const article = getArticle(fn);
   if (!article) notFound();
   const related = article.related.map((slug) => getArticle(slug)).filter((item) => item !== null);
-  return <><SiteHeader current="learn" /><main className="learn-page" id="main"><article className="doc learn-article">
+  return <><SiteHeader signedIn={!!user} current="learn" /><main className="learn-page" id="main"><article className="doc learn-article">
     <nav className="crumbs" aria-label="Breadcrumb"><Link href="/learn">Guides</Link><Icon name="chevronRight" size={14} /><span aria-current="page">{article.fn}</span></nav>
     <h1>{article.title}</h1><p className="learn-description">{article.description}</p>
     <h2>Syntax</h2><p className="learn-syntax"><b aria-hidden="true">fx</b><code>{article.syntax}</code></p>

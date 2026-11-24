@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Grid } from "@/components/grid/Grid";
+import { createClient } from "@/lib/supabase/server";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 
 export const metadata: Metadata = {
@@ -8,10 +9,13 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-export default function SandboxPage() {
+export default async function SandboxPage() {
+  const session = await createClient();
+  const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
+
   return (
     <>
-      <SiteHeader />
+      <SiteHeader signedIn={!!user} />
       <main className="wrap" id="main" style={{ paddingTop: "var(--s7)", paddingBottom: "var(--s8)" }}>
         <p className="eyebrow"><span className="ref">A1</span>Sandbox</p>
         <h1>Free practice sheet</h1>
