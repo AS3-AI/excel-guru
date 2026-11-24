@@ -34,6 +34,8 @@
 .pl-lessons h2,.pl-right h2 { margin:0 0 10px; color:var(--ink); font-size:1.05rem; }
 .pl-lessons ol { list-style:none; margin:0; padding:0; }
 .pl-lessons li + li { border-top:1px solid var(--border); }
+/* Desktop: lesson list scrolls on its own; 80px = breadcrumb above it + bottom gap. */
+@media (min-width:1000px) { .pl-lessons { position:sticky; top:16px; max-height:calc(100vh - 80px); display:flex; flex-direction:column; } .pl-lessons ol { overflow-y:auto; min-height:0; overscroll-behavior:contain; } }
 .pl-lessons a { display:grid; grid-template-columns:25px 1fr; gap:6px; align-items:center; padding:9px 2px; color:var(--text); text-decoration:none; font-size:.9rem; }
 .pl-lessons b { grid-column:2; color:var(--primary); font-size:.68rem; letter-spacing:.04em; }
 .pl-lessons .is-current a { color:var(--ink); font-weight:700; }
