@@ -1,5 +1,19 @@
 /* Lesson player: a 12-column "challenge board". Palette only from lib/tokens.css. */
-.pl-page { max-width: 1440px; padding-bottom: var(--s8); }
+.pl-page {
+  max-width: 1440px;
+  padding-bottom: var(--s8);
+  transition: margin var(--d3) var(--ease), max-width var(--d3) var(--ease);
+}
+
+/* Squeeze lesson content to the left when incorrect sidebar is open */
+@media (min-width: 900px) {
+  body.has-drawer .pl-page,
+  .pl-page:has(.pl-drawer) {
+    margin-left: max(var(--s5), calc((100vw - min(400px, 92vw) - 1440px) / 2));
+    margin-right: min(400px, 92vw);
+    max-width: calc(100vw - min(400px, 92vw) - var(--s5) * 2);
+  }
+}
 
 /* focused top bar: logo + breadcrumb, no marketing nav */
 .pl-top { display: flex; align-items: center; gap: var(--s5); min-height: 60px; margin-bottom: var(--s5); border-bottom: var(--line); }

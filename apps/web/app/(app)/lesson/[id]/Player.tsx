@@ -152,6 +152,16 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   useEffect(() => { if (feedback === "correct") continueRef.current?.focus({ preventScroll: true }); }, [feedback]);
   useEffect(() => { if (feedback === "wrong") focusAnswerControl(); }, [feedback]);
   useEffect(() => {
+    if (feedback === "wrong") {
+      document.body.classList.add("has-drawer");
+    } else {
+      document.body.classList.remove("has-drawer");
+    }
+    return () => {
+      document.body.classList.remove("has-drawer");
+    };
+  }, [feedback]);
+  useEffect(() => {
     if (feedback !== "wrong") return;
     const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") { event.preventDefault(); closeWrong(); } };
     window.addEventListener("keydown", onKey);
@@ -367,7 +377,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
           </>}
       </div>
       <div ref={feedbackRef} className="pl-feedback" aria-live="polite">{feedback === "wrong" && <p className="pl-wrong-summary">{wrongText}</p>}</div>
-      {feedback === "wrong" && <aside className="pl-drawer" aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect (<span className="num">{state.wrongCount}</span>)</strong><button aria-label="Close" onClick={closeWrong}><Icon name="x" size={18} /></button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution">{step.type === "formula" ? <code className="chip">{step.solution}</code> : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : step.type === "shortcut" ? step.mode === "sequence" ? step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac" : step.keys[platform.os] ?? "Unavailable on Mac" : ""}</p>}{aiShown && <div className="pl-ai-slot">{aiLoading ? <span className="pl-ai-loading" role="status" aria-label="Loading explanation"><i /><i /><i /></span> : <><p>{aiExplanation?.text ?? "An explanation isn't available right now. Please try again in a moment."}</p>{signedIn && aiExplanation?.id && (aiThanks ? <p role="status">Thanks for your feedback!</p> : <div className="pl-ai-rating"><button type="button" aria-label="Helpful" disabled={aiRated} onClick={() => void rateExplanation(true)}><Icon name="thumbUp" size={18} /></button><button type="button" aria-label="Not helpful" disabled={aiRated} onClick={() => void rateExplanation(false)}><Icon name="thumbDown" size={18} /></button></div>)}<small>AI can be wrong. Check the answer before relying on it.</small></>}</div>}</aside>}
+      {feedback === "wrong" && <aside className="pl-drawer" aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect</strong><button aria-label="Close" onClick={closeWrong}><Icon name="x" size={18} /></button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution">{step.type === "formula" ? <code className="chip">{step.solution}</code> : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : step.type === "shortcut" ? step.mode === "sequence" ? step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac" : step.keys[platform.os] ?? "Unavailable on Mac" : ""}</p>}{aiShown && <div className="pl-ai-slot">{aiLoading ? <span className="pl-ai-loading" role="status" aria-label="Loading explanation"><i /><i /><i /></span> : <><p>{aiExplanation?.text ?? "An explanation isn't available right now. Please try again in a moment."}</p>{signedIn && aiExplanation?.id && (aiThanks ? <p role="status">Thanks for your feedback!</p> : <div className="pl-ai-rating"><button type="button" aria-label="Helpful" disabled={aiRated} onClick={() => void rateExplanation(true)}><Icon name="thumbUp" size={18} /></button><button type="button" aria-label="Not helpful" disabled={aiRated} onClick={() => void rateExplanation(false)}><Icon name="thumbDown" size={18} /></button></div>)}<small>AI can be wrong. Check the answer before relying on it.</small></>}</div>}</aside>}
     </main>}
     <section className="pl-tiles" aria-label="Your session">
       <div className="pl-tile pl-tile-stat"><span>First-try accuracy</span><b className="num">{answered ? `${firstTry}%` : "—"}</b><small>{answered ? `${answered} answered this lesson` : "Answer a question to start"}</small></div>
