@@ -101,3 +101,18 @@
 .lr-status { border: 2px solid var(--ink); }
 .is-done .lr-status { border-color: var(--ink); }
 .leaderboard-card { box-shadow: var(--shadow-1); }
+.dash-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; grid-template-areas: "main side"; gap: var(--s6); align-items: start; }
+.dash-main { grid-area: main; min-width: 0; }
+.dash-side { grid-area: side; display: grid; gap: var(--s4); position: sticky; top: var(--s6); }
+@media (max-width: 960px) {
+  .dash-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "side" "main"; }
+  .dash-side { position: static; }
+}
+/* Compact progress summary */
+.dash-stat { padding: var(--s4) var(--s5); }
+.dash-count { font-size: 2rem; margin-bottom: var(--s3); }
+.dash-note { margin-top: var(--s2); }
+.status-bar { margin: var(--s2) 0 var(--s3); }
+.dash-legend { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); }
+.dash-legend li { gap: 6px; }
+.dash-legend b { margin-left: 0; }
