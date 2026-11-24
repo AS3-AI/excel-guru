@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Icon } from "./icons";
 
 export function isValidYouTubeVideoId(value: unknown): value is string {
   return typeof value === "string" && /^[A-Za-z0-9_-]{11}$/.test(value);
@@ -42,10 +43,10 @@ export function VideoModal({ videoId }: { videoId: string | null }) {
 
   if (!validVideoId) return null;
   return <>
-    <button ref={triggerRef} className="btn" type="button" onClick={() => setOpen(true)}>▶ Watch lesson video</button>
+    <button ref={triggerRef} className="btn btn-quiet" type="button" onClick={() => setOpen(true)}><Icon name="play" size={16} />Watch lesson video</button>
     {open && <div className="video-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
       <div ref={dialogRef} className="video-modal" role="dialog" aria-modal="true" aria-labelledby="lesson-video-title" onKeyDown={onDialogKeyDown}>
-        <header className="video-modal-header"><h2 id="lesson-video-title">Lesson video</h2><span tabIndex={0} onFocus={() => iframeRef.current?.focus()} /><button ref={closeRef} type="button" aria-label="Close video" onClick={() => setOpen(false)}>×</button></header>
+        <header className="video-modal-header"><h2 id="lesson-video-title">Lesson video</h2><span tabIndex={0} onFocus={() => iframeRef.current?.focus()} /><button ref={closeRef} type="button" aria-label="Close video" onClick={() => setOpen(false)}><Icon name="x" size={18} /></button></header>
         <iframe ref={iframeRef} title="Lesson video" src={`https://www.youtube-nocookie.com/embed/${validVideoId}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
         <span tabIndex={0} onFocus={() => closeRef.current?.focus()} />
       </div>
