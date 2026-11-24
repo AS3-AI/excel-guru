@@ -109,6 +109,44 @@ p { text-wrap: pretty; }
 .menu > summary:hover { border-color: var(--border-strong); }
 .menu > summary svg { transition: transform var(--d2) var(--ease); }
 .menu[open] > summary svg.chev { transform: rotate(180deg); }
+
+/* Account menu trigger: seamlessly integrates with the navbar without looking like an odd boxed button */
+.menu-account > summary {
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text);
+  font-size: 0.93rem;
+  font-weight: 500;
+  padding: 6px 10px;
+  gap: 8px;
+  transition: background-color var(--d2) var(--ease), color var(--d2) var(--ease), border-color var(--d2) var(--ease);
+}
+.menu-account > summary:hover,
+.menu-account[open] > summary {
+  background: var(--surface-sunk);
+  border-color: var(--border);
+  color: var(--ink);
+}
+.menu-account .avatar {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--primary-tint);
+  border: 1.5px solid var(--primary-strong);
+  color: var(--primary-strong);
+}
+.menu-account > summary svg.chev {
+  color: var(--muted);
+  transition: transform var(--d2) var(--ease), color var(--d2);
+}
+.menu-account > summary:hover svg.chev,
+.menu-account[open] > summary svg.chev {
+  color: var(--ink);
+}
+
 .menu-panel { position: absolute; right: 0; top: calc(100% + 8px); min-width: 200px; padding: 6px; display: grid; background: var(--surface); border: var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-pop); transform-origin: top right; animation: menu-in var(--d2) var(--ease); }
 .menu-panel a, .menu-panel button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 8px 10px; border: 0; border-radius: var(--r-sm); background: none; color: var(--text); font-size: 0.93rem; text-align: left; text-decoration: none; cursor: pointer; }
 .menu-panel a:hover, .menu-panel button:hover { background: var(--surface-sunk); color: var(--ink); }

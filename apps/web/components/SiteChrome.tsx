@@ -38,8 +38,8 @@ export function SiteHeader({ signedIn = false, current, minimal = false }: { sig
         )}
         <div className="site-actions">
           {signedIn ? (
-            <details className="menu">
-              <summary aria-label="Account menu"><span className="avatar" aria-hidden="true"><Icon name="grid" size={13} /></span>Account<Icon name="chevronDown" size={14} className="chev" /></summary>
+            <details className="menu menu-account">
+              <summary aria-label="Account menu"><span className="avatar" aria-hidden="true"><Icon name="user" size={13} /></span>Account<Icon name="chevronDown" size={14} className="chev" /></summary>
               <div className="menu-panel">
                 <Link href="/profile"><Icon name="user" size={16} />Profile</Link>
                 <Link href="/dashboard"><Icon name="grid" size={16} />Dashboard</Link>
