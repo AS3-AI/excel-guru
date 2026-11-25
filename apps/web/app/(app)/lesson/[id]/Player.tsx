@@ -29,7 +29,7 @@ import { LessonList, type LessonNavItem } from "./LessonList";
 import { Leaderboards } from "@/components/Leaderboards";
 import { ShareBonus } from "@/components/ShareBonus";
 import { VideoModal } from "@/components/VideoModal";
-import { answerPointsVisible, celebrationStats } from "@/lib/leaderboard";
+import { answerPointsVisible } from "@/lib/leaderboard";
 import { DASHBOARD_HREF } from "@/lib/nav-links";
 import { Icon } from "@/components/icons";
 import { Doodle } from "@/components/Doodles";
@@ -92,7 +92,6 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   const listRef = useRef<HTMLDialogElement>(null);
   const step = lesson.steps[state.index]!;
   const pct = Math.min(100, Math.round(state.correct / lesson.requiredCorrect * 100));
-  const savedCelebrationStats = celebrationStats(savedStats);
   const firstTry = useMemo(() => {
     const results = Object.values(state.firstTry);
     return results.length ? Math.round(results.filter(Boolean).length / results.length * 100) : 0;
@@ -390,7 +389,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
       <dl className={`pl-stats ${plStatsClasses}`}>
         <div><dt>First-try accuracy</dt><dd className="num">{firstTry}%</dd></div>
         <div><dt>Questions correct</dt><dd className="num">{state.correct}</dd></div>
-        {savedCelebrationStats && <><div className="is-gold"><dt>Points earned</dt><dd className="num">+{celebrationPoints}</dd></div><div><dt>Day streak</dt><dd className="num">{savedCelebrationStats.streak}</dd></div></>}
+        {savedStats && <><div className="is-gold"><dt>Points earned</dt><dd className="num">+{celebrationPoints}</dd></div><div><dt>Day streak</dt><dd className="num">{savedStats.streak}</dd></div></>}
       </dl>
       {inviteNotice && <p className="pl-invite-note relative w-full m-[0_0_var(--s3)] p-[var(--s3)_var(--s4)] bg-mint [border:var(--line)] rounded-ledger
           text-ledger-sm text-left" role="note"><strong>No payment needed.</strong> You joined with an invite code, so every lesson is unlocked. Keep going!</p>}

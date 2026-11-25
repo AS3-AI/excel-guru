@@ -1,13 +1,5 @@
 import { MODULES } from "./modules";
-
-function getIstDate(now: Date): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Kolkata",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(now);
-}
+import { getIstDate } from "./dates";
 
 export type ModuleProgressItem = {
   slug: string;
