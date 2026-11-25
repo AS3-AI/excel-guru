@@ -12,9 +12,12 @@ export async function GET(request: NextRequest) {
   const admin = createAdminClient();
   if (!admin) return NextResponse.json({ error: "Leaderboard unavailable" }, { status: 503 });
   const view = type === "points" ? "leaderboard_points_today" : "leaderboard_streaks_today";
+  const now = new Date();
+  const bounds = getIstDayUtcBounds(now);
+  const today = getIstDate(now);
   const [board, ownPoints, ownStreak, profile] = await Promise.all([
     admin.from(view).select(leaderboardColumns(type)).lte("rank", 3).order("rank", { ascending: true }),
-    user && type === "points" ? admin.from("points_log").select("points").eq("user_id", user.id).gte("created_at", getIstDayUtcBounds(new Date()).start).lt("created_at", getIstDayUtcBounds(new Date()).end) : Promise.resolve({ data: [], error: null }),
+    user && type === "points" ? admin.from("points_log").select("points").eq("user_id", user.id).gte("created_at", bounds.start).lt("created_at", bounds.end) : Promise.resolve({ data: [], error: null }),
     user && type === "streak" ? admin.from("streaks").select("current,last_active_date").eq("user_id", user.id).maybeSingle() : Promise.resolve({ data: null, error: null }),
     user ? admin.from("profiles").select("shared_on_linkedin").eq("user_id", user.id).maybeSingle() : Promise.resolve({ data: null, error: null }),
   ]);
@@ -32,7 +35,6 @@ export async function GET(request: NextRequest) {
   if (user && type === "streak") {
     const current = ownStreak.data?.current ?? 0;
     const last = ownStreak.data?.last_active_date;
-    const today = getIstDate(new Date());
     const yesterday = new Date(`${today}T00:00:00+05:30`);
     yesterday.setUTCDate(yesterday.getUTCDate() - 1);
     const yesterdayText = getIstDate(yesterday);

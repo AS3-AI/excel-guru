@@ -37,7 +37,7 @@ export async function POST(request: Request) {
 
   const inputNorm = normaliseExplainInput(input.slice(0, 200));
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
-  const salt = process.env.EXPLAIN_IP_SALT;
+  const salt = process.env.EXPLAIN_IP_SALT || "excel-guru-explain-salt";
   const caller = callerKey(user?.id ?? null, ip, salt);
   if (!caller) return unavailable();
 

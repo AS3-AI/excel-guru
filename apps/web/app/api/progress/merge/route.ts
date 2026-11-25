@@ -35,6 +35,10 @@ export async function POST(request: Request) {
   } catch { return NextResponse.json({ error: "Progress unavailable" }, { status: 500 }); }
   let merged = 0;
   let partialFailure = false;
+  const now = new Date();
+  const end = now.toISOString();
+  const bounds = getIstDayUtcBounds(now);
+  const istDay = getIstDate(now);
   for (const item of (body as { lessons: unknown[] }).lessons) {
     if (!item || typeof item !== "object") continue;
     const candidate = item as { lessonId?: unknown; attempts?: unknown };
@@ -47,9 +51,6 @@ export async function POST(request: Request) {
     if (candidate.attempts.length > Math.max(200, 25 * lesson.steps.length)) continue;
     let score;
     try { score = calculateProgress(lesson, candidate.attempts as ProgressAttempt[]); } catch { continue; }
-    const now = new Date();
-    const end = now.toISOString();
-    const bounds = getIstDayUtcBounds(now);
     const [profile, prior, progress, earlierCompletions] = await Promise.all([
       admin.from("profiles").select("group_id,cohort").eq("user_id", user.id).maybeSingle(),
       admin.from("streaks").select("current,longest,last_active_date").eq("user_id", user.id).maybeSingle(),
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
     ]);
     if (profile.error || prior.error || progress.error || earlierCompletions.error) continue;
     let points = pointsAllowedForCompletion(earlierCompletions.data ?? [], now) ? score.points : 0;
-    const completionData = { user_id: user.id, lesson_id: lesson.id, completed_at: end, ist_day: getIstDate(now), first_try_accuracy: score.firstTryAccuracy, points, group_id: profile.data?.group_id ?? null, cohort: profile.data?.cohort ?? null };
+    const completionData = { user_id: user.id, lesson_id: lesson.id, completed_at: end, ist_day: istDay, first_try_accuracy: score.firstTryAccuracy, points, group_id: profile.data?.group_id ?? null, cohort: profile.data?.cohort ?? null };
     let completionWrite = await admin.from("lesson_completions").insert(completionData);
     if (completionWrite.error && shouldRetryCompletionWithZeroPoints(completionWrite.error)) {
       points = 0;

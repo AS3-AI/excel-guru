@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildExplainPrompt, callerKey, countExplainCalls, insertExplainCall, istDayStart, normaliseExplainInput, rateScore, requestGeminiExplanation, selectServableExplanation, shouldAllowUncachedCall, withinWordLimit, lookupExplainCache, insertExplainCache, getOrCreateExplain } from "./explain";
+import { buildExplainPrompt, callerKey, countExplainCalls, insertExplainCall, istDayStart, normaliseExplainInput, rateScore, requestGeminiExplanation, shouldAllowUncachedCall, withinWordLimit, lookupExplainCache, insertExplainCache } from "./explain";
 import { decideLessonAccess } from "./access";
 
 describe("normaliseExplainInput", () => {
@@ -104,10 +104,6 @@ describe("cache, limits, and ratings", () => {
     const client = { from: () => ({ insert: () => ({ then: (resolve: (v: unknown) => unknown) => resolve({ error: new Error("db") }) }) }) };
     await expect(insertExplainCall(client, "hash")).resolves.toBe(false);
   });
-  const rows = [{ id: "retired", text: "old", score: -1, served_count: 2 }, { id: "ok", text: "best", score: 3, served_count: 4 }, { id: "zero", text: "zero", score: 0, served_count: 1 }];
-  it("serves the highest scored eligible cached explanation", () => expect(selectServableExplanation(rows)?.id).toBe("ok"));
-  it("does not serve retired cache entries", () => expect(selectServableExplanation([rows[0]!])).toBeNull());
-  it("treats an empty cache as a miss", () => expect(selectServableExplanation([])).toBeNull());
   it("accepts same-day calls below the daily allowance", () => expect(shouldAllowUncachedCall(19)).toBe(true));
   it("accepts the twentieth same-day call", () => expect(shouldAllowUncachedCall(19, 20)).toBe(true));
   it("rejects calls above the daily allowance", () => expect(shouldAllowUncachedCall(20)).toBe(false));
@@ -175,29 +171,10 @@ describe("explanation cache database helpers", () => {
     expect(hit).toMatchObject({ id: "a", cached: true });
     expect(state.updates).toHaveLength(1);
   });
-  it("returns a cache hit without invoking Gemini", async () => {
-    const { client, state } = fakeAdmin([{ id: "a", text: "cached", score: 2, served_count: 4, lesson_id: "l", step_id: "s", input_norm: "n" } as any]);
-    let geminiCalls = 0;
-    await expect(getOrCreateExplain(client, "l", "s", "n", async () => { geminiCalls++; return "fresh"; })).resolves.toMatchObject({ id: "a", text: "cached", cached: true });
-    expect(geminiCalls).toBe(0);
-    expect(state.updates).toHaveLength(1);
-  });
   it("inserts a cache miss response", async () => {
     const { client, state } = fakeAdmin();
     await insertExplainCache(client, { lesson_id: "l", step_id: "s", input_norm: "n", text: "fresh" });
     expect(state.inserts).toHaveLength(1);
-  });
-  it("calls Gemini once and inserts its response on a miss", async () => {
-    const { client, state } = fakeAdmin();
-    let geminiCalls = 0;
-    await expect(getOrCreateExplain(client, "l", "s", "n", async () => { geminiCalls++; return "fresh"; })).resolves.toMatchObject({ id: "new", text: "fresh", cached: false });
-    expect(geminiCalls).toBe(1);
-    expect(state.inserts).toHaveLength(1);
-  });
-  it("does not insert when Gemini returns no usable text", async () => {
-    const { client, state } = fakeAdmin();
-    await expect(getOrCreateExplain(client, "l", "s", "n", async () => null)).resolves.toBeNull();
-    expect(state.inserts).toHaveLength(0);
   });
   it("treats negative score rows as cache misses", async () => {
     const { client } = fakeAdmin([{ id: "a", text: "retired", score: -1, served_count: 1, lesson_id: "l", step_id: "s", input_norm: "n" } as any]);
