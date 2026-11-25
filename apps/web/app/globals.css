@@ -1149,7 +1149,10 @@
 @layer components {
   @keyframes marker {
     from {
-      background-size: 0% 0.42em;
+      background-size: 0% 0.84em;
+    }
+    to {
+      background-size: 100% 0.84em;
     }
   }
   @keyframes rise {

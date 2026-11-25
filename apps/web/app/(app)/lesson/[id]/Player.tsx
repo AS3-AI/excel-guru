@@ -1284,17 +1284,50 @@ export function Player({
             Practice workbook
           </a>
           <div
-            className="pl-share flex flex-wrap gap-[6px] mt-[4px]
-          [&_a]:p-[4px_8px] [&_a]:[border:var(--line)] [&_a]:rounded-ledger-sm [&_a]:text-muted [&_a]:text-[0.8rem]
-          [&_a]:no-underline [&_a]:[transition:border-color_var(--d2),_color_var(--d2)]
-          [&_a:hover]:border-primary [&_a:hover]:text-primary-strong"
+            className="pl-share grid grid-cols-4 gap-[6px] mt-[4px]
+          [&_a]:flex [&_a]:items-center [&_a]:justify-center [&_a]:h-[36px] [&_a]:bg-surface
+          [&_a]:[border:var(--line)] [&_a]:rounded-ledger-sm [&_a]:text-muted [&_a]:no-underline
+          [&_a]:[box-shadow:var(--shadow-1)]
+          [&_a]:[transition:border-color_var(--d2),_color_var(--d2),_transform_var(--d1),_box-shadow_var(--d1)]
+          [&_a:hover]:border-primary [&_a:hover]:text-primary-strong [&_a:hover]:[box-shadow:var(--shadow-2)] [&_a:hover]:[transform:translate(-1px,_-1px)]"
             aria-label="Share"
           >
-            <a href="https://www.linkedin.com/">LinkedIn</a>
-            <a href="https://www.facebook.com/">Facebook</a>
-            <a href="https://x.com/">X</a>
-            <a href="mailto:?subject=Excel%20Guru">Email</a>
+            <a
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Share on LinkedIn"
+              title="Share on LinkedIn"
+            >
+              <Icon name="linkedin" size={17} />
+            </a>
+            <a
+              href="https://www.facebook.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Share on Facebook"
+              title="Share on Facebook"
+            >
+              <Icon name="facebook" size={17} />
+            </a>
+            <a
+              href="https://x.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Share on X"
+              title="Share on X"
+            >
+              <Icon name="xTwitter" size={17} />
+            </a>
+            <a
+              href="mailto:?subject=Excel%20Guru"
+              aria-label="Share via Email"
+              title="Share via Email"
+            >
+              <Icon name="mail" size={17} />
+            </a>
           </div>
+          <span className="text-[0.68rem] text-muted text-center block mt-[1px]">Share lesson</span>
         </div>
       </section>
       {list}

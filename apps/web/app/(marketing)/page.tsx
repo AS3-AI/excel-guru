@@ -21,8 +21,8 @@ const landingClasses = [
   "[&_h1]:m-[0_0_var(--s5)] [&_h1]:[font-variation-settings:'opsz'_96]",
   "[&_h1_mark]:[color:inherit] [&_h1_mark]:[background-color:transparent] [&_h1_mark]:whitespace-nowrap",
   "[&_h1_mark]:[background-image:linear-gradient(var(--highlight),_var(--highlight))]",
-  "[&_h1_mark]:[background-repeat:no-repeat] [&_h1_mark]:[background-size:100%_0.42em]",
-  "[&_h1_mark]:[background-position:0_86%] [&_h1_mark]:p-[0_0.06em] [&_h1_mark]:m-[0_-0.06em]",
+  "[&_h1_mark]:[background-repeat:no-repeat] [&_h1_mark]:[background-size:100%_0.84em]",
+  "[&_h1_mark]:[background-position:0_78%] [&_h1_mark]:rounded-ledger-sm [&_h1_mark]:p-[0_0.14em] [&_h1_mark]:m-[0_-0.04em]",
   "[&_h1_mark]:[animation:marker_0.9s_var(--ease)_0.45s_backwards]",
   "[html[data-motion='on']_&_[data-reveal]:not([data-shown])]:opacity-0",
   "[html[data-motion='on']_&_[data-reveal]:not([data-shown])]:[transform:translateY(24px)]",
@@ -257,21 +257,18 @@ export default async function Home() {
           [&>:nth-child(5)]:[animation-delay:0.24s]"
             >
               <h1>
-                Learn Excel by typing <mark>real formulas</mark>.
-                <Doodle
-                  name="squiggle"
-                  className="d-squiggle absolute left-0 bottom-[-18px] w-[min(320px,_70%)] h-auto text-primary"
-                />
+                Learn Excel by typing{" "}
+                <span className="relative inline-block whitespace-nowrap">
+                  <mark>real formulas.</mark>
+                  <Doodle
+                    name="squiggle"
+                    className="d-squiggle absolute left-0 bottom-[-14px] w-full h-auto text-primary pointer-events-none"
+                  />
+                </span>
               </h1>
-              {!signedIn && (
-                <p className="lead max-w-[30rem] mb-s6 text-text">
-                  A spreadsheet that runs in your browser, with every answer checked the moment you
-                  press Enter. Start with the intro lesson. No account needed.
-                </p>
-              )}
               <div
-                className={`hero-actions flex flex-wrap gap-s4
-          [@media(max-width:640px)]:[&_.btn]:w-full${signedIn ? " mt-s6" : ""}`}
+                className="hero-actions flex flex-wrap gap-s4 mt-s6
+          [@media(max-width:640px)]:[&_.btn]:w-full"
               >
                 {signedIn ? (
                   <Link className="btn btn-lg" href={continueHref}>
