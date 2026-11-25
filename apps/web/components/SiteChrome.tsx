@@ -38,21 +38,29 @@ export function SiteHeader({ signedIn = false, current, minimal = false }: { sig
         )}
         <div className="site-actions">
           {signedIn ? (
-            <details className="menu menu-account">
-              <summary aria-label="Account menu"><span className="avatar" aria-hidden="true"><Icon name="user" size={13} /></span>Account<Icon name="chevronDown" size={14} className="chev" /></summary>
-              <div className="menu-panel">
-                <Link href="/profile"><Icon name="user" size={16} />Profile</Link>
-                <Link href="/dashboard"><Icon name="grid" size={16} />Dashboard</Link>
-                <hr />
-                <Link href="/learn">Guides</Link>
-                <Link href="/pricing">Pricing</Link>
-                <Link href="/help">Help</Link>
-                <hr />
-                <form action="/auth/signout" method="post">
-                  <button type="submit"><Icon name="logOut" size={16} />Log out</button>
-                </form>
-              </div>
-            </details>
+            <>
+              <Link
+                href="/profile"
+                className="nav-profile-link"
+                aria-current={current === "profile" ? "page" : undefined}
+              >
+                <span className="avatar" aria-hidden="true"><Icon name="user" size={13} /></span>
+                Profile
+              </Link>
+              {!minimal && (
+                <details className="menu menu-mobile">
+                  <summary aria-label="Menu"><Icon name="menu" size={18} /></summary>
+                  <div className="menu-panel">
+                    {links.map((l) => <Link key={l.key} href={l.href}>{l.label}</Link>)}
+                    <Link href="/profile">Profile</Link>
+                    <hr />
+                    <form action="/auth/signout" method="post">
+                      <button type="submit"><Icon name="logOut" size={16} />Log out</button>
+                    </form>
+                  </div>
+                </details>
+              )}
+            </>
           ) : minimal ? null : (
             <>
               <Link className="hide-sm" href="/login">Log in</Link>

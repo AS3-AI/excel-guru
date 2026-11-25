@@ -110,25 +110,39 @@ p { text-wrap: pretty; }
 .menu > summary svg { transition: transform var(--d2) var(--ease); }
 .menu[open] > summary svg.chev { transform: rotate(180deg); }
 
-/* Account menu trigger: seamlessly integrates with the navbar without looking like an odd boxed button */
-.menu-account > summary {
-  border: 1px solid transparent;
+/* Nav Profile link: direct link to profile with avatar, seamless integration */
+.nav-profile-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
   border-radius: var(--r-sm);
-  background: transparent;
-  color: var(--text);
+  color: var(--muted);
   font-size: 0.93rem;
   font-weight: 500;
-  padding: 6px 10px;
-  gap: 8px;
-  transition: background-color var(--d2) var(--ease), color var(--d2) var(--ease), border-color var(--d2) var(--ease);
+  text-decoration: none;
+  transition: background-color var(--d2) var(--ease), color var(--d2) var(--ease);
 }
-.menu-account > summary:hover,
-.menu-account[open] > summary {
+.nav-profile-link:hover {
   background: var(--surface-sunk);
-  border-color: var(--border);
   color: var(--ink);
+  text-decoration: none;
 }
-.menu-account .avatar {
+.nav-profile-link[aria-current="page"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+.nav-profile-link[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -12px;
+  height: 4px;
+  background: var(--primary);
+}
+.nav-profile-link .avatar {
   display: grid;
   place-items: center;
   width: 26px;
@@ -137,14 +151,6 @@ p { text-wrap: pretty; }
   background: var(--primary-tint);
   border: 1.5px solid var(--primary-strong);
   color: var(--primary-strong);
-}
-.menu-account > summary svg.chev {
-  color: var(--muted);
-  transition: transform var(--d2) var(--ease), color var(--d2);
-}
-.menu-account > summary:hover svg.chev,
-.menu-account[open] > summary svg.chev {
-  color: var(--ink);
 }
 
 .menu-panel { position: absolute; right: 0; top: calc(100% + 8px); min-width: 200px; padding: 6px; display: grid; background: var(--surface); border: var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-pop); transform-origin: top right; animation: menu-in var(--d2) var(--ease); }
