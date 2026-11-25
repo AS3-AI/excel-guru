@@ -1363,3 +1363,336 @@
     gap: 2px;
   }
 }
+
+
+/* ==========================================================================
+   6. ENHANCED REAL-DATA SECTIONS & INTERACTIVE POLISH
+   ========================================================================== */
+
+.duo-cell-ref {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 4px 10px;
+  border-radius: var(--r-sm, 4px);
+  border: 1.5px solid var(--ink, #14201a);
+  background: var(--surface, #ffffff);
+  box-shadow: 2px 2px 0 var(--ink, #14201a);
+  font-family: var(--mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--ink, #14201a);
+}
+
+.identity-title-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.identity-email {
+  font-weight: 400;
+  color: var(--muted, #5f6963);
+  font-size: 0.85rem;
+}
+
+.identity-linkedin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--primary, #107c41);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.identity-linkedin-link:hover {
+  text-decoration: underline;
+}
+
+.identity-dot {
+  color: var(--faint, #9aa29d);
+}
+
+.track-badge-pill {
+  text-decoration: none;
+}
+
+.track-badge-pill.is-complete {
+  border-color: var(--primary-strong, #0a5c2f);
+}
+
+.track-badge-count {
+  font-size: 0.72rem;
+  opacity: 0.75;
+  font-weight: 600;
+}
+
+.track-badge-more {
+  cursor: pointer;
+  transition: background var(--d1, 120ms), transform var(--d1, 120ms);
+}
+
+.track-badge-more:hover {
+  background: var(--butter, #fdf5b0);
+  transform: translate(-1px, -1px);
+}
+
+.section-head-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  margin-bottom: var(--s4);
+}
+
+.achievements-sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-xs, 0.78rem);
+  color: var(--muted, #5f6963);
+  font-family: var(--mono, monospace);
+}
+
+.badge-progress-pill {
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  border: 1px solid var(--border, #e3e1da);
+  background: var(--surface-sunk, #f2f1ec);
+  font-family: var(--mono, monospace);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ink, #14201a);
+}
+
+.badge-item.is-unlocked .badge-progress-pill {
+  background: var(--mint, #c9f2c2);
+  border-color: var(--ink, #14201a);
+}
+
+/* Weekly Activity 7-Day Grid */
+.weekly-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--s2);
+}
+
+.weekly-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 4px;
+  border-radius: var(--r-md, 8px);
+  border: 1.5px solid var(--border, #e3e1da);
+  background: var(--surface-sunk, #f2f1ec);
+}
+
+.weekly-cell.is-active {
+  background: var(--surface, #ffffff);
+  border-color: var(--ink, #14201a);
+  box-shadow: 2px 2px 0 var(--ink, #14201a);
+}
+
+.weekly-cell.is-today {
+  border-color: var(--primary, #107c41);
+  background: var(--primary-tint, #e6f1ea);
+}
+
+.weekly-pts {
+  font-family: var(--mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted, #5f6963);
+}
+
+.weekly-cell.is-active .weekly-pts {
+  color: var(--primary-strong, #0a5c2f);
+}
+
+.weekly-bar-track {
+  width: 14px;
+  height: 48px;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(20, 32, 26, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.weekly-bar-fill {
+  width: 100%;
+  background: var(--faint, #9aa29d);
+  border-radius: 3px;
+  transition: height 0.35s var(--ease);
+}
+
+.weekly-cell.is-active .weekly-bar-fill {
+  background: var(--primary, #107c41);
+}
+
+.weekly-day {
+  font-family: var(--mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink, #14201a);
+}
+
+/* Clickable Module Mastery Rows */
+.mastery-module-item {
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--d1, 120ms), box-shadow var(--d1, 120ms), background var(--d1, 120ms);
+}
+
+.mastery-module-item:hover {
+  background: var(--butter, #fdf5b0);
+  transform: translate(-1px, -1px);
+  box-shadow: 2.5px 2.5px 0 var(--ink, #14201a);
+  text-decoration: none;
+}
+
+.mastery-module-head strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mod-done-check {
+  color: var(--primary, #107c41);
+}
+
+/* Recent Lessons List */
+.recent-empty {
+  text-align: center;
+  padding: var(--s4) var(--s2);
+  color: var(--muted, #5f6963);
+  font-size: var(--fs-sm, 0.875rem);
+}
+
+.recent-empty p {
+  margin: 0 0 var(--s3);
+}
+
+.recent-lessons-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s2);
+}
+
+.recent-lesson-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: 10px 14px;
+  border: 1.5px solid var(--ink, #14201a);
+  border-radius: var(--r-md, 8px);
+  background: var(--surface-sunk, #f2f1ec);
+  text-decoration: none;
+  color: var(--ink, #14201a);
+  transition: background var(--d1, 120ms), transform var(--d1, 120ms), box-shadow var(--d1, 120ms);
+}
+
+.recent-lesson-row:hover {
+  background: var(--mint, #c9f2c2);
+  transform: translate(-1px, -1px);
+  box-shadow: 2.5px 2.5px 0 var(--ink, #14201a);
+  text-decoration: none;
+}
+
+.recent-lesson-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.recent-lesson-main strong {
+  font-size: var(--fs-sm, 0.875rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-lesson-main small {
+  font-family: var(--mono, monospace);
+  font-size: 0.74rem;
+  color: var(--muted, #5f6963);
+}
+
+.recent-acc-pill {
+  flex-shrink: 0;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  border: 1.5px solid var(--ink, #14201a);
+  font-family: var(--mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.recent-acc-pill.is-high {
+  background: var(--mint, #c9f2c2);
+}
+
+.recent-acc-pill.is-mid {
+  background: var(--butter, #fdf5b0);
+}
+
+.recent-acc-pill.is-low {
+  background: var(--rose, #ffc9c2);
+}
+
+/* Sidebar Embedded Leaderboard Polish */
+.lb-type-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: var(--s3);
+}
+
+.lb-type-btn {
+  padding: 7px 10px;
+  border: 1.5px solid var(--ink, #14201a);
+  border-radius: var(--r-sm, 4px);
+  background: var(--surface-sunk, #f2f1ec);
+  color: var(--muted, #5f6963);
+  font-family: var(--mono, monospace);
+  font-size: var(--fs-xs, 0.78rem);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--d1, 120ms), color var(--d1, 120ms);
+}
+
+.lb-type-btn.is-active {
+  background: var(--butter, #fdf5b0);
+  color: var(--ink, #14201a);
+  box-shadow: 2px 2px 0 var(--ink, #14201a);
+}
+
+.duo-lb-embed .leaderboard-card {
+  border: 0;
+  padding: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.duo-lb-embed .leaderboard-card h2 {
+  font-size: 0.95rem;
+  margin-bottom: var(--s2);
+}
+
+@media (max-width: 540px) {
+  .weekly-grid {
+    gap: 4px;
+  }
+  .weekly-cell {
+    padding: 8px 2px;
+  }
+  .weekly-pts {
+    font-size: 0.65rem;
+  }
+}

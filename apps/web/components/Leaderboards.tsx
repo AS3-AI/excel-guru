@@ -22,9 +22,11 @@ export function Leaderboards({ type, title }: BoardProps) {
     const refresh = () => { void load(); };
     window.addEventListener("excelguru:progress-saved", refresh);
     window.addEventListener("excelguru:share-bonus", refresh);
+    window.addEventListener("excelguru:profile-updated", refresh);
     return () => {
       window.removeEventListener("excelguru:progress-saved", refresh);
       window.removeEventListener("excelguru:share-bonus", refresh);
+      window.removeEventListener("excelguru:profile-updated", refresh);
     };
   }, [load]);
   const heading = title ?? (type === "points" ? "Today’s High Scores" : "Today’s High Streaks");
