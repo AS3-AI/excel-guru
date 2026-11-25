@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { DASHBOARD_HREF, moduleHref } from "./nav-links";
+import { PROFILE_HREF, moduleHref } from "./nav-links";
 import { MODULES } from "./modules";
 
 describe("nav-links", () => {
-  describe("DASHBOARD_HREF", () => {
-    it("points to /dashboard", () => {
-      expect(DASHBOARD_HREF).toBe("/dashboard");
+  describe("PROFILE_HREF", () => {
+    it("points to /profile", () => {
+      expect(PROFILE_HREF).toBe("/profile");
     });
   });
 

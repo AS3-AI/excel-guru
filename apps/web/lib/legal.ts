@@ -43,7 +43,7 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
   {
     id: "retention-rights",
     title: "8. Data Retention & Account Deletion",
-    body: "You maintain full control over your data. You may reset your lesson progress checkmarks at any time from your Dashboard. You have the right to request full deletion of your account and all associated personal data at any time by sending an email to [CONTACT EMAIL]. We will promptly delete your profile, progress history, and authentication records.",
+    body: "You maintain full control over your data. You may reset your lesson progress checkmarks at any time from your Profile. You have the right to request full deletion of your account and all associated personal data at any time by sending an email to [CONTACT EMAIL]. We will promptly delete your profile, progress history, and authentication records.",
   },
   {
     id: "contact",

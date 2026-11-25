@@ -71,7 +71,7 @@ export const HELP_SECTIONS: HelpCategory[] = [
       },
       {
         q: "Can I reset my progress to practice again from scratch?",
-        a: "Yes. On your Dashboard, click 'Reset Progress' to clear your lesson checkmarks while keeping your lifetime points and streak intact.",
+        a: "Yes. On your Profile, click 'Reset Progress' to clear your lesson checkmarks while keeping your lifetime points and streak intact.",
         tags: ["reset", "restart", "replay"],
       },
       {

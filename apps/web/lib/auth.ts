@@ -1,9 +1,9 @@
 // Pure auth helpers: form validation, username rules, redirect decisions.
 // No Next or Supabase imports, so everything here is unit-tested in auth.test.ts.
 
-export const DEFAULT_AFTER_AUTH = "/dashboard";
+export const DEFAULT_AFTER_AUTH = "/profile";
 
-/** Routes that need a signed-in learner with a profile row. /dashboard is public (signed out shows 0 / 85). */
+/** Routes that need a signed-in learner with a profile row. */
 export const PROTECTED_PREFIXES = ["/profile", "/review", "/admin"] as const;
 /** Pages that make no sense once signed in. */
 export const AUTH_PAGES = ["/login", "/signup"] as const;
@@ -12,9 +12,30 @@ export const ONBOARDING = "/onboarding";
 // Must match the check constraint on profiles.username in 0001_init.sql.
 export const USERNAME_RE = /^[a-z][a-z0-9_]{2,19}$/;
 const RESERVED_USERNAMES = new Set([
-  "admin", "administrator", "root", "support", "help", "api", "auth", "login", "logout",
-  "signup", "onboarding", "dashboard", "profile", "review", "settings", "pricing", "verify",
-  "excelguru", "excel_guru", "staff", "moderator", "system", "null", "undefined",
+  "admin",
+  "administrator",
+  "root",
+  "support",
+  "help",
+  "api",
+  "auth",
+  "login",
+  "logout",
+  "signup",
+  "onboarding",
+  "dashboard",
+  "profile",
+  "review",
+  "settings",
+  "pricing",
+  "verify",
+  "excelguru",
+  "excel_guru",
+  "staff",
+  "moderator",
+  "system",
+  "null",
+  "undefined",
 ]);
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_EMAIL = 254;
@@ -32,8 +53,7 @@ const MAX_PASSWORD = 72; // bcrypt limit used by Supabase Auth
 
 export type FieldErrors<K extends string> = Partial<Record<K, string>>;
 export type Validation<T, K extends string> =
-  | { ok: true; value: T }
-  | { ok: false; errors: FieldErrors<K> };
+  { ok: true; value: T } | { ok: false; errors: FieldErrors<K> };
 
 const str = (v: unknown) => (typeof v === "string" ? v : "");
 
@@ -54,7 +74,8 @@ export function usernameError(username: string): string | null {
 
 export function firstNameError(firstName: string): string | null {
   if (!firstName) return "Enter your first name";
-  if (firstName.length > MAX_FIRST_NAME) return `First name must be at most ${MAX_FIRST_NAME} characters`;
+  if (firstName.length > MAX_FIRST_NAME)
+    return `First name must be at most ${MAX_FIRST_NAME} characters`;
   return null;
 }
 
@@ -67,7 +88,9 @@ export function emailError(email: string): string | null {
 export type ProfileInput = { firstName: string; username: string };
 type ProfileField = "firstName" | "username";
 
-export function validateProfile(input: Record<string, unknown>): Validation<ProfileInput, ProfileField> {
+export function validateProfile(
+  input: Record<string, unknown>,
+): Validation<ProfileInput, ProfileField> {
   const firstName = str(input.firstName).trim();
   const username = normalizeUsername(str(input.username));
   const errors: FieldErrors<ProfileField> = {};
@@ -82,7 +105,9 @@ export function validateProfile(input: Record<string, unknown>): Validation<Prof
 export type SignupInput = ProfileInput & { email: string; password: string };
 export type SignupField = ProfileField | "email" | "confirmEmail" | "password";
 
-export function validateSignup(input: Record<string, unknown>): Validation<SignupInput, SignupField> {
+export function validateSignup(
+  input: Record<string, unknown>,
+): Validation<SignupInput, SignupField> {
   const profile = validateProfile(input);
   const errors: FieldErrors<SignupField> = profile.ok ? {} : { ...profile.errors };
 
@@ -94,8 +119,10 @@ export function validateSignup(input: Record<string, unknown>): Validation<Signu
   if (e) errors.email = e;
   else if (confirmEmail !== email) errors.confirmEmail = "Emails don't match";
 
-  if (password.length < MIN_PASSWORD) errors.password = `Password must be at least ${MIN_PASSWORD} characters`;
-  else if (password.length > MAX_PASSWORD) errors.password = `Password must be at most ${MAX_PASSWORD} characters`;
+  if (password.length < MIN_PASSWORD)
+    errors.password = `Password must be at least ${MIN_PASSWORD} characters`;
+  else if (password.length > MAX_PASSWORD)
+    errors.password = `Password must be at most ${MAX_PASSWORD} characters`;
 
   if (!profile.ok || Object.keys(errors).length) return { ok: false, errors };
   return { ok: true, value: { ...profile.value, email, password } };
@@ -103,7 +130,9 @@ export function validateSignup(input: Record<string, unknown>): Validation<Signu
 
 export type LoginInput = { email: string; password: string };
 
-export function validateLogin(input: Record<string, unknown>): Validation<LoginInput, "email" | "password"> {
+export function validateLogin(
+  input: Record<string, unknown>,
+): Validation<LoginInput, "email" | "password"> {
   const email = str(input.email).trim().toLowerCase();
   const password = str(input.password);
   const errors: FieldErrors<"email" | "password"> = {};
@@ -120,7 +149,7 @@ export function validateLogin(input: Record<string, unknown>): Validation<LoginI
  */
 export function safeNext(next: unknown, fallback = DEFAULT_AFTER_AUTH): string {
   if (typeof next !== "string" || !next.startsWith("/") || next.startsWith("//")) return fallback;
-  if (next.includes("\\") || /[\u0000-\u001f]/.test(next)) return fallback;
+  if (next.includes("\\") || [...next].some((ch) => ch.charCodeAt(0) < 0x20)) return fallback;
   // Never bounce back into the auth pages themselves.
   const path = next.split(/[?#]/)[0] ?? "";
   if (matches(path, [...AUTH_PAGES, ONBOARDING, "/auth"])) return fallback;
@@ -140,10 +169,20 @@ export function needsProfileCheck(pathname: string): boolean {
   return isProtected(pathname) || matches(pathname, [...AUTH_PAGES, ONBOARDING]);
 }
 
-export type RouteState = { pathname: string; search: string; signedIn: boolean; hasProfile: boolean };
+export type RouteState = {
+  pathname: string;
+  search: string;
+  signedIn: boolean;
+  hasProfile: boolean;
+};
 
 /** Where the proxy should send this request, or null to let it through. */
-export function authRedirect({ pathname, search, signedIn, hasProfile }: RouteState): string | null {
+export function authRedirect({
+  pathname,
+  search,
+  signedIn,
+  hasProfile,
+}: RouteState): string | null {
   const here = `${pathname}${search}`;
   const nextParam = new URLSearchParams(search).get("next");
 
@@ -177,8 +216,9 @@ export function originFrom(
 ): string {
   const host = get("x-forwarded-host") ?? get("host");
   if (host && /^[a-z0-9.:-]+$/i.test(host)) {
-    const proto = get("x-forwarded-proto")?.split(",")[0]?.trim()
-      ?? (host.startsWith("localhost") || host.startsWith("127.0.0.1") ? "http" : "https");
+    const proto =
+      get("x-forwarded-proto")?.split(",")[0]?.trim() ??
+      (host.startsWith("localhost") || host.startsWith("127.0.0.1") ? "http" : "https");
     if (proto === "http" || proto === "https") return `${proto}://${host}`;
   }
   if (baseUrl) return baseUrl.replace(/\/+$/, "");

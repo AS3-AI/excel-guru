@@ -1,4 +1,4 @@
-export const DASHBOARD_HREF = "/dashboard";
+export const PROFILE_HREF = "/profile";
 
 export function moduleHref(slug: string): string {
   return `/modules/${slug}`;

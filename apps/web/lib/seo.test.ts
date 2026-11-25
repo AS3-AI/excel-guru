@@ -108,10 +108,7 @@ describe("lessonMetadata", () => {
 
 describe("moduleMetadata", () => {
   it("creates rich metadata for curriculum module", () => {
-    const meta = moduleMetadata(
-      { slug: "sum", title: "SUM", total: 9 },
-      "https://excelguru.dev",
-    );
+    const meta = moduleMetadata({ slug: "sum", title: "SUM", total: 9 }, "https://excelguru.dev");
 
     expect(meta.title).toBe("SUM Excel Lessons — Excel Guru");
     expect(meta.description).toContain("9 interactive hands-on lessons");
@@ -176,12 +173,7 @@ describe("buildRobots", () => {
     expect(robots.rules).toEqual({
       userAgent: "*",
       allow: "/",
-      disallow: [
-        "/api/",
-        "/dashboard",
-        "/onboarding",
-        "/sandbox",
-      ],
+      disallow: ["/api/", "/onboarding", "/sandbox"],
     });
     expect(robots.sitemap).toBe("https://excelguru.dev/sitemap.xml");
   });
@@ -199,8 +191,6 @@ describe("STATIC_METADATA", () => {
     expect(STATIC_METADATA.privacy.description).toBeTruthy();
     expect(STATIC_METADATA.terms.title).toBeTruthy();
     expect(STATIC_METADATA.terms.description).toBeTruthy();
-    expect(STATIC_METADATA.dashboard.title).toBeTruthy();
-    expect(STATIC_METADATA.dashboard.description).toBeTruthy();
   });
 
   it("describes realistic content with 80+ lessons and no unbuilt features", () => {

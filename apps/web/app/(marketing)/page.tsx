@@ -142,12 +142,49 @@ const FACTS = [
 ];
 
 // Functions taught in the lessons (from lesson titles in content/lessons).
-const FUNCTIONS = ["SUM", "SUMIFS", "COUNTIF", "IF", "IFS", "XLOOKUP", "VLOOKUP", "INDEX", "MATCH", "FILTER", "UNIQUE", "TEXTJOIN", "LEFT", "MID", "SEARCH", "SUBSTITUTE", "AVERAGE", "MEDIAN", "LARGE", "DATEDIF", "TODAY", "SWITCH", "CEILING", "COUNTIFS"];
+const FUNCTIONS = [
+  "SUM",
+  "SUMIFS",
+  "COUNTIF",
+  "IF",
+  "IFS",
+  "XLOOKUP",
+  "VLOOKUP",
+  "INDEX",
+  "MATCH",
+  "FILTER",
+  "UNIQUE",
+  "TEXTJOIN",
+  "LEFT",
+  "MID",
+  "SEARCH",
+  "SUBSTITUTE",
+  "AVERAGE",
+  "MEDIAN",
+  "LARGE",
+  "DATEDIF",
+  "TODAY",
+  "SWITCH",
+  "CEILING",
+  "COUNTIFS",
+];
 
 const STEPS = [
-  { col: "A", title: "Pick a lesson", text: "Short lessons across 15 modules, from your first SUM to INDEX/MATCH and dynamic arrays." },
-  { col: "B", title: "Type real formulas", text: "A working spreadsheet runs in your browser. Cells, ranges and functions behave as they do in Excel." },
-  { col: "C", title: "Get feedback instantly", text: "Every answer is checked the moment you press Enter, with an explanation of the exact mistake when you miss." },
+  {
+    col: "A",
+    title: "Pick a lesson",
+    text: "Short lessons across 15 modules, from your first SUM to INDEX/MATCH and dynamic arrays.",
+  },
+  {
+    col: "B",
+    title: "Type real formulas",
+    text: "A working spreadsheet runs in your browser. Cells, ranges and functions behave as they do in Excel.",
+  },
+  {
+    col: "C",
+    title: "Get feedback instantly",
+    text: "Every answer is checked the moment you press Enter, with an explanation of the exact mistake when you miss.",
+  },
 ];
 
 const FAQ = [
@@ -175,7 +212,9 @@ const FAQ = [
 
 export default async function Home() {
   const session = await createClient();
-  const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
+  const {
+    data: { user },
+  } = session ? await session.auth.getUser() : { data: { user: null } };
   const signedIn = !!user;
 
   const country = (await headers()).get("x-vercel-ip-country");
@@ -189,99 +228,178 @@ export default async function Home() {
     <>
       <SiteHeader signedIn={signedIn} />
       <main className={`landing ${landingClasses}`} id="main">
-        <section className={`hero block-mint bg-mint
-          ${heroClasses}`}>
+        <section
+          className={`hero block-mint bg-mint
+          ${heroClasses}`}
+        >
           <HeroPaper />
-          <div className="wrap hero-grid relative grid gap-s8 items-center grid-cols-[minmax(0,_1fr)]
-          [@media(min-width:980px)]:grid-cols-[minmax(0,_11fr)_minmax(0,_10fr)]">
-            <div className="hero-copy [&>*]:[animation:rise_0.7s_var(--ease)_backwards]
+          <div
+            className="wrap hero-grid relative grid gap-s8 items-center grid-cols-[minmax(0,_1fr)]
+          [@media(min-width:980px)]:grid-cols-[minmax(0,_11fr)_minmax(0,_10fr)]"
+          >
+            <div
+              className="hero-copy [&>*]:[animation:rise_0.7s_var(--ease)_backwards]
           [&>:nth-child(2)]:[animation-delay:0.06s]
           [&>:nth-child(3)]:[animation-delay:0.12s]
           [&>:nth-child(4)]:[animation-delay:0.18s]
-          [&>:nth-child(5)]:[animation-delay:0.24s]">
-              <p className="eyebrow"><span className="ref">A1</span>Interactive Excel lessons</p>
-              <h1>Learn Excel by typing <mark>real formulas</mark>.<Doodle name="squiggle" className="d-squiggle absolute left-0 bottom-[-18px] w-[min(320px,_70%)] h-auto text-primary" /></h1>
-              <p className="lead max-w-[30rem] mb-s6 text-text">
-                {signedIn ? (
-                  "Welcome back! Continue your streak and pick up right where you left off, or review your formulas."
-                ) : (
-                  "A spreadsheet that runs in your browser, with every answer checked the moment you press Enter. Start with the intro lesson. No account needed."
-                )}
+          [&>:nth-child(5)]:[animation-delay:0.24s]"
+            >
+              <p className="eyebrow">
+                <span className="ref">A1</span>Interactive Excel lessons
               </p>
-              <div className="hero-actions flex flex-wrap gap-s4
-          [@media(max-width:640px)]:[&_.btn]:w-full">
+              <h1>
+                Learn Excel by typing <mark>real formulas</mark>.
+                <Doodle
+                  name="squiggle"
+                  className="d-squiggle absolute left-0 bottom-[-18px] w-[min(320px,_70%)] h-auto text-primary"
+                />
+              </h1>
+              <p className="lead max-w-[30rem] mb-s6 text-text">
+                {signedIn
+                  ? "Welcome back! Continue your streak and pick up right where you left off, or review your formulas."
+                  : "A spreadsheet that runs in your browser, with every answer checked the moment you press Enter. Start with the intro lesson. No account needed."}
+              </p>
+              <div
+                className="hero-actions flex flex-wrap gap-s4
+          [@media(max-width:640px)]:[&_.btn]:w-full"
+              >
                 {signedIn ? (
-                  <>
-                    <Link className="btn btn-lg" href="/dashboard">Go to Dashboard <Icon name="arrowRight" size={18} /></Link>
-                    <Link className="btn btn-lg btn-quiet" href="/profile">View Profile</Link>
-                  </>
+                  <Link className="btn btn-lg" href="/profile">
+                    View Profile <Icon name="arrowRight" size={18} />
+                  </Link>
                 ) : (
                   <>
-                    <Link className="btn btn-lg" href="/lesson/intro">Start the free lesson <Icon name="arrowRight" size={18} /></Link>
-                    <Link className="btn btn-lg btn-quiet" href="#curriculum">Browse the curriculum</Link>
+                    <Link className="btn btn-lg" href="/lesson/intro">
+                      Start the free lesson <Icon name="arrowRight" size={18} />
+                    </Link>
+                    <Link className="btn btn-lg btn-quiet" href="#curriculum">
+                      Browse the curriculum
+                    </Link>
                   </>
                 )}
               </div>
-              <dl className="facts flex gap-s3 m-[var(--s7)_0_0] p-0
+              <dl
+                className="facts flex gap-s3 m-[var(--s7)_0_0] p-0
           [&>div]:min-w-[96px] [&>div]:p-[var(--s3)_var(--s4)] [&>div]:[border:var(--line)] [&>div]:rounded-ledger
           [&>div]:bg-surface [&>div]:[box-shadow:var(--shadow-1)]
           [&_dt]:text-[1.7rem] [&_dt]:font-bold [&_dt]:text-ink [&_dt]:leading-[1.1]
           [&_dd]:m-[2px_0_0] [&_dd]:text-text [&_dd]:text-ledger-sm
           [@media(max-width:640px)]:[&>div]:min-w-0 [@media(max-width:640px)]:[&>div]:[flex:1]
-          [@media(max-width:640px)]:[&>div]:p-[var(--s2)_var(--s3)]" data-reveal>
+          [@media(max-width:640px)]:[&>div]:p-[var(--s2)_var(--s3)]"
+                data-reveal
+              >
                 {FACTS.map((f) => (
-                  <div key={f.label}><dt className="num" data-count={f.value}>{f.value}</dt><dd>{f.label}</dd></div>
+                  <div key={f.label}>
+                    <dt className="num" data-count={f.value}>
+                      {f.value}
+                    </dt>
+                    <dd>{f.label}</dd>
+                  </div>
                 ))}
               </dl>
             </div>
-            <div className="hero-art relative p-[18px_18px_0_0] [animation:rise_0.9s_var(--ease)_0.15s_backwards]
-          [@media(max-width:640px)]:p-[12px_12px_0_0]">
-              <div className="hero-frame absolute inset-[0_0_18px_18px] [border:var(--line)] rounded-ledger-lg bg-surface
-          [@media(max-width:640px)]:inset-[0_0_12px_12px]" aria-hidden="true" />
+            <div
+              className="hero-art relative p-[18px_18px_0_0] [animation:rise_0.9s_var(--ease)_0.15s_backwards]
+          [@media(max-width:640px)]:p-[12px_12px_0_0]"
+            >
+              <div
+                className="hero-frame absolute inset-[0_0_18px_18px] [border:var(--line)] rounded-ledger-lg bg-surface
+          [@media(max-width:640px)]:inset-[0_0_12px_12px]"
+                aria-hidden="true"
+              />
               <HeroSheet />
-              <Doodle name="pencil" className="d-pencil float w-[120px] left-[-64px] bottom-[-40px] text-ink z-[2]
+              <Doodle
+                name="pencil"
+                className="d-pencil float w-[120px] left-[-64px] bottom-[-40px] text-ink z-[2]
           [@media(max-width:979px)]:w-[84px] [@media(max-width:979px)]:left-auto [@media(max-width:979px)]:right-[-10px]
-          [@media(max-width:979px)]:bottom-[-36px]" fill="var(--highlight)" />
-              <Doodle name="sparkle" className="d-spark1 twinkle w-[46px] top-[-26px] right-[40px]
-          [@media(max-width:640px)]:right-[10px]" fill="var(--highlight)" />
-              <Doodle name="sparkle" className="d-spark2 twinkle w-[26px] top-[20px] right-[-18px] [animation-delay:0.8s]" fill="var(--surface)" />
-              <Doodle name="arrow" className="d-arrow w-[120px] left-[-150px] top-[28%] [transform:rotate(8deg)]
-          [@media(max-width:1180px)]:hidden" />
+          [@media(max-width:979px)]:bottom-[-36px]"
+                fill="var(--highlight)"
+              />
+              <Doodle
+                name="sparkle"
+                className="d-spark1 twinkle w-[46px] top-[-26px] right-[40px]
+          [@media(max-width:640px)]:right-[10px]"
+                fill="var(--highlight)"
+              />
+              <Doodle
+                name="sparkle"
+                className="d-spark2 twinkle w-[26px] top-[20px] right-[-18px] [animation-delay:0.8s]"
+                fill="var(--surface)"
+              />
+              <Doodle
+                name="arrow"
+                className="d-arrow w-[120px] left-[-150px] top-[28%] [transform:rotate(8deg)]
+          [@media(max-width:1180px)]:hidden"
+              />
             </div>
           </div>
         </section>
 
         <div className={`ticker ${tickerClasses}`} aria-hidden="true">
-          <div className="ticker-track flex w-[max-content] [animation:ticker_48s_linear_infinite]
-          [@media(prefers-reduced-motion:reduce)]:[animation:none]">
-            {[0, 1].map((copy) => <ul key={copy}>{FUNCTIONS.map((fn) => <li key={fn}><b>=</b>{fn}()</li>)}</ul>)}
+          <div
+            className="ticker-track flex w-[max-content] [animation:ticker_48s_linear_infinite]
+          [@media(prefers-reduced-motion:reduce)]:[animation:none]"
+          >
+            {[0, 1].map((copy) => (
+              <ul key={copy}>
+                {FUNCTIONS.map((fn) => (
+                  <li key={fn}>
+                    <b>=</b>
+                    {fn}()
+                  </li>
+                ))}
+              </ul>
+            ))}
           </div>
         </div>
 
-        <section className="band block-butter relative p-[var(--s9)_0] [border-top:var(--line)]
+        <section
+          className="band block-butter relative p-[var(--s9)_0] [border-top:var(--line)]
           [@media(max-width:640px)]:p-[var(--s8)_0]
-          bg-butter" aria-labelledby="how">
+          bg-butter"
+          aria-labelledby="how"
+        >
           <div className="wrap">
             <div className="band-head relative max-w-[40rem]" data-reveal>
-              <p className="eyebrow"><span className="ref">B1</span>How it works</p>
+              <p className="eyebrow">
+                <span className="ref">B1</span>How it works
+              </p>
               <h2 id="how">From lesson to answer in one sitting.</h2>
-              <Doodle name="bulb" className="d-head float w-[76px] right-[-110px] top-[-6px]
-          [@media(max-width:860px)]:right-0 [@media(max-width:860px)]:top-[-70px] [@media(max-width:860px)]:w-[58px]" fill="var(--highlight)" />
-              <p className="section-lead text-text max-w-[34rem] m-[0_0_var(--s6)] text-[1.05rem]">Short lessons, a real grid, and feedback before you lose your train of thought.</p>
+              <Doodle
+                name="bulb"
+                className="d-head float w-[76px] right-[-110px] top-[-6px]
+          [@media(max-width:860px)]:right-0 [@media(max-width:860px)]:top-[-70px] [@media(max-width:860px)]:w-[58px]"
+                fill="var(--highlight)"
+              />
+              <p className="section-lead text-text max-w-[34rem] m-[0_0_var(--s6)] text-[1.05rem]">
+                Short lessons, a real grid, and feedback before you lose your train of thought.
+              </p>
             </div>
             <ol className="bento list-none m-0 p-0 grid grid-cols-[repeat(12,_minmax(0,_1fr))] gap-s5">
               {STEPS.map((s, i) => (
-                <li key={s.title} className={`bento-card bento-${i} ${bentoCardClasses}`} data-reveal>
-                  <span className="ledger-col hidden" aria-hidden="true">{s.col}</span>
-                  <div className="ledger-copy [&_h3]:flex [&_h3]:items-baseline [&_h3]:gap-s3 [&_h3]:text-ledger-lg [&_h3]:mb-s2
+                <li
+                  key={s.title}
+                  className={`bento-card bento-${i} ${bentoCardClasses}`}
+                  data-reveal
+                >
+                  <span className="ledger-col hidden" aria-hidden="true">
+                    {s.col}
+                  </span>
+                  <div
+                    className="ledger-copy [&_h3]:flex [&_h3]:items-baseline [&_h3]:gap-s3 [&_h3]:text-ledger-lg [&_h3]:mb-s2
           [&_h3_.num]:inline-grid [&_h3_.num]:place-items-center [&_h3_.num]:min-w-[34px] [&_h3_.num]:h-[26px]
           [&_h3_.num]:[border:var(--line)] [&_h3_.num]:rounded-ledger-sm [&_h3_.num]:bg-highlight [&_h3_.num]:text-ink
           [&_h3_.num]:text-ledger-xs [&_h3_.num]:font-bold
-          [&_p]:m-0 [&_p]:text-text [&_p]:max-w-[32rem]">
-                    <h3><span className="num">{String(i + 1).padStart(2, "0")}</span>{s.title}</h3>
+          [&_p]:m-0 [&_p]:text-text [&_p]:max-w-[32rem]"
+                  >
+                    <h3>
+                      <span className="num">{String(i + 1).padStart(2, "0")}</span>
+                      {s.title}
+                    </h3>
                     <p>{s.text}</p>
                   </div>
-                  <div className="mini min-h-[150px] p-[18px] bg-surface-warm [border:var(--line)] rounded-ledger flex flex-col justify-center gap-[8px]
+                  <div
+                    className="mini min-h-[150px] p-[18px] bg-surface-warm [border:var(--line)] rounded-ledger flex flex-col justify-center gap-[8px]
           [font:500_0.82rem_var(--mono)] overflow-hidden
           [&_.row]:flex [&_.row]:items-center [&_.row]:gap-[10px] [&_.row]:p-[8px_10px] [&_.row]:rounded-ledger-sm
           [&_.row]:bg-surface [&_.row]:[border:var(--line)] [&_.row]:text-muted
@@ -306,25 +424,51 @@ export default async function Home() {
           [&_.tag]:bg-surface
           [&_.tag.ok]:bg-mint [&_.tag.ok]:text-ink
           [&_.bad]:text-danger
-          [&_.note]:text-ink [&_.note]:[font-family:var(--font)] [&_.note]:text-[0.86rem] [&_.note]:leading-[1.45]" aria-hidden="true">
+          [&_.note]:text-ink [&_.note]:[font-family:var(--font)] [&_.note]:text-[0.86rem] [&_.note]:leading-[1.45]"
+                    aria-hidden="true"
+                  >
                     {i === 0 && (
                       <>
-                        <div className="row"><span className="dot done"><Icon name="check" size={10} strokeWidth={3} /></span>SUM<small>9 lessons</small></div>
-                        <div className="row on"><span className="dot" />COUNT<small>7 lessons</small></div>
-                        <div className="row"><span className="dot" />Logical<small>7 lessons</small></div>
+                        <div className="row">
+                          <span className="dot done">
+                            <Icon name="check" size={10} strokeWidth={3} />
+                          </span>
+                          SUM<small>9 lessons</small>
+                        </div>
+                        <div className="row on">
+                          <span className="dot" />
+                          COUNT<small>7 lessons</small>
+                        </div>
+                        <div className="row">
+                          <span className="dot" />
+                          Logical<small>7 lessons</small>
+                        </div>
                       </>
                     )}
                     {i === 1 && (
                       <>
-                        <div className="formula"><b>fx</b><span><em>=INDEX</em>(<i className="r1">C2:C9</i>, <em>MATCH</em>(<i className="r2">F2</i>, <i className="r3">A2:A9</i>, 0))</span></div>
-                        <div className="note">References are coloured as you type, like the real thing.</div>
+                        <div className="formula">
+                          <b>fx</b>
+                          <span>
+                            <em>=INDEX</em>(<i className="r1">C2:C9</i>, <em>MATCH</em>(
+                            <i className="r2">F2</i>, <i className="r3">A2:A9</i>, 0))
+                          </span>
+                        </div>
+                        <div className="note">
+                          References are coloured as you type, like the real thing.
+                        </div>
                       </>
                     )}
                     {i === 2 && (
                       <>
                         <span className="tag bad">Not quite</span>
-                        <div className="note">The range stops at row 8. Extend it to row 9 to include the last sale.</div>
-                        <span className="tag ok"><Icon name="check" size={12} strokeWidth={2.5} />Correct · 4,820</span>
+                        <div className="note">
+                          The range stops at row 8. Extend it to row 9 to include the last sale.
+                        </div>
+                        <span className="tag ok">
+                          <Icon name="check" size={12} strokeWidth={2.5} />
+                          Correct · 4,820
+                        </span>
                       </>
                     )}
                   </div>
@@ -334,122 +478,225 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="band block-lilac relative p-[var(--s9)_0] [border-top:var(--line)]
+        <section
+          className="band block-lilac relative p-[var(--s9)_0] [border-top:var(--line)]
           [@media(max-width:640px)]:p-[var(--s8)_0]
-          bg-lilac" aria-labelledby="curriculum">
-          <div className="wrap curriculum grid gap-s7 grid-cols-[minmax(0,_1fr)] [align-items:start]
-          [@media(min-width:980px)]:grid-cols-[minmax(0,_5fr)_minmax(0,_6fr)] [@media(min-width:980px)]:gap-s8">
-            <div className="band-head sticky-head relative max-w-[40rem]
-          [@media(min-width:980px)]:top-[100px]" data-reveal>
-              <p className="eyebrow"><span className="ref">C1</span>Curriculum</p>
+          bg-lilac"
+          aria-labelledby="curriculum"
+        >
+          <div
+            className="wrap curriculum grid gap-s7 grid-cols-[minmax(0,_1fr)] [align-items:start]
+          [@media(min-width:980px)]:grid-cols-[minmax(0,_5fr)_minmax(0,_6fr)] [@media(min-width:980px)]:gap-s8"
+          >
+            <div
+              className="band-head sticky-head relative max-w-[40rem]
+          [@media(min-width:980px)]:top-[100px]"
+              data-reveal
+            >
+              <p className="eyebrow">
+                <span className="ref">C1</span>Curriculum
+              </p>
               <h2 id="curriculum">Fifteen modules, in the order you&apos;ll need them.</h2>
-              <Doodle name="cells" className="d-cells float relative block w-[110px] m-[var(--s2)_0_var(--s5)]" fill="var(--surface)" />
-              <p className="section-lead text-text max-w-[34rem] m-[0_0_var(--s6)] text-[1.05rem]">Start with totals and counts, finish with lookups, dates and array formulas. Every module is hands-on.</p>
-              <Link className="btn" href="/lesson/intro">Try your first lesson</Link>
+              <Doodle
+                name="cells"
+                className="d-cells float relative block w-[110px] m-[var(--s2)_0_var(--s5)]"
+                fill="var(--surface)"
+              />
+              <p className="section-lead text-text max-w-[34rem] m-[0_0_var(--s6)] text-[1.05rem]">
+                Start with totals and counts, finish with lookups, dates and array formulas. Every
+                module is hands-on.
+              </p>
+              <Link className="btn" href="/lesson/intro">
+                Try your first lesson
+              </Link>
             </div>
-            <div className="sheet-table bg-surface [border:var(--line)] rounded-ledger-lg overflow-hidden [box-shadow:var(--shadow-2)] text-[0.95rem]
+            <div
+              className="sheet-table bg-surface [border:var(--line)] rounded-ledger-lg overflow-hidden [box-shadow:var(--shadow-2)] text-[0.95rem]
           [&_ol]:list-none [&_ol]:m-0 [&_ol]:p-0
           [&[data-shown]_li]:[animation:row-in_0.45s_var(--ease)_backwards]
           [&[data-shown]_li]:[animation-delay:calc(var(--i,_0)_*_45ms)]
           [&[data-shown]_.st-n_i]:[animation:bar_0.8s_var(--ease)_backwards]
           [&[data-shown]_.st-n_i]:[animation-delay:calc(var(--i,_0)_*_45ms_+_200ms)]
           [&[data-shown]_.st-n_i]:[transform-origin:left]
-          [&[data-shown]_.st-total_.st-n]:[animation:total-flash_1s_var(--ease)_0.9s_backwards]" data-reveal>
+          [&[data-shown]_.st-total_.st-n]:[animation:total-flash_1s_var(--ease)_0.9s_backwards]"
+              data-reveal
+            >
               <div className={`st-row st-head ${stRowClasses}`} aria-hidden="true">
                 <span className="st-gutter justify-center bg-surface-sunk text-muted text-[0.76rem] p-0!" />
                 <span className="st-col">A</span>
-                <span className="st-col st-n relative justify-end tabular-nums
+                <span
+                  className="st-col st-n relative justify-end tabular-nums
           [&_i]:absolute [&_i]:left-[10px] [&_i]:top-[50%] [&_i]:h-[8px] [&_i]:max-w-[calc(100%_-_52px)] [&_i]:mt-[-4px]
           [&_i]:[border:1.5px_solid_var(--ink)] [&_i]:rounded-[2px] [&_i]:bg-mint
-          [@media(max-width:640px)]:[&_i]:hidden">B</span>
+          [@media(max-width:640px)]:[&_i]:hidden"
+                >
+                  B
+                </span>
               </div>
               <div className={`st-row st-label ${stRowClasses}`} aria-hidden="true">
-                <span className="st-gutter num justify-center bg-surface-sunk text-muted text-[0.76rem] p-0!">1</span>
+                <span className="st-gutter num justify-center bg-surface-sunk text-muted text-[0.76rem] p-0!">
+                  1
+                </span>
                 <span className="st-name">Module</span>
-                <span className="st-n relative justify-end tabular-nums
+                <span
+                  className="st-n relative justify-end tabular-nums
           [&_i]:absolute [&_i]:left-[10px] [&_i]:top-[50%] [&_i]:h-[8px] [&_i]:max-w-[calc(100%_-_52px)] [&_i]:mt-[-4px]
           [&_i]:[border:1.5px_solid_var(--ink)] [&_i]:rounded-[2px] [&_i]:bg-mint
-          [@media(max-width:640px)]:[&_i]:hidden">Lessons</span>
+          [@media(max-width:640px)]:[&_i]:hidden"
+                >
+                  Lessons
+                </span>
               </div>
               <ol>
                 {MODULES.map((m) => (
                   <li key={m.slug} style={{ "--i": m.order } as React.CSSProperties}>
                     <Link className={`st-row ${stRowClasses}`} href={`/modules/${m.slug}`}>
-                      <span className="st-gutter num justify-center bg-surface-sunk text-muted text-[0.76rem] p-0!" aria-hidden="true">{m.order + 1}</span>
+                      <span
+                        className="st-gutter num justify-center bg-surface-sunk text-muted text-[0.76rem] p-0!"
+                        aria-hidden="true"
+                      >
+                        {m.order + 1}
+                      </span>
                       <span className="st-name">{m.title}</span>
-                      <span className="st-n num relative justify-end tabular-nums
+                      <span
+                        className="st-n num relative justify-end tabular-nums
           [&_i]:absolute [&_i]:left-[10px] [&_i]:top-[50%] [&_i]:h-[8px] [&_i]:max-w-[calc(100%_-_52px)] [&_i]:mt-[-4px]
           [&_i]:[border:1.5px_solid_var(--ink)] [&_i]:rounded-[2px] [&_i]:bg-mint
-          [@media(max-width:640px)]:[&_i]:hidden">{m.total}<span className="sr-only"> lessons</span><i style={{ width: `${(m.total / 10) * 100}%` }} aria-hidden="true" /></span>
+          [@media(max-width:640px)]:[&_i]:hidden"
+                      >
+                        {m.total}
+                        <span className="sr-only"> lessons</span>
+                        <i style={{ width: `${(m.total / 10) * 100}%` }} aria-hidden="true" />
+                      </span>
                     </Link>
                   </li>
                 ))}
               </ol>
               <div className={`st-row st-total ${stRowClasses}`}>
-                <span className="st-gutter num justify-center bg-surface-sunk text-muted text-[0.76rem] p-0!" aria-hidden="true">{MODULES.length + 2}</span>
-                <span className="st-name num"><b aria-hidden="true">fx</b><span aria-hidden="true">=SUM(B2:B{MODULES.length + 1})</span><span className="sr-only">Total</span></span>
-                <span className="st-n num relative justify-end tabular-nums
+                <span
+                  className="st-gutter num justify-center bg-surface-sunk text-muted text-[0.76rem] p-0!"
+                  aria-hidden="true"
+                >
+                  {MODULES.length + 2}
+                </span>
+                <span className="st-name num">
+                  <b aria-hidden="true">fx</b>
+                  <span aria-hidden="true">=SUM(B2:B{MODULES.length + 1})</span>
+                  <span className="sr-only">Total</span>
+                </span>
+                <span
+                  className="st-n num relative justify-end tabular-nums
           [&_i]:absolute [&_i]:left-[10px] [&_i]:top-[50%] [&_i]:h-[8px] [&_i]:max-w-[calc(100%_-_52px)] [&_i]:mt-[-4px]
           [&_i]:[border:1.5px_solid_var(--ink)] [&_i]:rounded-[2px] [&_i]:bg-mint
-          [@media(max-width:640px)]:[&_i]:hidden">{lessonTotal}<span className="sr-only"> lessons</span></span>
+          [@media(max-width:640px)]:[&_i]:hidden"
+                >
+                  {lessonTotal}
+                  <span className="sr-only"> lessons</span>
+                </span>
               </div>
-              <p className="st-note m-0 p-[10px_14px] [border-top:1px_solid_var(--border)] bg-surface-warm text-muted text-ledger-sm">Plus the free intro lesson.</p>
+              <p className="st-note m-0 p-[10px_14px] [border-top:1px_solid_var(--border)] bg-surface-warm text-muted text-ledger-sm">
+                Plus the free intro lesson.
+              </p>
             </div>
           </div>
         </section>
 
-        <section className="band block-sky relative p-[var(--s9)_0] [border-top:var(--line)]
+        <section
+          className="band block-sky relative p-[var(--s9)_0] [border-top:var(--line)]
           [@media(max-width:640px)]:p-[var(--s8)_0]
-          bg-sky" aria-labelledby="pricing">
+          bg-sky"
+          aria-labelledby="pricing"
+        >
           <div className="wrap">
             <div className="band-head relative max-w-[40rem]" data-reveal>
-              <p className="eyebrow"><span className="ref">D1</span>Plans</p>
+              <p className="eyebrow">
+                <span className="ref">D1</span>Plans
+              </p>
               <h2 id="pricing">Try it free. Pay when you&apos;re sure.</h2>
-              <Doodle name="trophy" className="d-head float w-[76px] right-[-110px] top-[-6px]
-          [@media(max-width:860px)]:right-0 [@media(max-width:860px)]:top-[-70px] [@media(max-width:860px)]:w-[58px]" fill="var(--highlight)" />
-              <p className="section-lead text-text max-w-[34rem] m-[0_0_var(--s6)] text-[1.05rem]">The intro lesson is free with no sign-up. Everything else is one plan, billed your way.</p>
+              <Doodle
+                name="trophy"
+                className="d-head float w-[76px] right-[-110px] top-[-6px]
+          [@media(max-width:860px)]:right-0 [@media(max-width:860px)]:top-[-70px] [@media(max-width:860px)]:w-[58px]"
+                fill="var(--highlight)"
+              />
+              <p className="section-lead text-text max-w-[34rem] m-[0_0_var(--s6)] text-[1.05rem]">
+                The intro lesson is free with no sign-up. Everything else is one plan, billed your
+                way.
+              </p>
             </div>
-            <div className="plans grid gap-s5 grid-cols-[repeat(3,_minmax(0,_1fr))]
+            <div
+              className="plans grid gap-s5 grid-cols-[repeat(3,_minmax(0,_1fr))]
           [&[data-shown]_.plan]:[animation:rise_0.6s_var(--ease)_backwards]
           [&[data-shown]_.plan:nth-child(2)]:[animation-delay:0.1s]
           [&[data-shown]_.plan:nth-child(3)]:[animation-delay:0.2s]
-          [@media(max-width:860px)]:grid-cols-[minmax(0,_1fr)]" data-reveal>
+          [@media(max-width:860px)]:grid-cols-[minmax(0,_1fr)]"
+              data-reveal
+            >
               <div className={`plan ${planClasses}`}>
                 <h3>Try it</h3>
                 <div className="price">Free</div>
                 <p>The intro lesson, then one more with a free account.</p>
-                <Link className="btn btn-quiet btn-block" href="/lesson/intro">Start free</Link>
+                <Link className="btn btn-quiet btn-block" href="/lesson/intro">
+                  Start free
+                </Link>
               </div>
               <div className={`plan ${planClasses}`}>
                 <h3>Monthly</h3>
-                <div className="price num">{formatPrice(currency, plan.monthly)}<small>/ month</small></div>
+                <div className="price num">
+                  {formatPrice(currency, plan.monthly)}
+                  <small>/ month</small>
+                </div>
                 <p>All lessons, projects, daily challenge and certificate.</p>
-                <Link className="btn btn-quiet btn-block" href="/pricing">Choose monthly</Link>
+                <Link className="btn btn-quiet btn-block" href="/pricing">
+                  Choose monthly
+                </Link>
               </div>
-              <div className={`plan plan-best ${planClasses}
-          [&_.badge]:bg-highlight [&_.badge]:text-ink`}>
-                <h3>Annual <span className="badge">Save {annualSaving}%</span></h3>
-                <div className="price num">{formatPrice(currency, plan.annual)}<small>/ year</small></div>
+              <div
+                className={`plan plan-best ${planClasses}
+          [&_.badge]:bg-highlight [&_.badge]:text-ink`}
+              >
+                <h3>
+                  Annual <span className="badge">Save {annualSaving}%</span>
+                </h3>
+                <div className="price num">
+                  {formatPrice(currency, plan.annual)}
+                  <small>/ year</small>
+                </div>
                 <p>Everything in Monthly, billed once a year.</p>
-                <Link className="btn btn-block" href="/pricing">Choose annual</Link>
+                <Link className="btn btn-block" href="/pricing">
+                  Choose annual
+                </Link>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="band block-rose relative p-[var(--s9)_0] [border-top:var(--line)]
+        <section
+          className="band block-rose relative p-[var(--s9)_0] [border-top:var(--line)]
           [@media(max-width:640px)]:p-[var(--s8)_0]
-          bg-rose" aria-labelledby="faq">
-          <div className="wrap faq-grid grid gap-s6 grid-cols-[minmax(0,_1fr)]
+          bg-rose"
+          aria-labelledby="faq"
+        >
+          <div
+            className="wrap faq-grid grid gap-s6 grid-cols-[minmax(0,_1fr)]
           [@media(min-width:980px)]:grid-cols-[minmax(0,_5fr)_minmax(0,_7fr)] [@media(min-width:980px)]:gap-s8
           [&>div:last-child]:p-[var(--s2)_var(--s5)] [&>div:last-child]:bg-surface [&>div:last-child]:[border:var(--line)]
           [&>div:last-child]:rounded-ledger-lg [&>div:last-child]:[box-shadow:var(--shadow-2)]
-          [&_.faq-item:last-child]:[border-bottom:0]">
+          [&_.faq-item:last-child]:[border-bottom:0]"
+          >
             <div className="band-head relative max-w-[40rem]" data-reveal>
-              <p className="eyebrow"><span className="ref">E1</span>Questions</p>
+              <p className="eyebrow">
+                <span className="ref">E1</span>Questions
+              </p>
               <h2 id="faq">Before you start</h2>
-              <Doodle name="bubble" className="d-bubble float relative block w-[110px] mt-s2" fill="var(--surface)" />
-              <p className="section-lead text-text max-w-[34rem] m-[0_0_var(--s6)] text-[1.05rem]">Anything else is in <Link href="/help">Help</Link>.</p>
+              <Doodle
+                name="bubble"
+                className="d-bubble float relative block w-[110px] mt-s2"
+                fill="var(--surface)"
+              />
+              <p className="section-lead text-text max-w-[34rem] m-[0_0_var(--s6)] text-[1.05rem]">
+                Anything else is in <Link href="/help">Help</Link>.
+              </p>
             </div>
             <div data-reveal>
               {FAQ.map((f) => (
@@ -464,15 +711,25 @@ export default async function Home() {
 
         <section className={`closer ${closerClasses}`} aria-labelledby="closer">
           <div className="wrap" data-reveal>
-            <Doodle name="check" className="d-check float w-[160px] right-[6%] top-[50%] mt-[-80px] text-highlight
-          [@media(max-width:860px)]:hidden" />
-            <p className="closer-fx num inline-flex gap-[12px] m-0 p-[6px_12px] [border:2px_solid_rgb(255_255_255_/_0.3)] rounded-ledger-sm
+            <Doodle
+              name="check"
+              className="d-check float w-[160px] right-[6%] top-[50%] mt-[-80px] text-highlight
+          [@media(max-width:860px)]:hidden"
+            />
+            <p
+              className="closer-fx num inline-flex gap-[12px] m-0 p-[6px_12px] [border:2px_solid_rgb(255_255_255_/_0.3)] rounded-ledger-sm
           [color:rgb(255_255_255_/_0.8)] text-ledger-sm
           [&_b]:text-highlight [&_b]:[font-style:italic]
           [&::after]:[content:''] [&::after]:w-[2px] [&::after]:h-[1em] [&::after]:[align-self:center] [&::after]:bg-highlight
-          [&::after]:[animation:blink_1s_steps(1)_infinite]" aria-hidden="true"><b>fx</b>=LESSON(1)</p>
+          [&::after]:[animation:blink_1s_steps(1)_infinite]"
+              aria-hidden="true"
+            >
+              <b>fx</b>=LESSON(1)
+            </p>
             <h2 id="closer">Your first formula is two minutes away.</h2>
-            <Link className="btn btn-lg" href="/lesson/intro">Start the free lesson <Icon name="arrowRight" size={18} /></Link>
+            <Link className="btn btn-lg" href="/lesson/intro">
+              Start the free lesson <Icon name="arrowRight" size={18} />
+            </Link>
           </div>
         </section>
       </main>
