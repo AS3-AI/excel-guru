@@ -38,6 +38,9 @@ export async function POST(request: Request) {
   }
   if (!body || typeof body !== "object" || !Array.isArray((body as { lessons?: unknown }).lessons))
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  const lessonsInput = (body as { lessons: unknown[] }).lessons;
+  if (lessonsInput.length > 100)
+    return NextResponse.json({ error: "Too many lessons" }, { status: 400 });
   let completedLessonIds: string[];
   let openedLessonIds: string[];
   let premium: boolean;
@@ -51,13 +54,20 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: "Progress unavailable" }, { status: 500 });
   }
-  let merged = 0;
-  let partialFailure = false;
+  const profileRes = await admin
+    .from("profiles")
+    .select("group_id,cohort")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (profileRes.error)
+    return NextResponse.json({ error: "Progress unavailable" }, { status: 500 });
   const now = new Date();
   const end = now.toISOString();
   const bounds = getIstDayUtcBounds(now);
   const istDay = getIstDate(now);
-  for (const item of (body as { lessons: unknown[] }).lessons) {
+  let merged = 0;
+  let partialFailure = false;
+  for (const item of lessonsInput) {
     if (!item || typeof item !== "object") continue;
     const candidate = item as { lessonId?: unknown; attempts?: unknown };
     if (typeof candidate.lessonId !== "string" || !Array.isArray(candidate.attempts)) continue;
@@ -79,8 +89,7 @@ export async function POST(request: Request) {
     } catch {
       continue;
     }
-    const [profile, prior, progress, earlierCompletions] = await Promise.all([
-      admin.from("profiles").select("group_id,cohort").eq("user_id", user.id).maybeSingle(),
+    const [prior, progress, earlierCompletions] = await Promise.all([
       admin
         .from("streaks")
         .select("current,longest,last_active_date")
@@ -101,7 +110,7 @@ export async function POST(request: Request) {
         .gte("completed_at", bounds.start)
         .lt("completed_at", bounds.end),
     ]);
-    if (profile.error || prior.error || progress.error || earlierCompletions.error) continue;
+    if (prior.error || progress.error || earlierCompletions.error) continue;
     let points = pointsAllowedForCompletion(earlierCompletions.data ?? [], now) ? score.points : 0;
     const completionData = {
       user_id: user.id,
@@ -110,8 +119,8 @@ export async function POST(request: Request) {
       ist_day: istDay,
       first_try_accuracy: score.firstTryAccuracy,
       points,
-      group_id: profile.data?.group_id ?? null,
-      cohort: profile.data?.cohort ?? null,
+      group_id: profileRes.data?.group_id ?? null,
+      cohort: profileRes.data?.cohort ?? null,
     };
     let completionWrite = await admin.from("lesson_completions").insert(completionData);
     if (completionWrite.error && shouldRetryCompletionWithZeroPoints(completionWrite.error)) {

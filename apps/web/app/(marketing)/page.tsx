@@ -10,7 +10,6 @@ import { Icon } from "@/components/icons";
 import { Reveal } from "@/components/Reveal";
 import { Doodle } from "@/components/Doodles";
 import { HeroSheet } from "./HeroSheet";
-import { HeroPaper } from "./HeroPaper";
 
 const landingClasses = [
   "[&_[data-shown]_.doodle_path]:[animation:draw_1.2s_var(--ease)_backwards]",
@@ -232,7 +231,9 @@ export default async function Home() {
           className={`hero block-mint bg-mint
           ${heroClasses}`}
         >
-          <HeroPaper />
+          <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+            <div className="absolute inset-0 [background-image:linear-gradient(rgb(20_32_26_/_0.09)_1px,_transparent_1px),_linear-gradient(90deg,_rgb(20_32_26_/_0.09)_1px,_transparent_1px)] [background-size:96px_32px] [background-position:-1px_-1px] [mask-image:radial-gradient(ellipse_75%_85%_at_75%_40%,_#000_0%,_transparent_75%)]" />
+          </div>
           <div
             className="wrap hero-grid relative grid gap-s8 items-center grid-cols-[minmax(0,_1fr)]
           [@media(min-width:980px)]:grid-cols-[minmax(0,_11fr)_minmax(0,_10fr)]"

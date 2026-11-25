@@ -31,8 +31,10 @@ export function hashIp(
  */
 export type RateLimitAdmin =
   | {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- lets test fakes stand in for SupabaseClient
-      rpc: (...args: any[]) => any;
+      rpc: (
+        fn: string,
+        params: Record<string, unknown>,
+      ) => Promise<{ data: unknown; error: { message?: string } | null }>;
     }
   | SupabaseClient;
 

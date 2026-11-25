@@ -143,12 +143,7 @@ describe("cache, limits, and ratings", () => {
     const client = {
       from: (table: string) => {
         expect(table).toBe("explain_calls");
-        const q: {
-          select: () => unknown;
-          eq: (k: string, v: unknown) => unknown;
-          gte: (k: string, v: unknown) => unknown;
-          then: (resolve: (v: unknown) => unknown) => unknown;
-        } = {
+        const q = {
           select: () => q,
           eq: (k: string, v: unknown) => {
             calls.push(["eq", k, v]);
@@ -183,12 +178,7 @@ describe("cache, limits, and ratings", () => {
   it("fails closed when counting errors", async () => {
     const client = {
       from: () => {
-        const q: {
-          select: () => unknown;
-          eq: () => unknown;
-          gte: () => unknown;
-          then: (resolve: (v: unknown) => unknown) => unknown;
-        } = {
+        const q = {
           select: () => q,
           eq: () => q,
           gte: () => q,
@@ -323,32 +313,34 @@ describe("Gemini failure handling", () => {
 });
 
 describe("explanation cache database helpers", () => {
-  function fakeAdmin(
-    rows: Array<{ id: string; text: string; score: number; served_count: number }> = [],
-  ) {
+  type FakeRow = {
+    id: string;
+    text: string;
+    score: number;
+    served_count: number;
+    lesson_id?: string;
+    step_id?: string;
+    input_norm?: string;
+  };
+  function fakeAdmin(rows: FakeRow[] = []) {
     const state = { rows, inserts: [] as unknown[], updates: [] as unknown[] };
     const client = {
       from: (_table: string) => {
-        const filters: Array<(r: (typeof rows)[number]) => boolean> = [];
+        const filters: Array<(r: FakeRow) => boolean> = [];
         let insertData: unknown;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- chainable Supabase query fake
-        const query: any = {
+        const query = {
           select: () => query,
-          eq: (key: string, val: unknown) => {
-            filters.push((r) => (r as Record<string, unknown>)[key] === val);
+          eq: (key: keyof FakeRow, val: unknown) => {
+            filters.push((r) => r[key] === val);
             return query;
           },
-          gte: (key: string, val: number) => {
-            filters.push((r) => ((r as Record<string, unknown>)[key] as number) >= val);
+          gte: (key: keyof FakeRow, val: number) => {
+            filters.push((r) => Number(r[key]) >= val);
             return query;
           },
-          order: (key: string, opts: { ascending: boolean }) => {
+          order: (key: keyof FakeRow, opts: { ascending: boolean }) => {
             rows.sort((a, b) =>
-              opts.ascending
-                ? ((a as Record<string, unknown>)[key] as number) -
-                  ((b as Record<string, unknown>)[key] as number)
-                : ((b as Record<string, unknown>)[key] as number) -
-                  ((a as Record<string, unknown>)[key] as number),
+              opts.ascending ? Number(a[key]) - Number(b[key]) : Number(b[key]) - Number(a[key]),
             );
             return query;
           },
@@ -386,7 +378,7 @@ describe("explanation cache database helpers", () => {
         lesson_id: "l",
         step_id: "s",
         input_norm: "n",
-      } as { id: string; text: string; score: number; served_count: number },
+      },
     ]);
     const hit = await lookupExplainCache(client, "l", "s", "n");
     expect(hit).toMatchObject({ id: "a", cached: true });
@@ -412,7 +404,7 @@ describe("explanation cache database helpers", () => {
         lesson_id: "l",
         step_id: "s",
         input_norm: "n",
-      } as { id: string; text: string; score: number; served_count: number },
+      },
     ]);
     await expect(lookupExplainCache(client, "l", "s", "n")).resolves.toBeNull();
   });
