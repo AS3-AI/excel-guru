@@ -223,7 +223,7 @@ export function ProfileClient({
         setCertificate({ ...certificate, name: updatedName });
       }
 
-      setFeedback({ text: "Profile saved!", ok: true });
+      setFeedback({ text: "Profile updated", ok: true });
       window.dispatchEvent(new Event("excelguru:profile-updated"));
       router.refresh();
 
@@ -265,7 +265,7 @@ export function ProfileClient({
       if (res.ok) {
         setShared(true);
         setBonusAdded((prev) => prev + (data.points ?? 500));
-        setShareFeedback({ text: "+500 pts credited to your score!", ok: true });
+        setShareFeedback({ text: "+500 pts credited to your score", ok: true });
         window.dispatchEvent(new Event("excelguru:share-bonus"));
         router.refresh();
       } else if (res.status === 409) {
@@ -386,7 +386,7 @@ export function ProfileClient({
       {/* 1. TOP HERO COVER BANNER */}
       <section className="duo-hero-banner" aria-label="Profile cover banner">
         <span className="duo-cell-ref" aria-hidden="true">
-          A1 · PROFILE
+          A1 · Profile
         </span>
 
         {/* Centered Retro Avatar */}
@@ -612,7 +612,7 @@ export function ProfileClient({
                 aria-expanded={showAllAchievements}
                 onClick={() => setShowAllAchievements(!showAllAchievements)}
               >
-                {showAllAchievements ? "SHOW LESS" : "VIEW ALL"}
+                {showAllAchievements ? "Show less" : "View all"}
               </button>
             </div>
 
@@ -922,11 +922,11 @@ export function ProfileClient({
 
             <div className="friend-action-list">
               {shared ? (
-                <div className="friend-action-row" style={{ background: "var(--surface-sunk)", cursor: "default" }}>
-                  <span className="friend-action-icon" style={{ background: "var(--mint)" }}>
+                <div className="friend-action-row is-done-row">
+                  <span className="friend-action-icon is-mint">
                     <Icon name="check" size={18} />
                   </span>
-                  <span className="friend-action-text">+500 pts claimed! Shared on LinkedIn</span>
+                  <span className="friend-action-text">+500 pts claimed on LinkedIn</span>
                 </div>
               ) : (
                 <button
@@ -935,7 +935,7 @@ export function ProfileClient({
                   onClick={handleShareBonus}
                   disabled={claimingShare}
                 >
-                  <span className="friend-action-icon" style={{ background: "var(--butter)" }}>
+                  <span className="friend-action-icon is-butter">
                     <Icon name="externalLink" size={18} />
                   </span>
                   <span className="friend-action-text">
@@ -950,7 +950,7 @@ export function ProfileClient({
                   <Icon name="user" size={18} />
                 </span>
                 <span className="friend-action-text">
-                  {copiedInvite ? "Signup invite link copied!" : "Invite Friends (Copy Signup Link)"}
+                  {copiedInvite ? "Signup invite link copied" : "Invite Friends (Copy Signup Link)"}
                 </span>
                 <span className="friend-action-arrow">→</span>
               </button>
@@ -1162,17 +1162,14 @@ export function ProfileClient({
             </div>
 
             {/* Danger Zone: Reset Learning Progress */}
-            <div style={{ marginTop: "var(--s5)", paddingTop: "var(--s4)", borderTop: "1px solid var(--border)" }}>
-              <h3 style={{ margin: "0 0 6px", fontSize: "0.95rem", color: "var(--danger)" }}>
-                Danger Zone
-              </h3>
-              <p style={{ margin: "0 0 var(--s3)", color: "var(--muted)", fontSize: "var(--fs-xs)" }}>
+            <div className="danger-well">
+              <h3 className="danger-well-title">Danger Zone</h3>
+              <p className="danger-well-desc">
                 Clear completed lesson checks and accuracy metrics to practice the curriculum from scratch. Points &amp; leaderboard history are preserved.
               </p>
               <button
                 type="button"
-                className="btn"
-                style={{ borderColor: "var(--danger)", color: "var(--danger)", width: "100%" }}
+                className="btn btn-danger-outline btn-block"
                 onClick={() => {
                   setResetError(null);
                   setShowResetModal(true);
@@ -1183,12 +1180,11 @@ export function ProfileClient({
             </div>
 
             {/* Account Sign Out */}
-            <div style={{ marginTop: "var(--s4)", paddingTop: "var(--s4)", borderTop: "1px solid var(--border)" }}>
+            <div className="signout-row">
               <form action="/auth/signout" method="post" style={{ margin: 0 }}>
                 <button
                   type="submit"
-                  className="btn btn-quiet"
-                  style={{ width: "100%", justifyContent: "center", gap: 8 }}
+                  className="btn btn-quiet btn-block"
                 >
                   <Icon name="logOut" size={16} />
                   Log Out
@@ -1330,8 +1326,7 @@ export function ProfileClient({
               </button>
               <button
                 type="button"
-                className="btn"
-                style={{ background: "var(--danger)", color: "#fff", borderColor: "var(--danger)" }}
+                className="btn btn-danger"
                 onClick={handleResetProgress}
                 disabled={resetting}
               >
@@ -1369,8 +1364,7 @@ export function ProfileClient({
               </button>
               <button
                 type="button"
-                className="btn"
-                style={{ background: "var(--danger)", color: "#fff", borderColor: "var(--danger)" }}
+                className="btn btn-danger"
                 onClick={handleCancelSubscription}
                 disabled={cancellingSub}
               >

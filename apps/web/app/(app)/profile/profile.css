@@ -442,6 +442,7 @@
 .stat-val {
   margin: 0;
   font-family: var(--mono, monospace);
+  font-variant-numeric: tabular-nums;
   font-size: 1.85rem;
   font-weight: 800;
   line-height: 1.1;
@@ -558,19 +559,24 @@
   font-family: var(--mono, monospace);
   font-size: var(--fs-xs, 0.78rem);
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--primary, #107c41);
+  color: var(--primary-strong, #0a5c2f);
+  background: transparent;
+  border: 1.5px solid transparent;
   text-decoration: none;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 5px 10px;
   border-radius: var(--r-sm, 4px);
-  transition: color var(--d1, 120ms), background var(--d1, 120ms);
+  transition: color 150ms cubic-bezier(0.23, 1, 0.32, 1), background-color 150ms cubic-bezier(0.23, 1, 0.32, 1), border-color 150ms ease, transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .achievements-view-all:hover {
-  color: var(--primary-strong, #0a5c2f);
+  color: var(--ink, #14201a);
   background: var(--primary-tint, #e6f1ea);
+  border-color: var(--ink, #14201a);
+}
+
+.achievements-view-all:active {
+  transform: scale(0.97);
 }
 
 .achievements-list {
@@ -1161,40 +1167,52 @@
   color: var(--danger, #b42318);
 }
 
-/* Curriculum breakdown */
+/* Curriculum breakdown — 2-col compact sheet without awkward nested scrolling */
 .mastery-module-list {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--s3);
-  max-height: 380px;
-  overflow-y: auto;
-  padding-right: 6px;
 }
 
 .mastery-module-item {
-  padding: 10px 14px;
+  padding: 12px 14px;
   background: var(--surface-sunk, #f2f1ec);
   border: 1.5px solid var(--ink, #0f172a);
   border-radius: var(--r-md, 8px);
   display: grid;
-  gap: 6px;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 160ms ease;
+}
+
+.mastery-module-item:active {
+  transform: scale(0.98);
 }
 
 .mastery-module-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   font-size: var(--fs-sm, 0.875rem);
 }
 
 .mastery-module-head strong {
   color: var(--ink, #0f172a);
   font-weight: 700;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mastery-module-head span {
   font-family: var(--mono, monospace);
+  font-variant-numeric: tabular-nums;
   font-size: var(--fs-xs, 0.78rem);
-  color: var(--muted, #5f6963);
+  color: var(--text, #29332d);
+  white-space: nowrap;
 }
 
 /* Subscription card */
@@ -1202,24 +1220,60 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--s4);
   padding: var(--s4);
   background: var(--surface-sunk, #f2f1ec);
   border: 1.5px solid var(--ink, #0f172a);
   border-radius: var(--r-md, 8px);
   box-shadow: 2px 2px 0 var(--ink, #0f172a);
-  margin-bottom: var(--s4);
+  margin-bottom: var(--s3);
+}
+
+.sub-plan-info {
+  min-width: 0;
+  flex: 1;
 }
 
 .sub-plan-info h3 {
-  margin: 0 0 2px;
-  font-size: 1rem;
+  margin: 0 0 4px;
+  font-size: 0.98rem;
   color: var(--ink, #0f172a);
 }
 
 .sub-plan-info p {
   margin: 0;
   font-size: var(--fs-xs, 0.78rem);
-  color: var(--muted, #5f6963);
+  line-height: 1.4;
+  color: var(--text, #29332d);
+}
+
+/* Danger zone well & Sign Out row */
+.danger-well {
+  margin-top: var(--s5);
+  padding: var(--s4);
+  background: #fff5f5;
+  border: 1.5px solid var(--danger, #b42318);
+  border-radius: var(--r-md, 8px);
+}
+
+.danger-well-title {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--danger, #b42318);
+}
+
+.danger-well-desc {
+  margin: 0 0 var(--s3);
+  color: var(--text, #29332d);
+  font-size: var(--fs-xs, 0.78rem);
+  line-height: 1.45;
+}
+
+.signout-row {
+  margin-top: var(--s4);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--border, #e3e1da);
 }
 
 /* Danger zone */
@@ -1539,18 +1593,50 @@
   color: var(--ink, #14201a);
 }
 
-/* Clickable Module Mastery Rows */
-.mastery-module-item {
-  text-decoration: none;
-  color: inherit;
-  transition: transform var(--d1, 120ms), box-shadow var(--d1, 120ms), background var(--d1, 120ms);
+/* Tabular figures & refined interactive hover/active states */
+.achievement-score,
+.weekly-pts,
+.track-badge-count,
+.lb-status-rank,
+.recent-acc-pill {
+  font-variant-numeric: tabular-nums;
 }
 
-.mastery-module-item:hover {
+.friend-action-row.is-done-row {
+  background: var(--surface-sunk, #f2f1ec);
+  cursor: default;
+  box-shadow: none;
+}
+
+.friend-action-icon.is-mint {
+  background: var(--mint, #c9f2c2);
+}
+
+.friend-action-icon.is-butter {
   background: var(--butter, #fdf5b0);
-  transform: translate(-1px, -1px);
-  box-shadow: 2.5px 2.5px 0 var(--ink, #14201a);
-  text-decoration: none;
+}
+
+/* Hover lift only on pointer devices (prevents sticky tap hover on mobile) */
+@media (hover: hover) and (pointer: fine) {
+  .mastery-module-item:hover {
+    background: var(--butter, #fdf5b0);
+    transform: translate(-1px, -1px);
+    box-shadow: 2.5px 2.5px 0 var(--ink, #14201a);
+    text-decoration: none;
+  }
+  .recent-lesson-row:hover {
+    background: var(--mint, #c9f2c2);
+    transform: translate(-1px, -1px);
+    box-shadow: 2.5px 2.5px 0 var(--ink, #14201a);
+    text-decoration: none;
+  }
+}
+
+.recent-lesson-row:active,
+.track-badge-pill:active,
+.track-badge-more:active,
+.lb-type-btn:active {
+  transform: scale(0.98);
 }
 
 .mastery-module-head strong {
@@ -1561,6 +1647,17 @@
 
 .mod-done-check {
   color: var(--primary, #107c41);
+  flex-shrink: 0;
+}
+
+@media (max-width: 580px) {
+  .mastery-module-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sub-plan-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 /* Recent Lessons List */
@@ -1594,14 +1691,7 @@
   background: var(--surface-sunk, #f2f1ec);
   text-decoration: none;
   color: var(--ink, #14201a);
-  transition: background var(--d1, 120ms), transform var(--d1, 120ms), box-shadow var(--d1, 120ms);
-}
-
-.recent-lesson-row:hover {
-  background: var(--mint, #c9f2c2);
-  transform: translate(-1px, -1px);
-  box-shadow: 2.5px 2.5px 0 var(--ink, #14201a);
-  text-decoration: none;
+  transition: background-color 150ms ease, transform 150ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 150ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .recent-lesson-main {

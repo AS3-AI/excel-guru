@@ -64,6 +64,8 @@ p { text-wrap: pretty; }
 .btn-ink:hover { --btn-bg: #000; }
 .btn-danger { --btn-bg: var(--danger); --btn-fg: #fff; }
 .btn-danger:hover { --btn-bg: #8f1c13; }
+.btn-danger-outline { --btn-bg: var(--surface); --btn-fg: var(--danger); border-color: var(--danger); }
+.btn-danger-outline:hover { --btn-bg: var(--danger); --btn-fg: #fff; border-color: var(--ink); }
 .btn-lg { min-height: 52px; padding: 14px 24px; font-size: 1rem; }
 .btn-sm { min-height: 36px; padding: 6px 12px; font-size: var(--fs-sm); box-shadow: 2px 2px 0 var(--ink); }
 .btn-block { width: 100%; }
@@ -138,8 +140,8 @@ p { text-wrap: pretty; }
   position: absolute;
   left: 10px;
   right: 10px;
-  bottom: -12px;
-  height: 4px;
+  bottom: -10px;
+  height: 3px;
   background: var(--primary);
 }
 .nav-profile-link .avatar {
