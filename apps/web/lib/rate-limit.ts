@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
  * Format a rate limit key as `<route>:<identifier>`.
@@ -25,8 +26,12 @@ export function hashIp(ip: string | null, salt: string = process.env.EXPLAIN_IP_
  * @param windowSeconds Window length in seconds
  * @returns true if allowed, false if blocked (rate limited)
  */
+export type RateLimitAdmin = {
+  rpc: (...args: any[]) => any;
+} | SupabaseClient;
+
 export async function rateLimit(
-  admin: any,
+  admin: RateLimitAdmin | null | undefined,
   key: string,
   max: number,
   windowSeconds: number,

@@ -1,6 +1,7 @@
 import type { Lesson, Step } from "@excel-guru/grader";
 import { gradeFormulaStep, gradeSelectStep, gradeSequenceStep, gradeShortcutStep } from "@excel-guru/grader";
 import { createHash } from "node:crypto";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 const INPUT_LIMIT = 200;
 
@@ -70,27 +71,20 @@ export function rateScore(score: number, helpful: boolean): number {
   return score + (helpful ? 1 : -1);
 }
 
+export type ExplainAdmin = {
+  from: (...args: any[]) => any;
+} | SupabaseClient;
+
 export type ExplainCacheRow = { id: string; text: string; score: number; served_count: number };
-export async function lookupExplainCache(admin: any, lessonId: string, stepId: string, inputNorm: string): Promise<(ExplainCacheRow & { cached: true }) | null> {
+export async function lookupExplainCache(admin: ExplainAdmin, lessonId: string, stepId: string, inputNorm: string): Promise<(ExplainCacheRow & { cached: true }) | null> {
   const result = await admin.from("ai_explanations").select("id,text,score,served_count").eq("lesson_id", lessonId).eq("step_id", stepId).eq("input_norm", inputNorm).gte("score", 0).order("score", { ascending: false }).limit(1).maybeSingle();
   if (result.error || !result.data) { if (result.error) throw result.error; return null; }
   await admin.from("ai_explanations").update({ served_count: result.data.served_count + 1 }).eq("id", result.data.id);
   return { ...result.data, cached: true };
 }
-export async function insertExplainCache(admin: any, row: { lesson_id: string; step_id: string; input_norm: string; text: string }): Promise<{ id: string } | null> {
+export async function insertExplainCache(admin: ExplainAdmin, row: { lesson_id: string; step_id: string; input_norm: string; text: string }): Promise<{ id: string } | null> {
   const result = await admin.from("ai_explanations").insert(row).select("id").single();
   return result.error || !result.data ? null : result.data;
-}
-export async function getOrCreateExplain(admin: any, lessonId: string, stepId: string, inputNorm: string, generate: () => Promise<string | null>): Promise<{ id: string; text: string; cached: boolean } | null> {
-  const hit = await lookupExplainCache(admin, lessonId, stepId, inputNorm);
-  if (hit) return { id: hit.id, text: hit.text, cached: true };
-  const text = await generate();
-  if (!text) return null;
-  const row = await insertExplainCache(admin, { lesson_id: lessonId, step_id: stepId, input_norm: inputNorm, text });
-  return row ? { id: row.id, text, cached: false } : null;
-}
-export function selectServableExplanation(rows: readonly ExplainCacheRow[]): ExplainCacheRow | null {
-  return rows.filter((row) => row.score >= 0).sort((a, b) => b.score - a.score)[0] ?? null;
 }
 
 export async function requestGeminiExplanation(prompt: string, apiKey: string | undefined, model: string | undefined, fetcher: typeof fetch = fetch): Promise<string | null> {
@@ -113,13 +107,13 @@ export function istDayStart(now = new Date()): string {
   return new Date(`${parts}T00:00:00+05:30`).toISOString();
 }
 
-export async function countExplainCalls(admin: any, caller: string, since: string): Promise<number> {
+export async function countExplainCalls(admin: ExplainAdmin, caller: string, since: string): Promise<number> {
   const result = await admin.from("explain_calls").select("id", { count: "exact", head: true }).eq("caller", caller).gte("called_at", since);
   if (result.error || typeof result.count !== "number") throw result.error ?? new Error("Explain call count unavailable");
   return result.count;
 }
 
-export async function insertExplainCall(admin: any, caller: string): Promise<boolean> {
+export async function insertExplainCall(admin: ExplainAdmin, caller: string): Promise<boolean> {
   const result = await admin.from("explain_calls").insert({ caller });
   return !result.error;
 }

@@ -37,7 +37,7 @@ import { LessonList, type LessonNavItem } from "./LessonList";
 import { Leaderboards } from "@/components/Leaderboards";
 import { ShareBonus } from "@/components/ShareBonus";
 import { VideoModal } from "@/components/VideoModal";
-import { answerPointsVisible, celebrationStats } from "@/lib/leaderboard";
+import { answerPointsVisible } from "@/lib/leaderboard";
 import { PROFILE_HREF } from "@/lib/nav-links";
 import { Icon } from "@/components/icons";
 import { Doodle } from "@/components/Doodles";
@@ -138,7 +138,6 @@ export function Player({
   const listRef = useRef<HTMLDialogElement>(null);
   const step = lesson.steps[state.index]!;
   const pct = Math.min(100, Math.round((state.correct / lesson.requiredCorrect) * 100));
-  const savedCelebrationStats = celebrationStats(savedStats);
   const firstTry = useMemo(() => {
     const results = Object.values(state.firstTry);
     return results.length ? Math.round((results.filter(Boolean).length / results.length) * 100) : 0;
@@ -797,7 +796,7 @@ export function Player({
               <dt>Questions correct</dt>
               <dd className="num">{state.correct}</dd>
             </div>
-            {savedCelebrationStats && (
+            {savedStats && (
               <>
                 <div className="is-gold">
                   <dt>Points earned</dt>
@@ -805,7 +804,7 @@ export function Player({
                 </div>
                 <div>
                   <dt>Day streak</dt>
-                  <dd className="num">{savedCelebrationStats.streak}</dd>
+                  <dd className="num">{savedStats.streak}</dd>
                 </div>
               </>
             )}
