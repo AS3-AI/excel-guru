@@ -63,17 +63,20 @@ export function DashboardContent({ signedIn: initiallySignedIn, completedIds: in
       <div><p className="eyebrow"><span className="ref">A1</span>Dashboard</p><h1>{doneCount === 0 ? "Let’s start your first lesson" : "Pick up where you left off"}</h1></div>
       <Link className="btn btn-lg" href={nextHref}>{doneCount === 0 ? "Start learning" : "Continue learning"} <Icon name="arrowRight" size={18} /></Link>
     </header>
+    <div className="dash-layout">
+      {dashboardReady && <aside className="dash-side" aria-label="Leaderboards"><Leaderboards type="points" /><Leaderboards type="streak" /></aside>}
+      <div className="dash-main">
     <section className="dash-summary" aria-label="Progress summary">
       <div className="dash-stat">
         <h2>Lessons completed</h2>
         <p className="dash-count num">{doneCount}<span>/ {total}</span></p>
         <div className="meter" role="progressbar" aria-label="Curriculum progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><i style={{ width: `${pct}%` }} /></div>
-        <p className="dash-note">{pct}% of the curriculum · certificate unlocks at 100%</p>
+        <p className="dash-note">{pct}% · certificate at 100%</p>
       </div>
       <div className="dash-stat">
         <h2>First-try accuracy</h2>
         <div className="status-bar" aria-hidden="true">{legend.map((l) => <span key={l.key} style={{ flexGrow: l.n, background: l.color }} />)}{counts.good + counts.practice + counts.low === 0 && <span className="is-empty" />}</div>
-        <ul className="dash-legend">{legend.map((l) => <li key={l.key}><i style={{ background: l.color }} aria-hidden="true" />{l.label}<b className="num">{l.n}</b></li>)}</ul>
+        <ul className="dash-legend">{legend.map((l) => <li key={l.key}><i style={{ background: l.color }} aria-hidden="true" /><b className="num">{l.n}</b>{l.label}</li>)}</ul>
       </div>
     </section>
     <section className="dash-block" aria-labelledby="modules-title">
@@ -85,11 +88,13 @@ export function DashboardContent({ signedIn: initiallySignedIn, completedIds: in
         <span className="meter" aria-hidden="true"><i style={{ width: `${Math.min(100, module.done / module.total * 100)}%` }} /></span>
       </Link></li>; })}</ol>
     </section>
-    {dashboardReady && <section className="dash-block" aria-label="Leaderboards"><div className="dash-leaderboards"><Leaderboards type="points" /><Leaderboards type="streak" /></div><ShareBonus signedIn={signedIn} /></section>}
+    {dashboardReady && <section className="dash-block" aria-label="Share bonus"><ShareBonus signedIn={signedIn} /></section>}
     <section className="dash-block dash-soon" aria-label="Coming soon">
       <div><span className="badge">Soon</span><h2>Projects</h2><p>Practice on real datasets, end to end.</p></div>
       <div><span className="badge">Soon</span><h2>Daily challenge</h2><p>Scores and daily streaks will appear here.</p></div>
     </section>
+      </div>
+    </div>
     {signedIn && <footer className="dash-danger"><div><strong>Reset progress</strong><p>Clears completed lessons. Points and streak stay.</p></div><button className="btn btn-quiet btn-sm" onClick={() => setConfirm(true)}>Reset…</button></footer>}
     {message && <p role="status" className="dash-message">{message}</p>}
     {confirm && <div className="modal-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setConfirm(false); }} onKeyDown={(e) => { if (e.key === "Escape") setConfirm(false); }}><section className="modal" role="dialog" aria-modal="true" aria-labelledby="reset-title"><h2 id="reset-title">Reset lesson progress?</h2><p>Your completed lessons will be cleared. Points and streak will stay.</p><div className="modal-actions"><button className="btn btn-quiet" autoFocus onClick={() => setConfirm(false)}>Cancel</button><button className="btn btn-danger" onClick={() => void reset()}>Reset progress</button></div></section></div>}
