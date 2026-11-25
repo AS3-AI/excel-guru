@@ -631,72 +631,55 @@ export function Player({
   const openList = () => listRef.current?.showModal();
   const closeList = () => listRef.current?.close();
   const hud = (
-    <header
-      className="pl-hud grid grid-cols-[auto_minmax(0,_1fr)_minmax(220px,_420px)] items-center gap-s5 mb-s5
-          [@media(max-width:900px)]:grid-cols-[auto_minmax(0,_1fr)]
-          [@media(max-width:640px)]:gap-s3"
-    >
-      <button
-        type="button"
-        className="pl-hud-btn inline-flex items-center gap-[8px] min-h-[40px] p-[8px_12px] [border:var(--line)] rounded-ledger bg-surface
+    <header className="pl-hud grid grid-cols-[repeat(12,_minmax(0,_1fr))] gap-[var(--s4)_var(--s5)] mb-s3">
+      <h1 className="sr-only">{lesson.title}</h1>
+      <div className="[grid-column:2_/_span_10] [@media(max-width:900px)]:[grid-column:1_/_-1] flex items-center gap-s3 min-w-0">
+        <button
+          type="button"
+          className="pl-hud-btn inline-flex items-center gap-[8px] min-h-[40px] p-[8px_12px] [border:var(--line)] rounded-ledger bg-surface
           text-ink text-ledger-sm font-medium cursor-pointer
           [transition:background-color_var(--d2),_border-color_var(--d2)] [box-shadow:2px_2px_0_var(--ink)]
           [&:hover]:bg-butter
           [@media(max-width:640px)]:[&_span]:hidden
           [&:active]:[transform:translate(2px,_2px)] [&:active]:[box-shadow:none]"
-        onClick={openList}
-        aria-haspopup="dialog"
-      >
-        <Icon name="menu" size={16} />
-        <span>Lessons</span>
-      </button>
-      <div
-        className="pl-hud-title min-w-0
-          [&>span]:block [&>span]:[font:500_var(--fs-xs)/1_var(--mono)] [&>span]:tracking-[0.06em] [&>span]:uppercase
-          [&>span]:text-muted [&>span]:mb-[6px]"
-      >
-        <span>{lesson.module}</span>
-        <h1
-          className="pl-title m-0 text-[clamp(1.35rem,_2.6vw,_1.85rem)] tracking-[-0.025em] overflow-hidden [text-overflow:ellipsis]
-          whitespace-nowrap"
+          onClick={openList}
+          aria-haspopup="dialog"
         >
-          {lesson.title}
-        </h1>
-      </div>
-      <div
-        className="pl-progress flex items-center gap-s3
-          [@media(max-width:900px)]:[grid-column:1_/_-1]"
-      >
-        <ol
-          className="pl-cells [flex:1] grid [grid-auto-flow:column] [grid-auto-columns:minmax(0,_1fr)] gap-[3px] m-0 p-[3px] list-none
+          <Icon name="menu" size={16} />
+          <span>Lessons</span>
+        </button>
+        <div className="pl-progress flex-1 min-w-0 flex items-center gap-s3">
+          <ol
+            className="pl-cells [flex:1] grid [grid-auto-flow:column] [grid-auto-columns:minmax(0,_1fr)] gap-[3px] m-0 p-[3px] list-none
           [border:var(--line)] rounded-ledger-sm bg-surface
           [&_li]:h-[14px] [&_li]:rounded-[1px] [&_li]:bg-surface
           [&_li]:[transition:background-color_var(--d3)_var(--ease)] [&_li]:[border:1.5px_solid_var(--ink)]
           [&_li.is-on]:bg-primary [&_li.is-on]:[animation:pl-cell-pop_420ms_var(--ease)]
           [&_li.is-next]:bg-butter [&_li.is-next]:[box-shadow:none]
           [&_li.is-next]:[animation:pl-cell-pulse_1.6s_ease-in-out_infinite]"
-          role="progressbar"
-          aria-label="Lesson progress"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={pct}
-        >
-          {Array.from({ length: lesson.requiredCorrect }, (_, i) => (
-            <li
-              key={i}
-              className={
-                i < state.correct
-                  ? "is-on"
-                  : i === state.correct && !state.complete
-                    ? "is-next"
-                    : undefined
-              }
-            />
-          ))}
-        </ol>
-        <span className="pl-pct num [font:600_var(--fs-sm)_var(--mono)] text-ink whitespace-nowrap">
-          {state.correct}/{lesson.requiredCorrect}
-        </span>
+            role="progressbar"
+            aria-label="Lesson progress"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={pct}
+          >
+            {Array.from({ length: lesson.requiredCorrect }, (_, i) => (
+              <li
+                key={i}
+                className={
+                  i < state.correct
+                    ? "is-on"
+                    : i === state.correct && !state.complete
+                      ? "is-next"
+                      : undefined
+                }
+              />
+            ))}
+          </ol>
+          <span className="pl-pct num [font:600_var(--fs-sm)_var(--mono)] text-ink whitespace-nowrap">
+            {state.correct}/{lesson.requiredCorrect}
+          </span>
+        </div>
       </div>
     </header>
   );
@@ -859,7 +842,10 @@ export function Player({
           )}
           <div
             ref={stageRef}
-            className="pl-stage [grid-column:2_/_span_10] min-w-0 p-s4 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-2)]
+            className="pl-stage [grid-column:2_/_span_10] min-w-0 p-s4 bg-surface
+          min-h-[calc(100dvh-250px)] [@media(max-width:640px)]:min-h-[calc(100dvh-400px)]
+          [border-top:var(--line)] [border-inline:var(--line)] [border-bottom:0]
+          rounded-ledger-lg rounded-b-none [box-shadow:5px_0_0_var(--ink)]
           [transition:box-shadow_var(--d3)_var(--ease),_border-color_var(--d3)_var(--ease)]
           [@media(max-width:900px)]:[grid-column:1_/_-1]
           [@media(max-width:640px)]:p-s3

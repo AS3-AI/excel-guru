@@ -132,7 +132,7 @@ export default async function LessonPage({ params }: Props) {
         <div className="ml-auto flex flex-wrap items-center gap-s3 min-w-0 max-w-full">
           <VideoModal videoId={lesson.video} />
           <a
-            className="btn btn-quiet pl-workbook-link"
+            className="pl-workbook-link inline-flex items-center gap-[6px] text-ledger-sm text-muted no-underline hover:text-ink hover:underline"
             href={`/api/lessons/${encodeURIComponent(lesson.id)}/workbook`}
             aria-label="Download practice workbook"
           >

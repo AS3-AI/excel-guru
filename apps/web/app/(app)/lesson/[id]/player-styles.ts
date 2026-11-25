@@ -13,8 +13,7 @@ export const plListDialogClasses = [
 ].join(" ");
 
 export const plArenaClasses = [
-  "grid grid-cols-[repeat(12,_minmax(0,_1fr))] gap-[var(--s4)_var(--s5)] items-start [align-content:stretch]",
-  "min-h-[calc(100dvh-190px)] [@media(max-width:640px)]:min-h-[calc(100dvh-230px)]",
+  "grid grid-cols-[repeat(12,_minmax(0,_1fr))] gap-[var(--s4)_var(--s5)] items-start",
   "[&.is-solo_.pl-stage]:p-s6",
   "[@media(max-width:640px)]:[&.is-solo_.pl-stage]:p-s4",
   "[&.is-solo_.pl-stage_.pl-card]:[border-block:0] [&.is-solo_.pl-stage_.pl-card]:[border-right:0] [&.is-solo_.pl-stage_.pl-card]:[border-left:3px_solid_var(--primary)]",
@@ -24,9 +23,14 @@ export const plArenaClasses = [
   "[&.is-solo_.pl-stage_.pl-prompt]:tracking-[-0.01em]",
   "[&[data-feedback='wrong']_.pl-stage]:border-ink",
   "[&[data-feedback='wrong']_.pl-stage]:[animation:pl-shake_380ms_var(--ease)]",
-  "[&[data-feedback='wrong']_.pl-stage]:[box-shadow:5px_5px_0_var(--danger)]",
+  "[&[data-feedback='wrong']_.pl-stage]:[box-shadow:5px_0_0_var(--danger)]",
+  "[&[data-feedback='wrong']_.pl-actions]:border-ink",
+  "[&[data-feedback='wrong']_.pl-actions]:[animation:pl-shake_380ms_var(--ease)]",
+  "[&[data-feedback='wrong']_.pl-actions]:[box-shadow:5px_0_0_var(--danger),_5px_5px_0_var(--danger)]",
   "[&[data-feedback='correct']_.pl-stage]:border-ink",
-  "[&[data-feedback='correct']_.pl-stage]:[box-shadow:5px_5px_0_var(--primary)]",
+  "[&[data-feedback='correct']_.pl-stage]:[box-shadow:5px_0_0_var(--primary)]",
+  "[&[data-feedback='correct']_.pl-actions]:border-ink",
+  "[&[data-feedback='correct']_.pl-actions]:[box-shadow:5px_0_0_var(--primary),_5px_5px_0_var(--primary)]",
   "[&.is-solo_.pl-options]:[border:0] [&.is-solo_.pl-options]:p-0 [&.is-solo_.pl-options]:[background:none]",
   "[&.is-solo_.pl-options_legend]:[font:600_clamp(1.2rem,_2vw,_1.5rem)/1.4_var(--font-display)]",
   "[&.is-solo_.pl-options_legend]:tracking-[-0.015em] [&.is-solo_.pl-options_legend]:mb-s4",
@@ -62,12 +66,13 @@ export const plBriefClasses = [
 ].join(" ");
 
 export const plActionsClasses = [
-  "[grid-column:2_/_span_10] self-end sticky bottom-0 z-[5] mb-s3 flex flex-wrap items-center gap-[var(--s2)_var(--s3)]",
-  "p-s3 [@media(max-width:640px)]:pb-[max(var(--s3),env(safe-area-inset-bottom))] [border:var(--line)]",
-  "rounded-ledger-lg bg-surface",
+  "[grid-column:2_/_span_10] mt-[calc(-1*var(--s4))] sticky bottom-0 z-[5] flex flex-wrap items-center gap-[var(--s2)_var(--s3)]",
+  "p-s3 [@media(max-width:640px)]:pb-[max(var(--s3),env(safe-area-inset-bottom))]",
+  "[border-inline:var(--line)] [border-bottom:var(--line)] [border-top:1px_solid_var(--border)]",
+  "rounded-ledger-lg rounded-t-none bg-surface",
   "[@media(max-width:900px)]:[grid-column:1_/_-1]",
   "[transition:background-color_var(--d3)_var(--ease),_border-color_var(--d3)_var(--ease)]",
-  "[box-shadow:var(--shadow-1)]",
+  "[box-shadow:5px_0_0_var(--ink),_var(--shadow-2)]",
   "[&.is-correct]:text-ink [&.is-correct]:bg-mint [&.is-correct]:border-ink",
   "[&.is-correct]:[animation:pl-correct_var(--d3)_var(--ease)]",
   "[&.is-correct_span]:text-ink",
