@@ -10,13 +10,35 @@
     "build": "pnpm --filter web build",
     "test": "pnpm -r --if-present test && vitest run --dir scripts",
     "typecheck": "pnpm -r --if-present typecheck && tsc --noEmit --strict --noUncheckedIndexedAccess --target ES2022 --module ESNext --moduleResolution Bundler --skipLibCheck --isolatedModules --types node scripts/validate-content.ts scripts/validate-content.test.ts",
-    "validate-content": "tsx scripts/validate-content.ts content"
+    "validate-content": "tsx scripts/validate-content.ts content",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@excel-guru/grader": "workspace:*",
     "@types/node": "^26.6.6",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "eslint": "^10.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.2",
+    "prettier": "^3.10.1",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "typescript-eslint": "^8.74.0",
     "vitest": "^5.1.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,mjs,cjs}": [
+      "eslint",
+      "prettier --check"
+    ],
+    "*.{json,md,css,yml,yaml}": [
+      "prettier --check"
+    ]
   }
 }

@@ -1,0 +1,9 @@
+node_modules/
+.next/
+dist/
+coverage/
+.claude/
+pnpm-lock.yaml
+*.tsbuildinfo
+apps/web/next-env.d.ts
+scripts/fixtures/invalid-json/
