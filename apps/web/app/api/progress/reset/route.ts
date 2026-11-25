@@ -5,7 +5,9 @@ import { rateLimit } from "../../../../lib/rate-limit";
 
 export async function POST() {
   const session = await createClient();
-  const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
+  const {
+    data: { user },
+  } = session ? await session.auth.getUser() : { data: { user: null } };
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const admin = createAdminClient();
   if (!admin) return NextResponse.json({ error: "Progress unavailable" }, { status: 503 });

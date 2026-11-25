@@ -83,7 +83,10 @@ export function computeModuleBreakdown(
  * Picks up to `limit` featured modules: prioritizes modules the learner has started/finished,
  * then fills remaining slots with foundational modules.
  */
-export function pickFeaturedModules(breakdown: readonly ModuleProgressItem[], limit = 4): ModuleProgressItem[] {
+export function pickFeaturedModules(
+  breakdown: readonly ModuleProgressItem[],
+  limit = 4,
+): ModuleProgressItem[] {
   const started = breakdown.filter((m) => m.done > 0);
   const untouched = breakdown.filter((m) => m.done === 0);
   return [...started, ...untouched].slice(0, limit);
@@ -93,7 +96,9 @@ export function pickFeaturedModules(breakdown: readonly ModuleProgressItem[], li
  * Honest first-try accuracy metrics: returns `hasData: false` and `averagePct: 0` when no
  * lessons have been completed yet instead of falsely claiming 100%.
  */
-export function computeAccuracySummary(progressRows: readonly LessonProgressInput[]): AccuracySummary {
+export function computeAccuracySummary(
+  progressRows: readonly LessonProgressInput[],
+): AccuracySummary {
   const accuracies = progressRows
     .map((r) => r.first_try_accuracy)
     .filter((a): a is number => typeof a === "number" && Number.isFinite(a));
@@ -107,17 +112,19 @@ export function computeAccuracySummary(progressRows: readonly LessonProgressInpu
     };
   }
 
-  const averagePct = Math.round((accuracies.reduce((sum, val) => sum + val, 0) / accuracies.length) * 100);
+  const averagePct = Math.round(
+    (accuracies.reduce((sum, val) => sum + val, 0) / accuracies.length) * 100,
+  );
   const perfectCount = accuracies.filter((a) => a >= 0.99).length;
 
   const tier =
     averagePct >= 90
       ? { label: "Mastery", desc: "Top-tier formula precision on first try" }
       : averagePct >= 75
-      ? { label: "Proficient", desc: "Strong retention with few formula syntax errors" }
-      : averagePct >= 50
-      ? { label: "Practitioner", desc: "Steady progress across formula categories" }
-      : { label: "Developing", desc: "Building formula intuition and muscle memory" };
+        ? { label: "Proficient", desc: "Strong retention with few formula syntax errors" }
+        : averagePct >= 50
+          ? { label: "Practitioner", desc: "Steady progress across formula categories" }
+          : { label: "Developing", desc: "Building formula intuition and muscle memory" };
 
   return { hasData: true, averagePct, perfectCount, tier };
 }
@@ -189,7 +196,10 @@ export function computeWeeklyActivity(
   }
 
   const days: WeeklyDay[] = [];
-  const weekdayFmt = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", weekday: "short" });
+  const weekdayFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Kolkata",
+    weekday: "short",
+  });
   const baseMidnightIst = new Date(`${todayIst}T00:00:00+05:30`);
 
   for (let offset = 6; offset >= 0; offset--) {
