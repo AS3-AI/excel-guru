@@ -5,10 +5,12 @@ import { Icon } from "@/components/icons";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getOrder } from "@/lib/lessons";
+import { escapeIlikePrefix } from "@/lib/verify";
 
 export const metadata: Metadata = {
   title: "Verify Certificate — Excel Guru",
-  description: "Verify an authentic Excel Guru Formula Mastery certificate by credential ID or recipient name.",
+  description:
+    "Verify an authentic Excel Guru Formula Mastery certificate by credential ID or recipient name.",
 };
 
 type CertRow = {
@@ -46,12 +48,15 @@ export default async function VerifyPage({
           .limit(5);
         matches = data ?? [];
       } else if (queryName) {
-        const { data } = await admin
-          .from("certificates")
-          .select("credential_id,name,issued_at")
-          .ilike("name_lower", `${queryName.toLowerCase()}%`)
-          .limit(10);
-        matches = data ?? [];
+        const safeName = escapeIlikePrefix(queryName);
+        if (safeName) {
+          const { data } = await admin
+            .from("certificates")
+            .select("credential_id,name,issued_at")
+            .ilike("name_lower", `${safeName}%`)
+            .limit(10);
+          matches = data ?? [];
+        }
       }
     }
   }
@@ -67,7 +72,8 @@ export default async function VerifyPage({
         </p>
         <h1 style={{ marginBottom: "var(--s3)" }}>Verify a Certificate</h1>
         <p style={{ color: "var(--muted)", marginBottom: "var(--s5)" }}>
-          Confirm an Excel Guru graduate&apos;s credential ID or search by name. Every verified learner has completed all {totalLessons} interactive spreadsheet lessons.
+          Confirm an Excel Guru graduate&apos;s credential ID or search by name. Every verified
+          learner has completed all {totalLessons} interactive spreadsheet lessons.
         </p>
 
         <form
@@ -84,7 +90,13 @@ export default async function VerifyPage({
             marginBottom: "var(--s6)",
           }}
         >
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "var(--s3)" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: "var(--s3)",
+            }}
+          >
             <label style={{ display: "grid", gap: 6, fontSize: "var(--fs-sm)", fontWeight: 700 }}>
               Credential ID
               <input
@@ -137,9 +149,12 @@ export default async function VerifyPage({
               boxShadow: "var(--shadow-1)",
             }}
           >
-            <h2 style={{ margin: "0 0 6px", fontSize: "var(--fs-md)" }}>No matching certificate found</h2>
+            <h2 style={{ margin: "0 0 6px", fontSize: "var(--fs-md)" }}>
+              No matching certificate found
+            </h2>
             <p style={{ margin: 0, color: "var(--ink)", fontSize: "var(--fs-sm)" }}>
-              Double-check the credential ID (for example, <code>EG-2026-...</code>) or recipient name spelling.
+              Double-check the credential ID (for example, <code>EG-2026-...</code>) or recipient
+              name spelling.
             </p>
           </section>
         )}
