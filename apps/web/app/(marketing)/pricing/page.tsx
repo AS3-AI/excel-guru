@@ -7,7 +7,6 @@ import { paymentsEnabled } from "@/lib/payments-config";
 import { STATIC_METADATA } from "@/lib/seo";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { PricingClient } from "./pricing-client";
-import "./pricing.css";
 
 export const metadata: Metadata = {
   title: STATIC_METADATA.pricing.title,

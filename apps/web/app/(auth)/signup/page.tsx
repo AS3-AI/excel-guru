@@ -25,7 +25,7 @@ export default async function SignupPage({
   const loginHref = next === safeNext(undefined) ? "/login" : `/login?next=${encodeURIComponent(next)}`;
 
   return (
-    <div className="auth-card">
+    <div className="w-full max-w-[25rem] [animation:auth-in_var(--d3)_var(--ease)] [&_h1]:mb-s2 [&_h1]:text-[clamp(1.8rem,4vw,2.25rem)] [&_h1]:tracking-[-0.03em] [&_.lead]:mb-s6 [&_.lead]:text-[1rem]">
       {completed ? (
         <>
           <h1>Nice work — lesson complete!</h1>
@@ -41,9 +41,9 @@ export default async function SignupPage({
         Excel Guru is invite-only for now. No code? <Link href="/">Join the waitlist</Link>.
       </p>
       <GoogleButton next={next} invite={invite} />
-      <div className="auth-or">or</div>
+      <div className="my-s5 flex items-center gap-[12px] font-ledger-code text-ledger-xs font-medium tracking-[0.06em] text-muted uppercase before:flex-1 before:border-t before:border-solid before:border-border before:content-[''] after:flex-1 after:border-t after:border-solid after:border-border after:content-['']">or</div>
       <SignupForm next={next} invite={invite} />
-      <p className="auth-switch">
+      <p className="mt-s5 mb-0 text-center text-[0.93rem] text-muted">
         Already have an account? <Link href={loginHref}>Log in</Link>
       </p>
     </div>

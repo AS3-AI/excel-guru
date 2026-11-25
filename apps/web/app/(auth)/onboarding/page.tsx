@@ -33,7 +33,7 @@ export default async function OnboardingPage({
   const suggested = typeof meta.username === "string" ? normalizeUsername(meta.username) : "";
 
   return (
-    <div className="auth-card">
+    <div className="w-full max-w-[25rem] [animation:auth-in_var(--d3)_var(--ease)] [&_h1]:mb-s2 [&_h1]:text-[clamp(1.8rem,4vw,2.25rem)] [&_h1]:tracking-[-0.03em] [&_.lead]:mb-s6 [&_.lead]:text-[1rem]">
       <h1>One last step</h1>
       <p className="lead">Pick the name and username other learners will see.</p>
       <OnboardingForm
@@ -42,9 +42,9 @@ export default async function OnboardingPage({
         username={usernameError(suggested) ? "" : suggested}
         invite={invite}
       />
-      <form className="auth-signout" action="/auth/signout" method="post">
+      <form className="mt-s5 text-center text-ledger-sm text-muted" action="/auth/signout" method="post">
         <span className="hint">Signed in as {user.email}. </span>
-        <button className="link-btn" type="submit">Log out</button>
+        <button className="cursor-pointer border-0 bg-transparent p-0 [font:inherit] text-primary-strong underline underline-offset-[3px]" type="submit">Log out</button>
       </form>
     </div>
   );

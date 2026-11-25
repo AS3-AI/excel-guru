@@ -7,7 +7,6 @@ import { getLesson, getOrder } from "@/lib/lessons";
 import { getStatusTag } from "@/lib/progress";
 import { MODULES, type StatusTag } from "@/lib/modules";
 import { STATIC_METADATA } from "@/lib/seo";
-import "./dashboard.css";
 
 export const metadata: Metadata = {
   title: STATIC_METADATA.dashboard.title,
