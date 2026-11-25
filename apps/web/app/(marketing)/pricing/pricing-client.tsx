@@ -155,9 +155,6 @@ export function PricingClient({
           [&_li::before]:[border:2px_solid_var(--ink)] [&_li::before]:rounded-ledger-sm
           [&_li::before]:[background:var(--primary)_url(/pricing-check.svg)_center_/_12px_no-repeat]"
       >
-        <p className="eyebrow">
-          <span className="ref">D1</span>Excel Guru Premium
-        </p>
         <h1>Learn Excel without limits</h1>
         <p>
           Build practical spreadsheet skills with a clear path from your first formula to advanced

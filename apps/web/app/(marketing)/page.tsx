@@ -138,7 +138,7 @@ export const metadata: Metadata = {
 const FACTS = [
   { value: "86", label: "lessons" },
   { value: "15", label: "modules" },
-  { value: "2000+", label: "current users" },
+  { value: "2400+", label: "current users" },
 ];
 
 // Functions taught in the lessons (from lesson titles in content/lessons).
@@ -500,9 +500,6 @@ export default async function Home() {
           [@media(min-width:980px)]:top-[100px]"
               data-reveal
             >
-              <p className="eyebrow">
-                <span className="ref">C1</span>Curriculum
-              </p>
               <h2 id="curriculum">Fifteen modules, in the order you&apos;ll need them.</h2>
               <Doodle
                 name="cells"
@@ -616,9 +613,6 @@ export default async function Home() {
         >
           <div className="wrap">
             <div className="band-head relative max-w-[40rem]" data-reveal>
-              <p className="eyebrow">
-                <span className="ref">D1</span>Plans
-              </p>
               <h2 id="pricing">Try it free. Pay when you&apos;re sure.</h2>
               <Doodle
                 name="trophy"
@@ -692,9 +686,6 @@ export default async function Home() {
           [&_.faq-item:last-child]:[border-bottom:0]"
           >
             <div className="band-head relative max-w-[40rem]" data-reveal>
-              <p className="eyebrow">
-                <span className="ref">E1</span>Questions
-              </p>
               <h2 id="faq">Before you start</h2>
               <Doodle
                 name="bubble"
