@@ -27,7 +27,7 @@ export function StepView({ step, onReady, onEditStart, setSelectRef }: {
     <label className="pl-prompt block m-0 text-ink text-[1.06rem] leading-[1.55]" htmlFor={`answer-${step.id}`}><RichText text={step.prompt} /></label>
     <div className="pl-free-answer flex flex-wrap gap-s2 mt-s3
           [&_input]:min-w-0 [&_input]:[flex:1] [&_input]:min-h-[46px] [&_input]:p-[10px_14px]
-          [&_input]:[border:var(--line)] [&_input]:rounded-ledger [&_input]:bg-surface [&_input]:text-text
+          [&_input]:[border:1px_solid_var(--border)] [&_input]:rounded-ledger [&_input]:bg-surface [&_input]:text-text
           [&_input]:[font:inherit] [&_input]:font-ledger-code
           [&_input:focus]:[outline:none] [&_input:focus]:border-primary
           [&_input:focus]:[box-shadow:0_0_0_3px_var(--primary-tint)]"><input id={`answer-${step.id}`} value={input} onChange={(e) => { setInput(e.target.value); onReady(e.target.value); onEditStart?.(); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onReady(input); } }} /></div>

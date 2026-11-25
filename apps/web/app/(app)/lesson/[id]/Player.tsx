@@ -10,7 +10,6 @@ import {
   plListDialogClasses,
   plStatsClasses,
   plTileBoardClasses,
-  plTileStatClasses,
 } from "./player-styles";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Link from "next/link";
@@ -28,7 +27,6 @@ import { ShortcutStep as ShortcutPractice, shortcutSkipOutcome } from "./steps/S
 import { LessonList, type LessonNavItem } from "./LessonList";
 import { Leaderboards } from "@/components/Leaderboards";
 import { ShareBonus } from "@/components/ShareBonus";
-import { VideoModal } from "@/components/VideoModal";
 import { answerPointsVisible, celebrationStats } from "@/lib/leaderboard";
 import { DASHBOARD_HREF } from "@/lib/nav-links";
 import { Icon } from "@/components/icons";
@@ -337,7 +335,6 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   // Same rule as answer(): first try is worth 1.5×, nothing once the answer has been shown.
   const stakes = answerPointsVisible(signedIn) ? (showSolution ? 0 : Math.round(10 * lesson.difficulty * (state.firstTry[step.id] === undefined ? 1.5 : 1))) : null;
   const firstTryRun = (() => { let n = 0; for (const ok of Object.values(state.firstTry).reverse()) { if (!ok) break; n++; } return n; })();
-  const answered = Object.keys(state.firstTry).length;
   // The counter only moves on once the learner continues, not the moment they answer.
   const challengeNo = String(Math.min(state.correct + (feedback === "correct" ? 0 : 1), lesson.requiredCorrect)).padStart(2, "0");
   const openList = () => listRef.current?.showModal();
@@ -357,9 +354,9 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
           whitespace-nowrap">{lesson.title}</h1></div>
     <div className="pl-progress flex items-center gap-s3
           [@media(max-width:900px)]:[grid-column:1_/_-1]"><ol className="pl-cells [flex:1] grid [grid-auto-flow:column] [grid-auto-columns:minmax(0,_1fr)] gap-[3px] m-0 p-[3px] list-none
-          [border:var(--line)] rounded-ledger-sm bg-surface
-          [&_li]:h-[14px] [&_li]:rounded-[1px] [&_li]:bg-surface
-          [&_li]:[transition:background-color_var(--d3)_var(--ease)] [&_li]:[border:1.5px_solid_var(--ink)]
+          [border:1px_solid_var(--border)] rounded-ledger-sm bg-surface
+          [&_li]:h-[14px] [&_li]:rounded-[1px] [&_li]:bg-border
+          [&_li]:[transition:background-color_var(--d3)_var(--ease)]
           [&_li.is-on]:bg-primary [&_li.is-on]:[animation:pl-cell-pop_420ms_var(--ease)]
           [&_li.is-next]:bg-butter [&_li.is-next]:[box-shadow:none]
           [&_li.is-next]:[animation:pl-cell-pulse_1.6s_ease-in-out_infinite]" role="progressbar" aria-label="Lesson progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>{Array.from({ length: lesson.requiredCorrect }, (_, i) => <li key={i} className={i < state.correct ? "is-on" : i === state.correct && !state.complete ? "is-next" : undefined} />)}</ol><span className="pl-pct num [font:600_var(--fs-sm)_var(--mono)] text-ink whitespace-nowrap">{state.correct}/{lesson.requiredCorrect}</span></div>
@@ -373,7 +370,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
   return <div className="pl-board">
     {hud}
     {celebrate ? <main className="pl-complete relative overflow-hidden grid [justify-items:start] gap-s4 p-[var(--s7)_var(--s6)] bg-surface
-          [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-pop)]
+          rounded-ledger-lg
           [@media(max-width:640px)]:p-[var(--s6)_var(--s4)]
           [&_h2]:relative [&_h2]:m-0 [&_h2]:text-[clamp(2rem,_4.6vw,_3.25rem)] [&_h2]:tracking-[-0.035em]
           [&_.eyebrow]:relative [&_.eyebrow]:m-0" id="main" aria-labelledby="pl-done-title">
@@ -392,7 +389,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
         <div><dt>Questions correct</dt><dd className="num">{state.correct}</dd></div>
         {savedCelebrationStats && <><div className="is-gold"><dt>Points earned</dt><dd className="num">+{celebrationPoints}</dd></div><div><dt>Day streak</dt><dd className="num">{savedCelebrationStats.streak}</dd></div></>}
       </dl>
-      {inviteNotice && <p className="pl-invite-note relative w-full m-[0_0_var(--s3)] p-[var(--s3)_var(--s4)] bg-mint [border:var(--line)] rounded-ledger
+      {inviteNotice && <p className="pl-invite-note relative w-full m-[0_0_var(--s3)] p-[var(--s3)_var(--s4)] bg-mint rounded-ledger
           text-ledger-sm text-left" role="note"><strong>No payment needed.</strong> You joined with an invite code, so every lesson is unlocked. Keep going!</p>}
       {saveNote && <p role="status" className="pl-save-note m-0 text-muted text-ledger-sm">{saveNote}</p>}
       <button ref={continueRef} className={`btn pl-key pl-key-enter ${plKeyClasses}
@@ -417,8 +414,8 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
           [&_.num]:text-primary-strong
           [&_.pl-chip-pts]:ml-auto [&_.pl-chip-pts]:tracking-[0] [&_.pl-chip-pts]:[text-transform:none]" key={`head-${state.visit}`}><span className="num">Challenge {challengeNo}</span><span>{KIND[step.type]}</span>{stakes !== null && feedback !== "correct" && <span className="pl-chip-pts inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
           bg-highlight text-ink">{stakes > 0 ? `+${stakes} pts` : "No points"}</span>}</p>}
-      <div ref={stageRef} className="pl-stage [grid-column:span_8] min-w-0 p-s4 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-2)]
-          [transition:box-shadow_var(--d3)_var(--ease),_border-color_var(--d3)_var(--ease)]
+      <div ref={stageRef} className="pl-stage [grid-column:span_8] min-w-0 p-s4 bg-surface [border:1px_solid_transparent] rounded-ledger-lg
+          [transition:border-color_var(--d3)_var(--ease)]
           [@media(max-width:900px)]:[grid-column:1_/_-1]
           [@media(max-width:640px)]:p-s3
           [&_.pl-card]:[box-shadow:none]
@@ -431,7 +428,7 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
       </div>
       <div className={`pl-actions${feedback === "correct" ? " is-correct" : ""} ${plActionsClasses}`}>
         {feedback === "correct" ? <><strong className="pl-correct-label inline-flex items-center gap-[10px] [color:#fff] [font:650_1.15rem_var(--font-display)]"><span className="pl-correct-icon grid place-items-center w-[28px] h-[28px] rounded-[50%] bg-primary [color:#fff]
-          [animation:pl-pop_420ms_var(--ease)] [border:2px_solid_var(--ink)]" aria-hidden="true"><Icon name="check" size={14} strokeWidth={3} /></span>Correct!</strong>{answerPointsVisible(signedIn) && <span className="pl-points-earned p-[3px_9px] rounded-[4px] bg-highlight text-ink! [font:700_var(--fs-sm)_var(--mono)] tabular-nums
+          [animation:pl-pop_420ms_var(--ease)]" aria-hidden="true"><Icon name="check" size={14} strokeWidth={3} /></span>Correct!</strong>{answerPointsVisible(signedIn) && <span className="pl-points-earned p-[3px_9px] rounded-[4px] bg-highlight text-ink! [font:700_var(--fs-sm)_var(--mono)] tabular-nums
           [animation:pl-float_600ms_var(--ease)]" aria-live="polite">+{shownPoints} pts</span>}{step.type === "formula" && step.explain ? <span><RichText text={step.explain} /></span> : null}<button ref={continueRef} className={`btn pl-key pl-key-enter ${plKeyClasses}
           [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
           [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
@@ -452,9 +449,9 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
           </>}
       </div>
       <div ref={feedbackRef} className="pl-feedback min-h-0 mt-s2 [grid-column:1_/_-1]
-          [&:empty]:hidden" aria-live="polite">{feedback === "wrong" && <p className="pl-wrong-summary m-0 p-[10px_14px] rounded-ledger bg-rose text-ink [border:var(--line)]
+          [&:empty]:hidden" aria-live="polite">{feedback === "wrong" && <p className="pl-wrong-summary m-0 p-[10px_14px] rounded-ledger bg-rose text-ink
           [animation:pl-enter_var(--d2)_var(--ease)]">{wrongText}</p>}</div>
-      {feedback === "wrong" && <aside className={`pl-drawer ${plDrawerClasses}`} aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect</strong><button aria-label="Close" onClick={closeWrong}><Icon name="x" size={18} /></button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer mb-s4" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [overflow-wrap:anywhere]">{step.type === "formula" ? <code className="chip">{step.solution}</code> : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : step.type === "shortcut" ? step.mode === "sequence" ? step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac" : step.keys[platform.os] ?? "Unavailable on Mac" : ""}</p>}{aiShown && <div className="pl-ai-slot min-h-[100px] p-s4 [border:var(--line)] rounded-ledger bg-surface-warm text-muted
+      {feedback === "wrong" && <aside className={`pl-drawer ${plDrawerClasses}`} aria-label="Incorrect answer" aria-live="polite"><header><strong>Incorrect</strong><button aria-label="Close" onClick={closeWrong}><Icon name="x" size={18} /></button></header>{state.wrongCount > 0 && !showSolution && <button className="btn pl-show-answer mb-s4" onClick={() => { dispatch({ type: "show-answer" }); setShowSolution(true); focusAnswerControl(); }}>Show Answer</button>}{showSolution && <p className="pl-solution p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [overflow-wrap:anywhere]">{step.type === "formula" ? <code className="chip">{step.solution}</code> : step.type === "select" ? step.target : step.type === "mcq" ? step.options[step.answer] : step.type === "picture" || step.type === "project" ? step.accept[0] : step.type === "shortcut" ? step.mode === "sequence" ? step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac" : step.keys[platform.os] ?? "Unavailable on Mac" : ""}</p>}{aiShown && <div className="pl-ai-slot min-h-[100px] p-s4 [border:1px_solid_var(--border)] rounded-ledger bg-surface-warm text-muted
           [&_p]:m-[0_0_var(--s3)] [&_p]:text-text [&_p]:leading-[1.6] [&_p]:[overflow-wrap:anywhere]
           [&_small]:block [&_small]:mt-s3 [&_small]:text-muted [&_small]:leading-[1.4] [&_small]:text-[0.8rem]">{aiLoading ? <span className="pl-ai-loading flex items-center gap-[6px] min-h-[36px]
           [&_i]:w-[7px] [&_i]:h-[7px] [&_i]:rounded-[50%] [&_i]:bg-primary-strong
@@ -468,34 +465,16 @@ export function Player({ lesson, next: _next, nextLessonId, lessons, signedOutIn
           [&_button:hover:not(:disabled)]:border-primary [&_button:hover:not(:disabled)]:text-primary-strong
           [&_button:disabled]:opacity-[0.5] [&_button:disabled]:cursor-default"><button type="button" aria-label="Helpful" disabled={aiRated} onClick={() => void rateExplanation(true)}><Icon name="thumbUp" size={18} /></button><button type="button" aria-label="Not helpful" disabled={aiRated} onClick={() => void rateExplanation(false)}><Icon name="thumbDown" size={18} /></button></div>)}<small>AI can be wrong. Check the answer before relying on it.</small></>}</div>}</aside>}
     </main>}
-    <section className="pl-tiles grid grid-cols-[repeat(12,_minmax(0,_1fr))] gap-s4 mt-s7 pt-s5 [border-top:1px_solid_var(--border)]" aria-label="Your session">
-      <div className={`pl-tile pl-tile-stat min-w-0
-          [&:empty]:hidden
-          ${plTileStatClasses}`}><span>First-try accuracy</span><b className="num">{answered ? `${firstTry}%` : "—"}</b><small>{answered ? `${answered} answered this lesson` : "Answer a question to start"}</small></div>
-      <div className={`pl-tile pl-tile-stat min-w-0
-          [&:empty]:hidden
-          ${plTileStatClasses}`}><span>In a row</span><b className="num">{firstTryRun}</b><small>first-try answers</small></div>
-      {boardsReady && <><div className={`pl-tile pl-tile-board min-w-0
+    {boardsReady && <section className="pl-tiles grid grid-cols-[repeat(12,_minmax(0,_1fr))] gap-s4 mt-s7 pt-s5 [border-top:1px_solid_var(--border)]" aria-label="Your session">
+      <div className={`pl-tile pl-tile-board min-w-0
           [&:empty]:hidden
           ${plTileBoardClasses}`}><Leaderboards type="points" /></div><div className={`pl-tile pl-tile-board min-w-0
           [&:empty]:hidden
           ${plTileBoardClasses}`}><Leaderboards type="streak" /></div><div className="pl-tile pl-tile-wide min-w-0
           [&:empty]:hidden
           [grid-column:1_/_-1] [order:9]
-          [&_.share-bonus-card]:mt-0"><ShareBonus signedIn={signedIn} /></div></>}
-      <div className="pl-tile pl-tile-extras min-w-0
-          [&:empty]:hidden
-          [&>span]:[font:500_var(--fs-xs)/1.2_var(--mono)] [&>span]:tracking-[0.06em] [&>span]:uppercase
-          [&>span]:text-muted
-          [grid-column:span_2] grid [align-content:start] gap-s2 p-s4 bg-lilac [border:var(--line)] rounded-ledger-lg
-          [box-shadow:var(--shadow-1)]
-          [@media(900px<width<=1100px)]:[grid-column:span_6]
-          [@media(max-width:900px)]:[grid-column:1_/_-1]
-          [&_.btn]:w-full [&_.btn]:whitespace-normal"><span>Extras</span><VideoModal videoId={lesson.video} /><a className="btn btn-quiet pl-workbook-link" href={`/api/lessons/${encodeURIComponent(lesson.id)}/workbook`}><Icon name="download" size={16} />Practice workbook</a><div className="pl-share flex flex-wrap gap-[6px] mt-[4px]
-          [&_a]:p-[4px_8px] [&_a]:[border:var(--line)] [&_a]:rounded-ledger-sm [&_a]:text-muted [&_a]:text-[0.8rem]
-          [&_a]:no-underline [&_a]:[transition:border-color_var(--d2),_color_var(--d2)]
-          [&_a:hover]:border-primary [&_a:hover]:text-primary-strong" aria-label="Share"><a href="https://www.linkedin.com/">LinkedIn</a><a href="https://www.facebook.com/">Facebook</a><a href="https://x.com/">X</a><a href="mailto:?subject=Excel%20Guru">Email</a></div></div>
-    </section>
+          [&_.share-bonus-card]:mt-0"><ShareBonus signedIn={signedIn} /></div>
+    </section>}
     {list}
   </div>;
 }

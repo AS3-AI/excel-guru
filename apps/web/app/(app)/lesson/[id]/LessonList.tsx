@@ -26,6 +26,6 @@ export function LessonList({ items, currentId }: { items: LessonNavItem[]; curre
 /** Swaps the status dot for a spinner while this link's navigation is pending. */
 function LessonDot({ done }: { done: boolean }) {
   const { pending } = useLinkStatus();
-  if (pending) return <span className="pl-lesson-dot is-loading grid place-items-center w-[16px] h-[16px] mt-[1px] rounded-[50%] [border:1.5px_solid_var(--border-strong)]" role="status" aria-label="Loading lesson" />;
-  return <span className="pl-lesson-dot grid place-items-center w-[16px] h-[16px] mt-[1px] rounded-[50%] [border:1.5px_solid_var(--border-strong)]" aria-hidden="true">{done ? <Icon name="check" size={10} strokeWidth={3} /> : null}</span>;
+  if (pending) return <span className="pl-lesson-dot is-loading grid place-items-center w-[16px] h-[16px] mt-[1px] rounded-[50%] [border:1.5px_solid_var(--faint)]" role="status" aria-label="Loading lesson" />;
+  return <span className="pl-lesson-dot grid place-items-center w-[16px] h-[16px] mt-[1px] rounded-[50%] [border:1.5px_solid_var(--faint)]" aria-hidden="true">{done ? <Icon name="check" size={10} strokeWidth={3} /> : null}</span>;
 }

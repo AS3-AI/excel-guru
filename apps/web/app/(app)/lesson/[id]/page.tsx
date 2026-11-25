@@ -67,9 +67,9 @@ export default async function LessonPage({ params }: Props) {
 
   return (
     <div className={`wrap pl-page ${plPageClasses}`}>
-      <header className="pl-top flex items-center gap-s5 min-h-[60px] mb-s5 [border-bottom:var(--line)]
+      <header className="pl-top flex items-center gap-s5 min-h-[60px] mb-s5 [border-bottom:1px_solid_var(--border)]
           [@media(max-width:640px)]:gap-s3 [@media(max-width:640px)]:mb-s4 [@media(max-width:640px)]:flex-wrap
-          [@media(max-width:640px)]:p-[var(--s2)_0]"><Logo /><nav className="pl-breadcrumb flex items-center gap-[6px] min-w-0 text-muted text-ledger-sm pl-s5 [border-left:2px_solid_var(--ink)]
+          [@media(max-width:640px)]:p-[var(--s2)_0]"><Logo /><nav className="pl-breadcrumb flex items-center gap-[6px] min-w-0 text-muted text-ledger-sm pl-s5 [border-left:1px_solid_var(--border)]
           [@media(max-width:640px)]:pl-0 [@media(max-width:640px)]:[border-left:0]
           [@media(max-width:640px)]:[flex-basis:100%]
           [&_a]:text-muted [&_a]:no-underline [&_a]:whitespace-nowrap
