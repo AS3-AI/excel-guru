@@ -1,6 +1,6 @@
 # Roadmap
 
-Last updated: 25 Nov 2026 (T56: dashboard page removed, /dashboard redirects to /profile)
+Last updated: 25 Nov 2026 (T57: lesson page right rail, stat boxes removed)
 
 ## Start here (17 Nov 2026) — for the human review
 

@@ -6,7 +6,6 @@ import { getLesson, getOrder, nextLessonId, stepSequence } from "@/lib/lessons";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decideAndRecordLessonOpen, decideLessonAccess, loadLessonAccess } from "@/lib/access";
-import { moduleHref } from "@/lib/nav-links";
 import { Logo } from "@/components/SiteChrome";
 import { Icon } from "@/components/icons";
 import { Player } from "./Player";
@@ -125,8 +124,6 @@ export default async function LessonPage({ params }: Props) {
           aria-label="Breadcrumb"
         >
           <Link href="/">Home</Link>
-          <Icon name="chevronRight" size={14} />
-          <Link href={moduleHref(lesson.module)}>{lesson.module}</Link>
           <Icon name="chevronRight" size={14} />
           <span aria-current="page">{lesson.title}</span>
         </nav>
