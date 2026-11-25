@@ -1,9 +1,11 @@
 node_modules/
 .next/
-.env.local
+.env.*
 .claude/settings.local.json
 .DS_Store
 .vercel/
+
+.env
 
 next-env.d.ts
 *.tsbuildinfo
