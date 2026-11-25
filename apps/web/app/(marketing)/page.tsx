@@ -10,6 +10,7 @@ import { Icon } from "@/components/icons";
 import { Reveal } from "@/components/Reveal";
 import { Doodle } from "@/components/Doodles";
 import { HeroSheet } from "./HeroSheet";
+import { HeroPaper } from "./HeroPaper";
 
 const landingClasses = [
   "[&_[data-shown]_.doodle_path]:[animation:draw_1.2s_var(--ease)_backwards]",
@@ -143,9 +144,6 @@ const FACTS = [
 // Functions taught in the lessons (from lesson titles in content/lessons).
 const FUNCTIONS = ["SUM", "SUMIFS", "COUNTIF", "IF", "IFS", "XLOOKUP", "VLOOKUP", "INDEX", "MATCH", "FILTER", "UNIQUE", "TEXTJOIN", "LEFT", "MID", "SEARCH", "SUBSTITUTE", "AVERAGE", "MEDIAN", "LARGE", "DATEDIF", "TODAY", "SWITCH", "CEILING", "COUNTIFS"];
 
-// Grid-paper cells (column, row on the 96×32 hero grid) that light up in turn, like a moving selection.
-const LIT = [[9, 3], [11, 6], [8, 9], [12, 11], [10, 14], [13, 4], [7, 12]] as const;
-
 const STEPS = [
   { col: "A", title: "Pick a lesson", text: "Short lessons across 15 modules, from your first SUM to INDEX/MATCH and dynamic arrays." },
   { col: "B", title: "Type real formulas", text: "A working spreadsheet runs in your browser. Cells, ranges and functions behave as they do in Excel." },
@@ -193,17 +191,7 @@ export default async function Home() {
       <main className={`landing ${landingClasses}`} id="main">
         <section className={`hero block-mint bg-mint
           ${heroClasses}`}>
-          <div className="hero-paper absolute inset-0 pointer-events-none
-          [background-image:linear-gradient(rgb(20_32_26_/_0.09)_1px,_transparent_1px),_linear-gradient(90deg,_rgb(20_32_26_/_0.09)_1px,_transparent_1px)]
-          [background-size:96px_32px] [background-position:-1px_-1px]
-          [mask-image:radial-gradient(ellipse_75%_85%_at_75%_40%,_#000_0%,_transparent_75%)]
-          [&_i]:absolute [&_i]:w-[97px] [&_i]:h-[33px] [&_i]:m-[-1px_0_0_-1px] [&_i]:[border:2px_solid_var(--ink)]
-          [&_i]:bg-surface [&_i]:opacity-0 [&_i]:[animation:lit_7.7s_var(--ease)_infinite]
-          [&_i:nth-child(3n)]:bg-highlight
-          [&_i:nth-child(4n)]:bg-lilac
-          [@media(prefers-reduced-motion:reduce)]:[&_i]:hidden" aria-hidden="true">
-            {LIT.map(([c, r], i) => <i key={i} style={{ left: c * 96, top: r * 32, animationDelay: `${i * 1.1}s` }} />)}
-          </div>
+          <HeroPaper />
           <div className="wrap hero-grid relative grid gap-s8 items-center grid-cols-[minmax(0,_1fr)]
           [@media(min-width:980px)]:grid-cols-[minmax(0,_11fr)_minmax(0,_10fr)]">
             <div className="hero-copy [&>*]:[animation:rise_0.7s_var(--ease)_backwards]

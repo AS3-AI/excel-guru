@@ -393,7 +393,6 @@ p { text-wrap: pretty; }
 
 /* Landing page animations */
 @layer components {
-  @keyframes lit { 0% { opacity: 0; transform: scale(0.9); } 4% { opacity: 1; transform: none; } 14% { opacity: 1; } 20%, 100% { opacity: 0; } }
   @keyframes marker { from { background-size: 0% 0.42em; } }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
   @keyframes blink { 50% { opacity: 0; } }
