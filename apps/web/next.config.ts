@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   // Lesson pages read content/ (repo root) at request time; trace from the monorepo root and ship it.
   outputFileTracingRoot: path.join(__dirname, "../../"),
   outputFileTracingIncludes: { "/**": ["../../content/**/*"] },
+  async redirects() {
+    return [{ source: "/dashboard", destination: "/profile", permanent: true }];
+  },
 };
 
 export default nextConfig;

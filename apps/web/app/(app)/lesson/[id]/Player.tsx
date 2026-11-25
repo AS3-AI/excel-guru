@@ -38,7 +38,7 @@ import { Leaderboards } from "@/components/Leaderboards";
 import { ShareBonus } from "@/components/ShareBonus";
 import { VideoModal } from "@/components/VideoModal";
 import { answerPointsVisible } from "@/lib/leaderboard";
-import { DASHBOARD_HREF } from "@/lib/nav-links";
+import { PROFILE_HREF } from "@/lib/nav-links";
 import { Icon } from "@/components/icons";
 import { Doodle } from "@/components/Doodles";
 
@@ -741,9 +741,9 @@ export function Player({
           [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
           [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
               aria-keyshortcuts="Enter"
-              href={DASHBOARD_HREF}
+              href={signedIn ? PROFILE_HREF : "/"}
             >
-              Go to dashboard
+              {signedIn ? "Go to profile" : "Go home"}
             </Link>
           </section>
         </main>

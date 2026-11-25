@@ -11,8 +11,7 @@ export const STATIC_METADATA = {
   },
   pricing: {
     title: "Pricing & Plans",
-    description:
-      "Unlock all 80+ interactive Excel lessons. Choose monthly or annual billing.",
+    description: "Unlock all 80+ interactive Excel lessons. Choose monthly or annual billing.",
   },
   help: {
     title: "Help & FAQ",
@@ -28,11 +27,6 @@ export const STATIC_METADATA = {
     title: "Terms of Service",
     description:
       "Terms and conditions for using Excel Guru interactive spreadsheet lessons, subscriptions, and AI explanations.",
-  },
-  dashboard: {
-    title: "Learning Dashboard",
-    description:
-      "Track your completed Excel lessons, daily streak, points, and next recommended interactive lesson.",
   },
   login: {
     title: "Log in",
@@ -229,12 +223,7 @@ export function buildRobots(input: { baseUrl: string }): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: [
-        "/api/",
-        "/dashboard",
-        "/onboarding",
-        "/sandbox",
-      ],
+      disallow: ["/api/", "/onboarding", "/sandbox"],
     },
     sitemap: siteUrl("/sitemap.xml", input.baseUrl),
   };

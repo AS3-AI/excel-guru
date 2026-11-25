@@ -265,14 +265,9 @@ export default async function Home() {
           [@media(max-width:640px)]:[&_.btn]:w-full"
               >
                 {signedIn ? (
-                  <>
-                    <Link className="btn btn-lg" href="/dashboard">
-                      Go to Dashboard <Icon name="arrowRight" size={18} />
-                    </Link>
-                    <Link className="btn btn-lg btn-quiet" href="/profile">
-                      View Profile
-                    </Link>
-                  </>
+                  <Link className="btn btn-lg" href="/profile">
+                    View Profile <Icon name="arrowRight" size={18} />
+                  </Link>
                 ) : (
                   <>
                     <Link className="btn btn-lg" href="/lesson/intro">

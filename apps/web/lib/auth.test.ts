@@ -68,7 +68,12 @@ describe("validateSignup", () => {
   it("normalizes a valid sign-up", () => {
     expect(validateSignup(goodSignup)).toEqual({
       ok: true,
-      value: { firstName: "Ana", username: "ana_99", email: "ana@example.com", password: "correct horse" },
+      value: {
+        firstName: "Ana",
+        username: "ana_99",
+        email: "ana@example.com",
+        password: "correct horse",
+      },
     });
   });
 
@@ -97,7 +102,8 @@ describe("validateSignup", () => {
   it("collects profile and account errors together", () => {
     const r = validateSignup({});
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(Object.keys(r.errors).sort()).toEqual(["email", "firstName", "password", "username"]);
+    if (!r.ok)
+      expect(Object.keys(r.errors).sort()).toEqual(["email", "firstName", "password", "username"]);
   });
 });
 
@@ -133,7 +139,7 @@ describe("safeNext", () => {
     ["non-string", ["/a"]],
     ["undefined", undefined],
   ])("falls back for %s", (_label, p) => {
-    expect(safeNext(p)).toBe("/dashboard");
+    expect(safeNext(p)).toBe("/profile");
   });
 
   it("does not treat lookalike prefixes as auth pages", () => {
@@ -149,7 +155,9 @@ describe("authRedirect", () => {
   it.each(["/profile", "/review", "/admin", "/admin/groups/1"])(
     "sends signed-out users from %s to login with next",
     (pathname) => {
-      expect(authRedirect({ ...anon, pathname })).toBe(`/login?next=${encodeURIComponent(pathname)}`);
+      expect(authRedirect({ ...anon, pathname })).toBe(
+        `/login?next=${encodeURIComponent(pathname)}`,
+      );
     },
   );
 
@@ -160,37 +168,45 @@ describe("authRedirect", () => {
   });
 
   it("sends signed-in users without a profile to onboarding", () => {
-    expect(authRedirect({ ...noProfile, pathname: "/profile" })).toBe("/onboarding?next=%2Fprofile");
+    expect(authRedirect({ ...noProfile, pathname: "/profile" })).toBe(
+      "/onboarding?next=%2Fprofile",
+    );
   });
 
   it("lets complete users through protected routes", () => {
     expect(authRedirect({ ...full, pathname: "/profile" })).toBeNull();
   });
 
-  it.each(["/", "/dashboard", "/lesson/intro", "/pricing", "/daily", "/profiles-are-not-protected"])(
-    "leaves public route %s alone",
-    (pathname) => {
-      expect(authRedirect({ ...anon, pathname })).toBeNull();
-      expect(authRedirect({ ...noProfile, pathname })).toBeNull();
-    },
-  );
+  it.each([
+    "/",
+    "/dashboard",
+    "/lesson/intro",
+    "/pricing",
+    "/daily",
+    "/profiles-are-not-protected",
+  ])("leaves public route %s alone", (pathname) => {
+    expect(authRedirect({ ...anon, pathname })).toBeNull();
+    expect(authRedirect({ ...noProfile, pathname })).toBeNull();
+  });
 
   it("handles onboarding", () => {
-    expect(authRedirect({ ...anon, pathname: "/onboarding" })).toBe("/login?next=%2Fdashboard");
+    expect(authRedirect({ ...anon, pathname: "/onboarding" })).toBe("/login?next=%2Fprofile");
     expect(authRedirect({ ...noProfile, pathname: "/onboarding" })).toBeNull();
-    expect(authRedirect({ ...full, pathname: "/onboarding", search: "?next=/review" })).toBe("/review");
-    expect(authRedirect({ ...full, pathname: "/onboarding", search: "?next=https://evil.example" })).toBe(
-      "/dashboard",
+    expect(authRedirect({ ...full, pathname: "/onboarding", search: "?next=/review" })).toBe(
+      "/review",
     );
+    expect(
+      authRedirect({ ...full, pathname: "/onboarding", search: "?next=https://evil.example" }),
+    ).toBe("/profile");
   });
 
   it("bounces signed-in users away from login and signup", () => {
     expect(authRedirect({ ...anon, pathname: "/login" })).toBeNull();
     expect(authRedirect({ ...anon, pathname: "/signup" })).toBeNull();
     expect(authRedirect({ ...full, pathname: "/login", search: "?next=/review" })).toBe("/review");
-    expect(authRedirect({ ...full, pathname: "/signup" })).toBe("/dashboard");
+    expect(authRedirect({ ...full, pathname: "/signup" })).toBe("/profile");
     expect(authRedirect({ ...noProfile, pathname: "/signup", search: "?completed=intro" })).toBe(
-      "/onboarding?next=%2Fdashboard",
+      "/onboarding?next=%2Fprofile",
     );
   });
 });
@@ -211,7 +227,10 @@ describe("originFrom", () => {
 
   it("uses forwarded host and proto (Vercel previews)", () => {
     expect(
-      originFrom(h({ "x-forwarded-host": "eg-git-x.vercel.app", "x-forwarded-proto": "https" }), "https://excelguru.in"),
+      originFrom(
+        h({ "x-forwarded-host": "eg-git-x.vercel.app", "x-forwarded-proto": "https" }),
+        "https://excelguru.in",
+      ),
     ).toBe("https://eg-git-x.vercel.app");
   });
 
@@ -226,14 +245,20 @@ describe("originFrom", () => {
   });
 
   it("ignores malformed hosts and protocols", () => {
-    expect(originFrom(h({ host: "evil.com/path" }), "https://excelguru.in")).toBe("https://excelguru.in");
-    expect(originFrom(h({ host: "a.com", "x-forwarded-proto": "javascript" }), "https://b.com")).toBe("https://b.com");
+    expect(originFrom(h({ host: "evil.com/path" }), "https://excelguru.in")).toBe(
+      "https://excelguru.in",
+    );
+    expect(
+      originFrom(h({ host: "a.com", "x-forwarded-proto": "javascript" }), "https://b.com"),
+    ).toBe("https://b.com");
   });
 });
 
 describe("firstNameFromMetadata", () => {
   it("prefers explicit first names and keeps them whole", () => {
-    expect(firstNameFromMetadata({ first_name: "Mary Ann", full_name: "Mary Ann Lee" })).toBe("Mary Ann");
+    expect(firstNameFromMetadata({ first_name: "Mary Ann", full_name: "Mary Ann Lee" })).toBe(
+      "Mary Ann",
+    );
     expect(firstNameFromMetadata({ given_name: "Ravi" })).toBe("Ravi");
   });
 

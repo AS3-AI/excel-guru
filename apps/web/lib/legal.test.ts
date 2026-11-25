@@ -3,7 +3,9 @@ import { PRIVACY_SECTIONS, TERMS_SECTIONS } from "./legal";
 
 describe("PRIVACY_SECTIONS", () => {
   it("explicitly documents what we collect across Supabase, Razorpay, Gemini, Vercel, and cookies", () => {
-    const combined = PRIVACY_SECTIONS.map((s) => `${s.title} ${s.body}`).join(" ").toLowerCase();
+    const combined = PRIVACY_SECTIONS.map((s) => `${s.title} ${s.body}`)
+      .join(" ")
+      .toLowerCase();
 
     // Supabase: email, name, progress, points
     expect(combined).toContain("supabase");
@@ -52,7 +54,7 @@ describe("PRIVACY_SECTIONS", () => {
     const retention = PRIVACY_SECTIONS.find((s) => s.id === "retention-rights");
     expect(retention).toBeDefined();
     expect(retention?.body).toContain("email to [CONTACT EMAIL]");
-    expect(retention?.body).toContain("Dashboard");
+    expect(retention?.body).toContain("Profile");
   });
 
   it("uses placeholders [LEGAL NAME], [ADDRESS], [CONTACT EMAIL] for owner details", () => {
@@ -80,7 +82,9 @@ describe("PRIVACY_SECTIONS", () => {
 
 describe("TERMS_SECTIONS", () => {
   it("covers disclaimer, subscriptions, renewals, refunds, AI hints, and acceptable use", () => {
-    const combined = TERMS_SECTIONS.map((s) => `${s.title} ${s.body}`).join(" ").toLowerCase();
+    const combined = TERMS_SECTIONS.map((s) => `${s.title} ${s.body}`)
+      .join(" ")
+      .toLowerCase();
 
     // Educational / Microsoft trademark disclaimer
     expect(combined).toContain("microsoft");
