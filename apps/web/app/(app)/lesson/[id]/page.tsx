@@ -1,3 +1,6 @@
+import {
+  plPageClasses,
+} from "./player-styles";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -63,8 +66,17 @@ export default async function LessonPage({ params }: Props) {
   });
 
   return (
-    <div className="wrap pl-page">
-      <header className="pl-top"><Logo /><nav className="pl-breadcrumb" aria-label="Breadcrumb"><Link href={DASHBOARD_HREF}>Dashboard</Link><Icon name="chevronRight" size={14} /><Link href={moduleHref(lesson.module)}>{lesson.module}</Link><Icon name="chevronRight" size={14} /><span aria-current="page">{lesson.title}</span></nav></header>
+    <div className={`wrap pl-page ${plPageClasses}`}>
+      <header className="pl-top flex items-center gap-s5 min-h-[60px] mb-s5 [border-bottom:var(--line)]
+          [@media(max-width:640px)]:gap-s3 [@media(max-width:640px)]:mb-s4 [@media(max-width:640px)]:flex-wrap
+          [@media(max-width:640px)]:p-[var(--s2)_0]"><Logo /><nav className="pl-breadcrumb flex items-center gap-[6px] min-w-0 text-muted text-ledger-sm pl-s5 [border-left:2px_solid_var(--ink)]
+          [@media(max-width:640px)]:pl-0 [@media(max-width:640px)]:[border-left:0]
+          [@media(max-width:640px)]:[flex-basis:100%]
+          [&_a]:text-muted [&_a]:no-underline [&_a]:whitespace-nowrap
+          [&_a:hover]:text-ink [&_a:hover]:underline
+          [&_svg]:[flex:none] [&_svg]:text-faint
+          [&_[aria-current]]:text-ink [&_[aria-current]]:font-medium [&_[aria-current]]:overflow-hidden
+          [&_[aria-current]]:[text-overflow:ellipsis] [&_[aria-current]]:whitespace-nowrap" aria-label="Breadcrumb"><Link href={DASHBOARD_HREF}>Dashboard</Link><Icon name="chevronRight" size={14} /><Link href={moduleHref(lesson.module)}>{lesson.module}</Link><Icon name="chevronRight" size={14} /><span aria-current="page">{lesson.title}</span></nav></header>
       <Player lesson={lesson} next={stepSequence(lesson.steps.length)} nextLessonId={nextLessonId(id)} lessons={lessons} signedOutIntro={!user && id === "intro"} signedIn={!!user} inviteNotice={inviteNotice} />
     </div>
   );

@@ -44,9 +44,18 @@ export function VideoModal({ videoId }: { videoId: string | null }) {
   if (!validVideoId) return null;
   return <>
     <button ref={triggerRef} className="btn btn-quiet" type="button" onClick={() => setOpen(true)}><Icon name="play" size={16} />Watch lesson video</button>
-    {open && <div className="video-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
-      <div ref={dialogRef} className="video-modal" role="dialog" aria-modal="true" aria-labelledby="lesson-video-title" onKeyDown={onDialogKeyDown}>
-        <header className="video-modal-header"><h2 id="lesson-video-title">Lesson video</h2><span tabIndex={0} onFocus={() => iframeRef.current?.focus()} /><button ref={closeRef} type="button" aria-label="Close video" onClick={() => setOpen(false)}><Icon name="x" size={18} /></button></header>
+    {open && <div className="video-modal-backdrop fixed z-[var(--z-modal)] inset-0 grid place-items-center p-s4 [background:rgb(20_32_26_/_0.72)]
+          [animation:fade-in_var(--d2)_var(--ease)]" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
+      <div ref={dialogRef} className="video-modal w-[min(900px,_100%)] p-s4 [border:var(--line)] rounded-ledger-lg bg-surface text-text
+          [box-shadow:var(--shadow-pop)] [animation:profile-modal-in_var(--d3)_var(--ease)]
+          [&_iframe]:block [&_iframe]:w-full [&_iframe]:[aspect-ratio:16_/_9] [&_iframe]:[border:0]
+          [&_iframe]:rounded-ledger-sm [&_iframe]:bg-ink" role="dialog" aria-modal="true" aria-labelledby="lesson-video-title" onKeyDown={onDialogKeyDown}>
+        <header className="video-modal-header flex items-center justify-between gap-s3 mb-s3
+          [&_h2]:m-0 [&_h2]:text-ink [&_h2]:text-ledger-md
+          [&_button]:grid [&_button]:place-items-center [&_button]:min-w-[44px] [&_button]:min-h-[44px]
+          [&_button]:[border:1px_solid_var(--border)] [&_button]:rounded-ledger [&_button]:bg-surface [&_button]:text-ink
+          [&_button]:cursor-pointer
+          [&_button:hover]:bg-surface-sunk"><h2 id="lesson-video-title">Lesson video</h2><span tabIndex={0} onFocus={() => iframeRef.current?.focus()} /><button ref={closeRef} type="button" aria-label="Close video" onClick={() => setOpen(false)}><Icon name="x" size={18} /></button></header>
         <iframe ref={iframeRef} title="Lesson video" src={`https://www.youtube-nocookie.com/embed/${validVideoId}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
         <span tabIndex={0} onFocus={() => closeRef.current?.focus()} />
       </div>

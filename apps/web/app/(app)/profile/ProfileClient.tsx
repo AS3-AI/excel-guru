@@ -1,5 +1,21 @@
 "use client";
 
+import {
+  achievementIconBoxClasses,
+  achievementMeterFillClasses,
+  badgeItemClasses,
+  duoAchievementCardClasses,
+  duoTabBtnClasses,
+  friendActionRowClasses,
+  lbStatusBoxClasses,
+  lbTypeBtnClasses,
+  profileCardHeaderClasses,
+  profileInputRowClasses,
+  profileModalClasses,
+  statIconBoxClasses,
+  statQuadCardClasses,
+  stripedClasses,
+} from "./profile-styles";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -384,14 +400,26 @@ export function ProfileClient({
   return (
     <>
       {/* 1. TOP HERO COVER BANNER */}
-      <section className="duo-hero-banner" aria-label="Profile cover banner">
-        <span className="duo-cell-ref" aria-hidden="true">
+      <section className="duo-hero-banner relative w-full min-h-[200px] [background-color:var(--mint)]
+          [background-image:linear-gradient(to_right,_rgba(15,_23,_42,_0.08)_1px,_transparent_1px),_linear-gradient(to_bottom,_rgba(15,_23,_42,_0.08)_1px,_transparent_1px)]
+          [background-size:24px_24px] [background-position:-1px_-1px] [border:var(--line)] rounded-ledger-lg
+          [box-shadow:var(--shadow-pop)] flex items-center justify-center p-[var(--s6)_var(--s4)] mb-s5 overflow-hidden
+          [@media(540px<width<=960px)]:min-h-[180px]
+          [@media(max-width:540px)]:min-h-[160px] [@media(max-width:540px)]:p-s4" aria-label="Profile cover banner">
+        <span className="duo-cell-ref absolute top-[16px] left-[16px] p-[4px_10px] rounded-ledger-sm [border:1.5px_solid_var(--ink)] bg-surface
+          [box-shadow:2px_2px_0_var(--ink)] font-ledger-code text-[0.72rem] font-bold tracking-[0.05em] text-ink" aria-hidden="true">
           A1 · Profile
         </span>
 
         {/* Centered Retro Avatar */}
-        <div className="duo-avatar-wrap">
-          <div className="duo-avatar" aria-hidden="true">
+        <div className="duo-avatar-wrap relative flex flex-col items-center justify-center z-[2]">
+          <div className="duo-avatar grid place-items-center w-[96px] h-[96px] rounded-[20px] bg-butter [border:2.5px_solid_var(--ink)]
+          [box-shadow:4px_4px_0_var(--ink)] text-ink font-heading text-[2.5rem] [font-weight:800] uppercase
+          [user-select:none] [transition:transform_var(--d2)_var(--ease),_box-shadow_var(--d2)_var(--ease)]
+          [@media(540px<width<=720px)]:w-[84px] [@media(540px<width<=720px)]:h-[84px]
+          [@media(540px<width<=720px)]:text-[2.1rem]
+          [@media(max-width:540px)]:w-[76px] [@media(max-width:540px)]:h-[76px] [@media(max-width:540px)]:text-[1.85rem]
+          [&:hover]:[transform:translateY(-2px)_scale(1.02)] [&:hover]:[box-shadow:6px_6px_0_var(--ink)]" aria-hidden="true">
             {avatarChar}
           </div>
         </div>
@@ -399,7 +427,12 @@ export function ProfileClient({
         {/* Edit Profile Modal Trigger Button in Top Right */}
         <button
           type="button"
-          className="duo-edit-btn"
+          className="duo-edit-btn absolute top-[16px] right-[16px] z-[3] inline-flex items-center justify-center gap-[6px] w-[40px] h-[40px] p-0
+          rounded-[50%] bg-surface [border:2px_solid_var(--ink)] [box-shadow:2.5px_2.5px_0_var(--ink)] text-ink
+          cursor-pointer
+          [transition:transform_var(--d1)_var(--ease),_box-shadow_var(--d1)_var(--ease),_background_var(--d1)]
+          [&:hover]:bg-butter [&:hover]:[transform:translate(-1px,_-1px)] [&:hover]:[box-shadow:4px_4px_0_var(--ink)]
+          [&:active]:[transform:translate(2px,_2px)] [&:active]:[box-shadow:0_0_0_var(--ink)]"
           aria-label="Edit Profile"
           title="Edit Profile"
           onClick={handleOpenEditModal}
@@ -422,17 +455,21 @@ export function ProfileClient({
       </section>
 
       {/* 2. IDENTITY ROW BELOW BANNER */}
-      <section className="duo-identity-row" aria-label="User identification">
-        <div className="identity-main">
-          <div className="identity-title-line">
-            <h1 className="identity-name">{savedFirstName}</h1>
-            <span className={`profile-badge ${hasFullAccess ? "is-pro" : "is-free"}`}>{accessLabel}</span>
+      <section className="duo-identity-row flex items-start justify-between gap-s5 mb-s6 p-[0_var(--s2)]
+          [@media(max-width:720px)]:items-start [@media(max-width:720px)]:gap-s4 [@media(max-width:720px)]:flex-col" aria-label="User identification">
+        <div className="identity-main flex flex-col gap-[4px]">
+          <div className="identity-title-line flex flex-wrap items-center gap-[10px]">
+            <h1 className="identity-name m-0 font-heading text-[clamp(1.8rem,_4vw,_2.35rem)] [font-weight:800] tracking-[-0.03em] text-ink leading-[1.15]">{savedFirstName}</h1>
+            <span className={`profile-badge ${hasFullAccess ? "is-pro" : "is-free"} inline-flex items-center gap-[6px] p-[3px_10px] rounded-[9999px] text-ledger-xs font-bold tracking-[0.04em]
+          uppercase [border:1.5px_solid_var(--ink)]
+          [&.is-pro]:bg-primary [&.is-pro]:text-primary-ink [&.is-pro]:[box-shadow:2px_2px_0_var(--ink)]
+          [&.is-free]:bg-butter [&.is-free]:text-ink [&.is-free]:[box-shadow:2px_2px_0_var(--ink)]`}>{accessLabel}</span>
           </div>
-          <p className="identity-handle">
+          <p className="identity-handle font-ledger-code text-[0.95rem] font-semibold text-muted m-0">
             @{username}
-            {email ? <span className="identity-email"> · {email}</span> : null}
+            {email ? <span className="identity-email font-normal text-muted text-[0.85rem]"> · {email}</span> : null}
           </p>
-          <div className="identity-joined">
+          <div className="identity-joined inline-flex items-center gap-[6px] text-ledger-sm text-muted mt-[2px]">
             <span>Joined {joinedDate}</span>
             {savedLinkedinUrl && (
               <>
@@ -441,38 +478,53 @@ export function ProfileClient({
                   href={savedLinkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="identity-linkedin-link"
+                  className="identity-linkedin-link inline-flex items-center gap-[4px] text-primary font-semibold no-underline
+          [&:hover]:underline"
                 >
                   LinkedIn <Icon name="externalLink" size={12} />
                 </a>
               </>
             )}
           </div>
-          <div className="identity-social-links">
-            <Link href="/dashboard" className="social-stat-link">
+          <div className="identity-social-links flex items-center gap-s4 mt-[8px]">
+            <Link href="/dashboard" className="social-stat-link text-ledger-sm font-bold text-primary no-underline [border-bottom:2px_solid_transparent]
+          [transition:border-color_var(--d1),_color_var(--d1)]
+          [&:hover]:text-primary-strong [&:hover]:[border-bottom-color:var(--primary)]">
               {completedCount} / {totalLessons} Lessons Done
             </Link>
-            <span className="identity-dot" aria-hidden="true">
+            <span className="identity-dot text-faint" aria-hidden="true">
               ·
             </span>
-            <a href="#curriculum-heading" className="social-stat-link">
+            <a href="#curriculum-heading" className="social-stat-link text-ledger-sm font-bold text-primary no-underline [border-bottom:2px_solid_transparent]
+          [transition:border-color_var(--d1),_color_var(--d1)]
+          [&:hover]:text-primary-strong [&:hover]:[border-bottom-color:var(--primary)]">
               {hasAccuracyData ? `${averageAccuracy}% Learning Rate` : "No Accuracy Yet"}
             </a>
           </div>
         </div>
 
         {/* Real Course Track Badges on Right Side */}
-        <div className="duo-track-badges" aria-label="Formula course tracks">
+        <div className="duo-track-badges flex items-center justify-end gap-[8px] flex-wrap pt-[6px]
+          [@media(max-width:720px)]:[justify-content:flex-start]" aria-label="Formula course tracks">
           {displayedTracks.map((mod, idx) => (
             <Link
               key={mod.slug}
               href={`/modules/${mod.slug}`}
-              className={`track-badge-pill ${TRACK_COLORS[idx % TRACK_COLORS.length]} ${mod.done >= mod.total ? "is-complete" : ""}`}
+              className={`track-badge-pill ${TRACK_COLORS[idx % TRACK_COLORS.length]} ${mod.done >= mod.total ? "is-complete" : ""} inline-flex items-center gap-[6px] p-[6px_12px] rounded-[9999px] [border:1.5px_solid_var(--ink)]
+          [box-shadow:2px_2px_0_var(--ink)] font-ledger-code text-[0.8rem] font-bold text-ink bg-surface whitespace-nowrap
+          [user-select:none] [transition:transform_var(--d1)_var(--ease),_box-shadow_var(--d1)_var(--ease)] no-underline
+          [&:hover]:[transform:translate(-1px,_-1px)] [&:hover]:[box-shadow:3px_3px_0_var(--ink)]
+          [&.is-mint]:bg-mint
+          [&.is-butter]:bg-butter
+          [&.is-lilac]:bg-lilac
+          [&.is-sky]:bg-sky
+          [&.is-complete]:border-primary-strong
+          [&:active]:[transform:scale(0.98)]`}
               title={`${mod.title}: ${mod.done}/${mod.total} lessons`}
             >
               {mod.done >= mod.total ? <Icon name="check" size={12} strokeWidth={3} /> : null}
               <span>{mod.title}</span>
-              <small className="track-badge-count">
+              <small className="track-badge-count text-[0.72rem] opacity-[0.75] font-semibold tabular-nums">
                 {mod.done}/{mod.total}
               </small>
             </Link>
@@ -480,7 +532,11 @@ export function ProfileClient({
           {remainingTrackCount > 0 && (
             <button
               type="button"
-              className="track-badge-more"
+              className="track-badge-more inline-flex items-center justify-center p-[6px_10px] rounded-[9999px] [border:1.5px_solid_var(--ink)]
+          [box-shadow:2px_2px_0_var(--ink)] bg-surface-sunk text-ink font-ledger-code text-[0.75rem] font-bold
+          [user-select:none] cursor-pointer [transition:background_var(--d1),_transform_var(--d1)]
+          [&:hover]:bg-butter [&:hover]:[transform:translate(-1px,_-1px)]
+          [&:active]:[transform:scale(0.98)]"
               aria-expanded={showAllTracks}
               onClick={() => setShowAllTracks((prev) => !prev)}
             >
@@ -491,13 +547,14 @@ export function ProfileClient({
       </section>
 
       {/* 3. TWO-COLUMN LAYOUT */}
-      <div className="profile-content-layout">
+      <div className="profile-content-layout grid grid-cols-[minmax(0,_1.65fr)_minmax(0,_1fr)] gap-s6 [align-items:start]
+          [@media(max-width:960px)]:grid-cols-[minmax(0,_1fr)]">
         {/* LEFT / MAIN COLUMN */}
-        <div className="profile-column">
+        <div className="profile-column flex flex-col gap-s6">
           {/* STATISTICS 2x2 QUAD GRID */}
-          <section className="duo-stats-section" aria-label="Learning statistics">
-            <div className="section-head-inline">
-              <h2 className="duo-section-title" style={{ margin: 0 }}>
+          <section className="duo-stats-section mb-s7" aria-label="Learning statistics">
+            <div className="section-head-inline flex items-center justify-between gap-s3 mb-s4">
+              <h2 className="duo-section-title m-[0_0_var(--s4)] font-heading text-[clamp(1.35rem,_3vw,_1.65rem)] [font-weight:800] tracking-[-0.02em] text-ink" style={{ margin: 0 }}>
                 Statistics
               </h2>
               <Link className="btn btn-sm" href={nextRecommendedHref}>
@@ -505,45 +562,49 @@ export function ProfileClient({
                 <Icon name="arrowRight" size={14} />
               </Link>
             </div>
-            <div className="duo-stats-grid">
+            <div className="duo-stats-grid grid grid-cols-[repeat(2,_minmax(0,_1fr))] gap-s4 mb-s6
+          [@media(max-width:540px)]:grid-cols-[minmax(0,_1fr)]">
               {/* Stat 1: Day Streak */}
-              <div className="stat-quad-card">
-                <div className="stat-icon-box is-streak">
+              <div className={`stat-quad-card ${statQuadCardClasses}`}>
+                <div className={`stat-icon-box is-streak ${statIconBoxClasses}`}>
                   <Icon name="flame" size={24} />
                 </div>
-                <div className="stat-content">
-                  <p className="stat-val">
+                <div className="stat-content flex flex-col gap-[2px] min-w-0">
+                  <p className="stat-val m-0 font-ledger-code tabular-nums text-[1.85rem] [font-weight:800] leading-[1.1] text-ink tracking-[-0.02em]
+          [&_span]:text-[0.95rem] [&_span]:font-semibold [&_span]:text-muted [&_span]:ml-[4px]">
                     {currentStreak}
                     <span>{currentStreak === 1 ? "day" : "days"}</span>
                   </p>
-                  <p className="stat-label">Day streak · Best {longestStreak}d</p>
+                  <p className="stat-label m-0 text-ledger-sm font-semibold text-muted">Day streak · Best {longestStreak}d</p>
                 </div>
               </div>
 
               {/* Stat 2: Total XP / Points */}
-              <div className="stat-quad-card">
-                <div className="stat-icon-box is-xp">
+              <div className={`stat-quad-card ${statQuadCardClasses}`}>
+                <div className={`stat-icon-box is-xp ${statIconBoxClasses}`}>
                   <Icon name="zap" size={24} />
                 </div>
-                <div className="stat-content">
-                  <p className="stat-val">
+                <div className="stat-content flex flex-col gap-[2px] min-w-0">
+                  <p className="stat-val m-0 font-ledger-code tabular-nums text-[1.85rem] [font-weight:800] leading-[1.1] text-ink tracking-[-0.02em]
+          [&_span]:text-[0.95rem] [&_span]:font-semibold [&_span]:text-muted [&_span]:ml-[4px]">
                     {totalPoints.toLocaleString()}
                     <span>pts</span>
                   </p>
-                  <p className="stat-label">
+                  <p className="stat-label m-0 text-ledger-sm font-semibold text-muted">
                     Total XP {todayPoints > 0 ? `· +${todayPoints} today` : ""}
                   </p>
                 </div>
               </div>
 
               {/* Stat 3: Formula Tier / Current League */}
-              <div className="stat-quad-card">
-                <div className={`stat-icon-box ${leagueTier.colorClass}`}>
+              <div className={`stat-quad-card ${statQuadCardClasses}`}>
+                <div className={`stat-icon-box ${leagueTier.colorClass} ${statIconBoxClasses}`}>
                   <Icon name="award" size={24} />
                 </div>
-                <div className="stat-content">
-                  <p className="stat-val">{leagueTier.name}</p>
-                  <p className="stat-label">
+                <div className="stat-content flex flex-col gap-[2px] min-w-0">
+                  <p className="stat-val m-0 font-ledger-code tabular-nums text-[1.85rem] [font-weight:800] leading-[1.1] text-ink tracking-[-0.02em]
+          [&_span]:text-[0.95rem] [&_span]:font-semibold [&_span]:text-muted [&_span]:ml-[4px]">{leagueTier.name}</p>
+                  <p className="stat-label m-0 text-ledger-sm font-semibold text-muted">
                     {leagueTier.nextName
                       ? `${leagueTier.pointsToNext.toLocaleString()} pts to ${leagueTier.nextName}`
                       : "Top league reached"}
@@ -552,15 +613,16 @@ export function ProfileClient({
               </div>
 
               {/* Stat 4: Learning Rate (First-Try Accuracy) */}
-              <div className="stat-quad-card">
-                <div className="stat-icon-box is-rank">
+              <div className={`stat-quad-card ${statQuadCardClasses}`}>
+                <div className={`stat-icon-box is-rank ${statIconBoxClasses}`}>
                   <Icon name="target" size={24} />
                 </div>
-                <div className="stat-content">
-                  <p className="stat-val">
+                <div className="stat-content flex flex-col gap-[2px] min-w-0">
+                  <p className="stat-val m-0 font-ledger-code tabular-nums text-[1.85rem] [font-weight:800] leading-[1.1] text-ink tracking-[-0.02em]
+          [&_span]:text-[0.95rem] [&_span]:font-semibold [&_span]:text-muted [&_span]:ml-[4px]">
                     {hasAccuracyData ? `${averageAccuracy}%` : "—"}
                   </p>
-                  <p className="stat-label">
+                  <p className="stat-label m-0 text-ledger-sm font-semibold text-muted">
                     {hasAccuracyData
                       ? `Learning rate · ${accuracyTier.label}`
                       : "Complete a lesson to measure"}
@@ -571,28 +633,36 @@ export function ProfileClient({
           </section>
 
           {/* WEEKLY XP ACTIVITY STRIP (Real 7-day IST points_log) */}
-          <section className="profile-card" aria-labelledby="weekly-heading">
-            <div className="profile-card-header">
+          <section className="profile-card p-s5 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-1)]" aria-labelledby="weekly-heading">
+            <div className={`profile-card-header ${profileCardHeaderClasses}`}>
               <h2 id="weekly-heading">
                 <Icon name="zap" size={20} /> 7-Day Learning Activity
               </h2>
               <p>{weeklyTotal > 0 ? `+${weeklyTotal.toLocaleString()} pts this week` : "No points logged this week"}</p>
             </div>
-            <div className="weekly-grid" role="list" aria-label="Points earned per day over the last 7 days">
+            <div className="weekly-grid grid grid-cols-[repeat(7,_minmax(0,_1fr))] gap-s2
+          [@media(max-width:540px)]:gap-[4px]" role="list" aria-label="Points earned per day over the last 7 days">
               {weeklyActivity.map((day) => {
                 const barHeight = day.points > 0 ? Math.max(20, Math.round((day.points / maxWeeklyDayPoints) * 100)) : 8;
                 return (
                   <div
                     key={day.date}
                     role="listitem"
-                    className={`weekly-cell ${day.isToday ? "is-today" : ""} ${day.points > 0 ? "is-active" : ""}`}
+                    className={`weekly-cell ${day.isToday ? "is-today" : ""} ${day.points > 0 ? "is-active" : ""} flex flex-col items-center gap-[6px] p-[10px_4px] rounded-[var(--r-md,_8px)] [border:1.5px_solid_var(--border)]
+          bg-surface-sunk
+          [@media(max-width:540px)]:p-[8px_2px]
+          [&.is-active]:bg-surface [&.is-active]:border-ink [&.is-active]:[box-shadow:2px_2px_0_var(--ink)]
+          [&.is-today]:border-primary [&.is-today]:bg-primary-tint
+          [&.is-active_.weekly-pts]:text-primary-strong
+          [&.is-active_.weekly-bar-fill]:bg-primary`}
                     title={`${day.date}: ${day.points} pts`}
                   >
-                    <span className="weekly-pts">{day.points > 0 ? `+${day.points}` : "0"}</span>
-                    <div className="weekly-bar-track" aria-hidden="true">
-                      <div className="weekly-bar-fill" style={{ height: `${barHeight}%` }} />
+                    <span className="weekly-pts font-ledger-code text-[0.72rem] font-bold text-muted tabular-nums
+          [@media(max-width:540px)]:text-[0.65rem]">{day.points > 0 ? `+${day.points}` : "0"}</span>
+                    <div className="weekly-bar-track w-[14px] h-[48px] flex items-end [background:rgba(20,_32,_26,_0.08)] rounded-[4px] overflow-hidden" aria-hidden="true">
+                      <div className="weekly-bar-fill w-full bg-faint rounded-[3px] [transition:height_0.35s_var(--ease)]" style={{ height: `${barHeight}%` }} />
                     </div>
-                    <span className="weekly-day">{day.dayLabel}</span>
+                    <span className="weekly-day font-ledger-code text-[0.72rem] font-bold text-ink">{day.dayLabel}</span>
                   </div>
                 );
               })}
@@ -600,15 +670,21 @@ export function ProfileClient({
           </section>
 
           {/* 4. ACHIEVEMENTS SECTION */}
-          <section className="duo-achievements-section" aria-label="Achievements and milestones">
-            <div className="achievements-section-header">
+          <section className="duo-achievements-section mb-s7" aria-label="Achievements and milestones">
+            <div className="achievements-section-header flex items-baseline justify-between gap-s3 mb-s4
+          [&_h2]:m-0 [&_h2]:font-heading [&_h2]:text-[clamp(1.35rem,_3vw,_1.65rem)] [&_h2]:[font-weight:800]
+          [&_h2]:tracking-[-0.02em] [&_h2]:text-ink">
               <div>
                 <h2>Achievements</h2>
-                <p className="achievements-sub">{unlockedMilestonesCount} of {milestones.length} badges unlocked</p>
+                <p className="achievements-sub m-[2px_0_0] text-ledger-xs text-muted font-ledger-code">{unlockedMilestonesCount} of {milestones.length} badges unlocked</p>
               </div>
               <button
                 type="button"
-                className="achievements-view-all"
+                className="achievements-view-all font-ledger-code text-ledger-xs font-bold text-primary-strong [background:transparent]
+          [border:1.5px_solid_transparent] no-underline cursor-pointer p-[5px_10px] rounded-ledger-sm
+          [transition:color_150ms_cubic-bezier(0.23,_1,_0.32,_1),_background-color_150ms_cubic-bezier(0.23,_1,_0.32,_1),_border-color_150ms_ease,_transform_150ms_cubic-bezier(0.23,_1,_0.32,_1)]
+          [&:hover]:text-ink [&:hover]:bg-primary-tint [&:hover]:border-ink
+          [&:active]:[transform:scale(0.97)]"
                 aria-expanded={showAllAchievements}
                 onClick={() => setShowAllAchievements(!showAllAchievements)}
               >
@@ -616,25 +692,27 @@ export function ProfileClient({
               </button>
             </div>
 
-            <div className="achievements-list">
+            <div className="achievements-list flex flex-col gap-s3">
               {/* Achievement 1: Wildfire Streak */}
-              <div className="duo-achievement-card">
-                <div className="achievement-row-top">
-                  <div className="achievement-icon-box is-butter">
+              <div className={`duo-achievement-card ${duoAchievementCardClasses}`}>
+                <div className="achievement-row-top flex items-center gap-s4">
+                  <div className={`achievement-icon-box is-butter ${achievementIconBoxClasses}`}>
                     <Icon name="flame" size={26} />
                   </div>
-                  <div className="achievement-info">
-                    <div className="achievement-title-row">
-                      <h3 className="achievement-title">Wildfire</h3>
-                      <span className="achievement-score">{Math.min(Math.max(currentStreak, longestStreak), 7)} / 7</span>
+                  <div className="achievement-info [flex:1] min-w-0">
+                    <div className="achievement-title-row flex items-baseline justify-between gap-s2 mb-[2px]
+          [@media(max-width:540px)]:items-start [@media(max-width:540px)]:gap-[2px] [@media(max-width:540px)]:flex-col">
+                      <h3 className="achievement-title m-0 font-heading text-[1.05rem] font-bold text-ink">Wildfire</h3>
+                      <span className="achievement-score font-ledger-code text-ledger-xs font-bold text-muted whitespace-nowrap tabular-nums">{Math.min(Math.max(currentStreak, longestStreak), 7)} / 7</span>
                     </div>
-                    <p className="achievement-desc">Reach a 7-day streak to ignite formula mastery habits</p>
+                    <p className="achievement-desc m-0 text-ledger-sm text-muted leading-[1.35]">Reach a 7-day streak to ignite formula mastery habits</p>
                   </div>
                 </div>
-                <div className="achievement-meter-wrap">
-                  <div className="achievement-meter striped" aria-hidden="true">
+                <div className="achievement-meter-wrap w-full">
+                  <div className={`achievement-meter striped relative w-full h-[12px] bg-surface-sunk [border:1.5px_solid_var(--ink)] rounded-[9999px] overflow-hidden
+          ${stripedClasses}`} aria-hidden="true">
                     <div
-                      className="achievement-meter-fill"
+                      className={`achievement-meter-fill ${achievementMeterFillClasses}`}
                       style={{
                         width: `${Math.min(100, Math.round((Math.max(currentStreak, longestStreak) / 7) * 100))}%`,
                       }}
@@ -644,27 +722,29 @@ export function ProfileClient({
               </div>
 
               {/* Achievement 2: Formula Sniper Accuracy */}
-              <div className="duo-achievement-card">
-                <div className="achievement-row-top">
-                  <div className="achievement-icon-box is-mint">
+              <div className={`duo-achievement-card ${duoAchievementCardClasses}`}>
+                <div className="achievement-row-top flex items-center gap-s4">
+                  <div className={`achievement-icon-box is-mint ${achievementIconBoxClasses}`}>
                     <Icon name="target" size={26} />
                   </div>
-                  <div className="achievement-info">
-                    <div className="achievement-title-row">
-                      <h3 className="achievement-title">Formula Sniper</h3>
-                      <span className="achievement-score">{hasAccuracyData ? `${averageAccuracy}%` : "0%"} / 100%</span>
+                  <div className="achievement-info [flex:1] min-w-0">
+                    <div className="achievement-title-row flex items-baseline justify-between gap-s2 mb-[2px]
+          [@media(max-width:540px)]:items-start [@media(max-width:540px)]:gap-[2px] [@media(max-width:540px)]:flex-col">
+                      <h3 className="achievement-title m-0 font-heading text-[1.05rem] font-bold text-ink">Formula Sniper</h3>
+                      <span className="achievement-score font-ledger-code text-ledger-xs font-bold text-muted whitespace-nowrap tabular-nums">{hasAccuracyData ? `${averageAccuracy}%` : "0%"} / 100%</span>
                     </div>
-                    <p className="achievement-desc">
+                    <p className="achievement-desc m-0 text-ledger-sm text-muted leading-[1.35]">
                       {hasAccuracyData
                         ? `${perfectLessonsCount} lesson${perfectLessonsCount === 1 ? "" : "s"} solved at 100% first-try accuracy`
                         : "Complete lessons cleanly on your first try to raise your learning rate"}
                     </p>
                   </div>
                 </div>
-                <div className="achievement-meter-wrap">
-                  <div className="achievement-meter striped" aria-hidden="true">
+                <div className="achievement-meter-wrap w-full">
+                  <div className={`achievement-meter striped relative w-full h-[12px] bg-surface-sunk [border:1.5px_solid_var(--ink)] rounded-[9999px] overflow-hidden
+          ${stripedClasses}`} aria-hidden="true">
                     <div
-                      className="achievement-meter-fill"
+                      className={`achievement-meter-fill ${achievementMeterFillClasses}`}
                       style={{ width: `${hasAccuracyData ? averageAccuracy : 0}%` }}
                     />
                   </div>
@@ -672,25 +752,27 @@ export function ProfileClient({
               </div>
 
               {/* Achievement 3: Century Club Points */}
-              <div className="duo-achievement-card">
-                <div className="achievement-row-top">
-                  <div className="achievement-icon-box is-rose">
+              <div className={`duo-achievement-card ${duoAchievementCardClasses}`}>
+                <div className="achievement-row-top flex items-center gap-s4">
+                  <div className={`achievement-icon-box is-rose ${achievementIconBoxClasses}`}>
                     <Icon name="zap" size={26} />
                   </div>
-                  <div className="achievement-info">
-                    <div className="achievement-title-row">
-                      <h3 className="achievement-title">Century Club</h3>
-                      <span className="achievement-score">
+                  <div className="achievement-info [flex:1] min-w-0">
+                    <div className="achievement-title-row flex items-baseline justify-between gap-s2 mb-[2px]
+          [@media(max-width:540px)]:items-start [@media(max-width:540px)]:gap-[2px] [@media(max-width:540px)]:flex-col">
+                      <h3 className="achievement-title m-0 font-heading text-[1.05rem] font-bold text-ink">Century Club</h3>
+                      <span className="achievement-score font-ledger-code text-ledger-xs font-bold text-muted whitespace-nowrap tabular-nums">
                         {Math.min(totalPoints, 1000).toLocaleString()} / 1,000
                       </span>
                     </div>
-                    <p className="achievement-desc">Earn 1,000 total points solving spreadsheet challenges</p>
+                    <p className="achievement-desc m-0 text-ledger-sm text-muted leading-[1.35]">Earn 1,000 total points solving spreadsheet challenges</p>
                   </div>
                 </div>
-                <div className="achievement-meter-wrap">
-                  <div className="achievement-meter striped" aria-hidden="true">
+                <div className="achievement-meter-wrap w-full">
+                  <div className={`achievement-meter striped relative w-full h-[12px] bg-surface-sunk [border:1.5px_solid_var(--ink)] rounded-[9999px] overflow-hidden
+          ${stripedClasses}`} aria-hidden="true">
                     <div
-                      className="achievement-meter-fill"
+                      className={`achievement-meter-fill ${achievementMeterFillClasses}`}
                       style={{ width: `${Math.min(100, Math.round((totalPoints / 1000) * 100))}%` }}
                     />
                   </div>
@@ -698,27 +780,29 @@ export function ProfileClient({
               </div>
 
               {/* Achievement 4: Grandmaster All Lessons */}
-              <div className="duo-achievement-card">
-                <div className="achievement-row-top">
-                  <div className="achievement-icon-box is-lilac">
+              <div className={`duo-achievement-card ${duoAchievementCardClasses}`}>
+                <div className="achievement-row-top flex items-center gap-s4">
+                  <div className={`achievement-icon-box is-lilac ${achievementIconBoxClasses}`}>
                     <Icon name="trophy" size={26} />
                   </div>
-                  <div className="achievement-info">
-                    <div className="achievement-title-row">
-                      <h3 className="achievement-title">Grandmaster</h3>
-                      <span className="achievement-score">
+                  <div className="achievement-info [flex:1] min-w-0">
+                    <div className="achievement-title-row flex items-baseline justify-between gap-s2 mb-[2px]
+          [@media(max-width:540px)]:items-start [@media(max-width:540px)]:gap-[2px] [@media(max-width:540px)]:flex-col">
+                      <h3 className="achievement-title m-0 font-heading text-[1.05rem] font-bold text-ink">Grandmaster</h3>
+                      <span className="achievement-score font-ledger-code text-ledger-xs font-bold text-muted whitespace-nowrap tabular-nums">
                         {completedCount} / {totalLessons}
                       </span>
                     </div>
-                    <p className="achievement-desc">
+                    <p className="achievement-desc m-0 text-ledger-sm text-muted leading-[1.35]">
                       Complete all {totalLessons} interactive lessons across the full curriculum
                     </p>
                   </div>
                 </div>
-                <div className="achievement-meter-wrap">
-                  <div className="achievement-meter striped" aria-hidden="true">
+                <div className="achievement-meter-wrap w-full">
+                  <div className={`achievement-meter striped relative w-full h-[12px] bg-surface-sunk [border:1.5px_solid_var(--ink)] rounded-[9999px] overflow-hidden
+          ${stripedClasses}`} aria-hidden="true">
                     <div
-                      className="achievement-meter-fill"
+                      className={`achievement-meter-fill ${achievementMeterFillClasses}`}
                       style={{ width: `${progressPct}%` }}
                     />
                   </div>
@@ -727,15 +811,18 @@ export function ProfileClient({
 
               {/* Extra Unlocked Badges when VIEW ALL is open */}
               {showAllAchievements && (
-                <div className="badges-grid" style={{ marginTop: "var(--s4)" }}>
+                <div className="badges-grid grid grid-cols-[repeat(3,_minmax(0,_1fr))] gap-s3
+          [@media(max-width:720px)]:grid-cols-[repeat(2,_minmax(0,_1fr))]" style={{ marginTop: "var(--s4)" }}>
                   {milestones.map((b) => (
-                    <div key={b.title} className={`badge-item ${b.unlocked ? "is-unlocked" : ""}`}>
-                      <div className="badge-icon-box">
+                    <div key={b.title} className={`badge-item ${b.unlocked ? "is-unlocked" : ""} ${badgeItemClasses}`}>
+                      <div className="badge-icon-box grid place-items-center w-[44px] h-[44px] rounded-[50%] mb-[8px] [border:1.5px_solid_var(--ink)] bg-mint
+          text-ink">
                         <Icon name={b.unlocked ? "check" : b.icon} size={20} />
                       </div>
                       <strong>{b.title}</strong>
                       <small>{b.desc}</small>
-                      <span className="badge-progress-pill">{b.unlocked ? "Unlocked" : b.progressLabel}</span>
+                      <span className="badge-progress-pill mt-[6px] p-[2px_8px] rounded-[9999px] [border:1px_solid_var(--border)] bg-surface-sunk font-ledger-code
+          text-[0.7rem] font-bold text-ink">{b.unlocked ? "Unlocked" : b.progressLabel}</span>
                     </div>
                   ))}
                 </div>
@@ -744,8 +831,8 @@ export function ProfileClient({
           </section>
 
           {/* Curriculum Mastery by Module (Every module clickable & accurately slug-matched) */}
-          <section className="profile-card" aria-labelledby="curriculum-heading">
-            <div className="profile-card-header">
+          <section className="profile-card p-s5 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-1)]" aria-labelledby="curriculum-heading">
+            <div className={`profile-card-header ${profileCardHeaderClasses}`}>
               <h2 id="curriculum-heading">
                 <Icon name="grid" size={20} /> Curriculum Mastery by Module
               </h2>
@@ -754,12 +841,25 @@ export function ProfileClient({
               </p>
             </div>
 
-            <div className="mastery-module-list">
+            <div className="mastery-module-list grid grid-cols-[repeat(2,_minmax(0,_1fr))] gap-s3
+          [@media(max-width:580px)]:grid-cols-[minmax(0,_1fr)]">
               {moduleBreakdown.map((mod) => (
-                <Link key={mod.slug} href={`/modules/${mod.slug}`} className="mastery-module-item">
-                  <div className="mastery-module-head">
+                <Link key={mod.slug} href={`/modules/${mod.slug}`} className="mastery-module-item p-[12px_14px] bg-surface-sunk [border:1.5px_solid_var(--ink)] rounded-[var(--r-md,_8px)] grid gap-[8px]
+          no-underline [color:inherit]
+          [transition:transform_160ms_cubic-bezier(0.23,_1,_0.32,_1),_box-shadow_160ms_cubic-bezier(0.23,_1,_0.32,_1),_background-color_160ms_ease]
+          [&:active]:[transform:scale(0.98)]
+          [@media(hover:hover)_and_(pointer:fine)]:[&:hover]:bg-butter
+          [@media(hover:hover)_and_(pointer:fine)]:[&:hover]:[transform:translate(-1px,_-1px)]
+          [@media(hover:hover)_and_(pointer:fine)]:[&:hover]:[box-shadow:2.5px_2.5px_0_var(--ink)]
+          [@media(hover:hover)_and_(pointer:fine)]:[&:hover]:no-underline">
+                  <div className="mastery-module-head flex items-center justify-between gap-[8px] text-ledger-sm
+          [&_strong]:text-ink [&_strong]:font-bold [&_strong]:min-w-0 [&_strong]:overflow-hidden
+          [&_strong]:[text-overflow:ellipsis] [&_strong]:whitespace-nowrap [&_strong]:inline-flex [&_strong]:items-center
+          [&_strong]:gap-[6px]
+          [&_span]:font-ledger-code [&_span]:tabular-nums [&_span]:text-ledger-xs [&_span]:text-text
+          [&_span]:whitespace-nowrap">
                     <strong>
-                      {mod.done >= mod.total ? <Icon name="check" size={14} className="mod-done-check" /> : null}
+                      {mod.done >= mod.total ? <Icon name="check" size={14} className="mod-done-check text-primary [flex-shrink:0]" /> : null}
                       {mod.title}
                     </strong>
                     <span>
@@ -775,29 +875,42 @@ export function ProfileClient({
           </section>
 
           {/* Recent Completed Lessons */}
-          <section className="profile-card" aria-labelledby="recent-heading">
-            <div className="profile-card-header">
+          <section className="profile-card p-s5 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-1)]" aria-labelledby="recent-heading">
+            <div className={`profile-card-header ${profileCardHeaderClasses}`}>
               <h2 id="recent-heading">
                 <Icon name="play" size={20} /> Recent Lessons
               </h2>
-              <Link href="/dashboard" className="social-stat-link">
+              <Link href="/dashboard" className="social-stat-link text-ledger-sm font-bold text-primary no-underline [border-bottom:2px_solid_transparent]
+          [transition:border-color_var(--d1),_color_var(--d1)]
+          [&:hover]:text-primary-strong [&:hover]:[border-bottom-color:var(--primary)]">
                 All lessons →
               </Link>
             </div>
 
             {recentLessons.length === 0 ? (
-              <div className="recent-empty">
+              <div className="recent-empty text-center p-[var(--s4)_var(--s2)] text-muted text-ledger-sm
+          [&_p]:m-[0_0_var(--s3)]">
                 <p>You haven&apos;t completed a lesson yet. Start with our 2-minute interactive intro!</p>
                 <Link className="btn" href={nextRecommendedHref}>
                   Start Learning <Icon name="arrowRight" size={16} />
                 </Link>
               </div>
             ) : (
-              <ul className="recent-lessons-list">
+              <ul className="recent-lessons-list list-none m-0 p-0 grid gap-s2">
                 {recentLessons.map((item) => (
                   <li key={item.id}>
-                    <Link href={`/lesson/${item.id}`} className="recent-lesson-row">
-                      <div className="recent-lesson-main">
+                    <Link href={`/lesson/${item.id}`} className="recent-lesson-row [@media(hover:hover)_and_(pointer:fine)]:[&:hover]:bg-mint
+          [@media(hover:hover)_and_(pointer:fine)]:[&:hover]:[transform:translate(-1px,_-1px)]
+          [@media(hover:hover)_and_(pointer:fine)]:[&:hover]:[box-shadow:2.5px_2.5px_0_var(--ink)]
+          [@media(hover:hover)_and_(pointer:fine)]:[&:hover]:no-underline
+          [&:active]:[transform:scale(0.98)]
+          flex items-center justify-between gap-s3 p-[10px_14px] [border:1.5px_solid_var(--ink)]
+          rounded-[var(--r-md,_8px)] bg-surface-sunk no-underline text-ink
+          [transition:background-color_150ms_ease,_transform_150ms_cubic-bezier(0.23,_1,_0.32,_1),_box-shadow_150ms_cubic-bezier(0.23,_1,_0.32,_1)]">
+                      <div className="recent-lesson-main flex flex-col gap-[2px] min-w-0
+          [&_strong]:text-ledger-sm [&_strong]:whitespace-nowrap [&_strong]:overflow-hidden
+          [&_strong]:[text-overflow:ellipsis]
+          [&_small]:font-ledger-code [&_small]:text-[0.74rem] [&_small]:text-muted">
                         <strong>{item.title}</strong>
                         <small>
                           {item.module}
@@ -809,7 +922,11 @@ export function ProfileClient({
                         </small>
                       </div>
                       <span
-                        className={`recent-acc-pill ${item.accuracyPct >= 90 ? "is-high" : item.accuracyPct >= 50 ? "is-mid" : "is-low"}`}
+                        className={`recent-acc-pill ${item.accuracyPct >= 90 ? "is-high" : item.accuracyPct >= 50 ? "is-mid" : "is-low"} tabular-nums [flex-shrink:0] p-[3px_9px] rounded-[9999px] [border:1.5px_solid_var(--ink)] font-ledger-code
+          text-[0.75rem] font-bold
+          [&.is-high]:bg-mint
+          [&.is-mid]:bg-butter
+          [&.is-low]:bg-rose`}
                       >
                         {item.accuracyPct}%
                       </span>
@@ -822,15 +939,15 @@ export function ProfileClient({
         </div>
 
         {/* RIGHT-HAND SIDEBAR COLUMN */}
-        <div className="profile-column">
+        <div className="profile-column flex flex-col gap-s6">
           {/* SIDEBAR CARD 1: Tabbed Leaderboard card */}
-          <section className="duo-tab-card" aria-label="Leaderboard standings">
-            <div className="duo-tabs-nav" role="tablist">
+          <section className="duo-tab-card bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-1)] overflow-hidden" aria-label="Leaderboard standings">
+            <div className="duo-tabs-nav flex bg-surface-sunk [border-bottom:2px_solid_var(--ink)]" role="tablist">
               <button
                 type="button"
                 role="tab"
                 aria-selected={sidebarTab === "leaders"}
-                className={`duo-tab-btn ${sidebarTab === "leaders" ? "is-active" : ""}`}
+                className={`duo-tab-btn ${sidebarTab === "leaders" ? "is-active" : ""} ${duoTabBtnClasses}`}
                 onClick={() => setSidebarTab("leaders")}
               >
                 Today&apos;s Leaders
@@ -839,7 +956,7 @@ export function ProfileClient({
                 type="button"
                 role="tab"
                 aria-selected={sidebarTab === "standings"}
-                className={`duo-tab-btn ${sidebarTab === "standings" ? "is-active" : ""}`}
+                className={`duo-tab-btn ${sidebarTab === "standings" ? "is-active" : ""} ${duoTabBtnClasses}`}
                 onClick={() => setSidebarTab("standings")}
               >
                 Your Standings
@@ -849,23 +966,25 @@ export function ProfileClient({
             <div style={{ padding: "var(--s4)" }}>
               {sidebarTab === "leaders" ? (
                 <div>
-                  <div className="lb-type-toggle" role="group" aria-label="Leaderboard metric">
+                  <div className="lb-type-toggle grid grid-cols-[1fr_1fr] gap-[6px] mb-s3" role="group" aria-label="Leaderboard metric">
                     <button
                       type="button"
-                      className={`lb-type-btn ${leaderboardType === "points" ? "is-active" : ""}`}
+                      className={`lb-type-btn ${leaderboardType === "points" ? "is-active" : ""} ${lbTypeBtnClasses}`}
                       onClick={() => setLeaderboardType("points")}
                     >
                       Points
                     </button>
                     <button
                       type="button"
-                      className={`lb-type-btn ${leaderboardType === "streak" ? "is-active" : ""}`}
+                      className={`lb-type-btn ${leaderboardType === "streak" ? "is-active" : ""} ${lbTypeBtnClasses}`}
                       onClick={() => setLeaderboardType("streak")}
                     >
                       Streaks
                     </button>
                   </div>
-                  <div className="duo-lb-embed">
+                  <div className="duo-lb-embed [&_.leaderboard-card]:[border:0] [&_.leaderboard-card]:p-0 [&_.leaderboard-card]:[box-shadow:none]
+          [&_.leaderboard-card]:[background:transparent]
+          [&_.leaderboard-card_h2]:text-[0.95rem] [&_.leaderboard-card_h2]:mb-s2">
                     <Leaderboards
                       type={leaderboardType}
                       title={leaderboardType === "points" ? "Top Scorers Today" : "Top Streaks Today"}
@@ -883,19 +1002,22 @@ export function ProfileClient({
                 </div>
               ) : (
                 <div>
-                  <div className="lb-status-grid">
-                    <div className="lb-status-box">
+                  <div className="lb-status-grid grid grid-cols-[repeat(2,_minmax(0,_1fr))] gap-s4 mb-s5
+          [@media(max-width:720px)]:grid-cols-[minmax(0,_1fr)]">
+                    <div className={`lb-status-box ${lbStatusBoxClasses}`}>
                       <h3>Points Rank</h3>
-                      <div className={`lb-status-rank ${pointsRank && pointsRank <= 3 ? "is-top" : ""}`}>
+                      <div className={`lb-status-rank ${pointsRank && pointsRank <= 3 ? "is-top" : ""} font-ledger-code text-[1.75rem] [font-weight:800] text-ink tabular-nums
+          [&.is-top]:text-primary`}>
                         {pointsRank ? `#${pointsRank}` : "Unranked"}
                       </div>
                       <p style={{ margin: "4px 0 0", fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                         {todayPoints > 0 ? `+${todayPoints} pts today` : "Complete a lesson to enter"}
                       </p>
                     </div>
-                    <div className="lb-status-box">
+                    <div className={`lb-status-box ${lbStatusBoxClasses}`}>
                       <h3>Streak Rank</h3>
-                      <div className={`lb-status-rank ${streakRank && streakRank <= 3 ? "is-top" : ""}`}>
+                      <div className={`lb-status-rank ${streakRank && streakRank <= 3 ? "is-top" : ""} font-ledger-code text-[1.75rem] [font-weight:800] text-ink tabular-nums
+          [&.is-top]:text-primary`}>
                         {streakRank ? `#${streakRank}` : "Unranked"}
                       </div>
                       <p style={{ margin: "4px 0 0", fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
@@ -914,54 +1036,65 @@ export function ProfileClient({
           </section>
 
           {/* SIDEBAR CARD 2: Add Friends / Share on LinkedIn Bonus (+500 pts) */}
-          <section className="add-friends-card" aria-label="Invite and share bonus">
+          <section className="add-friends-card p-s5 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-1)]
+          [&_h3]:m-[0_0_var(--s3)] [&_h3]:font-heading [&_h3]:text-[1.15rem] [&_h3]:[font-weight:800] [&_h3]:text-ink" aria-label="Invite and share bonus">
             <h3>Add Friends &amp; Share</h3>
             <p style={{ margin: "0 0 var(--s4)", color: "var(--muted)", fontSize: "var(--fs-sm)" }}>
               Share your formula practice on LinkedIn for a one-time +500 XP boost on today&apos;s leaderboard.
             </p>
 
-            <div className="friend-action-list">
+            <div className="friend-action-list flex flex-col gap-[8px]">
               {shared ? (
-                <div className="friend-action-row is-done-row">
-                  <span className="friend-action-icon is-mint">
+                <div className={`friend-action-row is-done-row ${friendActionRowClasses}`}>
+                  <span className="friend-action-icon is-mint grid place-items-center w-[34px] h-[34px] rounded-ledger-sm [border:1.5px_solid_var(--ink)] bg-surface-sunk
+          text-ink [flex-shrink:0]
+          [&.is-mint]:bg-mint
+          [&.is-butter]:bg-butter">
                     <Icon name="check" size={18} />
                   </span>
-                  <span className="friend-action-text">+500 pts claimed on LinkedIn</span>
+                  <span className="friend-action-text [flex:1] font-bold text-ledger-sm">+500 pts claimed on LinkedIn</span>
                 </div>
               ) : (
                 <button
                   type="button"
-                  className="friend-action-row"
+                  className={`friend-action-row ${friendActionRowClasses}`}
                   onClick={handleShareBonus}
                   disabled={claimingShare}
                 >
-                  <span className="friend-action-icon is-butter">
+                  <span className="friend-action-icon is-butter grid place-items-center w-[34px] h-[34px] rounded-ledger-sm [border:1.5px_solid_var(--ink)] bg-surface-sunk
+          text-ink [flex-shrink:0]
+          [&.is-mint]:bg-mint
+          [&.is-butter]:bg-butter">
                     <Icon name="externalLink" size={18} />
                   </span>
-                  <span className="friend-action-text">
+                  <span className="friend-action-text [flex:1] font-bold text-ledger-sm">
                     {claimingShare ? "Claiming bonus…" : "Share on LinkedIn (+500 pts)"}
                   </span>
-                  <span className="friend-action-arrow">→</span>
+                  <span className="friend-action-arrow text-muted [font-weight:800] text-[1.1rem]">→</span>
                 </button>
               )}
 
-              <button type="button" className="friend-action-row" onClick={handleCopyInviteLink}>
-                <span className="friend-action-icon">
+              <button type="button" className={`friend-action-row ${friendActionRowClasses}`} onClick={handleCopyInviteLink}>
+                <span className="friend-action-icon grid place-items-center w-[34px] h-[34px] rounded-ledger-sm [border:1.5px_solid_var(--ink)] bg-surface-sunk
+          text-ink [flex-shrink:0]
+          [&.is-mint]:bg-mint
+          [&.is-butter]:bg-butter">
                   <Icon name="user" size={18} />
                 </span>
-                <span className="friend-action-text">
+                <span className="friend-action-text [flex:1] font-bold text-ledger-sm">
                   {copiedInvite ? "Signup invite link copied" : "Invite Friends (Copy Signup Link)"}
                 </span>
-                <span className="friend-action-arrow">→</span>
+                <span className="friend-action-arrow text-muted [font-weight:800] text-[1.1rem]">→</span>
               </button>
             </div>
 
             {manualInviteUrl && (
-              <div className="profile-form-group" style={{ marginTop: "var(--s3)", marginBottom: 0 }}>
+              <div className="profile-form-group grid gap-[6px] mb-s4
+          [&_label]:font-bold [&_label]:text-ledger-sm [&_label]:text-ink" style={{ marginTop: "var(--s3)", marginBottom: 0 }}>
                 <label htmlFor="manual-invite-url" style={{ fontSize: "var(--fs-xs)" }}>
                   Copy your invite link:
                 </label>
-                <div className="profile-input-row">
+                <div className={`profile-input-row ${profileInputRowClasses}`}>
                   <input
                     id="manual-invite-url"
                     type="text"
@@ -974,23 +1107,31 @@ export function ProfileClient({
             )}
 
             {shareFeedback && (
-              <p className={`profile-feedback ${shareFeedback.ok ? "is-success" : "is-error"}`} role="status">
+              <p className={`profile-feedback ${shareFeedback.ok ? "is-success" : "is-error"} mt-[8px] text-ledger-sm font-semibold
+          [&.is-success]:text-primary
+          [&.is-error]:text-danger`} role="status">
                 {shareFeedback.text}
               </p>
             )}
           </section>
 
           {/* SIDEBAR CARD 3: Verified Certificate preview card */}
-          <section className="profile-card" aria-labelledby="cert-heading">
-            <div className="profile-card-header">
+          <section className="profile-card p-s5 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-1)]" aria-labelledby="cert-heading">
+            <div className={`profile-card-header ${profileCardHeaderClasses}`}>
               <h2 id="cert-heading">
                 <Icon name="award" size={20} /> Verified Certificate
               </h2>
               <span className="badge">{certificateUnlocked ? "Unlocked" : "In Progress"}</span>
             </div>
 
-            <div className={`certificate-preview-box ${certificateUnlocked ? "is-unlocked" : ""}`}>
-              <div className="cert-seal">
+            <div className={`certificate-preview-box ${certificateUnlocked ? "is-unlocked" : ""} relative p-s5 [border:2px_dashed_var(--ink)] rounded-ledger-lg
+          [background:linear-gradient(135deg,_#fdfbf7_0%,_#f7f3ec_100%)] text-center mb-s4
+          [&.is-unlocked]:[border-style:solid] [&.is-unlocked]:border-primary [&.is-unlocked]:[background:#f0fdf4]
+          [&.is-unlocked]:[box-shadow:3px_3px_0_var(--ink)]
+          [&_h3]:m-[0_0_6px] [&_h3]:text-[1.15rem] [&_h3]:text-ink [&_h3]:font-heading [&_h3]:font-bold
+          [&_p]:m-[0_0_var(--s4)] [&_p]:text-ledger-sm [&_p]:text-muted`}>
+              <div className="cert-seal inline-grid place-items-center w-[48px] h-[48px] rounded-[50%] bg-primary text-primary-ink
+          [border:1.5px_solid_var(--ink)] mb-s3 [box-shadow:2px_2px_0_var(--ink)]">
                 <Icon name="award" size={26} />
               </div>
               <h3>Excel Formula Mastery</h3>
@@ -1020,7 +1161,9 @@ export function ProfileClient({
                     </Link>
                   )}
                   {certError && (
-                    <p className="profile-feedback is-error" role="alert">
+                    <p className="profile-feedback is-error mt-[8px] text-ledger-sm font-semibold
+          [&.is-success]:text-primary
+          [&.is-error]:text-danger" role="alert">
                       {certError}
                     </p>
                   )}
@@ -1051,8 +1194,8 @@ export function ProfileClient({
           </section>
 
           {/* SIDEBAR CARD 4: Profile & Account Settings Form with Danger Zone */}
-          <section className="profile-card" aria-labelledby="settings-heading">
-            <div className="profile-card-header">
+          <section className="profile-card p-s5 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-1)]" aria-labelledby="settings-heading">
+            <div className={`profile-card-header ${profileCardHeaderClasses}`}>
               <h2 id="settings-heading">
                 <Icon name="user" size={20} /> Profile &amp; Settings
               </h2>
@@ -1065,10 +1208,11 @@ export function ProfileClient({
                 void submitProfileUpdate(inlineFirstName, inlineLinkedinUrl, "inline");
               }}
             >
-              <div className="profile-form-group">
+              <div className="profile-form-group grid gap-[6px] mb-s4
+          [&_label]:font-bold [&_label]:text-ledger-sm [&_label]:text-ink">
                 <label htmlFor="first-name-input">Display Name</label>
-                <p className="profile-form-hint">Shown on your certificate, leaderboard, and greetings.</p>
-                <div className="profile-input-row">
+                <p className="profile-form-hint text-ledger-xs text-muted m-[0_0_4px]">Shown on your certificate, leaderboard, and greetings.</p>
+                <div className={`profile-input-row ${profileInputRowClasses}`}>
                   <input
                     id="first-name-input"
                     type="text"
@@ -1080,10 +1224,11 @@ export function ProfileClient({
                 </div>
               </div>
 
-              <div className="profile-form-group">
+              <div className="profile-form-group grid gap-[6px] mb-s4
+          [&_label]:font-bold [&_label]:text-ledger-sm [&_label]:text-ink">
                 <label htmlFor="username-display">Username</label>
-                <p className="profile-form-hint">Unique handle displayed on public leaderboards.</p>
-                <div className="profile-input-row">
+                <p className="profile-form-hint text-ledger-xs text-muted m-[0_0_4px]">Unique handle displayed on public leaderboards.</p>
+                <div className={`profile-input-row ${profileInputRowClasses}`}>
                   <input
                     id="username-display"
                     type="text"
@@ -1094,12 +1239,13 @@ export function ProfileClient({
                 </div>
               </div>
 
-              <div className="profile-form-group">
+              <div className="profile-form-group grid gap-[6px] mb-s4
+          [&_label]:font-bold [&_label]:text-ledger-sm [&_label]:text-ink">
                 <label htmlFor="linkedin-input">LinkedIn Profile URL</label>
-                <p className="profile-form-hint">
+                <p className="profile-form-hint text-ledger-xs text-muted m-[0_0_4px]">
                   Adds a clickable LinkedIn link next to your name on your profile and leaderboard.
                 </p>
-                <div className="profile-input-row">
+                <div className={`profile-input-row ${profileInputRowClasses}`}>
                   <input
                     id="linkedin-input"
                     type="url"
@@ -1115,7 +1261,9 @@ export function ProfileClient({
               </button>
 
               {inlineMsg && (
-                <p className={`profile-feedback ${inlineMsg.ok ? "is-success" : "is-error"}`} role="alert">
+                <p className={`profile-feedback ${inlineMsg.ok ? "is-success" : "is-error"} mt-[8px] text-ledger-sm font-semibold
+          [&.is-success]:text-primary
+          [&.is-error]:text-danger`} role="alert">
                   {inlineMsg.text}
                 </p>
               )}
@@ -1123,8 +1271,12 @@ export function ProfileClient({
 
             {/* Membership Plan Section */}
             <div style={{ marginTop: "var(--s5)", paddingTop: "var(--s4)", borderTop: "1px solid var(--border)" }}>
-              <div className="sub-plan-row">
-                <div className="sub-plan-info">
+              <div className="sub-plan-row flex items-center justify-between gap-s4 p-s4 bg-surface-sunk [border:1.5px_solid_var(--ink)]
+          rounded-[var(--r-md,_8px)] [box-shadow:2px_2px_0_var(--ink)] mb-s3
+          [@media(max-width:580px)]:items-stretch [@media(max-width:580px)]:flex-col">
+                <div className="sub-plan-info min-w-0 [flex:1]
+          [&_h3]:m-[0_0_4px] [&_h3]:text-[0.98rem] [&_h3]:text-ink
+          [&_p]:m-0 [&_p]:text-ledger-xs [&_p]:leading-[1.4] [&_p]:text-text">
                   <h3>{accessLabel}</h3>
                   <p>
                     {isInvited
@@ -1155,16 +1307,18 @@ export function ProfileClient({
                 ) : null}
               </div>
               {subMsg && (
-                <p className={`profile-feedback ${subMsg.ok ? "is-success" : "is-error"}`} role="status">
+                <p className={`profile-feedback ${subMsg.ok ? "is-success" : "is-error"} mt-[8px] text-ledger-sm font-semibold
+          [&.is-success]:text-primary
+          [&.is-error]:text-danger`} role="status">
                   {subMsg.text}
                 </p>
               )}
             </div>
 
             {/* Danger Zone: Reset Learning Progress */}
-            <div className="danger-well">
-              <h3 className="danger-well-title">Danger Zone</h3>
-              <p className="danger-well-desc">
+            <div className="danger-well mt-s5 p-s4 [background:#fff5f5] [border:1.5px_solid_var(--danger)] rounded-[var(--r-md,_8px)]">
+              <h3 className="danger-well-title m-[0_0_4px] text-[0.95rem] font-bold text-danger">Danger Zone</h3>
+              <p className="danger-well-desc m-[0_0_var(--s3)] text-text text-ledger-xs leading-[1.45]">
                 Clear completed lesson checks and accuracy metrics to practice the curriculum from scratch. Points &amp; leaderboard history are preserved.
               </p>
               <button
@@ -1180,7 +1334,7 @@ export function ProfileClient({
             </div>
 
             {/* Account Sign Out */}
-            <div className="signout-row">
+            <div className="signout-row mt-s4 pt-s4 [border-top:1px_solid_var(--border)]">
               <form action="/auth/signout" method="post" style={{ margin: 0 }}>
                 <button
                   type="submit"
@@ -1198,7 +1352,8 @@ export function ProfileClient({
       {/* EDIT PROFILE MODAL (Isolated draft state, Escape + Backdrop closes) */}
       {showEditModal && (
         <div
-          className="profile-modal-backdrop"
+          className="profile-modal-backdrop fixed inset-0 [background:rgba(15,_23,_42,_0.6)] [backdrop-filter:blur(2px)] grid place-items-center z-[100]
+          p-s4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="edit-modal-title"
@@ -1206,7 +1361,7 @@ export function ProfileClient({
             if (e.target === e.currentTarget && !savingModal) setShowEditModal(false);
           }}
         >
-          <div className="profile-modal">
+          <div className={`profile-modal ${profileModalClasses}`}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--s3)" }}>
               <h3 id="edit-modal-title" style={{ margin: 0 }}>
                 Edit Profile
@@ -1228,9 +1383,10 @@ export function ProfileClient({
                 void submitProfileUpdate(modalFirstName, modalLinkedinUrl, "modal");
               }}
             >
-              <div className="profile-form-group">
+              <div className="profile-form-group grid gap-[6px] mb-s4
+          [&_label]:font-bold [&_label]:text-ledger-sm [&_label]:text-ink">
                 <label htmlFor="modal-name">Display Name</label>
-                <div className="profile-input-row">
+                <div className={`profile-input-row ${profileInputRowClasses}`}>
                   <input
                     id="modal-name"
                     type="text"
@@ -1243,9 +1399,10 @@ export function ProfileClient({
                 </div>
               </div>
 
-              <div className="profile-form-group">
+              <div className="profile-form-group grid gap-[6px] mb-s4
+          [&_label]:font-bold [&_label]:text-ledger-sm [&_label]:text-ink">
                 <label htmlFor="modal-username">Username</label>
-                <div className="profile-input-row">
+                <div className={`profile-input-row ${profileInputRowClasses}`}>
                   <input
                     id="modal-username"
                     type="text"
@@ -1256,10 +1413,11 @@ export function ProfileClient({
                 </div>
               </div>
 
-              <div className="profile-form-group">
+              <div className="profile-form-group grid gap-[6px] mb-s4
+          [&_label]:font-bold [&_label]:text-ledger-sm [&_label]:text-ink">
                 <label htmlFor="modal-linkedin">LinkedIn Profile URL</label>
-                <p className="profile-form-hint">Shown as a profile link on your profile and public leaderboard.</p>
-                <div className="profile-input-row">
+                <p className="profile-form-hint text-ledger-xs text-muted m-[0_0_4px]">Shown as a profile link on your profile and public leaderboard.</p>
+                <div className={`profile-input-row ${profileInputRowClasses}`}>
                   <input
                     id="modal-linkedin"
                     type="url"
@@ -1271,12 +1429,14 @@ export function ProfileClient({
               </div>
 
               {modalMsg && (
-                <p className={`profile-feedback ${modalMsg.ok ? "is-success" : "is-error"}`} role="alert">
+                <p className={`profile-feedback ${modalMsg.ok ? "is-success" : "is-error"} mt-[8px] text-ledger-sm font-semibold
+          [&.is-success]:text-primary
+          [&.is-error]:text-danger`} role="alert">
                   {modalMsg.text}
                 </p>
               )}
 
-              <div className="profile-modal-actions" style={{ marginTop: "var(--s4)" }}>
+              <div className="profile-modal-actions flex justify-end gap-s3" style={{ marginTop: "var(--s4)" }}>
                 <button
                   type="button"
                   className="btn btn-quiet"
@@ -1297,7 +1457,8 @@ export function ProfileClient({
       {/* RESET CONFIRMATION MODAL */}
       {showResetModal && (
         <div
-          className="profile-modal-backdrop"
+          className="profile-modal-backdrop fixed inset-0 [background:rgba(15,_23,_42,_0.6)] [backdrop-filter:blur(2px)] grid place-items-center z-[100]
+          p-s4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
@@ -1305,17 +1466,19 @@ export function ProfileClient({
             if (e.target === e.currentTarget && !resetting) setShowResetModal(false);
           }}
         >
-          <div className="profile-modal">
+          <div className={`profile-modal ${profileModalClasses}`}>
             <h3 id="modal-title">Reset your learning progress?</h3>
             <p>
               This will clear all completed lesson checks and reset your learning accuracy metrics to zero. You will start fresh on Module 1. Points &amp; leaderboard history are preserved.
             </p>
             {resetError && (
-              <p className="profile-feedback is-error" role="alert" style={{ marginBottom: "var(--s3)" }}>
+              <p className="profile-feedback is-error mt-[8px] text-ledger-sm font-semibold
+          [&.is-success]:text-primary
+          [&.is-error]:text-danger" role="alert" style={{ marginBottom: "var(--s3)" }}>
                 {resetError}
               </p>
             )}
-            <div className="profile-modal-actions">
+            <div className="profile-modal-actions flex justify-end gap-s3">
               <button
                 type="button"
                 className="btn btn-quiet"
@@ -1340,7 +1503,8 @@ export function ProfileClient({
       {/* CANCEL SUBSCRIPTION CONFIRMATION MODAL */}
       {showCancelModal && (
         <div
-          className="profile-modal-backdrop"
+          className="profile-modal-backdrop fixed inset-0 [background:rgba(15,_23,_42,_0.6)] [backdrop-filter:blur(2px)] grid place-items-center z-[100]
+          p-s4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="cancel-modal-title"
@@ -1348,12 +1512,12 @@ export function ProfileClient({
             if (e.target === e.currentTarget && !cancellingSub) setShowCancelModal(false);
           }}
         >
-          <div className="profile-modal">
+          <div className={`profile-modal ${profileModalClasses}`}>
             <h3 id="cancel-modal-title">Cancel PRO subscription?</h3>
             <p>
               You will keep full access to all {totalLessons} lessons and your certificate until the end of your current billing period.
             </p>
-            <div className="profile-modal-actions">
+            <div className="profile-modal-actions flex justify-end gap-s3">
               <button
                 type="button"
                 className="btn btn-quiet"

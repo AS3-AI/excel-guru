@@ -406,3 +406,38 @@ p { text-wrap: pretty; }
   @keyframes bar { from { transform: scaleX(0); } }
   @keyframes total-flash { 0% { background: var(--highlight); } 100% { background: transparent; } }
 }
+
+/* Profile and lesson animations */
+@layer components {
+  @keyframes meter-stripes {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: 32px 0;
+    }
+  }
+  @keyframes profile-modal-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  @keyframes pl-drawer-in { from { transform: translateX(100%); } }
+  @keyframes pl-ai-dot { 0%, 60%, 100% { opacity: 0.35; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-4px); } }
+  @keyframes pl-cell-pop { 0% { transform: scaleY(0.4); background: var(--highlight); } 60% { transform: scaleY(1.25); } }
+  @keyframes pl-cell-pulse { 50% { background: var(--highlight); } }
+  @keyframes pl-enter { from { opacity: 0; transform: translateY(10px); } }
+  @keyframes pl-pop-in { from { opacity: 0; transform: scale(0.8); } }
+  @keyframes pl-shake { 20% { transform: translateX(-6px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+  @keyframes pl-correct { from { transform: scale(0.985); opacity: 0.6; } }
+  @keyframes pl-pop { 0% { transform: scale(0.3) rotate(-30deg); opacity: 0; } 70% { transform: scale(1.15); } }
+  @keyframes pl-float { from { opacity: 0; transform: translateY(10px) scale(0.9); } }
+  @keyframes pl-list-in { from { transform: translateX(-100%); } }
+  @keyframes pl-fill { from { background: transparent; } }
+  @keyframes pl-spin { to { transform: rotate(360deg); } }
+}

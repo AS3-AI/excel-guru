@@ -17,7 +17,6 @@ import {
   type LessonMeta,
 } from "@/lib/profile-stats";
 import { ProfileClient, type Milestone } from "./ProfileClient";
-import "./profile.css";
 
 export const metadata: Metadata = {
   title: "Profile & Learning Stats — Excel Guru",
@@ -39,7 +38,7 @@ export default async function ProfilePage() {
     return (
       <>
         <SiteHeader signedIn current="profile" />
-        <main className="wrap profile-page" id="main">
+        <main className="wrap profile-page pt-s6 pb-s9 max-w-[1120px] m-[0_auto]" id="main">
           <h1>Profile unavailable</h1>
           <p>Database connection is temporarily unavailable. Please try again in a few moments.</p>
         </main>
@@ -214,7 +213,7 @@ export default async function ProfilePage() {
   return (
     <>
       <SiteHeader signedIn current="profile" />
-      <main className="wrap profile-page" id="main">
+      <main className="wrap profile-page pt-s6 pb-s9 max-w-[1120px] m-[0_auto]" id="main">
         <ProfileClient
           initialFirstName={profile.first_name}
           username={profile.username}
