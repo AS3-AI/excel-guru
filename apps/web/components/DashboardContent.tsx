@@ -20,9 +20,9 @@ const moduleCardClasses = [
   "[&.is-done]:bg-mint",
 ].join(" ");
 
-type DashboardProps = { signedIn: boolean; completedIds: string[]; tags: StatusTag[]; moduleDone: Record<string, number>; order: string[]; lessonModules: Record<string, string> };
+type DashboardProps = { signedIn: boolean; progressLoaded: boolean; completedIds: string[]; tags: StatusTag[]; moduleDone: Record<string, number>; order: string[]; lessonModules: Record<string, string> };
 
-export function DashboardContent({ signedIn: initiallySignedIn, completedIds: initialDone, tags, moduleDone: initialModuleDone, order, lessonModules }: DashboardProps) {
+export function DashboardContent({ signedIn: initiallySignedIn, progressLoaded, completedIds: initialDone, tags, moduleDone: initialModuleDone, order, lessonModules }: DashboardProps) {
   const [signedIn, setSignedIn] = useState(initiallySignedIn);
   const [done, setDone] = useState(initialDone);
   const [completedCount, setCompletedCount] = useState(initialDone.length);
@@ -36,6 +36,10 @@ export function DashboardContent({ signedIn: initiallySignedIn, completedIds: in
     let active = true;
     void (async () => {
       const local = readLocalProgress();
+      if (initiallySignedIn && progressLoaded && !local.length) {
+        if (active) setDashboardReady(true);
+        return;
+      }
       if (initiallySignedIn && local.length) await mergeLocalProgress();
       try {
         const response = await fetch("/api/dashboard");
@@ -51,7 +55,7 @@ export function DashboardContent({ signedIn: initiallySignedIn, completedIds: in
       } catch { if (active) setDashboardReady(true); /* Keep server-rendered progress visible if the refresh fails. */ }
     })();
     return () => { active = false; };
-  }, [initiallySignedIn, router]);
+  }, [initiallySignedIn, progressLoaded, router]);
   useEffect(() => { if (!initiallySignedIn) { const localDone = readLocalProgress().map((item) => item.lessonId); setDone(localDone); setCompletedCount(localDone.length); setModuleDone(Object.fromEntries(MODULES.map((module) => [module.title.toLowerCase(), order.filter((id) => lessonModules[id]?.toLowerCase() === module.title.toLowerCase() && localDone.includes(id)).length]))); } }, [initiallySignedIn, order, lessonModules]);
   const doneCount = signedIn ? completedCount : done.length;
   const modules = MODULES.map((module) => ({ ...module, done: moduleDone[module.title.toLowerCase()] ?? 0 }));

@@ -41,14 +41,14 @@ export const stripedClasses = [
   "[&.meter]:[border:1.5px_solid_var(--ink)] [&.meter]:rounded-[9999px] [&.meter]:overflow-hidden",
   "[&.meter_i]:block [&.meter_i]:h-full [&.meter_i]:rounded-[9999px] [&.meter_i]:[background-color:var(--primary)]",
   "[&.meter_i]:[background-image:linear-gradient(_45deg,_rgba(255,_255,_255,_0.28)_25%,_transparent_25%,_transparent_50%,_rgba(255,_255,_255,_0.28)_50%,_rgba(255,_255,_255,_0.28)_75%,_transparent_75%,_transparent_)]",
-  "[&.meter_i]:[background-size:16px_16px] [&.meter_i]:[animation:meter-stripes_2.2s_linear_infinite]",
+  "[&.meter_i]:[background-size:16px_16px]",
   "[&.meter_i]:[transition:width_0.4s_var(--ease)]",
 ].join(" ");
 
 export const achievementMeterFillClasses = [
   "block h-full rounded-[9999px] [background-color:var(--primary)]",
   "[background-image:linear-gradient(_45deg,_rgba(255,_255,_255,_0.28)_25%,_transparent_25%,_transparent_50%,_rgba(255,_255,_255,_0.28)_50%,_rgba(255,_255,_255,_0.28)_75%,_transparent_75%,_transparent_)]",
-  "[background-size:16px_16px] [animation:meter-stripes_2.2s_linear_infinite] [transition:width_0.4s_var(--ease)]",
+  "[background-size:16px_16px] [transition:width_0.4s_var(--ease)]",
 ].join(" ");
 
 export const badgeItemClasses = [

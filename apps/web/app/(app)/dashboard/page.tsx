@@ -21,15 +21,17 @@ export default async function DashboardPage() {
   const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
   let completedIds: string[] = [];
   let tags: StatusTag[] = [];
+  let progressLoaded = false;
   if (user) {
     const admin = createAdminClient();
     if (admin) {
-      const { data } = await admin.from("lesson_progress").select("lesson_id,completed_at,first_try_accuracy").eq("user_id", user.id);
+      const { data, error } = await admin.from("lesson_progress").select("lesson_id,completed_at,first_try_accuracy").eq("user_id", user.id);
+      progressLoaded = !error;
       const rows = data ?? [];
       completedIds = rows.map((row) => row.lesson_id);
       tags = rows.map((row) => getStatusTag(row.first_try_accuracy ?? 0, new Date(row.completed_at), new Date()));
     }
   }
   const moduleDone = MODULES.map((module) => [module.title.toLowerCase(), order.filter((id) => lessonModules[id]?.toLowerCase() === module.title.toLowerCase() && completedIds.includes(id)).length] as [string, number]);
-  return <><SiteHeader signedIn={!!user} current="dashboard" /><DashboardContent signedIn={!!user} completedIds={completedIds} tags={tags} moduleDone={Object.fromEntries(moduleDone)} order={order} lessonModules={lessonModules} /><SiteFooter /></>;
+  return <><SiteHeader signedIn={!!user} current="dashboard" /><DashboardContent signedIn={!!user} progressLoaded={progressLoaded} completedIds={completedIds} tags={tags} moduleDone={Object.fromEntries(moduleDone)} order={order} lessonModules={lessonModules} /><SiteFooter /></>;
 }
