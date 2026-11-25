@@ -3,6 +3,9 @@ import {
   type Lesson, type Step,
 } from "@excel-guru/grader";
 import { nextLessonId } from "./lessons";
+import { getIstDate, getIstDayUtcBounds } from "./dates";
+
+export { getIstDate, getIstDayUtcBounds };
 
 export type ProgressAttempt = { stepId: string; input: string; showedAnswer: boolean; os?: "win" | "mac"; correct?: boolean };
 export type StreakRow = { current: number; longest: number; last_active_date: string | null };
@@ -18,13 +21,6 @@ export function shouldRetryCompletionWithZeroPoints(error: unknown): boolean {
 export function pointsAllowedForCompletion(earlierCompletions: readonly EarlierLessonCompletion[], now: Date): boolean {
   const today = getIstDate(now);
   return !earlierCompletions.some((completion) => completion.points > 0 && getIstDate(new Date(completion.completed_at)) === today);
-}
-
-/** Inclusive start and exclusive end of the current IST day, expressed as UTC instants. */
-export function getIstDayUtcBounds(now: Date): { start: string; end: string } {
-  const [year, month, day] = getIstDate(now).split("-").map(Number);
-  const start = new Date(Date.UTC(year!, month! - 1, day!) - 5.5 * 60 * 60 * 1000);
-  return { start: start.toISOString(), end: new Date(start.getTime() + 24 * 60 * 60 * 1000).toISOString() };
 }
 
 /** Keeps request parsing behind the route's completed session check. */
@@ -86,10 +82,6 @@ export function calculateProgress(lesson: Lesson, attempts: readonly ProgressAtt
   const firstTryAccuracy = gradableAttempted === 0 ? 0 : firstCorrect.size / gradableAttempted;
   if (correctCount < lesson.requiredCorrect) throw new Error("Lesson is not complete");
   return { points: Math.round(points), firstTryAccuracy, correctCount, nextLessonId: nextLessonId(lesson.id) };
-}
-
-export function getIstDate(now: Date): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
 }
 
 export function getStreak(previous: StreakRow | null, now: Date): StreakRow {

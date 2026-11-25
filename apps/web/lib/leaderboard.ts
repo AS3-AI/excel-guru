@@ -37,10 +37,6 @@ export function currentStreakForOffset(current: number, lastActiveDayOffset: num
   return lastActiveDayOffset === null || lastActiveDayOffset >= 2 ? 0 : current;
 }
 
-export function celebrationStats(savedStats: { points: number; streak: number } | null): { points: number; streak: number } | null {
-  return savedStats;
-}
-
 export function answerPointsVisible(signedIn: boolean): boolean { return signedIn; }
 
 export function shareBonusDecision(sharedOnLinkedIn: boolean | null | undefined): "grant" | "already-shared" {

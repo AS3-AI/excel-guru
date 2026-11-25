@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { rankEntries, topThree, youLine, streakCopy, shareBonusDecision, safeLinkedInUrl, leaderboardColumns, currentStreakForOffset, celebrationStats, answerPointsVisible, claimShareBonus, type LeaderboardEntry } from "./leaderboard";
+import { rankEntries, topThree, youLine, streakCopy, shareBonusDecision, safeLinkedInUrl, leaderboardColumns, currentStreakForOffset, answerPointsVisible, claimShareBonus, type LeaderboardEntry } from "./leaderboard";
 
 const entries: LeaderboardEntry[] = [
   { username: "ada", firstName: "Ada", value: 100, rank: 1, linkedinUrl: null },
@@ -34,9 +34,7 @@ describe("leaderboard pure logic", () => {
     expect(leaderboardColumns("streak")).not.toContain("points");
   });
   it.each([[0, 8], [1, 8], [2, 0], [4, 0], [null, 0]] as const)("uses current streak for offset %s", (offset, expected) => expect(currentStreakForOffset(8, offset)).toBe(expected));
-  it("only shows saved server celebration stats", () => {
-    expect(celebrationStats({ points: 0, streak: 2 })).toEqual({ points: 0, streak: 2 });
-    expect(celebrationStats(null)).toBeNull();
+  it("only shows answer points when signed in", () => {
     expect(answerPointsVisible(true)).toBe(true);
     expect(answerPointsVisible(false)).toBe(false);
   });
