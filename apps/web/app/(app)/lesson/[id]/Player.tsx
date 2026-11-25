@@ -835,67 +835,6 @@ export function Player({
           id="main"
           data-feedback={feedback ?? undefined}
         >
-          {hasBrief && (
-            <section
-              className={`pl-brief ${plBriefClasses}`}
-              key={`brief-${state.visit}`}
-              aria-label="Challenge"
-            >
-              <p
-                className="pl-brief-kicker flex items-center justify-between gap-s2 m-0 [font:500_var(--fs-xs)/1_var(--mono)] tracking-[0.06em] uppercase
-          [&_.num]:text-highlight"
-              >
-                <span className="num">Challenge {challengeNo}</span>
-                <span className="pl-brief-kind p-[4px_8px] [border:1px_solid_rgb(255_255_255_/_0.18)] rounded-[4px] [color:rgb(255_255_255_/_0.75)]">
-                  {KIND[step.type]}
-                </span>
-              </p>
-              <p className="pl-prompt block m-0 text-ink text-[1.06rem] leading-[1.55]">
-                <RichText text={step.prompt} />
-              </p>
-              {(stakes !== null || firstTryRun >= 2) && feedback !== "correct" && (
-                <div className="pl-brief-chips flex flex-wrap gap-s2">
-                  {stakes !== null && (
-                    <span
-                      className="pl-chip-pts inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
-          bg-highlight text-ink"
-                    >
-                      {stakes > 0 ? (
-                        <>
-                          +<span className="num">{stakes}</span> pts
-                          {state.firstTry[step.id] === undefined ? " on first try" : ""}
-                        </>
-                      ) : (
-                        "Answer shown · no points"
-                      )}
-                    </span>
-                  )}
-                  {firstTryRun >= 2 && (
-                    <span
-                      className="pl-chip-run inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
-          [background:rgb(255_255_255_/_0.1)] [color:#fff] [animation:pl-pop-in_var(--d3)_var(--ease)]"
-                    >
-                      <Icon name="sparkle" size={13} />
-                      {firstTryRun} in a row
-                    </span>
-                  )}
-                </div>
-              )}
-              <p
-                className="pl-brief-tip relative z-[1] m-0 pt-s3 [border-top:1px_solid_rgb(255_255_255_/_0.12)] text-ledger-sm
-          [color:rgb(255_255_255_/_0.65)]"
-              >
-                {step.type === "formula" ? (
-                  <>
-                    Click <code className="chip">{step.targetCell}</code>, type a formula starting
-                    with <code className="chip">=</code>, then press Enter.
-                  </>
-                ) : (
-                  <>Click or drag across the cells, then press Enter.</>
-                )}
-              </p>
-            </section>
-          )}
           {!hasBrief && step.type !== "info" && (
             <p
               className="pl-solo-head [grid-column:2_/_span_10] flex items-center gap-s3 m-[0_0_calc(-1_*_var(--s2))]
@@ -920,7 +859,7 @@ export function Player({
           )}
           <div
             ref={stageRef}
-            className="pl-stage [grid-column:span_8] min-w-0 p-s4 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-2)]
+            className="pl-stage [grid-column:2_/_span_10] min-w-0 p-s4 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-2)]
           [transition:box-shadow_var(--d3)_var(--ease),_border-color_var(--d3)_var(--ease)]
           [@media(max-width:900px)]:[grid-column:1_/_-1]
           [@media(max-width:640px)]:p-s3
@@ -931,6 +870,64 @@ export function Player({
             onKeyDownCapture={onStageCapture}
             onKeyDown={onStageKey}
           >
+            {hasBrief && (
+              <section
+                className={`pl-brief ${plBriefClasses}`}
+                key={`brief-${state.visit}`}
+                aria-label="Challenge"
+              >
+                <p
+                  className="pl-brief-kicker flex items-center justify-between gap-s2 m-0 [font:500_var(--fs-xs)/1_var(--mono)] tracking-[0.06em] uppercase
+          text-muted [&_.num]:text-primary-strong"
+                >
+                  <span className="num">Challenge {challengeNo}</span>
+                  <span className="pl-brief-kind p-[4px_8px] [border:1px_solid_var(--border)] rounded-[4px] text-muted">
+                    {KIND[step.type]}
+                  </span>
+                </p>
+                <p className="pl-prompt block m-0 text-ink">
+                  <RichText text={step.prompt} />
+                </p>
+                {(stakes !== null || firstTryRun >= 2) && feedback !== "correct" && (
+                  <div className="pl-brief-chips flex flex-wrap gap-s2">
+                    {stakes !== null && (
+                      <span
+                        className="pl-chip-pts inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
+          bg-highlight text-ink"
+                      >
+                        {stakes > 0 ? (
+                          <>
+                            +<span className="num">{stakes}</span> pts
+                            {state.firstTry[step.id] === undefined ? " on first try" : ""}
+                          </>
+                        ) : (
+                          "Answer shown · no points"
+                        )}
+                      </span>
+                    )}
+                    {firstTryRun >= 2 && (
+                      <span
+                        className="pl-chip-run inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
+          bg-mint text-ink [animation:pl-pop-in_var(--d3)_var(--ease)]"
+                      >
+                        <Icon name="sparkle" size={13} />
+                        {firstTryRun} in a row
+                      </span>
+                    )}
+                  </div>
+                )}
+                <p className="pl-brief-tip m-0 pt-s3 [border-top:1px_solid_var(--border)] text-ledger-sm text-muted">
+                  {step.type === "formula" ? (
+                    <>
+                      Click <code className="chip">{step.targetCell}</code>, type a formula starting
+                      with <code className="chip">=</code>, then press Enter.
+                    </>
+                  ) : (
+                    <>Click or drag across the cells, then press Enter.</>
+                  )}
+                </p>
+              </section>
+            )}
             <div
               className="pl-stage-in [animation:pl-enter_var(--d3)_var(--ease)]"
               key={`stage-${state.visit}`}

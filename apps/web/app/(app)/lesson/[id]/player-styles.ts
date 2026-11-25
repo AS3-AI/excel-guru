@@ -13,9 +13,9 @@ export const plListDialogClasses = [
 ].join(" ");
 
 export const plArenaClasses = [
-  "grid grid-cols-[repeat(12,_minmax(0,_1fr))] gap-[var(--s4)_var(--s5)] [align-items:start]",
-  "[&.is-solo_.pl-stage]:[grid-column:2_/_span_10] [&.is-solo_.pl-stage]:p-s6",
-  "[@media(max-width:900px)]:[&.is-solo_.pl-stage]:[grid-column:1_/_-1]",
+  "grid grid-cols-[repeat(12,_minmax(0,_1fr))] gap-[var(--s4)_var(--s5)] items-start [align-content:stretch]",
+  "min-h-[calc(100dvh-190px)] [@media(max-width:640px)]:min-h-[calc(100dvh-230px)]",
+  "[&.is-solo_.pl-stage]:p-s6",
   "[@media(max-width:640px)]:[&.is-solo_.pl-stage]:p-s4",
   "[&.is-solo_.pl-stage_.pl-card]:[border-block:0] [&.is-solo_.pl-stage_.pl-card]:[border-right:0] [&.is-solo_.pl-stage_.pl-card]:[border-left:3px_solid_var(--primary)]",
   "[&.is-solo_.pl-stage_.pl-card]:rounded-[0] [&.is-solo_.pl-stage_.pl-card]:p-[var(--s2)_0_var(--s2)_var(--s5)]",
@@ -30,8 +30,6 @@ export const plArenaClasses = [
   "[&.is-solo_.pl-options]:[border:0] [&.is-solo_.pl-options]:p-0 [&.is-solo_.pl-options]:[background:none]",
   "[&.is-solo_.pl-options_legend]:[font:600_clamp(1.2rem,_2vw,_1.5rem)/1.4_var(--font-display)]",
   "[&.is-solo_.pl-options_legend]:tracking-[-0.015em] [&.is-solo_.pl-options_legend]:mb-s4",
-  "[&.is-solo_.pl-actions]:[grid-column:2_/_span_10]",
-  "[@media(max-width:900px)]:[&.is-solo_.pl-actions]:[grid-column:1_/_-1]",
 ].join(" ");
 
 export const plKeyClasses = [
@@ -57,23 +55,17 @@ export const plStatsClasses = [
 ].join(" ");
 
 export const plBriefClasses = [
-  "[grid-column:span_4] sticky top-s4 grid gap-s4 p-s5 bg-ink [color:rgb(255_255_255_/_0.82)] rounded-ledger-lg",
-  "[box-shadow:var(--shadow-2)] [animation:pl-enter_var(--d3)_var(--ease)] overflow-hidden [border:var(--line)]",
-  "[@media(max-width:900px)]:[grid-column:1_/_-1] [@media(max-width:900px)]:static",
-  "[@media(max-width:640px)]:p-s4",
-  "[&::after]:[content:''] [&::after]:absolute [&::after]:inset-[auto_-20px_-30px_auto] [&::after]:w-[180px]",
-  "[&::after]:h-[120px]",
-  "[&::after]:[background-image:linear-gradient(rgb(255_255_255_/_0.07)_1px,_transparent_1px),_linear-gradient(90deg,_rgb(255_255_255_/_0.07)_1px,_transparent_1px)]",
-  "[&::after]:[background-size:45px_20px] [&::after]:[transform:rotate(-8deg)] [&::after]:pointer-events-none",
-  "[&_.pl-prompt]:[color:#fff] [&_.pl-prompt]:[font:600_clamp(1.15rem,_1.8vw,_1.4rem)/1.4_var(--font-display)]",
+  "grid gap-s4 min-w-0 pb-s4 mb-s4 [border-bottom:1px_solid_var(--border)] text-ink",
+  "[animation:pl-enter_var(--d3)_var(--ease)]",
+  "[&_.pl-prompt]:text-ink [&_.pl-prompt]:[font:600_clamp(1.15rem,_1.8vw,_1.4rem)/1.45_var(--font-display)]",
   "[&_.pl-prompt]:tracking-[-0.015em]",
-  "[&_.chip]:[background:rgb(255_255_255_/_0.1)] [&_.chip]:[border-color:rgb(255_255_255_/_0.22)]",
-  "[&_.chip]:[color:#fff]",
 ].join(" ");
 
 export const plActionsClasses = [
-  "[grid-column:1_/_-1] flex flex-wrap items-center gap-[var(--s2)_var(--s3)] p-s3 [border:var(--line)]",
+  "[grid-column:2_/_span_10] self-end sticky bottom-0 z-[5] mb-s3 flex flex-wrap items-center gap-[var(--s2)_var(--s3)]",
+  "p-s3 [@media(max-width:640px)]:pb-[max(var(--s3),env(safe-area-inset-bottom))] [border:var(--line)]",
   "rounded-ledger-lg bg-surface",
+  "[@media(max-width:900px)]:[grid-column:1_/_-1]",
   "[transition:background-color_var(--d3)_var(--ease),_border-color_var(--d3)_var(--ease)]",
   "[box-shadow:var(--shadow-1)]",
   "[&.is-correct]:text-ink [&.is-correct]:bg-mint [&.is-correct]:border-ink",
