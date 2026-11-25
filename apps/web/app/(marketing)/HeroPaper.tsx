@@ -39,12 +39,15 @@ export function HeroPaper() {
       cell.getAnimations().forEach((animation) => animation.cancel());
       cell.style.left = `${column * 96 - 1}px`;
       cell.style.top = `${row * 32 - 1}px`;
-      cell.animate(
-        [{ opacity: 0 }, { opacity: 0.45, offset: 0.25 }, { opacity: 0 }],
-        { duration: 1400, easing: "ease-out" },
-      );
+      cell.animate([{ opacity: 0 }, { opacity: 0.45, offset: 0.25 }, { opacity: 0 }], {
+        duration: 1400,
+        easing: "ease-out",
+      });
     };
-    const leave = () => { glow.style.opacity = "0"; previousCell = ""; };
+    const leave = () => {
+      glow.style.opacity = "0";
+      previousCell = "";
+    };
     hero.addEventListener("pointermove", move, { passive: true });
     hero.addEventListener("pointerleave", leave);
     return () => {
@@ -54,11 +57,25 @@ export function HeroPaper() {
     };
   }, []);
 
-  return <div ref={paperRef} className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-    <div className="absolute inset-0 [background-image:linear-gradient(rgb(20_32_26_/_0.09)_1px,_transparent_1px),_linear-gradient(90deg,_rgb(20_32_26_/_0.09)_1px,_transparent_1px)] [background-size:96px_32px] [background-position:-1px_-1px] [mask-image:radial-gradient(ellipse_75%_85%_at_75%_40%,_#000_0%,_transparent_75%)]" />
-    <div ref={glowRef} className="absolute left-[-150px] top-[-150px] h-[300px] w-[300px] rounded-full opacity-0 [background:radial-gradient(circle,_rgb(255_255_255_/_0.16),_transparent_70%)] transition-opacity duration-500" />
-    <div ref={trailRef}>
-      {Array.from({ length: TRAIL_SIZE }, (_, index) => <div key={index} className="absolute h-[32px] w-[96px] rounded-[2px] border border-white/30 bg-white/30 opacity-0 [box-shadow:0_0_14px_2px_rgb(255_255_255_/_0.25)]" />)}
+  return (
+    <div
+      ref={paperRef}
+      className="absolute inset-0 pointer-events-none overflow-hidden"
+      aria-hidden="true"
+    >
+      <div className="absolute inset-0 [background-image:linear-gradient(rgb(20_32_26_/_0.09)_1px,_transparent_1px),_linear-gradient(90deg,_rgb(20_32_26_/_0.09)_1px,_transparent_1px)] [background-size:96px_32px] [background-position:-1px_-1px] [mask-image:radial-gradient(ellipse_75%_85%_at_75%_40%,_#000_0%,_transparent_75%)]" />
+      <div
+        ref={glowRef}
+        className="absolute left-[-150px] top-[-150px] h-[300px] w-[300px] rounded-full opacity-0 [background:radial-gradient(circle,_rgb(255_255_255_/_0.16),_transparent_70%)] transition-opacity duration-500"
+      />
+      <div ref={trailRef}>
+        {Array.from({ length: TRAIL_SIZE }, (_, index) => (
+          <div
+            key={index}
+            className="absolute h-[32px] w-[96px] rounded-[2px] border border-white/30 bg-white/30 opacity-0 [box-shadow:0_0_14px_2px_rgb(255_255_255_/_0.25)]"
+          />
+        ))}
+      </div>
     </div>
-  </div>;
+  );
 }

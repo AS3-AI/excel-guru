@@ -11,7 +11,10 @@ export function rateLimitKey(route: string, identifier: string): string {
 /**
  * Hash an IP address for unauthenticated rate limiting, matching the style in explain.ts.
  */
-export function hashIp(ip: string | null, salt: string = process.env.EXPLAIN_IP_SALT || ""): string {
+export function hashIp(
+  ip: string | null,
+  salt: string = process.env.EXPLAIN_IP_SALT || "",
+): string {
   const normalized = ip?.trim() || "unknown";
   return createHash("sha256").update(`ip:${normalized}:${salt}`).digest("hex");
 }
@@ -26,9 +29,12 @@ export function hashIp(ip: string | null, salt: string = process.env.EXPLAIN_IP_
  * @param windowSeconds Window length in seconds
  * @returns true if allowed, false if blocked (rate limited)
  */
-export type RateLimitAdmin = {
-  rpc: (...args: any[]) => any;
-} | SupabaseClient;
+export type RateLimitAdmin =
+  | {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- lets test fakes stand in for SupabaseClient
+      rpc: (...args: any[]) => any;
+    }
+  | SupabaseClient;
 
 export async function rateLimit(
   admin: RateLimitAdmin | null | undefined,
@@ -49,7 +55,9 @@ export async function rateLimit(
     });
 
     if (error) {
-      console.error(`rateLimit RPC error for key "${key}": ${error.message || JSON.stringify(error)}`);
+      console.error(
+        `rateLimit RPC error for key "${key}": ${error.message || JSON.stringify(error)}`,
+      );
       return true; // fail open
     }
 
