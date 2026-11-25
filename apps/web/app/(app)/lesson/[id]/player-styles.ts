@@ -81,7 +81,6 @@ export const plActionsClasses = [
   "[&.is-correct_span]:text-ink",
   "[&.is-correct_.chip]:bg-surface [&.is-correct_.chip]:border-ink [&.is-correct_.chip]:text-ink",
   "[&.is-correct_.pl-key-enter]:ml-auto",
-  "[@media(max-width:640px)]:sticky [@media(max-width:640px)]:bottom-[8px] [@media(max-width:640px)]:z-[5]",
   "[@media(max-width:640px)]:[&_.pl-key]:[flex:1]",
   "[&.is-correct_.pl-correct-label]:text-ink",
 ].join(" ");

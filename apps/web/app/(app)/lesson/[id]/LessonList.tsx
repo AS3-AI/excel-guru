@@ -16,7 +16,7 @@ export function LessonList({ items, currentId }: { items: LessonNavItem[]; curre
         <span className="pl-lesson-num num pt-[1px] text-faint text-[0.72rem] text-right">{i + 1}</span>
         <span className="pl-lesson-title [&_small]:block [&_small]:mt-[2px] [&_small]:text-muted [&_small]:text-[0.75rem]
           [&_b]:block [&_b]:mt-[3px] [&_b]:text-primary-strong [&_b]:[font:600_0.65rem_var(--mono)]
-          [&_b]:tracking-[0.06em] [&_b]:uppercase">{item.title}{item.lastCompletedAt && <small>{new Date(item.lastCompletedAt).toLocaleDateString()} · {Math.round((item.firstTryAccuracy ?? 0) * 100)}% first try</small>}{current && <b>In progress</b>}</span>
+          [&_b]:tracking-[0.06em] [&_b]:uppercase">{item.title}{item.lastCompletedAt && <small>{new Date(item.lastCompletedAt).toLocaleDateString("en-US", { timeZone: "Asia/Kolkata" })} · {Math.round((item.firstTryAccuracy ?? 0) * 100)}% first try</small>}{current && <b>In progress</b>}</span>
         <LessonDot done={!!item.lastCompletedAt} />
       </Link>
     </li>;
