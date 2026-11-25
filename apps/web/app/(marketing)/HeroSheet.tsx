@@ -3,15 +3,13 @@
 import { useEffect, useState } from "react";
 
 const sheetClasses = [
-  "relative z-[1] bg-surface [border:var(--line)] rounded-ledger-lg overflow-hidden [box-shadow:var(--shadow-2)]",
-  "text-[0.9rem] [transition:transform_0.4s_var(--ease),_box-shadow_0.4s_var(--ease)]",
-  "[@media(hover:hover)]:[&:hover]:[transform:translate(-3px,_-3px)]",
-  "[@media(hover:hover)]:[&:hover]:[box-shadow:8px_8px_0_var(--ink)]",
+  "relative z-[1] bg-surface [border:1px_solid_var(--border)] rounded-ledger-lg overflow-hidden",
+  "text-[0.9rem]",
 ].join(" ");
 
 const fxClasses = [
-  "flex items-stretch [border-bottom:2px_solid_var(--ink)] [font:500_0.88rem_var(--mono)]",
-  "[&_em]:grid [&_em]:place-items-center [&_em]:min-w-[52px] [&_em]:p-[0_10px] [&_em]:[border-right:2px_solid_var(--ink)]",
+  "flex items-stretch [border-bottom:1px_solid_var(--border)] [font:500_0.88rem_var(--mono)]",
+  "[&_em]:grid [&_em]:place-items-center [&_em]:min-w-[52px] [&_em]:p-[0_10px] [&_em]:[border-right:1px_solid_var(--border)]",
   "[&_em]:text-ink [&_em]:[font-style:normal] [&_em]:font-semibold [&_em]:bg-surface-sunk",
   "[&_b]:grid [&_b]:place-items-center [&_b]:p-[0_12px] [&_b]:text-primary-strong",
   "[&_b]:[border-right:1px_solid_var(--border)] [&_b]:[font-style:italic] [&_b]:font-semibold",
@@ -74,10 +72,10 @@ export function HeroSheet() {
 
   return (
     <figure className={`sheet ${sheetClasses}`} aria-label="A lesson that loops through formulas: SUM, AVERAGE, MAX and COUNTIF, each typed into the formula bar and marked correct" style={{ margin: 0 }}>
-      <div className="sheet-bar flex items-center gap-s3 p-[10px_12px_10px_16px] [border-bottom:var(--line)] bg-butter [font:600_0.78rem_var(--mono)]
+      <div className="sheet-bar flex items-center gap-s3 p-[10px_12px_10px_16px] [border-bottom:1px_solid_var(--border)] bg-butter [font:600_0.78rem_var(--mono)]
           whitespace-nowrap">
         <span className="sheet-file text-ink" aria-hidden="true">sales.xlsx</span>
-        <span className="sheet-lesson text-ink pl-s3 [border-left:2px_solid_var(--ink)]" aria-hidden="true">Lesson · {s.lesson}</span>
+        <span className="sheet-lesson text-ink pl-s3 [border-left:1px_solid_var(--border)]" aria-hidden="true">Lesson · {s.lesson}</span>
         {!still && (
           <button type="button" className="sheet-pause ml-auto grid place-items-center w-[30px] h-[30px] [border:var(--line)] rounded-ledger-sm bg-surface text-ink
           cursor-pointer [box-shadow:2px_2px_0_var(--ink)] [transition:transform_var(--d1),_box-shadow_var(--d1)]
@@ -90,7 +88,7 @@ export function HeroSheet() {
           </button>
         )}
       </div>
-      <div className="sheet-task p-[16px_20px] min-h-[78px] [border-bottom:2px_solid_var(--ink)] [border-left:6px_solid_var(--primary)]
+      <div className="sheet-task p-[16px_20px] min-h-[78px] [border-bottom:1px_solid_var(--border)] [border-left:6px_solid_var(--primary)]
           [&_p]:m-0 [&_p]:text-ink [&_p]:[font-weight:650]
           [&_small]:text-muted" aria-hidden="true">
         <p>{s.task}</p>
@@ -133,7 +131,7 @@ export function HeroSheet() {
         <div className="h">6</div><div><b>{s.label}</b></div>
         <div className="sel"><span data-show={done || undefined}>{s.result}</span></div>
       </div>
-      <div className="feedback flex items-center gap-[10px] m-[14px] p-[12px_14px] [border:var(--line)] rounded-ledger bg-mint text-ink opacity-0
+      <div className="feedback flex items-center gap-[10px] m-[14px] p-[12px_14px] rounded-ledger bg-mint text-ink opacity-0
           [transform:translateY(6px)] [transition:opacity_0.4s_var(--ease),_transform_0.4s_var(--ease)]
           [&[data-show]]:opacity-[1] [&[data-show]]:[transform:none]
           [&_svg]:[flex:none] [&_svg]:text-primary-strong

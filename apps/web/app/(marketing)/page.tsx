@@ -28,6 +28,7 @@ const landingClasses = [
   "[&_[data-reveal]:not([data-shown])]:[transition:opacity_0.7s_var(--ease),_transform_0.7s_var(--ease)]",
   "[&_[data-reveal][data-shown]]:[animation:reveal_0.7s_var(--ease)_backwards]",
   "[@media(max-width:640px)]:[&_h1_mark]:whitespace-normal",
+  "[&_.eyebrow_.ref]:border-0 [&_.eyebrow_.ref]:shadow-none [&_.badge]:border-0",
 ].join(" ");
 
 const heroClasses = [
@@ -40,7 +41,7 @@ const heroClasses = [
 ].join(" ");
 
 const tickerClasses = [
-  "overflow-hidden [border-top:var(--line)] bg-ink",
+  "overflow-hidden bg-ink",
   "[&:hover_.ticker-track]:[animation-play-state:paused]",
   "[&_ul]:flex [&_ul]:m-0 [&_ul]:p-0 [&_ul]:list-none",
   "[&_li]:p-[14px_26px] [&_li]:[border-right:1px_solid_rgb(255_255_255_/_0.16)]",
@@ -49,9 +50,7 @@ const tickerClasses = [
 ].join(" ");
 
 const bentoCardClasses = [
-  "flex flex-col gap-s5 p-s5 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-2)]",
-  "[&[data-shown]]:[transition:transform_var(--d2)_var(--ease),_box-shadow_var(--d2)_var(--ease)]",
-  "[&[data-shown]:hover]:[transform:translate(-3px,_-3px)] [&[data-shown]:hover]:[box-shadow:8px_8px_0_var(--ink)]",
+  "flex flex-col gap-s5 p-s5 bg-surface rounded-ledger-lg",
   "[&.bento-0]:[grid-column:span_7]",
   "[&.bento-1]:[grid-column:span_5]",
   "[&.bento-2]:[grid-column:1_/_-1] [&.bento-2]:flex-row [&.bento-2]:items-center",
@@ -83,7 +82,7 @@ const stRowClasses = [
   "[&>span+span]:[border-left:1px_solid_var(--border)]",
   "[&.st-head>span]:min-h-[30px] [&.st-head>span]:pt-[4px] [&.st-head>span]:pb-[4px] [&.st-head>span]:justify-center",
   "[&.st-head>span]:bg-butter [&.st-head>span]:text-ink [&.st-head>span]:[font:600_0.76rem_var(--mono)]",
-  "[&.st-head]:[border-bottom:2px_solid_var(--ink)]",
+  "[&.st-head]:[border-bottom:1px_solid_var(--border)]",
   "[&.st-label]:font-bold [&.st-label]:text-ink",
   "[&:is(a)]:[transition:background-color_var(--d1)_var(--ease)]",
   "[&:is(a):hover]:bg-highlight [&:is(a):hover]:no-underline",
@@ -91,7 +90,7 @@ const stRowClasses = [
   "[&:is(a):hover_.st-name]:text-ink [&:is(a):hover_.st-name]:font-semibold",
   "[&:is(a):hover_.st-n_i]:bg-primary",
   "[&:is(a):focus-visible]:[outline-offset:-3px] [&:is(a):focus-visible]:rounded-[0]",
-  "[&.st-total]:[border-bottom:0] [&.st-total]:[border-top:2px_solid_var(--ink)] [&.st-total]:font-bold",
+  "[&.st-total]:[border-bottom:0] [&.st-total]:[border-top:1px_solid_var(--border)] [&.st-total]:font-bold",
   "[&.st-total]:text-ink",
   "[&.st-total_.st-name]:gap-[10px] [&.st-total_.st-name]:text-muted [&.st-total_.st-name]:font-medium",
   "[&.st-total_.st-name]:text-[0.88rem]",
@@ -101,9 +100,7 @@ const stRowClasses = [
 ].join(" ");
 
 const planClasses = [
-  "flex flex-col gap-s2 p-s6 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-2)]",
-  "[transition:transform_var(--d2)_var(--ease),_box-shadow_var(--d2)_var(--ease)]",
-  "[&:hover]:[transform:translate(-3px,_-3px)] [&:hover]:[box-shadow:8px_8px_0_var(--ink)]",
+  "flex flex-col gap-s2 p-s6 bg-surface rounded-ledger-lg",
   "[&_h3]:flex [&_h3]:items-center [&_h3]:gap-s2 [&_h3]:text-ledger-md [&_h3]:m-0",
   "[&_p]:m-[0_0_var(--s5)] [&_p]:text-text [&_p]:[flex:1]",
   "[&_.price]:[font:700_2.5rem/1.1_var(--mono)] [&_.price]:tracking-[-0.04em] [&_.price]:text-ink",
@@ -114,7 +111,7 @@ const planClasses = [
 ].join(" ");
 
 const closerClasses = [
-  "relative overflow-hidden p-[var(--s9)_0] bg-ink text-surface [border-top:var(--line)]",
+  "relative overflow-hidden p-[var(--s9)_0] bg-ink text-surface",
   "[&_.wrap]:relative [&_.wrap]:grid [&_.wrap]:[justify-items:start] [&_.wrap]:gap-s5",
   "[&_h2]:text-surface [&_h2]:max-w-[22ch] [&_h2]:m-0 [&_h2]:text-[clamp(1.9rem,_4.4vw,_3rem)] [&_h2]:tracking-[-0.03em]",
   "[&_.btn]:[--btn-bg:var(--highlight)] [&_.btn]:[--btn-fg:var(--ink)] [&_.btn]:border-surface",
@@ -197,7 +194,7 @@ export default async function Home() {
           [background-image:linear-gradient(rgb(20_32_26_/_0.09)_1px,_transparent_1px),_linear-gradient(90deg,_rgb(20_32_26_/_0.09)_1px,_transparent_1px)]
           [background-size:96px_32px] [background-position:-1px_-1px]
           [mask-image:radial-gradient(ellipse_75%_85%_at_75%_40%,_#000_0%,_transparent_75%)]
-          [&_i]:absolute [&_i]:w-[97px] [&_i]:h-[33px] [&_i]:m-[-1px_0_0_-1px] [&_i]:[border:2px_solid_var(--ink)]
+          [&_i]:absolute [&_i]:w-[97px] [&_i]:h-[33px] [&_i]:m-[-1px_0_0_-1px] [&_i]:[border:1px_solid_var(--border)]
           [&_i]:bg-surface [&_i]:opacity-0 [&_i]:[animation:lit_7.7s_var(--ease)_infinite]
           [&_i:nth-child(3n)]:bg-highlight
           [&_i:nth-child(4n)]:bg-lilac
@@ -235,8 +232,8 @@ export default async function Home() {
                 )}
               </div>
               <dl className="facts flex gap-s3 m-[var(--s7)_0_0] p-0
-          [&>div]:min-w-[96px] [&>div]:p-[var(--s3)_var(--s4)] [&>div]:[border:var(--line)] [&>div]:rounded-ledger
-          [&>div]:bg-surface [&>div]:[box-shadow:var(--shadow-1)]
+          [&>div]:min-w-[96px] [&>div]:p-[var(--s3)_var(--s4)] [&>div]:rounded-ledger
+          [&>div]:bg-surface
           [&_dt]:text-[1.7rem] [&_dt]:font-bold [&_dt]:text-ink [&_dt]:leading-[1.1]
           [&_dd]:m-[2px_0_0] [&_dd]:text-text [&_dd]:text-ledger-sm
           [@media(max-width:640px)]:[&>div]:min-w-0 [@media(max-width:640px)]:[&>div]:[flex:1]
@@ -248,8 +245,6 @@ export default async function Home() {
             </div>
             <div className="hero-art relative p-[18px_18px_0_0] [animation:rise_0.9s_var(--ease)_0.15s_backwards]
           [@media(max-width:640px)]:p-[12px_12px_0_0]">
-              <div className="hero-frame absolute inset-[0_0_18px_18px] [border:var(--line)] rounded-ledger-lg bg-surface
-          [@media(max-width:640px)]:inset-[0_0_12px_12px]" aria-hidden="true" />
               <HeroSheet />
               <Doodle name="pencil" className="d-pencil float w-[120px] left-[-64px] bottom-[-40px] text-ink z-[2]
           [@media(max-width:979px)]:w-[84px] [@media(max-width:979px)]:left-auto [@media(max-width:979px)]:right-[-10px]
@@ -270,7 +265,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <section className="band block-butter relative p-[var(--s9)_0] [border-top:var(--line)]
+        <section className="band block-butter relative p-[var(--s9)_0]
           [@media(max-width:640px)]:p-[var(--s8)_0]
           bg-butter" aria-labelledby="how">
           <div className="wrap">
@@ -287,24 +282,24 @@ export default async function Home() {
                   <span className="ledger-col hidden" aria-hidden="true">{s.col}</span>
                   <div className="ledger-copy [&_h3]:flex [&_h3]:items-baseline [&_h3]:gap-s3 [&_h3]:text-ledger-lg [&_h3]:mb-s2
           [&_h3_.num]:inline-grid [&_h3_.num]:place-items-center [&_h3_.num]:min-w-[34px] [&_h3_.num]:h-[26px]
-          [&_h3_.num]:[border:var(--line)] [&_h3_.num]:rounded-ledger-sm [&_h3_.num]:bg-highlight [&_h3_.num]:text-ink
+          [&_h3_.num]:rounded-ledger-sm [&_h3_.num]:bg-highlight [&_h3_.num]:text-ink
           [&_h3_.num]:text-ledger-xs [&_h3_.num]:font-bold
           [&_p]:m-0 [&_p]:text-text [&_p]:max-w-[32rem]">
                     <h3><span className="num">{String(i + 1).padStart(2, "0")}</span>{s.title}</h3>
                     <p>{s.text}</p>
                   </div>
-                  <div className="mini min-h-[150px] p-[18px] bg-surface-warm [border:var(--line)] rounded-ledger flex flex-col justify-center gap-[8px]
+                  <div className="mini min-h-[150px] p-[18px] bg-surface-warm rounded-ledger flex flex-col justify-center gap-[8px]
           [font:500_0.82rem_var(--mono)] overflow-hidden
           [&_.row]:flex [&_.row]:items-center [&_.row]:gap-[10px] [&_.row]:p-[8px_10px] [&_.row]:rounded-ledger-sm
-          [&_.row]:bg-surface [&_.row]:[border:var(--line)] [&_.row]:text-muted
+          [&_.row]:bg-surface [&_.row]:text-muted
           [&_.row_small]:ml-auto [&_.row_small]:text-[0.72rem] [&_.row_small]:text-muted
-          [&_.row.on]:text-ink [&_.row.on]:[box-shadow:3px_3px_0_var(--ink)] [&_.row.on]:[transform:translate(-2px,_-2px)]
+          [&_.row.on]:text-ink [&_.row.on]:font-bold
           [&_.dot]:grid [&_.dot]:place-items-center [&_.dot]:w-[16px] [&_.dot]:h-[16px] [&_.dot]:rounded-[50%]
-          [&_.dot]:[border:2px_solid_var(--ink)] [&_.dot]:[flex:none] [&_.dot]:text-primary-ink
+          [&_.dot]:[border:1px_solid_var(--faint)] [&_.dot]:[flex:none] [&_.dot]:text-primary-ink
           [&_.dot.done]:bg-primary
-          [&_.formula]:flex [&_.formula]:rounded-ledger-sm [&_.formula]:bg-surface [&_.formula]:[border:var(--line)]
+          [&_.formula]:flex [&_.formula]:rounded-ledger-sm [&_.formula]:bg-surface
           [&_.formula]:text-ink [&_.formula]:overflow-hidden
-          [&_.formula_b]:p-[10px] [&_.formula_b]:[border-right:2px_solid_var(--ink)] [&_.formula_b]:text-primary-strong
+          [&_.formula_b]:p-[10px] [&_.formula_b]:[border-right:1px_solid_var(--border)] [&_.formula_b]:text-primary-strong
           [&_.formula_b]:[font-style:italic]
           [&_.formula_span]:p-[10px_12px] [&_.formula_span]:whitespace-nowrap [&_.formula_span]:overflow-hidden
           [&_.formula_span]:[text-overflow:ellipsis]
@@ -314,7 +309,7 @@ export default async function Home() {
           [&_.r2]:text-danger
           [&_.r3]:[color:color-mix(in_srgb,_var(--primary)_70%,_var(--track-sql))]
           [&_.tag]:inline-flex [&_.tag]:items-center [&_.tag]:gap-[4px] [&_.tag]:[align-self:flex-start] [&_.tag]:p-[3px_8px]
-          [&_.tag]:[border:2px_solid_var(--ink)] [&_.tag]:rounded-ledger-sm [&_.tag]:text-[0.74rem] [&_.tag]:font-bold
+          [&_.tag]:rounded-ledger-sm [&_.tag]:text-[0.74rem] [&_.tag]:font-bold
           [&_.tag]:bg-surface
           [&_.tag.ok]:bg-mint [&_.tag.ok]:text-ink
           [&_.bad]:text-danger
@@ -346,7 +341,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="band block-lilac relative p-[var(--s9)_0] [border-top:var(--line)]
+        <section className="band block-lilac relative p-[var(--s9)_0]
           [@media(max-width:640px)]:p-[var(--s8)_0]
           bg-lilac" aria-labelledby="curriculum">
           <div className="wrap curriculum grid gap-s7 grid-cols-[minmax(0,_1fr)] [align-items:start]
@@ -359,7 +354,7 @@ export default async function Home() {
               <p className="section-lead text-text max-w-[34rem] m-[0_0_var(--s6)] text-[1.05rem]">Start with totals and counts, finish with lookups, dates and array formulas. Every module is hands-on.</p>
               <Link className="btn" href="/lesson/intro">Try your first lesson</Link>
             </div>
-            <div className="sheet-table bg-surface [border:var(--line)] rounded-ledger-lg overflow-hidden [box-shadow:var(--shadow-2)] text-[0.95rem]
+            <div className="sheet-table bg-surface rounded-ledger-lg overflow-hidden text-[0.95rem]
           [&_ol]:list-none [&_ol]:m-0 [&_ol]:p-0
           [&[data-shown]_li]:[animation:row-in_0.45s_var(--ease)_backwards]
           [&[data-shown]_li]:[animation-delay:calc(var(--i,_0)_*_45ms)]
@@ -372,7 +367,7 @@ export default async function Home() {
                 <span className="st-col">A</span>
                 <span className="st-col st-n relative justify-end tabular-nums
           [&_i]:absolute [&_i]:left-[10px] [&_i]:top-[50%] [&_i]:h-[8px] [&_i]:max-w-[calc(100%_-_52px)] [&_i]:mt-[-4px]
-          [&_i]:[border:1.5px_solid_var(--ink)] [&_i]:rounded-[2px] [&_i]:bg-mint
+          [&_i]:rounded-[2px] [&_i]:bg-mint
           [@media(max-width:640px)]:[&_i]:hidden">B</span>
               </div>
               <div className={`st-row st-label ${stRowClasses}`} aria-hidden="true">
@@ -380,7 +375,7 @@ export default async function Home() {
                 <span className="st-name">Module</span>
                 <span className="st-n relative justify-end tabular-nums
           [&_i]:absolute [&_i]:left-[10px] [&_i]:top-[50%] [&_i]:h-[8px] [&_i]:max-w-[calc(100%_-_52px)] [&_i]:mt-[-4px]
-          [&_i]:[border:1.5px_solid_var(--ink)] [&_i]:rounded-[2px] [&_i]:bg-mint
+          [&_i]:rounded-[2px] [&_i]:bg-mint
           [@media(max-width:640px)]:[&_i]:hidden">Lessons</span>
               </div>
               <ol>
@@ -391,7 +386,7 @@ export default async function Home() {
                       <span className="st-name">{m.title}</span>
                       <span className="st-n num relative justify-end tabular-nums
           [&_i]:absolute [&_i]:left-[10px] [&_i]:top-[50%] [&_i]:h-[8px] [&_i]:max-w-[calc(100%_-_52px)] [&_i]:mt-[-4px]
-          [&_i]:[border:1.5px_solid_var(--ink)] [&_i]:rounded-[2px] [&_i]:bg-mint
+          [&_i]:rounded-[2px] [&_i]:bg-mint
           [@media(max-width:640px)]:[&_i]:hidden">{m.total}<span className="sr-only"> lessons</span><i style={{ width: `${(m.total / 10) * 100}%` }} aria-hidden="true" /></span>
                     </Link>
                   </li>
@@ -402,7 +397,7 @@ export default async function Home() {
                 <span className="st-name num"><b aria-hidden="true">fx</b><span aria-hidden="true">=SUM(B2:B{MODULES.length + 1})</span><span className="sr-only">Total</span></span>
                 <span className="st-n num relative justify-end tabular-nums
           [&_i]:absolute [&_i]:left-[10px] [&_i]:top-[50%] [&_i]:h-[8px] [&_i]:max-w-[calc(100%_-_52px)] [&_i]:mt-[-4px]
-          [&_i]:[border:1.5px_solid_var(--ink)] [&_i]:rounded-[2px] [&_i]:bg-mint
+          [&_i]:rounded-[2px] [&_i]:bg-mint
           [@media(max-width:640px)]:[&_i]:hidden">{lessonTotal}<span className="sr-only"> lessons</span></span>
               </div>
               <p className="st-note m-0 p-[10px_14px] [border-top:1px_solid_var(--border)] bg-surface-warm text-muted text-ledger-sm">Plus the free intro lesson.</p>
@@ -410,7 +405,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="band block-sky relative p-[var(--s9)_0] [border-top:var(--line)]
+        <section className="band block-sky relative p-[var(--s9)_0]
           [@media(max-width:640px)]:p-[var(--s8)_0]
           bg-sky" aria-labelledby="pricing">
           <div className="wrap">
@@ -449,13 +444,13 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="band block-rose relative p-[var(--s9)_0] [border-top:var(--line)]
+        <section className="band block-rose relative p-[var(--s9)_0]
           [@media(max-width:640px)]:p-[var(--s8)_0]
           bg-rose" aria-labelledby="faq">
           <div className="wrap faq-grid grid gap-s6 grid-cols-[minmax(0,_1fr)]
           [@media(min-width:980px)]:grid-cols-[minmax(0,_5fr)_minmax(0,_7fr)] [@media(min-width:980px)]:gap-s8
-          [&>div:last-child]:p-[var(--s2)_var(--s5)] [&>div:last-child]:bg-surface [&>div:last-child]:[border:var(--line)]
-          [&>div:last-child]:rounded-ledger-lg [&>div:last-child]:[box-shadow:var(--shadow-2)]
+          [&>div:last-child]:p-[var(--s2)_var(--s5)] [&>div:last-child]:bg-surface
+          [&>div:last-child]:rounded-ledger-lg
           [&_.faq-item:last-child]:[border-bottom:0]">
             <div className="band-head relative max-w-[40rem]" data-reveal>
               <p className="eyebrow"><span className="ref">E1</span>Questions</p>
@@ -478,7 +473,7 @@ export default async function Home() {
           <div className="wrap" data-reveal>
             <Doodle name="check" className="d-check float w-[160px] right-[6%] top-[50%] mt-[-80px] text-highlight
           [@media(max-width:860px)]:hidden" />
-            <p className="closer-fx num inline-flex gap-[12px] m-0 p-[6px_12px] [border:2px_solid_rgb(255_255_255_/_0.3)] rounded-ledger-sm
+            <p className="closer-fx num inline-flex gap-[12px] m-0 p-[6px_12px] [border:1px_solid_rgb(255_255_255_/_0.16)] rounded-ledger-sm
           [color:rgb(255_255_255_/_0.8)] text-ledger-sm
           [&_b]:text-highlight [&_b]:[font-style:italic]
           [&::after]:[content:''] [&::after]:w-[2px] [&::after]:h-[1em] [&::after]:[align-self:center] [&::after]:bg-highlight

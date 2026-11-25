@@ -363,6 +363,12 @@ p { text-wrap: pretty; }
 .leaderboard-copy { color: var(--muted); }
 
 
+/* Landing only: quieter shared chrome, so buttons and headlines lead. */
+body:has(> main.landing) .site-header { border-bottom: 1px solid var(--border); }
+body:has(> main.landing) .site-footer { border-top: 1px solid var(--border); }
+body:has(> main.landing) .logo-mark { border: 0; box-shadow: none; }
+body:has(> main.landing) .menu-panel { border: 1px solid var(--border); box-shadow: 0 8px 24px rgb(20 32 26 / 0.12); }
+
 /* ---------- doodles (components/Doodles.tsx) ---------- */
 .doodle { position: absolute; color: var(--ink); pointer-events: none; }
 .doodle path { stroke-dasharray: 1; stroke-dashoffset: 0; }
