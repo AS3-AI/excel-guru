@@ -10,6 +10,7 @@ import {
   currentStreakForOffset,
   answerPointsVisible,
   claimShareBonus,
+  rankLabel,
   type LeaderboardEntry,
 } from "./leaderboard";
 
@@ -151,5 +152,12 @@ describe("leaderboard pure logic", () => {
     expect(await claimShareBonus(true, db)).toEqual({ status: 200 });
     expect(await claimShareBonus(true, db)).toEqual({ status: 409 });
     expect(calls).toEqual(["claim"]);
+  });
+  it.each([
+    [1, "#1 today"],
+    [12, "#12 today"],
+    [null, "Unranked today"],
+  ] as const)("formats rankLabel(%s) as %s", (rank, expected) => {
+    expect(rankLabel(rank)).toBe(expected);
   });
 });

@@ -35,6 +35,10 @@ export function youLine(value: number, signedIn: boolean): { label: "you"; value
   return signedIn ? { label: "you", value } : null;
 }
 
+export function rankLabel(rank: number | null): string {
+  return rank === null ? "Unranked today" : `#${rank} today`;
+}
+
 export function streakCopy(
   current: number,
   lastActiveDayOffset: number,

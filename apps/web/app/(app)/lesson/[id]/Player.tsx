@@ -9,7 +9,6 @@ import {
   plKeyClasses,
   plListDialogClasses,
   plStatsClasses,
-  plTileBoardClasses,
 } from "./player-styles";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Link from "next/link";
@@ -33,9 +32,6 @@ import { getPlatform } from "@/lib/platform";
 import { StepView } from "./steps/StepView";
 import { ShortcutStep as ShortcutPractice, shortcutSkipOutcome } from "./steps/ShortcutStep";
 import { LessonList, type LessonNavItem } from "./LessonList";
-import { Leaderboards } from "@/components/Leaderboards";
-import { ShareBonus } from "@/components/ShareBonus";
-import { VideoModal } from "@/components/VideoModal";
 import { answerPointsVisible } from "@/lib/leaderboard";
 import { PROFILE_HREF } from "@/lib/nav-links";
 import { Icon } from "@/components/icons";
@@ -91,9 +87,8 @@ export function Player({
     : nextLessonId
       ? `/lesson/${nextLessonId}`
       : "/";
-  const [boardsReady, setBoardsReady] = useState(!signedIn);
   useEffect(() => {
-    if (signedIn) void mergeLocalProgress().finally(() => setBoardsReady(true));
+    if (signedIn) void mergeLocalProgress();
   }, [signedIn]);
   const [state, dispatch] = useReducer(playerReducer, undefined, () =>
     createPlayerState(lesson.steps.length, lesson.requiredCorrect),
@@ -748,261 +743,184 @@ export function Player({
         {list}
       </div>
     );
-  const renderRail = (belowComplete: boolean) => (
-    <aside
-      className={`pl-rail grid grid-cols-1 content-start gap-s4 min-w-0
-        [&>.pl-tile-board]:[grid-column:1_/_-1] ${belowComplete ? "mt-s7 pt-s5 [border-top:1px_solid_var(--border)]" : ""}`}
-      aria-label="Your session"
-    >
-      {boardsReady && (
-        <>
-          <div
-            className={`pl-tile pl-tile-board min-w-0
-          [&:empty]:hidden
-          ${plTileBoardClasses}`}
-          >
-            <Leaderboards type="points" />
-          </div>
-          <div
-            className={`pl-tile pl-tile-board min-w-0
-          [&:empty]:hidden
-          ${plTileBoardClasses}`}
-          >
-            <Leaderboards type="streak" />
-          </div>
-        </>
-      )}
-      <div
-        className="pl-tile pl-tile-extras min-w-0
-          [&:empty]:hidden
-          [&>span]:[font:500_var(--fs-xs)/1.2_var(--mono)] [&>span]:tracking-[0.06em] [&>span]:uppercase
-          [&>span]:text-muted
-          grid [align-content:start] gap-s2 p-s4 bg-lilac [border:var(--line)] rounded-ledger-lg
-          [box-shadow:var(--shadow-1)]
-          [&_.btn]:w-full [&_.btn]:whitespace-normal"
-      >
-        <span>Extras</span>
-        <VideoModal videoId={lesson.video} />
-        <a
-          className="btn btn-quiet pl-workbook-link"
-          href={`/api/lessons/${encodeURIComponent(lesson.id)}/workbook`}
-        >
-          <Icon name="download" size={16} />
-          Practice workbook
-        </a>
-        <div
-          className="pl-share flex flex-wrap gap-[6px] mt-[4px]
-          [&_a]:p-[4px_8px] [&_a]:[border:var(--line)] [&_a]:rounded-ledger-sm [&_a]:text-muted [&_a]:text-[0.8rem]
-          [&_a]:no-underline [&_a]:[transition:border-color_var(--d2),_color_var(--d2)]
-          [&_a:hover]:border-primary [&_a:hover]:text-primary-strong"
-          aria-label="Share"
-        >
-          <a href="https://www.linkedin.com/">LinkedIn</a>
-          <a href="https://www.facebook.com/">Facebook</a>
-          <a href="https://x.com/">X</a>
-          <a href="mailto:?subject=Excel%20Guru">Email</a>
-        </div>
-      </div>
-      {boardsReady && (
-        <div
-          className="pl-tile pl-tile-wide min-w-0
-          [&:empty]:hidden
-          [&_.share-bonus-card]:mt-0"
-        >
-          <ShareBonus signedIn={signedIn} />
-        </div>
-      )}
-    </aside>
-  );
-
   return (
     <div className="pl-board">
       {hud}
       {celebrate ? (
-        <>
-          <main
-            className="pl-complete relative overflow-hidden grid [justify-items:start] gap-s4 p-[var(--s7)_var(--s6)] bg-surface
+        <main
+          className="pl-complete relative overflow-hidden grid [justify-items:start] gap-s4 p-[var(--s7)_var(--s6)] bg-surface
           [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-pop)]
           [@media(max-width:640px)]:p-[var(--s6)_var(--s4)]
           [&_h2]:relative [&_h2]:m-0 [&_h2]:text-[clamp(2rem,_4.6vw,_3.25rem)] [&_h2]:tracking-[-0.035em]
           [&_.eyebrow]:relative [&_.eyebrow]:m-0"
-            id="main"
-            aria-labelledby="pl-done-title"
-          >
-            <div
-              className="pl-complete-cells absolute top-0 right-0 grid grid-cols-[repeat(8,_44px)] [grid-auto-rows:22px] opacity-[0.9]
+          id="main"
+          aria-labelledby="pl-done-title"
+        >
+          <div
+            className="pl-complete-cells absolute top-0 right-0 grid grid-cols-[repeat(8,_44px)] [grid-auto-rows:22px] opacity-[0.9]
           [mask-image:linear-gradient(to_bottom_left,_#000_20%,_transparent_75%)]
           [&_i]:[border-left:1px_solid_var(--border)] [&_i]:[border-bottom:1px_solid_var(--border)] [&_i]:bg-primary-tint
           [&_i]:[animation:pl-fill_700ms_var(--ease)_backwards]
           [&_i:nth-child(5n)]:bg-primary
           [&_i:nth-child(7n)]:bg-highlight"
-              aria-hidden="true"
-            >
-              {Array.from({ length: 24 }, (_, i) => (
-                <i
-                  key={i}
-                  style={{ animationDelay: `${(i % 8) * 40 + Math.floor(i / 8) * 60}ms` }}
-                />
-              ))}
-            </div>
-            <p className="eyebrow">
-              <span className="ref">✓</span>
-              {lesson.module}
-            </p>
-            <h2 id="pl-done-title">Lesson complete!</h2>
-            <Doodle
-              name="trophy"
-              className="pl-trophy draw w-[120px] right-s6 bottom-s6
+            aria-hidden="true"
+          >
+            {Array.from({ length: 24 }, (_, i) => (
+              <i key={i} style={{ animationDelay: `${(i % 8) * 40 + Math.floor(i / 8) * 60}ms` }} />
+            ))}
+          </div>
+          <p className="eyebrow">
+            <span className="ref">✓</span>
+            {lesson.module}
+          </p>
+          <h2 id="pl-done-title">Lesson complete!</h2>
+          <Doodle
+            name="trophy"
+            className="pl-trophy draw w-[120px] right-s6 bottom-s6
           [@media(max-width:640px)]:w-[72px] [@media(max-width:640px)]:right-s4 [@media(max-width:640px)]:bottom-s4"
-              fill="var(--highlight)"
-            />
-            <dl className={`pl-stats ${plStatsClasses}`}>
-              <div>
-                <dt>First-try accuracy</dt>
-                <dd className="num">{firstTry}%</dd>
-              </div>
-              <div>
-                <dt>Questions correct</dt>
-                <dd className="num">{state.correct}</dd>
-              </div>
-              {savedStats && (
-                <>
-                  <div className="is-gold">
-                    <dt>Points earned</dt>
-                    <dd className="num">+{celebrationPoints}</dd>
-                  </div>
-                  <div>
-                    <dt>Day streak</dt>
-                    <dd className="num">{savedStats.streak}</dd>
-                  </div>
-                </>
-              )}
-            </dl>
-            {inviteNotice && (
-              <p
-                className="pl-invite-note relative w-full m-[0_0_var(--s3)] p-[var(--s3)_var(--s4)] bg-mint [border:var(--line)] rounded-ledger
+            fill="var(--highlight)"
+          />
+          <dl className={`pl-stats ${plStatsClasses}`}>
+            <div>
+              <dt>First-try accuracy</dt>
+              <dd className="num">{firstTry}%</dd>
+            </div>
+            <div>
+              <dt>Questions correct</dt>
+              <dd className="num">{state.correct}</dd>
+            </div>
+            {savedStats && (
+              <>
+                <div className="is-gold">
+                  <dt>Points earned</dt>
+                  <dd className="num">+{celebrationPoints}</dd>
+                </div>
+                <div>
+                  <dt>Day streak</dt>
+                  <dd className="num">{savedStats.streak}</dd>
+                </div>
+              </>
+            )}
+          </dl>
+          {inviteNotice && (
+            <p
+              className="pl-invite-note relative w-full m-[0_0_var(--s3)] p-[var(--s3)_var(--s4)] bg-mint [border:var(--line)] rounded-ledger
           text-ledger-sm text-left"
-                role="note"
-              >
-                <strong>No payment needed.</strong> You joined with an invite code, so every lesson
-                is unlocked. Keep going!
-              </p>
-            )}
-            {saveNote && (
-              <p role="status" className="pl-save-note m-0 text-muted text-ledger-sm">
-                {saveNote}
-              </p>
-            )}
-            <button
-              ref={continueRef}
-              className={`btn pl-key pl-key-enter ${plKeyClasses}
+              role="note"
+            >
+              <strong>No payment needed.</strong> You joined with an invite code, so every lesson is
+              unlocked. Keep going!
+            </p>
+          )}
+          {saveNote && (
+            <p role="status" className="pl-save-note m-0 text-muted text-ledger-sm">
+              {saveNote}
+            </p>
+          )}
+          <button
+            ref={continueRef}
+            className={`btn pl-key pl-key-enter ${plKeyClasses}
           [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
           [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
           [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
-              aria-keyshortcuts="Enter"
-              onClick={() => router.push(completionDestination)}
-            >
-              Continue <span aria-hidden="true">⏎</span>
-            </button>
-          </main>
-          {renderRail(true)}
-        </>
-      ) : (
-        <div
-          className="pl-layout grid grid-cols-[minmax(0,_1fr)_minmax(260px,_320px)] items-start gap-s5
-          [@media(max-width:1100px)]:grid-cols-1"
-        >
-          <main
-            className={`pl-arena${hasBrief ? "" : " is-solo"} ${plArenaClasses}`}
-            id="main"
-            data-feedback={feedback ?? undefined}
+            aria-keyshortcuts="Enter"
+            onClick={() => router.push(completionDestination)}
           >
-            {hasBrief && (
-              <section
-                className={`pl-brief ${plBriefClasses}`}
-                key={`brief-${state.visit}`}
-                aria-label="Challenge"
-              >
-                <p
-                  className="pl-brief-kicker flex items-center justify-between gap-s2 m-0 [font:500_var(--fs-xs)/1_var(--mono)] tracking-[0.06em] uppercase
-          [&_.num]:text-highlight"
-                >
-                  <span className="num">Challenge {challengeNo}</span>
-                  <span className="pl-brief-kind p-[4px_8px] [border:1px_solid_rgb(255_255_255_/_0.18)] rounded-[4px] [color:rgb(255_255_255_/_0.75)]">
-                    {KIND[step.type]}
-                  </span>
-                </p>
-                <p className="pl-prompt block m-0 text-ink text-[1.06rem] leading-[1.55]">
-                  <RichText text={step.prompt} />
-                </p>
-                {(stakes !== null || firstTryRun >= 2) && feedback !== "correct" && (
-                  <div className="pl-brief-chips flex flex-wrap gap-s2">
-                    {stakes !== null && (
-                      <span
-                        className="pl-chip-pts inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
-          bg-highlight text-ink"
-                      >
-                        {stakes > 0 ? (
-                          <>
-                            +<span className="num">{stakes}</span> pts
-                            {state.firstTry[step.id] === undefined ? " on first try" : ""}
-                          </>
-                        ) : (
-                          "Answer shown · no points"
-                        )}
-                      </span>
-                    )}
-                    {firstTryRun >= 2 && (
-                      <span
-                        className="pl-chip-run inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
-          [background:rgb(255_255_255_/_0.1)] [color:#fff] [animation:pl-pop-in_var(--d3)_var(--ease)]"
-                      >
-                        <Icon name="sparkle" size={13} />
-                        {firstTryRun} in a row
-                      </span>
-                    )}
-                  </div>
-                )}
-                <p
-                  className="pl-brief-tip relative z-[1] m-0 pt-s3 [border-top:1px_solid_rgb(255_255_255_/_0.12)] text-ledger-sm
-          [color:rgb(255_255_255_/_0.65)]"
-                >
-                  {step.type === "formula" ? (
-                    <>
-                      Click <code className="chip">{step.targetCell}</code>, type a formula starting
-                      with <code className="chip">=</code>, then press Enter.
-                    </>
-                  ) : (
-                    <>Click or drag across the cells, then press Enter.</>
-                  )}
-                </p>
-              </section>
-            )}
-            {!hasBrief && step.type !== "info" && (
+            Continue <span aria-hidden="true">⏎</span>
+          </button>
+        </main>
+      ) : (
+        <main
+          className={`pl-arena${hasBrief ? "" : " is-solo"} ${plArenaClasses}`}
+          id="main"
+          data-feedback={feedback ?? undefined}
+        >
+          {hasBrief && (
+            <section
+              className={`pl-brief ${plBriefClasses}`}
+              key={`brief-${state.visit}`}
+              aria-label="Challenge"
+            >
               <p
-                className="pl-solo-head [grid-column:2_/_span_10] flex items-center gap-s3 m-[0_0_calc(-1_*_var(--s2))]
+                className="pl-brief-kicker flex items-center justify-between gap-s2 m-0 [font:500_var(--fs-xs)/1_var(--mono)] tracking-[0.06em] uppercase
+          [&_.num]:text-highlight"
+              >
+                <span className="num">Challenge {challengeNo}</span>
+                <span className="pl-brief-kind p-[4px_8px] [border:1px_solid_rgb(255_255_255_/_0.18)] rounded-[4px] [color:rgb(255_255_255_/_0.75)]">
+                  {KIND[step.type]}
+                </span>
+              </p>
+              <p className="pl-prompt block m-0 text-ink text-[1.06rem] leading-[1.55]">
+                <RichText text={step.prompt} />
+              </p>
+              {(stakes !== null || firstTryRun >= 2) && feedback !== "correct" && (
+                <div className="pl-brief-chips flex flex-wrap gap-s2">
+                  {stakes !== null && (
+                    <span
+                      className="pl-chip-pts inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
+          bg-highlight text-ink"
+                    >
+                      {stakes > 0 ? (
+                        <>
+                          +<span className="num">{stakes}</span> pts
+                          {state.firstTry[step.id] === undefined ? " on first try" : ""}
+                        </>
+                      ) : (
+                        "Answer shown · no points"
+                      )}
+                    </span>
+                  )}
+                  {firstTryRun >= 2 && (
+                    <span
+                      className="pl-chip-run inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
+          [background:rgb(255_255_255_/_0.1)] [color:#fff] [animation:pl-pop-in_var(--d3)_var(--ease)]"
+                    >
+                      <Icon name="sparkle" size={13} />
+                      {firstTryRun} in a row
+                    </span>
+                  )}
+                </div>
+              )}
+              <p
+                className="pl-brief-tip relative z-[1] m-0 pt-s3 [border-top:1px_solid_rgb(255_255_255_/_0.12)] text-ledger-sm
+          [color:rgb(255_255_255_/_0.65)]"
+              >
+                {step.type === "formula" ? (
+                  <>
+                    Click <code className="chip">{step.targetCell}</code>, type a formula starting
+                    with <code className="chip">=</code>, then press Enter.
+                  </>
+                ) : (
+                  <>Click or drag across the cells, then press Enter.</>
+                )}
+              </p>
+            </section>
+          )}
+          {!hasBrief && step.type !== "info" && (
+            <p
+              className="pl-solo-head [grid-column:2_/_span_10] flex items-center gap-s3 m-[0_0_calc(-1_*_var(--s2))]
           [font:500_var(--fs-xs)/1_var(--mono)] tracking-[0.06em] uppercase text-muted
           [animation:pl-enter_var(--d3)_var(--ease)]
           [@media(max-width:900px)]:[grid-column:1_/_-1]
           [&_.num]:text-primary-strong
           [&_.pl-chip-pts]:ml-auto [&_.pl-chip-pts]:tracking-[0] [&_.pl-chip-pts]:[text-transform:none]"
-                key={`head-${state.visit}`}
-              >
-                <span className="num">Challenge {challengeNo}</span>
-                <span>{KIND[step.type]}</span>
-                {stakes !== null && feedback !== "correct" && (
-                  <span
-                    className="pl-chip-pts inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
+              key={`head-${state.visit}`}
+            >
+              <span className="num">Challenge {challengeNo}</span>
+              <span>{KIND[step.type]}</span>
+              {stakes !== null && feedback !== "correct" && (
+                <span
+                  className="pl-chip-pts inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
           bg-highlight text-ink"
-                  >
-                    {stakes > 0 ? `+${stakes} pts` : "No points"}
-                  </span>
-                )}
-              </p>
-            )}
-            <div
-              ref={stageRef}
-              className="pl-stage [grid-column:span_8] min-w-0 p-s4 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-2)]
+                >
+                  {stakes > 0 ? `+${stakes} pts` : "No points"}
+                </span>
+              )}
+            </p>
+          )}
+          <div
+            ref={stageRef}
+            className="pl-stage [grid-column:span_8] min-w-0 p-s4 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-2)]
           [transition:box-shadow_var(--d3)_var(--ease),_border-color_var(--d3)_var(--ease)]
           [@media(max-width:900px)]:[grid-column:1_/_-1]
           [@media(max-width:640px)]:p-s3
@@ -1010,285 +928,283 @@ export function Player({
           [&_.pl-card:last-child]:mb-0
           [&_.pl-options:last-child]:mb-0
           [&_.eg-sheet]:max-w-[none]!"
-              onKeyDownCapture={onStageCapture}
-              onKeyDown={onStageKey}
-            >
-              <div
-                className="pl-stage-in [animation:pl-enter_var(--d3)_var(--ease)]"
-                key={`stage-${state.visit}`}
-              >
-                {step.type === "formula" ? (
-                  <Grid
-                    key={`${step.id}-${state.visit}`}
-                    grid={step.grid}
-                    today={LESSON_TODAY}
-                    targetCell={step.targetCell}
-                    highlightCells={step.highlightCells}
-                    sheetRef={sheetRef}
-                    onEditStart={() => {
-                      setFormulaReady(true);
-                      setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
-                    }}
-                    onCommit={() => {
-                      commitRef.current = true;
-                      setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
-                    }}
-                  />
-                ) : step.type === "shortcut" ? (
-                  <ShortcutPractice
-                    key={`${step.id}-${state.visit}`}
-                    step={step}
-                    os={platform.os}
-                    touch={platform.touch}
-                    showPostcondition={feedback === "correct"}
-                    onAttempt={shortcutAttempt}
-                    onSkip={skipShortcutStep}
-                    onSkipSection={skipShortcutSection}
-                    onPracticeReady={practiceReady}
-                  />
-                ) : (
-                  <StepView
-                    key={`${step.id}-${state.visit}`}
-                    step={step}
-                    setSelectRef={(ref) => {
-                      if (selectedRef) setSelectTouched(true);
-                      setSelectedRef(ref);
-                      setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
-                    }}
-                    onReady={(input) => setStepReady({ input })}
-                    onEditStart={() =>
-                      setFeedback((f) => (f === "wrong" && !showSolution ? null : f))
-                    }
-                  />
-                )}
-              </div>
-            </div>
+            onKeyDownCapture={onStageCapture}
+            onKeyDown={onStageKey}
+          >
             <div
-              className={`pl-actions${feedback === "correct" ? " is-correct" : ""} ${plActionsClasses}`}
+              className="pl-stage-in [animation:pl-enter_var(--d3)_var(--ease)]"
+              key={`stage-${state.visit}`}
             >
-              {feedback === "correct" ? (
-                <>
-                  <strong className="pl-correct-label inline-flex items-center gap-[10px] [color:#fff] [font:650_1.15rem_var(--font-display)]">
-                    <span
-                      className="pl-correct-icon grid place-items-center w-[28px] h-[28px] rounded-[50%] bg-primary [color:#fff]
+              {step.type === "formula" ? (
+                <Grid
+                  key={`${step.id}-${state.visit}`}
+                  grid={step.grid}
+                  today={LESSON_TODAY}
+                  targetCell={step.targetCell}
+                  highlightCells={step.highlightCells}
+                  sheetRef={sheetRef}
+                  onEditStart={() => {
+                    setFormulaReady(true);
+                    setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
+                  }}
+                  onCommit={() => {
+                    commitRef.current = true;
+                    setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
+                  }}
+                />
+              ) : step.type === "shortcut" ? (
+                <ShortcutPractice
+                  key={`${step.id}-${state.visit}`}
+                  step={step}
+                  os={platform.os}
+                  touch={platform.touch}
+                  showPostcondition={feedback === "correct"}
+                  onAttempt={shortcutAttempt}
+                  onSkip={skipShortcutStep}
+                  onSkipSection={skipShortcutSection}
+                  onPracticeReady={practiceReady}
+                />
+              ) : (
+                <StepView
+                  key={`${step.id}-${state.visit}`}
+                  step={step}
+                  setSelectRef={(ref) => {
+                    if (selectedRef) setSelectTouched(true);
+                    setSelectedRef(ref);
+                    setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
+                  }}
+                  onReady={(input) => setStepReady({ input })}
+                  onEditStart={() =>
+                    setFeedback((f) => (f === "wrong" && !showSolution ? null : f))
+                  }
+                />
+              )}
+            </div>
+          </div>
+          <div
+            className={`pl-actions${feedback === "correct" ? " is-correct" : ""} ${plActionsClasses}`}
+          >
+            {feedback === "correct" ? (
+              <>
+                <strong className="pl-correct-label inline-flex items-center gap-[10px] [color:#fff] [font:650_1.15rem_var(--font-display)]">
+                  <span
+                    className="pl-correct-icon grid place-items-center w-[28px] h-[28px] rounded-[50%] bg-primary [color:#fff]
           [animation:pl-pop_420ms_var(--ease)] [border:2px_solid_var(--ink)]"
-                      aria-hidden="true"
-                    >
-                      <Icon name="check" size={14} strokeWidth={3} />
-                    </span>
-                    Correct!
-                  </strong>
-                  {answerPointsVisible(signedIn) && (
-                    <span
-                      className="pl-points-earned p-[3px_9px] rounded-[4px] bg-highlight text-ink! [font:700_var(--fs-sm)_var(--mono)] tabular-nums
+                    aria-hidden="true"
+                  >
+                    <Icon name="check" size={14} strokeWidth={3} />
+                  </span>
+                  Correct!
+                </strong>
+                {answerPointsVisible(signedIn) && (
+                  <span
+                    className="pl-points-earned p-[3px_9px] rounded-[4px] bg-highlight text-ink! [font:700_var(--fs-sm)_var(--mono)] tabular-nums
           [animation:pl-float_600ms_var(--ease)]"
-                      aria-live="polite"
-                    >
-                      +{shownPoints} pts
-                    </span>
-                  )}
-                  {step.type === "formula" && step.explain ? (
-                    <span>
-                      <RichText text={step.explain} />
-                    </span>
-                  ) : null}
-                  <button
-                    ref={continueRef}
-                    className={`btn pl-key pl-key-enter ${plKeyClasses}
+                    aria-live="polite"
+                  >
+                    +{shownPoints} pts
+                  </span>
+                )}
+                {step.type === "formula" && step.explain ? (
+                  <span>
+                    <RichText text={step.explain} />
+                  </span>
+                ) : null}
+                <button
+                  ref={continueRef}
+                  className={`btn pl-key pl-key-enter ${plKeyClasses}
           [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
           [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
           [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
-                    aria-keyshortcuts="Enter"
-                    onClick={nextStep}
+                  aria-keyshortcuts="Enter"
+                  onClick={nextStep}
+                >
+                  Continue <span aria-hidden="true">⏎</span>
+                </button>
+              </>
+            ) : (
+              <>
+                {canGoBack && (
+                  <button
+                    className={`btn pl-key ${plKeyClasses}`}
+                    aria-label="Previous"
+                    aria-keyshortcuts="ArrowLeft"
+                    onClick={goPrevious}
                   >
-                    Continue <span aria-hidden="true">⏎</span>
+                    <span aria-hidden="true">←</span> Prev
                   </button>
-                </>
-              ) : (
-                <>
-                  {canGoBack && (
+                )}
+                <span
+                  className="pl-actions-end ml-auto flex gap-s2
+          [@media(max-width:640px)]:[flex:1]"
+                >
+                  {step.type === "info" ? (
+                    <button
+                      ref={continueRef}
+                      className={`btn pl-key pl-key-enter ${plKeyClasses}
+          [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
+          [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
+          [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
+                      aria-keyshortcuts="Enter"
+                      onClick={nextStep}
+                    >
+                      Continue <span aria-hidden="true">⏎</span>
+                    </button>
+                  ) : (step.type === "formula" && formulaReady) ||
+                    (step.type === "select" && selectTouched) ||
+                    (step.type === "mcq" && stepReady) ||
+                    ((step.type === "picture" || step.type === "project") &&
+                      !!stepReady?.input.trim()) ? (
+                    <button
+                      className={`btn pl-key pl-key-enter ${plKeyClasses}
+          [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
+          [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
+          [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
+                      aria-keyshortcuts="Enter"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => (step.type === "formula" ? check(step) : checkStep())}
+                    >
+                      Check <span aria-hidden="true">⏎</span>
+                    </button>
+                  ) : (
                     <button
                       className={`btn pl-key ${plKeyClasses}`}
-                      aria-label="Previous"
-                      aria-keyshortcuts="ArrowLeft"
-                      onClick={goPrevious}
+                      aria-keyshortcuts="Tab ArrowRight"
+                      onClick={skipQuestion}
                     >
-                      <span aria-hidden="true">←</span> Prev
+                      Skip question <span aria-hidden="true">⇥</span>
                     </button>
                   )}
-                  <span
-                    className="pl-actions-end ml-auto flex gap-s2
-          [@media(max-width:640px)]:[flex:1]"
-                  >
-                    {step.type === "info" ? (
-                      <button
-                        ref={continueRef}
-                        className={`btn pl-key pl-key-enter ${plKeyClasses}
-          [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
-          [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
-          [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
-                        aria-keyshortcuts="Enter"
-                        onClick={nextStep}
-                      >
-                        Continue <span aria-hidden="true">⏎</span>
-                      </button>
-                    ) : (step.type === "formula" && formulaReady) ||
-                      (step.type === "select" && selectTouched) ||
-                      (step.type === "mcq" && stepReady) ||
-                      ((step.type === "picture" || step.type === "project") &&
-                        !!stepReady?.input.trim()) ? (
-                      <button
-                        className={`btn pl-key pl-key-enter ${plKeyClasses}
-          [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
-          [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
-          [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
-                        aria-keyshortcuts="Enter"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => (step.type === "formula" ? check(step) : checkStep())}
-                      >
-                        Check <span aria-hidden="true">⏎</span>
-                      </button>
-                    ) : (
-                      <button
-                        className={`btn pl-key ${plKeyClasses}`}
-                        aria-keyshortcuts="Tab ArrowRight"
-                        onClick={skipQuestion}
-                      >
-                        Skip question <span aria-hidden="true">⇥</span>
-                      </button>
-                    )}
-                  </span>
-                </>
-              )}
-            </div>
-            <div
-              ref={feedbackRef}
-              className="pl-feedback min-h-0 mt-s2 [grid-column:1_/_-1]
+                </span>
+              </>
+            )}
+          </div>
+          <div
+            ref={feedbackRef}
+            className="pl-feedback min-h-0 mt-s2 [grid-column:1_/_-1]
           [&:empty]:hidden"
+            aria-live="polite"
+          >
+            {feedback === "wrong" && (
+              <p
+                className="pl-wrong-summary m-0 p-[10px_14px] rounded-ledger bg-rose text-ink [border:var(--line)]
+          [animation:pl-enter_var(--d2)_var(--ease)]"
+              >
+                {wrongText}
+              </p>
+            )}
+          </div>
+          {feedback === "wrong" && (
+            <aside
+              className={`pl-drawer ${plDrawerClasses}`}
+              aria-label="Incorrect answer"
               aria-live="polite"
             >
-              {feedback === "wrong" && (
-                <p
-                  className="pl-wrong-summary m-0 p-[10px_14px] rounded-ledger bg-rose text-ink [border:var(--line)]
-          [animation:pl-enter_var(--d2)_var(--ease)]"
+              <header>
+                <strong>Incorrect</strong>
+                <button aria-label="Close" onClick={closeWrong}>
+                  <Icon name="x" size={18} />
+                </button>
+              </header>
+              {state.wrongCount > 0 && !showSolution && (
+                <button
+                  className="btn pl-show-answer mb-s4"
+                  onClick={() => {
+                    dispatch({ type: "show-answer" });
+                    setShowSolution(true);
+                    focusAnswerControl();
+                  }}
                 >
-                  {wrongText}
+                  Show Answer
+                </button>
+              )}
+              {showSolution && (
+                <p className="pl-solution p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [overflow-wrap:anywhere]">
+                  {step.type === "formula" ? (
+                    <code className="chip">{step.solution}</code>
+                  ) : step.type === "select" ? (
+                    step.target
+                  ) : step.type === "mcq" ? (
+                    step.options[step.answer]
+                  ) : step.type === "picture" || step.type === "project" ? (
+                    step.accept[0]
+                  ) : step.type === "shortcut" ? (
+                    step.mode === "sequence" ? (
+                      (step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac")
+                    ) : (
+                      (step.keys[platform.os] ?? "Unavailable on Mac")
+                    )
+                  ) : (
+                    ""
+                  )}
                 </p>
               )}
-            </div>
-            {feedback === "wrong" && (
-              <aside
-                className={`pl-drawer ${plDrawerClasses}`}
-                aria-label="Incorrect answer"
-                aria-live="polite"
-              >
-                <header>
-                  <strong>Incorrect</strong>
-                  <button aria-label="Close" onClick={closeWrong}>
-                    <Icon name="x" size={18} />
-                  </button>
-                </header>
-                {state.wrongCount > 0 && !showSolution && (
-                  <button
-                    className="btn pl-show-answer mb-s4"
-                    onClick={() => {
-                      dispatch({ type: "show-answer" });
-                      setShowSolution(true);
-                      focusAnswerControl();
-                    }}
-                  >
-                    Show Answer
-                  </button>
-                )}
-                {showSolution && (
-                  <p className="pl-solution p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [overflow-wrap:anywhere]">
-                    {step.type === "formula" ? (
-                      <code className="chip">{step.solution}</code>
-                    ) : step.type === "select" ? (
-                      step.target
-                    ) : step.type === "mcq" ? (
-                      step.options[step.answer]
-                    ) : step.type === "picture" || step.type === "project" ? (
-                      step.accept[0]
-                    ) : step.type === "shortcut" ? (
-                      step.mode === "sequence" ? (
-                        (step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac")
-                      ) : (
-                        (step.keys[platform.os] ?? "Unavailable on Mac")
-                      )
-                    ) : (
-                      ""
-                    )}
-                  </p>
-                )}
-                {aiShown && (
-                  <div
-                    className="pl-ai-slot min-h-[100px] p-s4 [border:var(--line)] rounded-ledger bg-surface-warm text-muted
+              {aiShown && (
+                <div
+                  className="pl-ai-slot min-h-[100px] p-s4 [border:var(--line)] rounded-ledger bg-surface-warm text-muted
           [&_p]:m-[0_0_var(--s3)] [&_p]:text-text [&_p]:leading-[1.6] [&_p]:[overflow-wrap:anywhere]
           [&_small]:block [&_small]:mt-s3 [&_small]:text-muted [&_small]:leading-[1.4] [&_small]:text-[0.8rem]"
-                  >
-                    {aiLoading ? (
-                      <span
-                        className="pl-ai-loading flex items-center gap-[6px] min-h-[36px]
+                >
+                  {aiLoading ? (
+                    <span
+                      className="pl-ai-loading flex items-center gap-[6px] min-h-[36px]
           [&_i]:w-[7px] [&_i]:h-[7px] [&_i]:rounded-[50%] [&_i]:bg-primary-strong
           [&_i]:[animation:pl-ai-dot_1s_infinite_ease-in-out]
           [&_i:nth-child(2)]:[animation-delay:0.15s]
           [&_i:nth-child(3)]:[animation-delay:0.3s]"
-                        role="status"
-                        aria-label="Loading explanation"
-                      >
-                        <i />
-                        <i />
-                        <i />
-                      </span>
-                    ) : (
-                      <>
-                        <p>
-                          {aiExplanation?.text ??
-                            "An explanation isn't available right now. Please try again in a moment."}
-                        </p>
-                        {signedIn &&
-                          aiExplanation?.id &&
-                          (aiThanks ? (
-                            <p role="status">Thanks for your feedback!</p>
-                          ) : (
-                            <div
-                              className="pl-ai-rating flex gap-s2
+                      role="status"
+                      aria-label="Loading explanation"
+                    >
+                      <i />
+                      <i />
+                      <i />
+                    </span>
+                  ) : (
+                    <>
+                      <p>
+                        {aiExplanation?.text ??
+                          "An explanation isn't available right now. Please try again in a moment."}
+                      </p>
+                      {signedIn &&
+                        aiExplanation?.id &&
+                        (aiThanks ? (
+                          <p role="status">Thanks for your feedback!</p>
+                        ) : (
+                          <div
+                            className="pl-ai-rating flex gap-s2
           [&_button]:grid [&_button]:place-items-center [&_button]:min-w-[44px] [&_button]:min-h-[44px]
           [&_button]:[border:var(--line)] [&_button]:rounded-ledger [&_button]:bg-surface [&_button]:text-text
           [&_button]:cursor-pointer
           [&_button]:[transition:border-color_var(--d2),_color_var(--d2),_background-color_var(--d2)]
           [&_button:hover:not(:disabled)]:border-primary [&_button:hover:not(:disabled)]:text-primary-strong
           [&_button:disabled]:opacity-[0.5] [&_button:disabled]:cursor-default"
+                          >
+                            <button
+                              type="button"
+                              aria-label="Helpful"
+                              disabled={aiRated}
+                              onClick={() => void rateExplanation(true)}
                             >
-                              <button
-                                type="button"
-                                aria-label="Helpful"
-                                disabled={aiRated}
-                                onClick={() => void rateExplanation(true)}
-                              >
-                                <Icon name="thumbUp" size={18} />
-                              </button>
-                              <button
-                                type="button"
-                                aria-label="Not helpful"
-                                disabled={aiRated}
-                                onClick={() => void rateExplanation(false)}
-                              >
-                                <Icon name="thumbDown" size={18} />
-                              </button>
-                            </div>
-                          ))}
-                        <small>AI can be wrong. Check the answer before relying on it.</small>
-                      </>
-                    )}
-                  </div>
-                )}
-              </aside>
-            )}
-          </main>
-          {renderRail(false)}
-        </div>
+                              <Icon name="thumbUp" size={18} />
+                            </button>
+                            <button
+                              type="button"
+                              aria-label="Not helpful"
+                              disabled={aiRated}
+                              onClick={() => void rateExplanation(false)}
+                            >
+                              <Icon name="thumbDown" size={18} />
+                            </button>
+                          </div>
+                        ))}
+                      <small>AI can be wrong. Check the answer before relying on it.</small>
+                    </>
+                  )}
+                </div>
+              )}
+            </aside>
+          )}
+        </main>
       )}
       {list}
     </div>

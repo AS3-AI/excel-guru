@@ -1,6 +1,6 @@
 # Roadmap
 
-Last updated: 25 Nov 2026 (T57: lesson page right rail, stat boxes removed)
+Last updated: 26 Nov 2026 (T58: lesson page cards removed, rank in top bar)
 
 ## Start here (17 Nov 2026) — for the human review
 

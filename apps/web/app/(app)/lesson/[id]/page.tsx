@@ -8,6 +8,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { decideAndRecordLessonOpen, decideLessonAccess, loadLessonAccess } from "@/lib/access";
 import { Logo } from "@/components/SiteChrome";
 import { Icon } from "@/components/icons";
+import { VideoModal } from "@/components/VideoModal";
+import { LeaderboardRank } from "@/components/LeaderboardRank";
 import { Player } from "./Player";
 import type { LessonNavItem } from "./LessonList";
 
@@ -127,6 +129,18 @@ export default async function LessonPage({ params }: Props) {
           <Icon name="chevronRight" size={14} />
           <span aria-current="page">{lesson.title}</span>
         </nav>
+        <div className="ml-auto flex flex-wrap items-center gap-s3 min-w-0 max-w-full">
+          <VideoModal videoId={lesson.video} />
+          <a
+            className="btn btn-quiet pl-workbook-link"
+            href={`/api/lessons/${encodeURIComponent(lesson.id)}/workbook`}
+            aria-label="Download practice workbook"
+          >
+            <Icon name="download" size={16} />
+            Workbook
+          </a>
+          {user && <LeaderboardRank />}
+        </div>
       </header>
       <Player
         lesson={lesson}
