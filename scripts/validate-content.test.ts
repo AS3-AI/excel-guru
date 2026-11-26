@@ -48,9 +48,64 @@ describe("validateContent: valid content", () => {
     expect(validateContent(fixture("valid"))).toEqual([]);
   });
 
+  it("accepts info grids, animations, yellowCells, keys, mustReference and wrongFeedback", () => {
+    const errors = validateLesson({
+      id: "rich-intro",
+      module: "intro",
+      title: "Your first Excel result",
+      goal: "Add two cells.",
+      difficulty: 1,
+      requiredCorrect: 1,
+      isIntro: true,
+      video: null,
+      steps: [
+        {
+          id: "s1",
+          type: "info",
+          topic: "See a cell",
+          text: "==B2== is column **B**, row **2** [[Enter]].",
+          grid: [
+            ["Supply", "In stock"],
+            ["Badges", 5],
+          ],
+          activeCell: "B2",
+          yellowCells: ["B2"],
+          keycaps: ["=", "Click B2", "Enter"],
+          showFormulaBar: true,
+          animation: { kind: "cell-locate", col: "B", row: 2, cell: "B2" },
+        },
+        {
+          id: "s2",
+          type: "formula",
+          topic: "Make the result",
+          prompt: "In C2, type `=B2+B3`.",
+          grid: [
+            ["Supply", "In stock", "Total"],
+            ["Badges", 5, null],
+            ["Lanyards", 4, null],
+          ],
+          targetCell: "C2",
+          expectedValue: 9,
+          mustReference: ["B2", "B3"],
+          disallowFunctions: true,
+          clues: ["Start with =."],
+          revealAfter: 2,
+          solution: "=B2+B3",
+          wrongFeedback: {
+            notFormula: "Start with =.",
+            missingReference: "Use B2 and B3.",
+          },
+        },
+      ],
+    });
+    expect(errors).toEqual([]);
+  });
+
   // Runs every lesson solution through the engine (~6s locally); the 5s default is too tight.
   it("accepts the repository's learning articles", () => {
-    expect(validateContent(join(fileURLToPath(new URL("..", import.meta.url)), "content"))).toEqual([]);
+    expect(validateContent(join(fileURLToPath(new URL("..", import.meta.url)), "content"))).toEqual(
+      [],
+    );
   }, 30_000);
 
   it("validates article shape, lesson links, related links and evaluated examples", () => {
@@ -60,19 +115,45 @@ describe("validateContent: valid content", () => {
       mkdirSync(join(dir, "learn"));
       writeFileSync(join(dir, "order.json"), "[]");
       const base = {
-        slug: "sum", fn: "SUM", title: "SUM guide", description: "A guide", syntax: "=SUM(number1)",
+        slug: "sum",
+        fn: "SUM",
+        title: "SUM guide",
+        description: "A guide",
+        syntax: "=SUM(number1)",
         args: [{ name: "number1", required: true, text: "Numbers to add." }],
-        sections: [{ heading: "Example", text: "Add these values.", grid: [[1, 2], [null, 0]], formula: "=SUM(A1:B1)", result: 3 }],
-        lessonId: "missing", related: ["absent"],
+        sections: [
+          {
+            heading: "Example",
+            text: "Add these values.",
+            grid: [
+              [1, 2],
+              [null, 0],
+            ],
+            formula: "=SUM(A1:B1)",
+            result: 3,
+          },
+        ],
+        lessonId: "missing",
+        related: ["absent"],
       };
       writeFileSync(join(dir, "learn", "sum.json"), JSON.stringify(base));
       const errors = validateContent(dir).flatMap((entry) => entry.errors);
-      expect(errors.some((error) => error.includes("lessonId \"missing\" does not exist"))).toBe(true);
-      expect(errors.some((error) => error.includes("related slug \"absent\" does not exist"))).toBe(true);
-      const bad = { ...base, description: "x".repeat(161), sections: [{ ...base.sections[0], result: 4 }] };
+      expect(errors.some((error) => error.includes('lessonId "missing" does not exist'))).toBe(
+        true,
+      );
+      expect(errors.some((error) => error.includes('related slug "absent" does not exist'))).toBe(
+        true,
+      );
+      const bad = {
+        ...base,
+        description: "x".repeat(161),
+        sections: [{ ...base.sections[0], result: 4 }],
+      };
       writeFileSync(join(dir, "learn", "sum.json"), JSON.stringify(bad));
       const badErrors = validateContent(dir).flatMap((entry) => entry.errors);
-      expect(badErrors.some((error) => error.includes("description must be 160 characters or fewer"))).toBe(true);
+      expect(
+        badErrors.some((error) => error.includes("description must be 160 characters or fewer")),
+      ).toBe(true);
       expect(badErrors.some((error) => error.includes("does not evaluate to result"))).toBe(true);
     } finally {
       rmSync(dir, { recursive: true, force: true });
@@ -80,42 +161,88 @@ describe("validateContent: valid content", () => {
   });
 
   it("rejects invalid article fields and formula grids", () => {
-    const dir = mkdtempSync(join(tmpdir(), "excel-guru-article-") );
+    const dir = mkdtempSync(join(tmpdir(), "excel-guru-article-"));
     try {
       mkdirSync(join(dir, "lessons"));
       mkdirSync(join(dir, "learn"));
       writeFileSync(join(dir, "order.json"), "[]");
       const article = {
-        slug: "sum", fn: "SUM", title: "SUM guide", description: "A guide", syntax: "=SUM(number1)",
-        args: [], sections: [{ heading: "Example", text: "Add values.", grid: [[1, null]], formula: "=SUM(A1:A1)", result: 1 }],
-        lessonId: "unused", related: [],
+        slug: "sum",
+        fn: "SUM",
+        title: "SUM guide",
+        description: "A guide",
+        syntax: "=SUM(number1)",
+        args: [],
+        sections: [
+          {
+            heading: "Example",
+            text: "Add values.",
+            grid: [[1, null]],
+            formula: "=SUM(A1:A1)",
+            result: 1,
+          },
+        ],
+        lessonId: "unused",
+        related: [],
       };
-      const write = (value: unknown, filename = "sum.json") => writeFileSync(join(dir, "learn", filename), JSON.stringify(value));
+      const write = (value: unknown, filename = "sum.json") =>
+        writeFileSync(join(dir, "learn", filename), JSON.stringify(value));
       const messages = (value: unknown, filename = "sum.json") => {
         write(value, filename);
         return validateContent(dir).flatMap((entry) => entry.errors);
       };
 
-      expect(messages({ ...article, sections: [{ ...article.sections[0], grid: Array.from({ length: 8 }, () => Array(9).fill(1)) }] })).toEqual(
-        expect.arrayContaining([expect.stringMatching(/grid must be no larger than 8 rows by 7 columns/)]),
+      expect(
+        messages({
+          ...article,
+          sections: [
+            { ...article.sections[0], grid: Array.from({ length: 8 }, () => Array(9).fill(1)) },
+          ],
+        }),
+      ).toEqual(
+        expect.arrayContaining([
+          expect.stringMatching(/grid must be no larger than 8 rows by 7 columns/),
+        ]),
       );
-      expect(messages({ ...article, sections: [{ heading: "Example", text: "Add values.", grid: [[1, null]], formula: "=SUM(A1:A1)" }] })).toEqual(
-        expect.arrayContaining([expect.stringMatching(/formula and result must be provided together/)]),
+      expect(
+        messages({
+          ...article,
+          sections: [
+            { heading: "Example", text: "Add values.", grid: [[1, null]], formula: "=SUM(A1:A1)" },
+          ],
+        }),
+      ).toEqual(
+        expect.arrayContaining([
+          expect.stringMatching(/formula and result must be provided together/),
+        ]),
       );
-      expect(messages({ ...article, sections: [{ heading: "Example", text: "Add values.", grid: [[1, null]], result: 1 }] })).toEqual(
-        expect.arrayContaining([expect.stringMatching(/formula and result must be provided together/)]),
+      expect(
+        messages({
+          ...article,
+          sections: [{ heading: "Example", text: "Add values.", grid: [[1, null]], result: 1 }],
+        }),
+      ).toEqual(
+        expect.arrayContaining([
+          expect.stringMatching(/formula and result must be provided together/),
+        ]),
       );
       expect(messages({ ...article, slug: "other" })).toEqual(
         expect.arrayContaining([expect.stringMatching(/slug "other" must match file name "sum"/)]),
       );
       const { title: _title, ...missingTitle } = article;
-      expect(messages(missingTitle)).toEqual(expect.arrayContaining([expect.stringMatching(/title must be a non-empty string/)]));
+      expect(messages(missingTitle)).toEqual(
+        expect.arrayContaining([expect.stringMatching(/title must be a non-empty string/)]),
+      );
       expect(messages({ ...article, unexpected: true })).toEqual(
         expect.arrayContaining([expect.stringMatching(/unknown field "unexpected"/)]),
       );
       for (const grid of [[[1]], [[1, null, null]]]) {
         expect(messages({ ...article, sections: [{ ...article.sections[0], grid }] })).toEqual(
-          expect.arrayContaining([expect.stringMatching(/section 1: a grid with a formula needs exactly one empty cell for the result/)]),
+          expect.arrayContaining([
+            expect.stringMatching(
+              /section 1: a grid with a formula needs exactly one empty cell for the result/,
+            ),
+          ]),
         );
       }
     } finally {
@@ -125,7 +252,6 @@ describe("validateContent: valid content", () => {
 });
 
 describe("validateContent: file name and folder", () => {
-
   it("accepts a shortcut lesson fixture with a grid and formatted postcondition", () => {
     expect(validateContent(fixture("shortcut-grid"))).toEqual([]);
   });
@@ -133,15 +259,24 @@ describe("validateContent: file name and folder", () => {
 
 describe("validateContent: shortcut grids and formatting", () => {
   it("checks dimensions, rectangular rows, references and allowed format styles", () => {
-    const errors = errorsFor("shortcut-grid-invalid", lessonFile("shortcut-grid-invalid", "nav/nav-1.json"));
-    expect(errors).toEqual(expect.arrayContaining([
-      expect.stringMatching(/step "large": grid must have at most 7 columns and 8 rows/),
-      expect.stringMatching(/step "ragged": grid rows must have equal length/),
-      expect.stringMatching(/step "active": activeCell "C1" is outside the grid/),
-      expect.stringMatching(/step "selection": postcondition\.selection "A1:C1" is outside the grid/),
-      expect.stringMatching(/step "format-key": postcondition\.format key "C1" is outside the grid/),
-      expect.stringMatching(/step "style": postcondition\.format style "shadow" is not allowed/),
-    ]));
+    const errors = errorsFor(
+      "shortcut-grid-invalid",
+      lessonFile("shortcut-grid-invalid", "nav/nav-1.json"),
+    );
+    expect(errors).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/step "large": grid must have at most 7 columns and 8 rows/),
+        expect.stringMatching(/step "ragged": grid rows must have equal length/),
+        expect.stringMatching(/step "active": activeCell "C1" is outside the grid/),
+        expect.stringMatching(
+          /step "selection": postcondition\.selection "A1:C1" is outside the grid/,
+        ),
+        expect.stringMatching(
+          /step "format-key": postcondition\.format key "C1" is outside the grid/,
+        ),
+        expect.stringMatching(/step "style": postcondition\.format style "shadow" is not allowed/),
+      ]),
+    );
   });
 
   it("rejects postcondition.format on non-shortcut steps", () => {
@@ -162,7 +297,7 @@ describe("validateContent: shortcut grids and formatting", () => {
           targetCell: "A1",
           expectedValue: 1,
           solution: "=1",
-          postcondition: { format: { "A1": ["bold"] } },
+          postcondition: { format: { A1: ["bold"] } },
         },
       ],
     });
@@ -207,11 +342,19 @@ describe("validateContent: shortcut grids and formatting", () => {
         },
       ],
     });
-    expect(errors).toEqual(expect.arrayContaining([
-      expect.stringMatching(/step "large-post": postcondition\.grid must have at most 7 columns and 8 rows/),
-      expect.stringMatching(/step "ragged-post": postcondition\.grid rows must have equal length/),
-      expect.stringMatching(/step "tall-post": postcondition\.grid must have at most 7 columns and 8 rows/),
-    ]));
+    expect(errors).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(
+          /step "large-post": postcondition\.grid must have at most 7 columns and 8 rows/,
+        ),
+        expect.stringMatching(
+          /step "ragged-post": postcondition\.grid rows must have equal length/,
+        ),
+        expect.stringMatching(
+          /step "tall-post": postcondition\.grid must have at most 7 columns and 8 rows/,
+        ),
+      ]),
+    );
   });
 
   it("allows postcondition.grid one row larger than step.grid, and checks format keys against postcondition.grid", () => {
@@ -242,7 +385,7 @@ describe("validateContent: shortcut grids and formatting", () => {
               ["Pens", 10],
               ["Total", 10],
             ],
-            format: { "B3": ["bold"] },
+            format: { B3: ["bold"] },
           },
         },
       ],
@@ -275,7 +418,7 @@ describe("validateContent: shortcut grids and formatting", () => {
               ["Pens", 10],
               ["Total", 10],
             ],
-            format: { "B4": ["bold"] },
+            format: { B4: ["bold"] },
           },
         },
       ],
@@ -304,7 +447,7 @@ describe("validateContent: shortcut grids and formatting", () => {
           activeCell: "Z99",
           postcondition: {
             selection: "Z99:Z100",
-            format: { "Z99": ["bold"] },
+            format: { Z99: ["bold"] },
           },
         },
       ],
@@ -356,12 +499,14 @@ describe("validateContent: shortcut grids and formatting", () => {
         },
       ],
     });
-    expect(errors).toEqual(expect.arrayContaining([
-      expect.stringMatching(/step "empty-step-grid": grid must not be empty/),
-      expect.stringMatching(/step "empty-row-step-grid": grid must not be empty/),
-      expect.stringMatching(/step "empty-post-grid": postcondition\.grid must not be empty/),
-      expect.stringMatching(/step "empty-row-post-grid": postcondition\.grid must not be empty/),
-    ]));
+    expect(errors).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/step "empty-step-grid": grid must not be empty/),
+        expect.stringMatching(/step "empty-row-step-grid": grid must not be empty/),
+        expect.stringMatching(/step "empty-post-grid": postcondition\.grid must not be empty/),
+        expect.stringMatching(/step "empty-row-post-grid": postcondition\.grid must not be empty/),
+      ]),
+    );
   });
 });
 
@@ -393,23 +538,38 @@ describe("validateContent: file name and folder", () => {
 
 describe("validateContent: formula solutions", () => {
   it("rejects a solution that does not evaluate to expectedValue", () => {
-    const errors = errorsFor("formula-wrong-value", lessonFile("formula-wrong-value", "count/count-1.json"));
+    const errors = errorsFor(
+      "formula-wrong-value",
+      lessonFile("formula-wrong-value", "count/count-1.json"),
+    );
     expect(errors).toHaveLength(1);
-    expect(errors[0]).toMatch(/step "f1": solution "=COUNT\(B2:B4\)" is not graded correct \(wrong_value; expected 3\)/);
+    expect(errors[0]).toMatch(
+      /step "f1": solution "=COUNT\(B2:B4\)" is not graded correct \(wrong_value; expected 3\)/,
+    );
     expectEveryErrorNamesItsFile("formula-wrong-value");
   });
 
   it("rejects a solution that skips a mustUse function", () => {
-    const errors = errorsFor("formula-missing-function", lessonFile("formula-missing-function", "count/count-1.json"));
+    const errors = errorsFor(
+      "formula-missing-function",
+      lessonFile("formula-missing-function", "count/count-1.json"),
+    );
     expect(errors).toHaveLength(1);
-    expect(errors[0]).toMatch(/step "f1": solution "=B2\/6" is not graded correct \(missing_function; mustUse COUNT\)/);
+    expect(errors[0]).toMatch(
+      /step "f1": solution "=B2\/6" is not graded correct \(missing_function; mustUse COUNT\)/,
+    );
     expectEveryErrorNamesItsFile("formula-missing-function");
   });
 
   it("rejects a solution that does not parse", () => {
-    const errors = errorsFor("formula-parse-error", lessonFile("formula-parse-error", "count/count-1.json"));
+    const errors = errorsFor(
+      "formula-parse-error",
+      lessonFile("formula-parse-error", "count/count-1.json"),
+    );
     expect(errors).toHaveLength(1);
-    expect(errors[0]).toMatch(/step "f1": solution "=COUNT\(B2:B4" is not graded correct \(parse_error\)/);
+    expect(errors[0]).toMatch(
+      /step "f1": solution "=COUNT\(B2:B4" is not graded correct \(parse_error\)/,
+    );
   });
 });
 
@@ -438,7 +598,9 @@ describe("validateContent: browser-reserved shortcuts", () => {
     expect(errors).toEqual(
       expect.arrayContaining([
         expect.stringMatching(/step "w": win shortcut "Ctrl\+W" uses a browser-reserved combo/),
-        expect.stringMatching(/step "t": win shortcut "Ctrl\+Shift\+T" uses a browser-reserved combo/),
+        expect.stringMatching(
+          /step "t": win shortcut "Ctrl\+Shift\+T" uses a browser-reserved combo/,
+        ),
         expect.stringMatching(/step "n": win shortcut "Ctrl\+n" uses a browser-reserved combo/),
         expect.stringMatching(/step "q": win shortcut "Ctrl\+Q" uses a browser-reserved combo/),
         expect.stringMatching(/step "tab": win shortcut "Ctrl\+Tab" uses a browser-reserved combo/),
@@ -456,7 +618,9 @@ describe("validateContent: browser-reserved shortcuts", () => {
       expect.arrayContaining([
         expect.stringMatching(/step "w": mac shortcut "Cmd\+W" uses a browser-reserved combo/),
         expect.stringMatching(/step "t": mac shortcut "Cmd\+T" uses a browser-reserved combo/),
-        expect.stringMatching(/step "n": mac shortcut "Shift\+Cmd\+N" uses a browser-reserved combo/),
+        expect.stringMatching(
+          /step "n": mac shortcut "Shift\+Cmd\+N" uses a browser-reserved combo/,
+        ),
         expect.stringMatching(/step "q": mac shortcut "Cmd\+Q" uses a browser-reserved combo/),
         expect.stringMatching(/step "tab": mac shortcut "Cmd\+Tab" uses a browser-reserved combo/),
         expect.stringMatching(/step "sq": mac shortcut "Cmd\+Q" uses a browser-reserved combo/),
@@ -472,30 +636,43 @@ describe("validateContent: shifted US shortcut symbols", () => {
     const file = lessonFile("shifted-symbol", "keys/keys-1.json");
     const errors = errorsFor("shifted-symbol", file);
     expect(errors).toHaveLength(1);
-    expect(errors[0]).toMatch(/win shortcut ":" uses shifted US symbol ":"; write "Shift\+;" instead/);
+    expect(errors[0]).toMatch(
+      /win shortcut ":" uses shifted US symbol ":"; write "Shift\+;" instead/,
+    );
     expectEveryErrorNamesItsFile("shifted-symbol");
   });
 });
 
 describe("validateContent: step ids and gradable steps", () => {
   it("rejects duplicate step ids within a lesson", () => {
-    const errors = errorsFor("duplicate-step-ids", lessonFile("duplicate-step-ids", "count/count-1.json"));
+    const errors = errorsFor(
+      "duplicate-step-ids",
+      lessonFile("duplicate-step-ids", "count/count-1.json"),
+    );
     expect(errors).toHaveLength(1);
     expect(errors[0]).toMatch(/step "s1": id is used by more than one step/);
     expectEveryErrorNamesItsFile("duplicate-step-ids");
   });
 
   it("rejects a lesson with fewer gradable steps than requiredCorrect", () => {
-    const errors = errorsFor("too-few-gradable", lessonFile("too-few-gradable", "count/count-1.json"));
+    const errors = errorsFor(
+      "too-few-gradable",
+      lessonFile("too-few-gradable", "count/count-1.json"),
+    );
     expect(errors).toHaveLength(1);
-    expect(errors[0]).toMatch(/requiredCorrect is 2 but the lesson has only 1 gradable step \(non-info\)/);
+    expect(errors[0]).toMatch(
+      /requiredCorrect is 2 but the lesson has only 1 gradable step \(non-info\)/,
+    );
     expectEveryErrorNamesItsFile("too-few-gradable");
   });
 });
 
 describe("validateContent: order.json", () => {
   it("rejects a lesson that order.json does not list", () => {
-    const errors = errorsFor("order-missing-id", lessonFile("order-missing-id", "count/count-2.json"));
+    const errors = errorsFor(
+      "order-missing-id",
+      lessonFile("order-missing-id", "count/count-2.json"),
+    );
     expect(errors).toHaveLength(1);
     expect(errors[0]).toMatch(/lesson "count-2" is not listed in .*order\.json/);
     expectEveryErrorNamesItsFile("order-missing-id");
@@ -520,7 +697,9 @@ describe("validateContent: order.json", () => {
     expect(results).toHaveLength(1);
     expect(results[0]!.file).toBe(lessonFile("duplicate-lesson-id", "sum/count-1.json"));
     expect(results[0]!.errors).toEqual([
-      expect.stringMatching(/lesson id "count-1" is also used by .*lessons[\\/]count[\\/]count-1\.json/),
+      expect.stringMatching(
+        /lesson id "count-1" is also used by .*lessons[\\/]count[\\/]count-1\.json/,
+      ),
     ]);
     expectEveryErrorNamesItsFile("duplicate-lesson-id");
   });
@@ -602,10 +781,17 @@ describe("validateContent: lesson and step shape", () => {
 describe("validateContent: stray files", () => {
   it("reports files and folders that are not lessons/<module>/<id>.json", () => {
     const results = validateContent(fixture("stray-files"));
-    const files = (rel: string) => results.find((r) => r.file === join(fixture("stray-files"), "lessons", rel))?.errors;
-    expect(files("top.json")).toEqual([expect.stringMatching(/lesson files must live in lessons\/<module>\/<id>\.json/)]);
-    expect(files("m/sub")).toEqual([expect.stringMatching(/unexpected folder: lessons must sit directly in lessons\/<module>\//)]);
-    expect(files("m/y.JSON")).toEqual([expect.stringMatching(/unexpected file: only <id>\.json lesson files belong/)]);
+    const files = (rel: string) =>
+      results.find((r) => r.file === join(fixture("stray-files"), "lessons", rel))?.errors;
+    expect(files("top.json")).toEqual([
+      expect.stringMatching(/lesson files must live in lessons\/<module>\/<id>\.json/),
+    ]);
+    expect(files("m/sub")).toEqual([
+      expect.stringMatching(/unexpected folder: lessons must sit directly in lessons\/<module>\//),
+    ]);
+    expect(files("m/y.JSON")).toEqual([
+      expect.stringMatching(/unexpected file: only <id>\.json lesson files belong/),
+    ]);
     expect(files("m/notes.txt")).toEqual([expect.stringMatching(/unexpected file/)]);
     expect(results).toHaveLength(4);
     expectEveryErrorNamesItsFile("stray-files");
@@ -614,7 +800,10 @@ describe("validateContent: stray files", () => {
 
 describe("validateContent: canonical shortcut keys", () => {
   it("treats ⌘ and ⌃ as Cmd and Ctrl when checking reserved combos", () => {
-    const errors = errorsFor("reserved-symbols", lessonFile("reserved-symbols", "keys/keys-1.json"));
+    const errors = errorsFor(
+      "reserved-symbols",
+      lessonFile("reserved-symbols", "keys/keys-1.json"),
+    );
     const reserved = errors.filter((e) => e.includes("browser-reserved"));
     expect(reserved).toEqual([
       expect.stringMatching(/step "m1": mac shortcut "⌘\+W" uses a browser-reserved combo/),
@@ -633,15 +822,26 @@ describe("validateContent: canonical shortcut keys", () => {
   });
 
   it("requires modifiers Ctrl, Alt, Shift, Cmd in that order, then one key", () => {
-    const errors = errorsFor("noncanonical-keys", lessonFile("noncanonical-keys", "keys/keys-1.json"));
+    const errors = errorsFor(
+      "noncanonical-keys",
+      lessonFile("noncanonical-keys", "keys/keys-1.json"),
+    );
     expect(errors).toEqual([
       expect.stringMatching(
         /step "order": win shortcut "Shift\+Ctrl\+C" is not canonical; write "Ctrl\+Shift\+C" \(modifiers Ctrl, Alt, Shift, Cmd in that order, then one key\)/,
       ),
-      expect.stringMatching(/step "case": win shortcut "ctrl\+C" is not canonical; write "Ctrl\+C"/),
-      expect.stringMatching(/step "letter": win shortcut "Ctrl\+c" is not canonical; write "Ctrl\+C"/),
-      expect.stringMatching(/step "dup": win shortcut "Ctrl\+Ctrl\+C" is not canonical; write "Ctrl\+C"/),
-      expect.stringMatching(/step "nokey": win shortcut "Ctrl\+Shift" has no key after its modifiers/),
+      expect.stringMatching(
+        /step "case": win shortcut "ctrl\+C" is not canonical; write "Ctrl\+C"/,
+      ),
+      expect.stringMatching(
+        /step "letter": win shortcut "Ctrl\+c" is not canonical; write "Ctrl\+C"/,
+      ),
+      expect.stringMatching(
+        /step "dup": win shortcut "Ctrl\+Ctrl\+C" is not canonical; write "Ctrl\+C"/,
+      ),
+      expect.stringMatching(
+        /step "nokey": win shortcut "Ctrl\+Shift" has no key after its modifiers/,
+      ),
       expect.stringMatching(/step "seq": win shortcut "alt" is not canonical; write "Alt"/),
       expect.stringMatching(/step "empty": win shortcut "Ctrl\+" is not canonical \(modifiers/),
     ]);
@@ -675,16 +875,24 @@ describe("validateContent: unknown field names", () => {
   it("rejects unknown lesson, step and nested fields, suggesting case/underscore variants", () => {
     const errors = errorsFor("unknown-fields", lessonFile("unknown-fields", "count/count-1.json"));
     expect(errors).toEqual([
-      expect.stringMatching(/lesson: unknown field "requiredcorrect" \(did you mean "requiredCorrect"\?\)/),
+      expect.stringMatching(
+        /lesson: unknown field "requiredcorrect" \(did you mean "requiredCorrect"\?\)/,
+      ),
       expect.stringMatching(/lesson: unknown field "notes"$/),
       expect.stringMatching(/step "f1": unknown field "mustuse" \(did you mean "mustUse"\?\)/),
       expect.stringMatching(/step "f2": unknown field "must_use" \(did you mean "mustUse"\?\)/),
       expect.stringMatching(/step "f3": unknown field "MustUse" \(did you mean "mustUse"\?\)/),
-      expect.stringMatching(/step "s1": unknown field "highlight_cells" \(did you mean "highlightCells"\?\)/),
-      expect.stringMatching(/step "s1": unknown field "ActiveCell" \(did you mean "activeCell"\?\)/),
-      expect.stringMatching(/step "s1": unknown field "postcondition\.Selection" \(did you mean "postcondition\.selection"\?\)/),
+      expect.stringMatching(
+        /step "s1": unknown field "highlight_cells" \(did you mean "highlightCells"\?\)/,
+      ),
+      expect.stringMatching(
+        /step "s1": unknown field "ActiveCell" \(did you mean "activeCell"\?\)/,
+      ),
+      expect.stringMatching(
+        /step "s1": unknown field "postcondition\.Selection" \(did you mean "postcondition\.selection"\?\)/,
+      ),
       expect.stringMatching(/step "k1": unknown field "keys\.linux"$/),
-      expect.stringMatching(/step "m1": unknown field "explain"$/),
+      expect.stringMatching(/step "m1": unknown field "rationale"$/),
       expect.stringMatching(/step "i1": unknown field "prompt"$/),
     ]);
     expectEveryErrorNamesItsFile("unknown-fields");

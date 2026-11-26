@@ -58,10 +58,27 @@ function formulaWrongMessage(reason: string | undefined, step: FormulaStep, inpu
   if (input.trim() === "")
     return `${step.targetCell} is still empty. Type your formula in ${step.targetCell}, then press Enter.`;
   if (reason === "not_formula")
-    return "That's a value, not a formula. Formulas start with an equals sign (=).";
+    return (
+      step.wrongFeedback?.notFormula ??
+      "That's a value, not a formula. Formulas start with an equals sign (=)."
+    );
   if (reason === "parse_error")
-    return "That formula can't be read. Check for a typo, a missing bracket or a stray symbol.";
+    return (
+      step.wrongFeedback?.parseError ??
+      "That formula can't be read. Check for a typo, a missing bracket or a stray symbol."
+    );
+  if (reason === "missing_reference")
+    return (
+      step.wrongFeedback?.missingReference ??
+      "Use cell addresses (like B2) instead of fixed numbers so the result updates when data changes."
+    );
+  if (reason === "disallowed_function")
+    return (
+      step.wrongFeedback?.disallowedFunction ??
+      "No functions needed here — combine the cell addresses directly with +."
+    );
   if (reason === "wrong_value") {
+    if (step.wrongFeedback?.wrongValue) return step.wrongFeedback.wrongValue;
     const sheet = new Sheet(step.grid, { today: LESSON_TODAY });
     try {
       sheet.set(step.targetCell, input);
@@ -71,7 +88,10 @@ function formulaWrongMessage(reason: string | undefined, step: FormulaStep, inpu
     return `Your formula gives ${formatValue(sheet.get(step.targetCell)) || "an empty result"}, which isn't the answer. Check which cells it uses.`;
   }
   if (reason === "missing_function")
-    return `Your formula needs to use ${(step.mustUse ?? []).join(", ")}.`;
+    return (
+      step.wrongFeedback?.missingFunction ??
+      `Your formula needs to use ${(step.mustUse ?? []).join(", ")}.`
+    );
   return `Not quite. Your answer was ${input || "blank"}.`;
 }
 export function Player({
@@ -493,11 +513,19 @@ export function Player({
   const checkStep = () => {
     if (step.type === "select") {
       const ref = selectedRef;
-      answer(ref, Boolean(ref) && gradeSelectStep(step, ref));
+      const ok = Boolean(ref) && gradeSelectStep(step, ref);
+      answer(ref, ok, ok ? undefined : (step.wrongFeedback ?? "Not quite. Try again."));
       return;
     }
-    if (step.type === "mcq" && stepReady)
-      answer(stepReady.input, gradeMcqStep(step, Number(stepReady.input)));
+    if (step.type === "mcq" && stepReady) {
+      const idx = Number(stepReady.input);
+      const ok = gradeMcqStep(step, idx);
+      answer(
+        stepReady.input,
+        ok,
+        ok ? undefined : (step.wrongFeedback?.[idx] ?? "Not quite. Try again."),
+      );
+    }
     if ((step.type === "picture" || step.type === "project") && stepReady)
       answer(stepReady.input, gradeAcceptStep(step, stepReady.input));
   };
@@ -869,7 +897,7 @@ export function Player({
               key={`head-${state.visit}`}
             >
               <span className="num">Challenge {challengeNo}</span>
-              <span>{KIND[step.type]}</span>
+              <span>{step.topic ?? KIND[step.type]}</span>
               {stakes !== null && feedback !== "correct" && (
                 <span
                   className="pl-chip-pts inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
@@ -904,12 +932,29 @@ export function Player({
                 >
                   <span className="num">Challenge {challengeNo}</span>
                   <span className="pl-brief-kind p-[4px_8px] [border:1px_solid_var(--border)] rounded-[4px] text-muted">
-                    {KIND[step.type]}
+                    {step.topic ?? KIND[step.type]}
                   </span>
                 </p>
                 <p className="pl-prompt block m-0 text-ink">
                   <RichText text={step.prompt} />
                 </p>
+                {step.keycaps && step.keycaps.length > 0 && (
+                  <div
+                    className="flex flex-wrap items-center gap-[8px]"
+                    aria-label="Keys and actions"
+                  >
+                    {step.keycaps.map((label, i) => (
+                      <span key={`${label}-${i}`} className="inline-flex items-center gap-[8px]">
+                        <kbd className="eg-kbd">{label}</kbd>
+                        {i < step.keycaps!.length - 1 && (
+                          <span className="text-muted text-ledger-xs" aria-hidden="true">
+                            →
+                          </span>
+                        )}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 {(stakes !== null || firstTryRun >= 2) && feedback !== "correct" && (
                   <div className="pl-brief-chips flex flex-wrap gap-s2">
                     {stakes !== null && (
@@ -960,7 +1005,9 @@ export function Player({
                   grid={step.grid}
                   today={LESSON_TODAY}
                   targetCell={step.targetCell}
+                  activeCell={step.activeCell}
                   highlightCells={step.highlightCells}
+                  yellowCells={step.yellowCells}
                   sheetRef={sheetRef}
                   onEditStart={() => {
                     setFormulaReady(true);
@@ -1024,7 +1071,7 @@ export function Player({
                     +{shownPoints} pts
                   </span>
                 )}
-                {step.type === "formula" && step.explain ? (
+                {(step.type === "formula" || step.type === "mcq") && step.explain ? (
                   <span>
                     <RichText text={step.explain} />
                   </span>
@@ -1109,7 +1156,7 @@ export function Player({
                 className="pl-wrong-summary m-0 p-[10px_14px] rounded-ledger bg-rose text-ink [border:var(--line)]
           [animation:pl-enter_var(--d2)_var(--ease)]"
               >
-                {wrongText}
+                <RichText text={wrongText} />
               </p>
             )}
           </div>
@@ -1125,7 +1172,20 @@ export function Player({
                   <Icon name="x" size={18} />
                 </button>
               </header>
-              {state.wrongCount > 0 && !showSolution && (
+              {step.clues && step.clues.length > 0 && (
+                <div className="mb-s4 grid gap-s2">
+                  {step.clues.slice(0, Math.max(1, state.wrongCount)).map((clue, i) => (
+                    <p
+                      key={i}
+                      className="m-0 p-[10px_12px] rounded-ledger bg-butter text-ink [border:var(--line)] text-ledger-sm leading-[1.5]"
+                    >
+                      <strong>Clue {i + 1}: </strong>
+                      <RichText text={clue} />
+                    </p>
+                  ))}
+                </div>
+              )}
+              {state.wrongCount >= (step.revealAfter ?? 1) && !showSolution ? (
                 <button
                   className="btn pl-show-answer mb-s4"
                   onClick={() => {
@@ -1136,6 +1196,14 @@ export function Player({
                 >
                   Show Answer
                 </button>
+              ) : (
+                state.wrongCount > 0 &&
+                !showSolution && (
+                  <p className="m-[0_0_var(--s4)] text-ledger-sm text-muted">
+                    Use the clue above and try once more — the full answer unlocks after another
+                    try.
+                  </p>
+                )
               )}
               {showSolution && (
                 <p className="pl-solution p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [overflow-wrap:anywhere]">
@@ -1144,7 +1212,7 @@ export function Player({
                   ) : step.type === "select" ? (
                     step.target
                   ) : step.type === "mcq" ? (
-                    step.options[step.answer]
+                    <RichText text={step.options[step.answer]!} />
                   ) : step.type === "picture" || step.type === "project" ? (
                     step.accept[0]
                   ) : step.type === "shortcut" ? (

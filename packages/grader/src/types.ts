@@ -13,14 +13,69 @@ export type Postcondition = {
   format?: Record<string, FormatStyle[]>;
 };
 
+export type FormulaBuildFrame = {
+  label: string;
+  key?: string;
+  draft: string;
+  focusCell?: string;
+  highlightCells?: string[];
+  yellowCells?: string[];
+  resultCell?: string;
+};
+
+export type LiveUpdateConfig = {
+  watchCell: string;
+  fromValue: GridValue;
+  toValue: GridValue;
+  resultCell: string;
+  buttonLabel?: string;
+  resetLabel?: string;
+};
+
+export type StepAnimation =
+  | {
+      kind: "cell-locate";
+      col: string;
+      row: number;
+      cell: string;
+    }
+  | {
+      kind: "formula-build";
+      targetCell: string;
+      frames: FormulaBuildFrame[];
+      liveUpdate?: LiveUpdateConfig;
+    }
+  | {
+      kind: "live-update";
+      liveUpdate: LiveUpdateConfig;
+    };
+
 /** Fields every step may carry. */
 export type StepBase = {
   /** Unique within the lesson; the API's stepId. */
   id: string;
+  /** Short heading/topic for this step (e.g. "See a cell"). */
+  topic?: string;
   activeCell?: string;
   highlightCells?: string[];
+  yellowCells?: string[];
+  /** Keycap badges shown on the step (e.g. ["=", "Click B2", "+", "Click B3", "Enter"]). */
+  keycaps?: string[];
+  /** Progressive clues shown before revealing the answer. */
+  clues?: string[];
+  /** Wrong attempts required before Show Answer unlocks (defaults to 1). */
+  revealAfter?: number;
   postcondition?: Postcondition;
   mobileButtons?: string[];
+};
+
+export type FormulaWrongFeedback = {
+  notFormula?: string;
+  parseError?: string;
+  wrongValue?: string;
+  missingFunction?: string;
+  disallowedFunction?: string;
+  missingReference?: string;
 };
 
 export type FormulaStep = StepBase & {
@@ -31,8 +86,13 @@ export type FormulaStep = StepBase & {
   expectedValue: CellValue;
   /** Function names the answer must call; compared case-insensitively. */
   mustUse?: string[];
+  /** Cell or range references the formula must include (e.g. ["B2", "B3"]). */
+  mustReference?: string[];
+  /** Rejects formulas that call any function (e.g. keep out SUM in Lesson 1). */
+  disallowFunctions?: boolean;
   solution: string;
   explain?: string;
+  wrongFeedback?: FormulaWrongFeedback;
 };
 
 export type SelectStep = StepBase & {
@@ -41,6 +101,7 @@ export type SelectStep = StepBase & {
   grid: Grid;
   /** "B2", "B2:C4", "B:B" or "3:3". */
   target: string;
+  wrongFeedback?: string;
 };
 
 export type ShortcutChordStep = StepBase & {
@@ -72,6 +133,9 @@ export type McqStep = StepBase & {
   options: string[];
   /** Index into options. */
   answer: number;
+  explain?: string;
+  /** Per-option feedback when a wrong option is chosen. */
+  wrongFeedback?: (string | null)[];
 };
 
 export type PictureStep = StepBase & {
@@ -91,16 +155,14 @@ export type ProjectStep = StepBase & {
 export type InfoStep = StepBase & {
   type: "info";
   text: string;
+  grid?: Grid;
+  showFormulaBar?: boolean;
+  selection?: string;
+  animation?: StepAnimation;
 };
 
 export type Step =
-  | FormulaStep
-  | SelectStep
-  | ShortcutStep
-  | McqStep
-  | PictureStep
-  | ProjectStep
-  | InfoStep;
+  FormulaStep | SelectStep | ShortcutStep | McqStep | PictureStep | ProjectStep | InfoStep;
 
 export type StepType = Step["type"];
 
@@ -108,6 +170,7 @@ export type Lesson = {
   id: string;
   module: string;
   title: string;
+  goal?: string;
   difficulty: 1 | 2 | 3;
   requiredCorrect: number;
   isIntro: boolean;

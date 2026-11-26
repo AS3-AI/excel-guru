@@ -25,11 +25,13 @@ type Obj = Record<string, unknown>;
 /** Validates a content directory. Returns only files that have errors; [] means valid. */
 export function validateContent(dir: string): FileResult[] {
   const report = new Map<string, string[]>();
-  const failFor = (file: string): Fail => (message) => {
-    const list = report.get(file) ?? [];
-    list.push(`${file}: ${message}`);
-    report.set(file, list);
-  };
+  const failFor =
+    (file: string): Fail =>
+    (message) => {
+      const list = report.get(file) ?? [];
+      list.push(`${file}: ${message}`);
+      report.set(file, list);
+    };
 
   // Lesson files. File names count as known ids too, so an unparseable lesson
   // isn't also reported as missing from order.json.
@@ -80,7 +82,8 @@ export function validateContent(dir: string): FileResult[] {
     for (const id of order) counts.set(id, (counts.get(id) ?? 0) + 1);
     for (const [id, n] of counts) {
       if (n > 1) orderFail(`lesson "${id}" is listed ${n} times; list it exactly once`);
-      if (!knownIds.has(id)) orderFail(`names lesson "${id}" but no lessons/<module>/${id}.json exists`);
+      if (!knownIds.has(id))
+        orderFail(`names lesson "${id}" but no lessons/<module>/${id}.json exists`);
     }
     for (const [id, file] of firstFile) {
       if (!counts.has(id)) failFor(file)(`lesson "${id}" is not listed in ${orderPath}`);
@@ -94,8 +97,14 @@ export function validateContent(dir: string): FileResult[] {
   for (const name of listDir(learnDir)) {
     const file = join(learnDir, name);
     const fail = failFor(file);
-    if (statSync(file).isDirectory()) { fail("unexpected folder: articles must be <slug>.json files"); continue; }
-    if (!name.endsWith(".json")) { fail("unexpected file: only <slug>.json article files belong in learn/"); continue; }
+    if (statSync(file).isDirectory()) {
+      fail("unexpected folder: articles must be <slug>.json files");
+      continue;
+    }
+    if (!name.endsWith(".json")) {
+      fail("unexpected file: only <slug>.json article files belong in learn/");
+      continue;
+    }
     const slug = basename(name, ".json");
     articleFiles.set(slug, file);
     const data = readJson(file, fail);
@@ -103,78 +112,133 @@ export function validateContent(dir: string): FileResult[] {
   }
   const slugs = new Set(articleFiles.keys());
   const knownLessons = new Set((order ?? []).filter((id) => firstFile.has(id)));
-  for (const { file, data } of articles) checkArticle(data, basename(file, ".json"), knownLessons, slugs, failFor(file));
+  for (const { file, data } of articles)
+    checkArticle(data, basename(file, ".json"), knownLessons, slugs, failFor(file));
 
   return [...report].map(([file, errors]) => ({ file, errors }));
 }
 
-function checkArticle(data: unknown, fileSlug: string, lessonIds: Set<string>, articleSlugs: Set<string>, fail: Fail) {
+function checkArticle(
+  data: unknown,
+  fileSlug: string,
+  lessonIds: Set<string>,
+  articleSlugs: Set<string>,
+  fail: Fail,
+) {
   if (!isObj(data)) return fail("article must be a JSON object");
-  const fields = ["slug", "fn", "title", "description", "syntax", "args", "sections", "lessonId", "related"];
-  checkFields(data, Object.fromEntries(fields.map((field) => [field, true])), "", (m) => fail(`article: ${m}`));
-  const { slug, fn, title, description, syntax, args, sections, lessonId, related } = data;
+  const fields = [
+    "slug",
+    "fn",
+    "title",
+    "description",
+    "syntax",
+    "args",
+    "sections",
+    "lessonId",
+    "related",
+  ];
+  checkFields(data, Object.fromEntries(fields.map((field) => [field, true])), "", (m) =>
+    fail(`article: ${m}`),
+  );
+  const { slug, description, args, sections, lessonId, related } = data;
   for (const key of ["slug", "fn", "title", "description", "syntax", "lessonId"] as const) {
     if (!isText(data[key])) fail(`${key} must be a non-empty string`);
   }
   if (isText(slug) && slug !== fileSlug) fail(`slug "${slug}" must match file name "${fileSlug}"`);
-  if (typeof description === "string" && description.length > 160) fail("description must be 160 characters or fewer");
-  if (isText(lessonId) && !lessonIds.has(lessonId)) fail(`lessonId "${lessonId}" does not exist in content/order.json`);
+  if (typeof description === "string" && description.length > 160)
+    fail("description must be 160 characters or fewer");
+  if (isText(lessonId) && !lessonIds.has(lessonId))
+    fail(`lessonId "${lessonId}" does not exist in content/order.json`);
   if (!Array.isArray(args)) fail("args must be an array");
-  else args.forEach((arg: unknown, i) => {
-    if (!isObj(arg)) return fail(`args[${i}] must be an object`);
-    if (!isText(arg.name)) fail(`args[${i}].name must be a non-empty string`);
-    if (typeof arg.required !== "boolean") fail(`args[${i}].required must be a boolean`);
-    if (!isText(arg.text)) fail(`args[${i}].text must be a non-empty string`);
-    checkFields(arg, { name: true, required: true, text: true }, `args[${i}].`, fail);
-  });
+  else
+    args.forEach((arg: unknown, i) => {
+      if (!isObj(arg)) return fail(`args[${i}] must be an object`);
+      if (!isText(arg.name)) fail(`args[${i}].name must be a non-empty string`);
+      if (typeof arg.required !== "boolean") fail(`args[${i}].required must be a boolean`);
+      if (!isText(arg.text)) fail(`args[${i}].text must be a non-empty string`);
+      checkFields(arg, { name: true, required: true, text: true }, `args[${i}].`, fail);
+    });
   if (!Array.isArray(sections) || sections.length === 0) fail("sections must be a non-empty array");
-  else sections.forEach((section: unknown, i) => {
-    if (!isObj(section)) return fail(`sections[${i}] must be an object`);
-    if (!isText(section.heading)) fail(`sections[${i}].heading must be a non-empty string`);
-    if (!isText(section.text)) fail(`sections[${i}].text must be a non-empty string`);
-    checkFields(section, { heading: true, text: true, grid: true, formula: true, result: true }, `sections[${i}].`, fail);
-    if (section.grid !== undefined && !isGrid(section.grid)) fail(`sections[${i}].grid must be an array of rows of strings, numbers, booleans or null`);
-    if (Array.isArray(section.grid)) {
-      if (section.grid.length > 8 || section.grid.some((row) => Array.isArray(row) && row.length > 7)) fail(`sections[${i}].grid must be no larger than 8 rows by 7 columns`);
-    }
-    if ((section.formula === undefined) !== (section.result === undefined)) fail(`sections[${i}] formula and result must be provided together`);
-    if (section.formula !== undefined) {
-      if (typeof section.formula !== "string" || !section.formula.startsWith("=")) fail(`sections[${i}].formula must start with "="`);
-      else if (!isGrid(section.grid)) fail(`sections[${i}] formula requires a valid grid`);
-      else {
-        try {
-          const grid = (section.grid as (string | number | boolean | null)[][]).map((row) => [...row]);
-          const targets: string[] = [];
-          for (let r = 0; r < grid.length; r++) for (let c = 0; c < (grid[r]?.length ?? 0); c++) {
-            if (grid[r]?.[c] === null) targets.push(`${columnName(c + 1)}${r + 1}`);
-          }
-          if (targets.length !== 1) fail(`section ${i + 1}: a grid with a formula needs exactly one empty cell for the result`);
-          else {
-            const sheet = new Sheet(grid, { today: LESSON_TODAY });
-            sheet.set(targets[0]!, section.formula);
-            const value = sheet.get(targets[0]!);
-            const expected = section.result;
-            if (typeof expected === "number" && typeof value === "number" ? Math.abs(value - expected) > 1e-9 : value !== expected) {
-              fail(`sections[${i}] formula does not evaluate to result ${show(expected)}`);
-            }
-          }
-        } catch { fail(`sections[${i}] formula does not evaluate to result ${show(section.result)}`); }
+  else
+    sections.forEach((section: unknown, i) => {
+      if (!isObj(section)) return fail(`sections[${i}] must be an object`);
+      if (!isText(section.heading)) fail(`sections[${i}].heading must be a non-empty string`);
+      if (!isText(section.text)) fail(`sections[${i}].text must be a non-empty string`);
+      checkFields(
+        section,
+        { heading: true, text: true, grid: true, formula: true, result: true },
+        `sections[${i}].`,
+        fail,
+      );
+      if (section.grid !== undefined && !isGrid(section.grid))
+        fail(`sections[${i}].grid must be an array of rows of strings, numbers, booleans or null`);
+      if (Array.isArray(section.grid)) {
+        if (
+          section.grid.length > 8 ||
+          section.grid.some((row) => Array.isArray(row) && row.length > 7)
+        )
+          fail(`sections[${i}].grid must be no larger than 8 rows by 7 columns`);
       }
-    }
-  });
+      if ((section.formula === undefined) !== (section.result === undefined))
+        fail(`sections[${i}] formula and result must be provided together`);
+      if (section.formula !== undefined) {
+        if (typeof section.formula !== "string" || !section.formula.startsWith("="))
+          fail(`sections[${i}].formula must start with "="`);
+        else if (!isGrid(section.grid)) fail(`sections[${i}] formula requires a valid grid`);
+        else {
+          try {
+            const grid = (section.grid as (string | number | boolean | null)[][]).map((row) => [
+              ...row,
+            ]);
+            const targets: string[] = [];
+            for (let r = 0; r < grid.length; r++)
+              for (let c = 0; c < (grid[r]?.length ?? 0); c++) {
+                if (grid[r]?.[c] === null) targets.push(`${columnName(c + 1)}${r + 1}`);
+              }
+            if (targets.length !== 1)
+              fail(
+                `section ${i + 1}: a grid with a formula needs exactly one empty cell for the result`,
+              );
+            else {
+              const sheet = new Sheet(grid, { today: LESSON_TODAY });
+              sheet.set(targets[0]!, section.formula);
+              const value = sheet.get(targets[0]!);
+              const expected = section.result;
+              if (
+                typeof expected === "number" && typeof value === "number"
+                  ? Math.abs(value - expected) > 1e-9
+                  : value !== expected
+              ) {
+                fail(`sections[${i}] formula does not evaluate to result ${show(expected)}`);
+              }
+            }
+          } catch {
+            fail(`sections[${i}] formula does not evaluate to result ${show(section.result)}`);
+          }
+        }
+      }
+    });
   if (!isStrings(related)) fail("related must be an array of slugs");
-  else related.forEach((relatedSlug) => { if (!articleSlugs.has(relatedSlug)) fail(`related slug "${relatedSlug}" does not exist`); });
+  else
+    related.forEach((relatedSlug) => {
+      if (!articleSlugs.has(relatedSlug)) fail(`related slug "${relatedSlug}" does not exist`);
+    });
 }
 
 function columnName(n: number): string {
   let name = "";
-  for (; n > 0; n = Math.floor((n - 1) / 26)) name = String.fromCharCode(65 + (n - 1) % 26) + name;
+  for (; n > 0; n = Math.floor((n - 1) / 26))
+    name = String.fromCharCode(65 + ((n - 1) % 26)) + name;
   return name;
 }
 
 /** Sorted entries, without dotfiles (.DS_Store, .gitkeep); [] if the folder is missing. */
 function listDir(path: string): string[] {
-  return existsSync(path) ? readdirSync(path).filter((n) => !n.startsWith(".")).sort() : [];
+  return existsSync(path)
+    ? readdirSync(path)
+        .filter((n) => !n.startsWith("."))
+        .sort()
+    : [];
 }
 
 function readJson(file: string, fail: Fail): unknown {
@@ -204,7 +268,8 @@ function readOrder(file: string, fail: Fail): string[] | null {
 
 const isObj = (v: unknown): v is Obj => typeof v === "object" && v !== null && !Array.isArray(v);
 const isText = (v: unknown): v is string => typeof v === "string" && v.length > 0;
-const isStrings = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === "string");
+const isStrings = (v: unknown): v is string[] =>
+  Array.isArray(v) && v.every((x) => typeof x === "string");
 const isTexts = (v: unknown): v is string[] => isStrings(v) && v.length > 0;
 const show = (v: unknown) => (v === undefined ? "nothing" : JSON.stringify(v));
 
@@ -221,20 +286,36 @@ function isGrid(v: unknown): boolean {
 
 /** Every step type in the grader's StepType, in schema order; the Record keeps it exhaustive. */
 const STEP_TYPES: Record<StepType, true> = {
-  formula: true, select: true, shortcut: true, mcq: true, picture: true, project: true, info: true,
+  formula: true,
+  select: true,
+  shortcut: true,
+  mcq: true,
+  picture: true,
+  project: true,
+  info: true,
 };
-const isStepType = (t: unknown): t is StepType => typeof t === "string" && Object.hasOwn(STEP_TYPES, t);
+const isStepType = (t: unknown): t is StepType =>
+  typeof t === "string" && Object.hasOwn(STEP_TYPES, t);
 
 type ErrorCode = Extract<FormulaStep["expectedValue"], { error: unknown }>["error"];
 const ERROR_CODES: Record<ErrorCode, true> = {
-  "#DIV/0!": true, "#N/A": true, "#VALUE!": true, "#REF!": true, "#NAME?": true, "#NUM!": true,
-  "#SPILL!": true, "#CIRC!": true,
+  "#DIV/0!": true,
+  "#N/A": true,
+  "#VALUE!": true,
+  "#REF!": true,
+  "#NAME?": true,
+  "#NUM!": true,
+  "#SPILL!": true,
+  "#CIRC!": true,
 };
 
 function isCellValue(v: unknown): boolean {
   if (v === null || ["string", "number", "boolean"].includes(typeof v)) return true;
   return (
-    isObj(v) && Object.keys(v).length === 1 && typeof v.error === "string" && Object.hasOwn(ERROR_CODES, v.error)
+    isObj(v) &&
+    Object.keys(v).length === 1 &&
+    typeof v.error === "string" &&
+    Object.hasOwn(ERROR_CODES, v.error)
   );
 }
 
@@ -244,20 +325,63 @@ const CELL_RE = /^[A-Z]{1,3}[1-9]\d*$/;
 // extra key here is a compile error, so these lists can't drift from the schema.
 type Fields<T> = Record<keyof T, true>;
 const LESSON_FIELDS: Fields<Lesson> = {
-  id: true, module: true, title: true, difficulty: true, requiredCorrect: true, isIntro: true, video: true, steps: true,
+  id: true,
+  module: true,
+  title: true,
+  goal: true,
+  difficulty: true,
+  requiredCorrect: true,
+  isIntro: true,
+  video: true,
+  steps: true,
 };
-const BASE = { id: true, type: true, activeCell: true, highlightCells: true, postcondition: true, mobileButtons: true } as const;
+const BASE = {
+  id: true,
+  type: true,
+  topic: true,
+  activeCell: true,
+  highlightCells: true,
+  yellowCells: true,
+  keycaps: true,
+  clues: true,
+  revealAfter: true,
+  postcondition: true,
+  mobileButtons: true,
+} as const;
 const STEP_FIELDS: { [T in StepType]: Fields<Extract<Step, { type: T }>> } = {
-  formula: { ...BASE, prompt: true, grid: true, targetCell: true, expectedValue: true, mustUse: true, solution: true, explain: true },
-  select: { ...BASE, prompt: true, grid: true, target: true },
+  formula: {
+    ...BASE,
+    prompt: true,
+    grid: true,
+    targetCell: true,
+    expectedValue: true,
+    mustUse: true,
+    mustReference: true,
+    disallowFunctions: true,
+    solution: true,
+    explain: true,
+    wrongFeedback: true,
+  },
+  select: { ...BASE, prompt: true, grid: true, target: true, wrongFeedback: true },
   shortcut: { ...BASE, mode: true, prompt: true, keys: true, pics: true, grid: true },
-  mcq: { ...BASE, prompt: true, options: true, answer: true },
+  mcq: { ...BASE, prompt: true, options: true, answer: true, explain: true, wrongFeedback: true },
   picture: { ...BASE, prompt: true, image: true, accept: true },
   project: { ...BASE, prompt: true, file: true, accept: true },
-  info: { ...BASE, text: true },
+  info: { ...BASE, text: true, grid: true, showFormulaBar: true, selection: true, animation: true },
 };
+const FORMULA_WRONG_FEEDBACK_FIELDS = {
+  notFormula: true,
+  parseError: true,
+  wrongValue: true,
+  missingFunction: true,
+  disallowedFunction: true,
+  missingReference: true,
+} as const;
 const POSTCONDITION_FIELDS: Fields<Postcondition> = { grid: true, selection: true, format: true };
-const KEYS_FIELDS: Fields<ShortcutChordStep["keys"]> & Fields<ShortcutSequenceStep["keys"]> = { win: true, mac: true };
+const KEYS_FIELDS: Fields<ShortcutChordStep["keys"]> & Fields<ShortcutSequenceStep["keys"]> = {
+  win: true,
+  mac: true,
+};
 
 /** Reports keys of `obj` outside `allowed`, suggesting a case/underscore/hyphen variant. */
 function checkFields(obj: Obj, allowed: Record<string, true>, prefix: string, fail: Fail) {
@@ -277,18 +401,22 @@ function checkLesson(data: unknown, fileId: string, folder: string, fail: Fail):
     fail("not a lesson: expected a JSON object");
     return null;
   }
-  const { id, module, title, difficulty, requiredCorrect, isIntro, video, steps } = data;
+  const { id, module, title, goal, difficulty, requiredCorrect, isIntro, video, steps } = data;
 
   if (!isText(id)) fail(`id must be a non-empty string (got ${show(id)})`);
   else if (id !== fileId) fail(`id "${id}" must match the file name "${fileId}"`);
   if (!isText(module)) fail(`module must be a non-empty string (got ${show(module)})`);
   else if (module !== folder) fail(`module "${module}" must match the folder name "${folder}"`);
   if (!isText(title)) fail("title must be a non-empty string");
-  if (difficulty !== 1 && difficulty !== 2 && difficulty !== 3) fail(`difficulty must be 1, 2 or 3 (got ${show(difficulty)})`);
+  if (goal !== undefined && !isText(goal)) fail("goal must be a non-empty string");
+  if (difficulty !== 1 && difficulty !== 2 && difficulty !== 3)
+    fail(`difficulty must be 1, 2 or 3 (got ${show(difficulty)})`);
   const requiredOk = Number.isInteger(requiredCorrect) && (requiredCorrect as number) > 0;
-  if (!requiredOk) fail(`requiredCorrect must be a positive integer (got ${show(requiredCorrect)})`);
+  if (!requiredOk)
+    fail(`requiredCorrect must be a positive integer (got ${show(requiredCorrect)})`);
   if (typeof isIntro !== "boolean") fail(`isIntro must be a boolean (got ${show(isIntro)})`);
-  if (video !== null && typeof video !== "string") fail(`video must be a string or null (got ${show(video)})`);
+  if (video !== null && typeof video !== "string")
+    fail(`video must be a string or null (got ${show(video)})`);
   checkFields(data, LESSON_FIELDS, "", (m) => fail(`lesson: ${m}`));
   if (!Array.isArray(steps) || steps.length === 0) {
     fail("steps must be a non-empty array");
@@ -309,7 +437,9 @@ function checkLesson(data: unknown, fileId: string, folder: string, fail: Fail):
     } else seen.add(step.id);
 
     if (!isStepType(step.type)) {
-      return stepFail(`unknown type ${show(step.type)} (expected one of: ${Object.keys(STEP_TYPES).join(", ")})`);
+      return stepFail(
+        `unknown type ${show(step.type)} (expected one of: ${Object.keys(STEP_TYPES).join(", ")})`,
+      );
     }
     if (step.type === "shortcut" && step.mode !== "chord" && step.mode !== "sequence") {
       return stepFail(`shortcut mode ${show(step.mode)} must be "chord" or "sequence"`);
@@ -318,8 +448,10 @@ function checkLesson(data: unknown, fileId: string, folder: string, fail: Fail):
 
     // Unknown names don't invalidate the known fields, so they don't block the content checks.
     checkFields(step, STEP_FIELDS[step.type], "", stepFail);
-    if (isObj(step.postcondition)) checkFields(step.postcondition, POSTCONDITION_FIELDS, "postcondition.", stepFail);
-    if (step.type === "shortcut" && isObj(step.keys)) checkFields(step.keys, KEYS_FIELDS, "keys.", stepFail);
+    if (isObj(step.postcondition))
+      checkFields(step.postcondition, POSTCONDITION_FIELDS, "postcondition.", stepFail);
+    if (step.type === "shortcut" && isObj(step.keys))
+      checkFields(step.keys, KEYS_FIELDS, "keys.", stepFail);
 
     let shapeErrors = 0;
     const shapeFail: Fail = (m) => {
@@ -344,27 +476,51 @@ function checkLesson(data: unknown, fileId: string, folder: string, fail: Fail):
 /** Structural check of one step whose type (and shortcut mode) is already known valid. */
 function checkStepShape(s: Obj, fail: Fail) {
   // StepBase optional fields.
-  if (s.activeCell !== undefined && typeof s.activeCell !== "string") fail("activeCell must be a string");
-  if (s.highlightCells !== undefined && !isStrings(s.highlightCells)) fail("highlightCells must be an array of strings");
+  if (s.topic !== undefined && !isText(s.topic)) fail("topic must be a non-empty string");
+  if (s.activeCell !== undefined && typeof s.activeCell !== "string")
+    fail("activeCell must be a string");
+  if (s.highlightCells !== undefined && !isStrings(s.highlightCells))
+    fail("highlightCells must be an array of strings");
+  if (s.yellowCells !== undefined && !isStrings(s.yellowCells))
+    fail("yellowCells must be an array of strings");
+  if (s.keycaps !== undefined && !isStrings(s.keycaps)) fail("keycaps must be an array of strings");
+  if (s.clues !== undefined && !isStrings(s.clues)) fail("clues must be an array of strings");
+  if (
+    s.revealAfter !== undefined &&
+    (!Number.isInteger(s.revealAfter) || (s.revealAfter as number) < 1)
+  ) {
+    fail("revealAfter must be a positive integer");
+  }
   if (s.postcondition !== undefined) {
     if (!isObj(s.postcondition)) fail("postcondition must be an object");
     else {
       const { grid, selection } = s.postcondition;
-      if (grid !== undefined && !isGrid(grid)) fail("postcondition.grid must be an array of rows of strings, numbers, booleans or null");
-      if (selection !== undefined && typeof selection !== "string") fail("postcondition.selection must be a string");
+      if (grid !== undefined && !isGrid(grid))
+        fail("postcondition.grid must be an array of rows of strings, numbers, booleans or null");
+      if (selection !== undefined && typeof selection !== "string")
+        fail("postcondition.selection must be a string");
       if (s.postcondition.format !== undefined) {
         if (s.type !== "shortcut") fail("postcondition.format is only allowed on shortcut steps");
-        else if (!isObj(s.postcondition.format) || Object.entries(s.postcondition.format).some(([, styles]) => !Array.isArray(styles) || !styles.every((style) => typeof style === "string"))) fail("postcondition.format must map cell or range references to arrays of styles");
+        else if (
+          !isObj(s.postcondition.format) ||
+          Object.entries(s.postcondition.format).some(
+            ([, styles]) =>
+              !Array.isArray(styles) || !styles.every((style) => typeof style === "string"),
+          )
+        )
+          fail("postcondition.format must map cell or range references to arrays of styles");
       }
     }
   }
-  if (s.mobileButtons !== undefined && !isStrings(s.mobileButtons)) fail("mobileButtons must be an array of strings");
+  if (s.mobileButtons !== undefined && !isStrings(s.mobileButtons))
+    fail("mobileButtons must be an array of strings");
 
   const need = (field: string, ok: boolean, what: string) => {
     if (!ok) fail(`${field} must be ${what}`);
   };
   const prompt = () => need("prompt", isText(s.prompt), "a non-empty string");
-  const grid = () => need("grid", isGrid(s.grid), "an array of rows of strings, numbers, booleans or null");
+  const grid = () =>
+    need("grid", isGrid(s.grid), "an array of rows of strings, numbers, booleans or null");
   const accept = () => need("accept", isTexts(s.accept), "a non-empty array of strings");
 
   switch (s.type as StepType) {
@@ -377,16 +533,35 @@ function checkStepShape(s: Obj, fail: Fail) {
       need(
         "expectedValue",
         isCellValue(s.expectedValue),
-        `a number, string, boolean, null or { "error": ${Object.keys(ERROR_CODES).map((c) => `"${c}"`).join(" | ")} }`,
+        `a number, string, boolean, null or { "error": ${Object.keys(ERROR_CODES)
+          .map((c) => `"${c}"`)
+          .join(" | ")} }`,
       );
-      if (s.mustUse !== undefined) need("mustUse", isStrings(s.mustUse), "an array of function names");
+      if (s.mustUse !== undefined)
+        need("mustUse", isStrings(s.mustUse), "an array of function names");
+      if (s.mustReference !== undefined)
+        need("mustReference", isStrings(s.mustReference), "an array of cell or range references");
+      if (s.disallowFunctions !== undefined && typeof s.disallowFunctions !== "boolean") {
+        fail("disallowFunctions must be a boolean");
+      }
       need("solution", typeof s.solution === "string", "a string");
       if (s.explain !== undefined) need("explain", typeof s.explain === "string", "a string");
+      if (s.wrongFeedback !== undefined) {
+        if (!isObj(s.wrongFeedback)) fail("wrongFeedback must be an object");
+        else {
+          checkFields(s.wrongFeedback, FORMULA_WRONG_FEEDBACK_FIELDS, "wrongFeedback.", fail);
+          for (const [k, v] of Object.entries(s.wrongFeedback)) {
+            if (typeof v !== "string") fail(`wrongFeedback.${k} must be a string`);
+          }
+        }
+      }
       return;
     case "select":
       prompt();
       grid();
       need("target", typeof s.target === "string", "a string");
+      if (s.wrongFeedback !== undefined)
+        need("wrongFeedback", typeof s.wrongFeedback === "string", "a string");
       return;
     case "shortcut": {
       prompt();
@@ -398,10 +573,15 @@ function checkStepShape(s: Obj, fail: Fail) {
         need("keys.mac", typeof mac === "string" || mac === null, "a string or null for a chord");
       } else {
         need("keys.win", isTexts(win), "a non-empty array of strings for a sequence");
-        need("keys.mac", isTexts(mac) || mac === null, "a non-empty array of strings or null for a sequence");
+        need(
+          "keys.mac",
+          isTexts(mac) || mac === null,
+          "a non-empty array of strings or null for a sequence",
+        );
       }
       if (s.pics !== undefined) need("pics", isStrings(s.pics), "an array of strings");
-      if (s.grid !== undefined && !isGrid(s.grid)) fail("grid must be an array of rows of strings, numbers, booleans or null");
+      if (s.grid !== undefined && !isGrid(s.grid))
+        fail("grid must be an array of rows of strings, numbers, booleans or null");
       return;
     }
     case "mcq": {
@@ -413,6 +593,15 @@ function checkStepShape(s: Obj, fail: Fail) {
         const n = (s.options as string[]).length;
         const a = s.answer as number;
         if (a < 0 || a >= n) fail(`answer ${a} is not an index into options (0..${n - 1})`);
+      }
+      if (s.explain !== undefined) need("explain", typeof s.explain === "string", "a string");
+      if (s.wrongFeedback !== undefined) {
+        if (
+          !Array.isArray(s.wrongFeedback) ||
+          s.wrongFeedback.some((x) => x !== null && typeof x !== "string")
+        ) {
+          fail("wrongFeedback must be an array of strings or null");
+        }
       }
       return;
     }
@@ -428,8 +617,110 @@ function checkStepShape(s: Obj, fail: Fail) {
       return;
     case "info":
       need("text", isText(s.text), "a non-empty string");
+      if (s.grid !== undefined && !isGrid(s.grid))
+        fail("grid must be an array of rows of strings, numbers, booleans or null");
+      if (s.showFormulaBar !== undefined && typeof s.showFormulaBar !== "boolean")
+        fail("showFormulaBar must be a boolean");
+      if (s.selection !== undefined && typeof s.selection !== "string")
+        fail("selection must be a string");
+      if (s.animation !== undefined) checkInfoAnimation(s.animation, fail);
       return;
   }
+}
+
+function checkLiveUpdate(v: unknown, prefix: string, fail: Fail) {
+  if (!isObj(v)) return fail(`${prefix} must be an object`);
+  checkFields(
+    v,
+    {
+      watchCell: true,
+      fromValue: true,
+      toValue: true,
+      resultCell: true,
+      buttonLabel: true,
+      resetLabel: true,
+    },
+    `${prefix}.`,
+    fail,
+  );
+  if (typeof v.watchCell !== "string" || !CELL_RE.test(v.watchCell))
+    fail(`${prefix}.watchCell must be an uppercase cell reference`);
+  if (typeof v.resultCell !== "string" || !CELL_RE.test(v.resultCell))
+    fail(`${prefix}.resultCell must be an uppercase cell reference`);
+  if (!isCellValue(v.fromValue)) fail(`${prefix}.fromValue must be a cell value`);
+  if (!isCellValue(v.toValue)) fail(`${prefix}.toValue must be a cell value`);
+  if (v.buttonLabel !== undefined && !isText(v.buttonLabel))
+    fail(`${prefix}.buttonLabel must be a non-empty string`);
+  if (v.resetLabel !== undefined && !isText(v.resetLabel))
+    fail(`${prefix}.resetLabel must be a non-empty string`);
+}
+
+function checkInfoAnimation(anim: unknown, fail: Fail) {
+  if (!isObj(anim)) return fail("animation must be an object");
+  if (anim.kind === "cell-locate") {
+    checkFields(anim, { kind: true, col: true, row: true, cell: true }, "animation.", fail);
+    if (!isText(anim.col) || !/^[A-Z]{1,3}$/.test(anim.col))
+      fail("animation.col must be uppercase column letters");
+    if (!Number.isInteger(anim.row) || (anim.row as number) < 1)
+      fail("animation.row must be a positive integer");
+    if (typeof anim.cell !== "string" || !CELL_RE.test(anim.cell))
+      fail("animation.cell must be an uppercase cell reference");
+    return;
+  }
+  if (anim.kind === "formula-build") {
+    checkFields(
+      anim,
+      { kind: true, targetCell: true, frames: true, liveUpdate: true },
+      "animation.",
+      fail,
+    );
+    if (typeof anim.targetCell !== "string" || !CELL_RE.test(anim.targetCell))
+      fail("animation.targetCell must be an uppercase cell reference");
+    if (!Array.isArray(anim.frames) || anim.frames.length === 0)
+      fail("animation.frames must be a non-empty array");
+    else {
+      anim.frames.forEach((f, i) => {
+        if (!isObj(f)) return fail(`animation.frames[${i}] must be an object`);
+        checkFields(
+          f,
+          {
+            label: true,
+            key: true,
+            draft: true,
+            focusCell: true,
+            highlightCells: true,
+            yellowCells: true,
+            resultCell: true,
+          },
+          `animation.frames[${i}].`,
+          fail,
+        );
+        if (!isText(f.label)) fail(`animation.frames[${i}].label must be a non-empty string`);
+        if (typeof f.draft !== "string") fail(`animation.frames[${i}].draft must be a string`);
+        if (f.key !== undefined && !isText(f.key))
+          fail(`animation.frames[${i}].key must be a non-empty string`);
+        if (f.focusCell !== undefined && typeof f.focusCell !== "string")
+          fail(`animation.frames[${i}].focusCell must be a string`);
+        if (f.highlightCells !== undefined && !isStrings(f.highlightCells))
+          fail(`animation.frames[${i}].highlightCells must be an array of strings`);
+        if (f.yellowCells !== undefined && !isStrings(f.yellowCells))
+          fail(`animation.frames[${i}].yellowCells must be an array of strings`);
+        if (f.resultCell !== undefined && typeof f.resultCell !== "string")
+          fail(`animation.frames[${i}].resultCell must be a string`);
+      });
+    }
+    if (anim.liveUpdate !== undefined)
+      checkLiveUpdate(anim.liveUpdate, "animation.liveUpdate", fail);
+    return;
+  }
+  if (anim.kind === "live-update") {
+    checkFields(anim, { kind: true, liveUpdate: true }, "animation.", fail);
+    checkLiveUpdate(anim.liveUpdate, "animation.liveUpdate", fail);
+    return;
+  }
+  fail(
+    `animation.kind ${show(anim.kind)} must be "cell-locate", "formula-build", or "live-update"`,
+  );
 }
 
 /** Content rules for a step whose shape is valid. */
@@ -460,7 +751,10 @@ function checkFormula(step: FormulaStep, fail: Fail) {
 
 // --- select ----------------------------------------------------------------
 
-type Part = { kind: "cell"; row: number; col: number } | { kind: "col"; col: number } | { kind: "row"; row: number };
+type Part =
+  | { kind: "cell"; row: number; col: number }
+  | { kind: "col"; col: number }
+  | { kind: "row"; row: number };
 
 function parsePart(s: string): Part | null {
   let m = /^([A-Z]{1,3})([1-9]\d*)$/.exec(s);
@@ -481,7 +775,8 @@ function columnIndex(letters: string): number {
 
 function columnLetters(index: number): string {
   let s = "";
-  for (let n = index + 1; n > 0; n = Math.floor((n - 1) / 26)) s = String.fromCharCode(65 + ((n - 1) % 26)) + s;
+  for (let n = index + 1; n > 0; n = Math.floor((n - 1) / 26))
+    s = String.fromCharCode(65 + ((n - 1) % 26)) + s;
   return s;
 }
 
@@ -546,20 +841,65 @@ function checkSelect(step: SelectStep, fail: Fail) {
 const MODIFIERS = ["Ctrl", "Alt", "Shift", "Cmd"] as const;
 type Modifier = (typeof MODIFIERS)[number];
 const MODIFIER_ALIASES: Record<string, Modifier> = {
-  ctrl: "Ctrl", control: "Ctrl", "⌃": "Ctrl",
-  alt: "Alt", option: "Alt", opt: "Alt", "⌥": "Alt",
-  shift: "Shift", "⇧": "Shift",
-  cmd: "Cmd", command: "Cmd", meta: "Cmd", "⌘": "Cmd",
+  ctrl: "Ctrl",
+  control: "Ctrl",
+  "⌃": "Ctrl",
+  alt: "Alt",
+  option: "Alt",
+  opt: "Alt",
+  "⌥": "Alt",
+  shift: "Shift",
+  "⇧": "Shift",
+  cmd: "Cmd",
+  command: "Cmd",
+  meta: "Cmd",
+  "⌘": "Cmd",
 };
 const NAMED_KEYS = [
-  "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", "Tab", "Escape", "Backspace", "Delete",
-  "Insert", "Home", "End", "PageUp", "PageDown", "Space", "ContextMenu",
+  "ArrowUp",
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "Enter",
+  "Tab",
+  "Escape",
+  "Backspace",
+  "Delete",
+  "Insert",
+  "Home",
+  "End",
+  "PageUp",
+  "PageDown",
+  "Space",
+  "ContextMenu",
   ...Array.from({ length: 24 }, (_, i) => `F${i + 1}`),
 ];
 const NAMED_KEY_BY_LOWER = new Map(NAMED_KEYS.map((k) => [k.toLowerCase(), k]));
 const CANONICAL_HINT = "(modifiers Ctrl, Alt, Shift, Cmd in that order, then one key)";
 const RESERVED_KEYS = new Set(["W", "T", "N", "Q", "Tab"]);
-const SHIFTED_US_KEYS: Record<string, string> = { "!": "1", "@": "2", "#": "3", "$": "4", "%": "5", "^": "6", "&": "7", "*": "8", "(": "9", ")": "0", "_": "-", "+": "=", "{": "[", "}": "]", "|": "\\", ":": ";", '"': "'", "<": ",", ">": ".", "?": "/", "~": "`" };
+const SHIFTED_US_KEYS: Record<string, string> = {
+  "!": "1",
+  "@": "2",
+  "#": "3",
+  $: "4",
+  "%": "5",
+  "^": "6",
+  "&": "7",
+  "*": "8",
+  "(": "9",
+  ")": "0",
+  _: "-",
+  "+": "=",
+  "{": "[",
+  "}": "]",
+  "|": "\\",
+  ":": ";",
+  '"': "'",
+  "<": ",",
+  ">": ".",
+  "?": "/",
+  "~": "`",
+};
 
 type Combo = { mods: Set<Modifier>; key: string | null };
 
@@ -578,7 +918,8 @@ function parseCombo(combo: string): Combo | null {
     const mod = MODIFIER_ALIASES[token.toLowerCase()];
     if (mod) mods.add(mod);
     else if (/^[!-~]$/.test(token)) keys.push(token.toUpperCase());
-    else if (NAMED_KEY_BY_LOWER.has(token.toLowerCase())) keys.push(NAMED_KEY_BY_LOWER.get(token.toLowerCase())!);
+    else if (NAMED_KEY_BY_LOWER.has(token.toLowerCase()))
+      keys.push(NAMED_KEY_BY_LOWER.get(token.toLowerCase())!);
     else return null;
   }
   return keys.length > 1 ? null : { mods, key: keys[0] ?? null };
@@ -590,7 +931,9 @@ const formatCombo = ({ mods, key }: Combo) =>
 /** Ctrl/Cmd + W, T, N, Q or Tab, with or without other modifiers: the browser keeps these. */
 export function isReservedCombo(combo: string): boolean {
   const c = parseCombo(combo);
-  return !!c && c.key !== null && RESERVED_KEYS.has(c.key) && (c.mods.has("Ctrl") || c.mods.has("Cmd"));
+  return (
+    !!c && c.key !== null && RESERVED_KEYS.has(c.key) && (c.mods.has("Ctrl") || c.mods.has("Cmd"))
+  );
 }
 
 function checkCombo(combo: string, bareModifierOk: boolean, label: string, fail: Fail) {
@@ -599,20 +942,35 @@ function checkCombo(combo: string, bareModifierOk: boolean, label: string, fail:
   if (c.key && Object.hasOwn(SHIFTED_US_KEYS, c.key)) {
     const mods = new Set(c.mods);
     mods.add("Shift");
-    fail(`${label} "${combo}" uses shifted US symbol "${c.key}"; write "${formatCombo({ mods, key: SHIFTED_US_KEYS[c.key]! })}" instead`);
+    fail(
+      `${label} "${combo}" uses shifted US symbol "${c.key}"; write "${formatCombo({ mods, key: SHIFTED_US_KEYS[c.key]! })}" instead`,
+    );
   }
   if (c.key === null && !(bareModifierOk && c.mods.size === 1)) {
     fail(`${label} "${combo}" has no key after its modifiers`);
   } else {
     const canonical = formatCombo(c);
-    if (canonical !== combo) fail(`${label} "${combo}" is not canonical; write "${canonical}" ${CANONICAL_HINT}`);
+    if (canonical !== combo)
+      fail(`${label} "${combo}" is not canonical; write "${canonical}" ${CANONICAL_HINT}`);
   }
-  if (isReservedCombo(combo)) fail(`${label} "${combo}" uses a browser-reserved combo (Ctrl/Cmd + W, T, N, Q, Tab)`);
+  if (isReservedCombo(combo))
+    fail(`${label} "${combo}" uses a browser-reserved combo (Ctrl/Cmd + W, T, N, Q, Tab)`);
 }
 
-const ALLOWED_FORMAT_STYLES = new Set(["bold", "italic", "underline", "strikethrough", "center", "border"]);
+const ALLOWED_FORMAT_STYLES = new Set([
+  "bold",
+  "italic",
+  "underline",
+  "strikethrough",
+  "center",
+  "border",
+]);
 
-function checkShortcutGrid(grid: unknown[][], label: string, fail: Fail): { rows: number; cols: number } | null {
+function checkShortcutGrid(
+  grid: unknown[][],
+  label: string,
+  fail: Fail,
+): { rows: number; cols: number } | null {
   const rows = grid.length;
   const cols = Math.max(0, ...grid.map((row) => (Array.isArray(row) ? row.length : 0)));
   if (rows === 0 || cols === 0) {
@@ -620,7 +978,8 @@ function checkShortcutGrid(grid: unknown[][], label: string, fail: Fail): { rows
     return null;
   }
   if (cols > 7 || rows > 8) fail(`${label} must have at most 7 columns and 8 rows`);
-  if (grid.some((row) => !Array.isArray(row) || row.length !== cols)) fail(`${label} rows must have equal length`);
+  if (grid.some((row) => !Array.isArray(row) || row.length !== cols))
+    fail(`${label} rows must have equal length`);
   return { rows, cols };
 }
 
@@ -643,13 +1002,20 @@ function checkShortcut(step: ShortcutStep, fail: Fail) {
     const keys = step.keys[os];
     if (keys === null) continue;
     // A sequence entry may be a lone modifier, e.g. the "Alt" that opens key tips.
-    for (const combo of Array.isArray(keys) ? keys : [keys]) checkCombo(combo, step.mode === "sequence", `${os} shortcut`, fail);
+    for (const combo of Array.isArray(keys) ? keys : [keys])
+      checkCombo(combo, step.mode === "sequence", `${os} shortcut`, fail);
   }
 
   const stepGridDim = step.grid ? checkShortcutGrid(step.grid, "grid", fail) : null;
-  const postGridDim = step.postcondition?.grid ? checkShortcutGrid(step.postcondition.grid, "postcondition.grid", fail) : null;
+  const postGridDim = step.postcondition?.grid
+    ? checkShortcutGrid(step.postcondition.grid, "postcondition.grid", fail)
+    : null;
 
-  if (step.activeCell && stepGridDim && !isInside(step.activeCell, stepGridDim.rows, stepGridDim.cols)) {
+  if (
+    step.activeCell &&
+    stepGridDim &&
+    !isInside(step.activeCell, stepGridDim.rows, stepGridDim.cols)
+  ) {
     fail(`activeCell "${step.activeCell}" is outside the grid`);
   }
 
@@ -664,7 +1030,8 @@ function checkShortcut(step: ShortcutStep, fail: Fail) {
       fail(`postcondition.format key "${ref}" is outside the grid`);
     }
     for (const style of styles) {
-      if (!ALLOWED_FORMAT_STYLES.has(style)) fail(`postcondition.format style "${style}" is not allowed`);
+      if (!ALLOWED_FORMAT_STYLES.has(style))
+        fail(`postcondition.format style "${style}" is not allowed`);
     }
   }
 }
@@ -680,7 +1047,9 @@ function main() {
   }
   for (const { errors } of results) for (const e of errors) console.error(`✗ ${e}`);
   const count = results.reduce((n, r) => n + r.errors.length, 0);
-  console.error(`validate-content: ${count} error${count === 1 ? "" : "s"} in ${results.length} file${results.length === 1 ? "" : "s"}`);
+  console.error(
+    `validate-content: ${count} error${count === 1 ? "" : "s"} in ${results.length} file${results.length === 1 ? "" : "s"}`,
+  );
   process.exit(1);
 }
 

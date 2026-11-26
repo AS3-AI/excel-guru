@@ -3,7 +3,7 @@
   "fn": "TEXTJOIN",
   "title": "How to use TEXTJOIN in Excel",
   "description": "Learn how Excel TEXTJOIN combines text across cells and ranges with a delimiter, with a worked example and a link to hands-on practice.",
-  "syntax": "=TEXTJOIN(delimiter, ignore_empty, text1, [text2], …)",
+  "syntax": "=TEXTJOIN(delimiter, ignore_empty, text1, [text2], â€¦)",
   "args": [
     {
       "name": "delimiter",
@@ -29,32 +29,17 @@
   "sections": [
     {
       "heading": "What TEXTJOIN does",
-      "text": "**TEXTJOIN** merges text from multiple cells or ranges into a single string. You provide a delimiter—such as a comma or space—and Excel inserts it between each value. You can also tell it to skip empty cells automatically."
+      "text": "**TEXTJOIN** merges text from multiple cells or ranges into a single string. You provide a delimiterâ€”such as a comma or spaceâ€”and Excel inserts it between each value. You can also tell it to skip empty cells automatically."
     },
     {
       "heading": "A small example",
       "text": "Here is a list of workshop sessions and speakers. The formula in the blank result cell joins all speaker names into one comma-separated list.",
       "grid": [
-        [
-          "Session",
-          "Speaker"
-        ],
-        [
-          "Morning",
-          "Alex"
-        ],
-        [
-          "Keynote",
-          "Priya"
-        ],
-        [
-          "Closing",
-          "Elena"
-        ],
-        [
-          "All Speakers",
-          null
-        ]
+        ["Session", "Speaker"],
+        ["Morning", "Alex"],
+        ["Keynote", "Priya"],
+        ["Closing", "Elena"],
+        ["All Speakers", null]
       ],
       "formula": "=TEXTJOIN(\", \", TRUE, B2:B4)",
       "result": "Alex, Priya, Elena"
@@ -65,11 +50,9 @@
     },
     {
       "heading": "Common mistake: delimiter without quotes",
-      "text": "Always enclose text delimiters in quotation marks, such as `\"-\"`. Typing `=TEXTJOIN(-, TRUE, B2:B4)` won't be accepted: Excel shows a formula error message and the formula is never entered. Also keep the argument order in mind: delimiter first, then `ignore_empty`, then your text range."
+      "text": "Always enclose text delimiters in quotation marks, such as `\"-\"`. Typing `=TEXTJOIN(-, TRUE, B2:B4)` won\u0027t be accepted: Excel shows a formula error message and the formula is never entered. Also keep the argument order in mind: delimiter first, then `ignore_empty`, then your text range."
     }
   ],
-  "lessonId": "text-manipulation-2",
-  "related": [
-    "sum"
-  ]
+  "lessonId": "intro",
+  "related": ["sum"]
 }

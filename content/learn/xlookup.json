@@ -41,36 +41,12 @@
       "heading": "What XLOOKUP does",
       "text": "**XLOOKUP** searches a range for a specific value and returns a matching value from another range. It defaults to an exact match, so you do not need to add extra flags for everyday lookups. Here, the formula searches for the item in `A6` and returns its price.",
       "grid": [
-        [
-          "Item",
-          "Category",
-          "Price"
-        ],
-        [
-          "Espresso",
-          "Drink",
-          3
-        ],
-        [
-          "Croissant",
-          "Bakery",
-          4
-        ],
-        [
-          "Muffin",
-          "Bakery",
-          3
-        ],
-        [
-          "Tea",
-          "Drink",
-          2
-        ],
-        [
-          "Croissant",
-          "Find Price",
-          null
-        ]
+        ["Item", "Category", "Price"],
+        ["Espresso", "Drink", 3],
+        ["Croissant", "Bakery", 4],
+        ["Muffin", "Bakery", 3],
+        ["Tea", "Drink", 2],
+        ["Croissant", "Find Price", null]
       ],
       "formula": "=XLOOKUP(A6,A2:A5,C2:C5)",
       "result": 4
@@ -79,69 +55,25 @@
       "heading": "Look up to the left",
       "text": "Earlier functions like VLOOKUP can only return values to the right of your lookup column. With XLOOKUP, your return range can sit anywhere. Here, the formula looks up bib `425` in column B and returns the runner name from column A on its left.",
       "grid": [
-        [
-          "Runner",
-          "Bib",
-          "Distance"
-        ],
-        [
-          "Ananya",
-          204,
-          5
-        ],
-        [
-          "Bilal",
-          318,
-          10
-        ],
-        [
-          "Chloe",
-          425,
-          21
-        ],
-        [
-          "Dan",
-          512,
-          10
-        ],
-        [
-          null,
-          425,
-          "Find Runner"
-        ]
+        ["Runner", "Bib", "Distance"],
+        ["Ananya", 204, 5],
+        ["Bilal", 318, 10],
+        ["Chloe", 425, 21],
+        ["Dan", 512, 10],
+        [null, 425, "Find Runner"]
       ],
       "formula": "=XLOOKUP(B6,B2:B5,A2:A5)",
       "result": "Chloe"
     },
     {
       "heading": "Handle missing values cleanly",
-      "text": "When a lookup value does not exist, Excel normally returns a `#N/A` error. You can use XLOOKUP’s fourth argument to show a friendly fallback message instead of wrapping your formula in `IFERROR`. In this example, searching for missing order `1099` returns `Not Found`.",
+      "text": "When a lookup value does not exist, Excel normally returns a `#N/A` error. You can use XLOOKUPâ€™s fourth argument to show a friendly fallback message instead of wrapping your formula in `IFERROR`. In this example, searching for missing order `1099` returns `Not Found`.",
       "grid": [
-        [
-          "Order ID",
-          "Customer",
-          "Status"
-        ],
-        [
-          1001,
-          "Amina",
-          "Shipped"
-        ],
-        [
-          1002,
-          "Carlos",
-          "Delivered"
-        ],
-        [
-          1003,
-          "Deepa",
-          "Pending"
-        ],
-        [
-          1099,
-          "Find Status",
-          null
-        ]
+        ["Order ID", "Customer", "Status"],
+        [1001, "Amina", "Shipped"],
+        [1002, "Carlos", "Delivered"],
+        [1003, "Deepa", "Pending"],
+        [1099, "Find Status", null]
       ],
       "formula": "=XLOOKUP(A5,A2:A4,C2:C4,\"Not Found\")",
       "result": "Not Found"
@@ -151,9 +83,6 @@
       "text": "Both `lookup_array` and `return_array` must have the exact same number of rows or columns. If you search four cells in `A2:A5` but supply five cells in `C2:C6` to return from, Excel cannot align the rows and displays a `#VALUE!` error. Always make sure your two ranges start and end on matching row numbers."
     }
   ],
-  "lessonId": "lookup-6",
-  "related": [
-    "vlookup",
-    "index-match"
-  ]
+  "lessonId": "intro",
+  "related": ["vlookup", "index-match"]
 }

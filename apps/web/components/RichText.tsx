@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
-export type RichTextPart = { type: "text" | "bold" | "code"; value: string };
+export type RichTextPart = { type: "text" | "bold" | "code" | "mark" | "kbd"; value: string };
 
-/** Parse the lesson's two supported markers without interpreting HTML. */
+/** Parse the lesson's supported markers (**, `, ==, [[...]]) without interpreting HTML. */
 export function parseRichText(value: string): RichTextPart[] {
   const parts: RichTextPart[] = [];
   let buffer = "";
@@ -17,7 +17,10 @@ export function parseRichText(value: string): RichTextPart[] {
     while (index < value.length) {
       if (value[index] === "`") {
         const close = value.indexOf("`", index + 1);
-        if (close !== -1) { index = close + 1; continue; }
+        if (close !== -1) {
+          index = close + 1;
+          continue;
+        }
       }
       if (value.startsWith("**", index)) return index > from;
       index++;
@@ -32,6 +35,24 @@ export function parseRichText(value: string): RichTextPart[] {
         flush();
         parts.push({ type: "code", value: value.slice(i + 1, close) });
         i = close + 1;
+        continue;
+      }
+    }
+    if (value.startsWith("==", i)) {
+      const close = value.indexOf("==", i + 2);
+      if (close > i + 2) {
+        flush();
+        parts.push({ type: "mark", value: value.slice(i + 2, close) });
+        i = close + 2;
+        continue;
+      }
+    }
+    if (value.startsWith("[[", i)) {
+      const close = value.indexOf("]]", i + 2);
+      if (close > i + 2) {
+        flush();
+        parts.push({ type: "kbd", value: value.slice(i + 2, close) });
+        i = close + 2;
         continue;
       }
     }
@@ -53,7 +74,24 @@ export function parseRichText(value: string): RichTextPart[] {
 export function RichText({ text }: { text: string }) {
   const nodes: ReactNode[] = parseRichText(text).map((part, index) => {
     if (part.type === "bold") return <strong key={index}>{part.value}</strong>;
-    if (part.type === "code") return <code className="chip" key={index}>{part.value}</code>;
+    if (part.type === "code")
+      return (
+        <code className="chip" key={index}>
+          {part.value}
+        </code>
+      );
+    if (part.type === "mark")
+      return (
+        <mark className="eg-mark" key={index}>
+          {part.value}
+        </mark>
+      );
+    if (part.type === "kbd")
+      return (
+        <kbd className="eg-kbd" key={index}>
+          {part.value}
+        </kbd>
+      );
     return part.value;
   });
   return <>{nodes}</>;

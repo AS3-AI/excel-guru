@@ -1,22 +1,41 @@
 "use client";
 
 import {
-  useEffect, useId, useLayoutEffect, useRef, type FocusEvent, type KeyboardEvent, type ReactNode, type RefObject,
+  useId,
+  useLayoutEffect,
+  useRef,
+  type FocusEvent,
+  type KeyboardEvent,
+  type ReactNode,
+  type RefObject,
 } from "react";
 
 /** A reference in the draft being edited and its colour index (see refs.ts and the .eg-ref-N classes). */
 export type ColouredRef = { start: number; end: number; colour: number };
 
 /** The draft with each reference wrapped in its colour. */
-export function RefText({ text, refs }: { text: string; refs: ColouredRef[] }) {
+export function RefText({
+  text,
+  refs,
+  caret = false,
+}: {
+  text: string;
+  refs: ColouredRef[];
+  caret?: boolean;
+}) {
   const parts: ReactNode[] = [];
   let at = 0;
   refs.forEach((r, i) => {
     if (r.start > at) parts.push(text.slice(at, r.start));
-    parts.push(<span key={i} className={`eg-reftext eg-ref-${r.colour}`}>{text.slice(r.start, r.end)}</span>);
+    parts.push(
+      <span key={i} className={`eg-reftext eg-ref-${r.colour}`}>
+        {text.slice(r.start, r.end)}
+      </span>,
+    );
     at = r.end;
   });
   if (at < text.length) parts.push(text.slice(at));
+  if (caret) parts.push(<i key="caret" className="eg-caret" aria-hidden="true" />);
   return <>{parts}</>;
 }
 
@@ -25,14 +44,25 @@ export function RefText({ text, refs }: { text: string; refs: ColouredRef[] }) {
  * transparent and this layer shows it, coloured, exactly on top (same font and padding; it never
  * takes pointer events). It follows the input's horizontal scroll so long formulas stay aligned.
  */
-export function RefMirror({ text, refs, inputRef, className }: {
-  text: string; refs: ColouredRef[]; inputRef: RefObject<HTMLInputElement | null>; className: string;
+export function RefMirror({
+  text,
+  refs,
+  inputRef,
+  className,
+}: {
+  text: string;
+  refs: ColouredRef[];
+  inputRef: RefObject<HTMLInputElement | null>;
+  className: string;
 }) {
   const inner = useRef<HTMLSpanElement>(null);
   useLayoutEffect(() => {
-    const el = inputRef.current, span = inner.current;
+    const el = inputRef.current,
+      span = inner.current;
     if (!el || !span) return;
-    const sync = () => { span.style.transform = `translateX(${-el.scrollLeft}px)`; };
+    const sync = () => {
+      span.style.transform = `translateX(${-el.scrollLeft}px)`;
+    };
     sync();
     // The caret can scroll the input without a render (arrow keys, Home/End, selecting).
     const events = ["scroll", "keyup", "select", "input", "mouseup"] as const;
@@ -41,7 +71,9 @@ export function RefMirror({ text, refs, inputRef, className }: {
   });
   return (
     <div className={`eg-mirror ${className}`} aria-hidden="true">
-      <span ref={inner} className="eg-mirror-text"><RefText text={text} refs={refs} /></span>
+      <span ref={inner} className="eg-mirror-text">
+        <RefText text={text} refs={refs} />
+      </span>
     </div>
   );
 }
@@ -70,56 +102,129 @@ type Props = {
   onConfirm: () => void;
   onCancel: () => void;
   onFx: () => void;
+  readOnly?: boolean;
+  previewCaret?: boolean;
 };
 
 /** Name box, ✕ ✓ fx buttons, the formula input and, under it, any parse error. */
 export function FormulaBar({
-  address, value, editing, error, inputRef, refs, onStartEdit, onChange, onKeyDown, onBlur, onCaretPlace, onConfirm, onCancel, onFx,
+  address,
+  value,
+  editing,
+  error,
+  inputRef,
+  refs,
+  onStartEdit,
+  onChange,
+  onKeyDown,
+  onBlur,
+  onCaretPlace,
+  onConfirm,
+  onCancel,
+  onFx,
+  readOnly = false,
+  previewCaret = false,
 }: Props) {
   const errorId = useId();
   // Keep focus in the editor when a button is pressed, so ✓ commits what was typed.
   const keepFocus = (e: { preventDefault: () => void }) => e.preventDefault();
+  const showReadOnlyMirror = readOnly && (refs !== null || previewCaret);
 
   return (
     <div className="eg-fbar-wrap">
       <div className="eg-fbar">
-        <div className="eg-namebox" aria-label="Name box" role="status">{address}</div>
+        <div className="eg-namebox" aria-label="Name box" role="status">
+          {address}
+        </div>
         <div className="eg-fbar-btns">
           <button
-            type="button" className="eg-fbtn" aria-label="Cancel" title="Cancel (Esc)"
-            disabled={!editing} onMouseDown={keepFocus} onClick={onCancel}
-          >✕</button>
+            type="button"
+            className="eg-fbtn"
+            aria-label="Cancel"
+            title="Cancel (Esc)"
+            disabled={readOnly || !editing}
+            onMouseDown={keepFocus}
+            onClick={onCancel}
+          >
+            ✕
+          </button>
           <button
-            type="button" className="eg-fbtn" aria-label="Enter" title="Enter"
-            disabled={!editing} onMouseDown={keepFocus} onClick={onConfirm}
-          >✓</button>
+            type="button"
+            className="eg-fbtn"
+            aria-label="Enter"
+            title="Enter"
+            disabled={readOnly || !editing}
+            onMouseDown={keepFocus}
+            onClick={onConfirm}
+          >
+            ✓
+          </button>
           <button
-            type="button" className="eg-fbtn eg-fx" aria-label="Insert function" title="Start a formula"
-            onMouseDown={keepFocus} onClick={onFx}
-          ><i>fx</i></button>
+            type="button"
+            className="eg-fbtn eg-fx"
+            aria-label="Insert function"
+            title="Start a formula"
+            disabled={readOnly}
+            onMouseDown={keepFocus}
+            onClick={onFx}
+          >
+            <i>fx</i>
+          </button>
         </div>
         <div className="eg-finput-wrap">
           <input
             ref={inputRef}
-            className={`eg-finput${refs ? " has-mirror" : ""}`}
+            className={`eg-finput${refs || showReadOnlyMirror ? " has-mirror" : ""}${readOnly ? " is-readonly" : ""}`}
             aria-label="Formula bar"
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? errorId : undefined}
             value={value}
+            readOnly={readOnly}
+            tabIndex={readOnly ? -1 : undefined}
             spellCheck={false}
             autoComplete="off"
             autoCapitalize="off"
             autoCorrect="off"
-            onFocus={() => { if (!editing) onStartEdit(); }}
-            onChange={(e) => onChange(e.target.value)}
-            onKeyDown={onKeyDown}
-            onBlur={onBlur}
-            onMouseUp={onCaretPlace}
+            onFocus={
+              readOnly
+                ? undefined
+                : () => {
+                    if (!editing) onStartEdit();
+                  }
+            }
+            onChange={readOnly ? undefined : (e) => onChange(e.target.value)}
+            onKeyDown={readOnly ? undefined : onKeyDown}
+            onBlur={readOnly ? undefined : onBlur}
+            onMouseUp={readOnly ? undefined : onCaretPlace}
           />
-          {refs && <RefMirror text={value} refs={refs} inputRef={inputRef} className="eg-finput-mirror" />}
+          {showReadOnlyMirror ? (
+            <div className="eg-mirror eg-finput-mirror" aria-hidden="true">
+              <span className="eg-mirror-text">
+                {refs ? (
+                  <RefText text={value} refs={refs} caret={previewCaret} />
+                ) : (
+                  <>
+                    {value}
+                    {previewCaret && <i className="eg-caret" aria-hidden="true" />}
+                  </>
+                )}
+              </span>
+            </div>
+          ) : (
+            refs && (
+              <RefMirror
+                text={value}
+                refs={refs}
+                inputRef={inputRef}
+                className="eg-finput-mirror"
+              />
+            )
+          )}
         </div>
       </div>
-      <p id={errorId} className="eg-fbar-error" aria-live="polite">{error ?? ""}</p>
+      <p id={errorId} className="eg-fbar-error" aria-live="polite">
+        {error ?? ""}
+      </p>
     </div>
   );
 }

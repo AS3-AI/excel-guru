@@ -5,29 +5,50 @@
   "description": "Learn how to extract text in Excel using LEFT, RIGHT, and MID, with clear examples and a link to hands-on practice.",
   "syntax": "=LEFT(text, [num_chars]) | =RIGHT(text, [num_chars]) | =MID(text, start_num, num_chars)",
   "args": [
-    { "name": "text", "required": true, "text": "The text string or cell reference containing the characters you want to extract." },
-    { "name": "num_chars", "required": false, "text": "The number of characters to extract. Defaults to 1 if omitted in LEFT and RIGHT. Required in MID." },
-    { "name": "start_num", "required": true, "text": "The position of the first character to extract in MID, starting at 1 for the first character." }
+    {
+      "name": "text",
+      "required": true,
+      "text": "The text string or cell reference containing the characters you want to extract."
+    },
+    {
+      "name": "num_chars",
+      "required": false,
+      "text": "The number of characters to extract. Defaults to 1 if omitted in LEFT and RIGHT. Required in MID."
+    },
+    {
+      "name": "start_num",
+      "required": true,
+      "text": "The position of the first character to extract in MID, starting at 1 for the first character."
+    }
   ],
   "sections": [
     {
       "heading": "Extract from the start with LEFT",
       "text": "**LEFT** pulls characters from the beginning of a text string. Give it a cell reference and the number of characters you want. If you omit the character count, Excel returns just the first character.",
-      "grid": [["Tracking Code", "Hub"], ["SEA-9041", null]],
+      "grid": [
+        ["Tracking Code", "Hub"],
+        ["SEA-9041", null]
+      ],
       "formula": "=LEFT(A2, 3)",
       "result": "SEA"
     },
     {
       "heading": "Extract from the end with RIGHT",
       "text": "**RIGHT** pulls characters from the end of a text string. Give it a cell reference and how many characters to return from the right side. If you omit the count, it returns only the last character.",
-      "grid": [["Employee ID", "Role"], ["EMP-418-MGR", null]],
+      "grid": [
+        ["Employee ID", "Role"],
+        ["EMP-418-MGR", null]
+      ],
       "formula": "=RIGHT(A2, 3)",
       "result": "MGR"
     },
     {
       "heading": "Extract from the middle with MID",
       "text": "**MID** returns a specific number of characters from anywhere inside a text string. You specify the text, the position where extraction starts, and how many characters to take. Unlike `LEFT` and `RIGHT`, the length is required.",
-      "grid": [["Shipment ID", "Destination"], ["US-CHI-940", null]],
+      "grid": [
+        ["Shipment ID", "Destination"],
+        ["US-CHI-940", null]
+      ],
       "formula": "=MID(A2, 4, 3)",
       "result": "CHI"
     },
@@ -36,6 +57,6 @@
       "text": "Text functions always return text strings, even when the characters look like numbers. If you extract digits like `940`, formulas like `SUM` will ignore that cell. Remember also that Excel uses 1-based indexing, so the first character is always 1, not 0. To use extracted digits in calculations, wrap your formula in `VALUE`, such as `=VALUE(RIGHT(A2, 3))`."
     }
   ],
-  "lessonId": "text-search-1",
+  "lessonId": "intro",
   "related": ["sum"]
 }
