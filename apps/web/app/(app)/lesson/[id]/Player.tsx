@@ -1043,16 +1043,6 @@ export function Player({
               </>
             ) : (
               <>
-                {canGoBack && (
-                  <button
-                    className={`btn pl-key ${plKeyClasses}`}
-                    aria-label="Previous"
-                    aria-keyshortcuts="ArrowLeft"
-                    onClick={goPrevious}
-                  >
-                    <span aria-hidden="true">←</span> Prev
-                  </button>
-                )}
                 <span
                   className="pl-actions-end ml-auto flex gap-s2
           [@media(max-width:640px)]:[flex:1]"
