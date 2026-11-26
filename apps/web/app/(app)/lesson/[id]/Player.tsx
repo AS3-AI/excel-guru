@@ -132,6 +132,7 @@ export function Player({
   const [aiThanks, setAiThanks] = useState(false);
   const [aiRated, setAiRated] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
+  const [gridResetNonce, setGridResetNonce] = useState(0);
   const [celebrate, setCelebrate] = useState(false);
   const [savedStats, setSavedStats] = useState<{ points: number; streak: number } | null>(null);
   const [saveNote, setSaveNote] = useState("");
@@ -172,6 +173,7 @@ export function Player({
   const feedbackRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<Sheet | null>(null);
   const commitRef = useRef(false);
+  const lastCommitCell = useRef<string | null>(null);
   const listRef = useRef<HTMLDialogElement>(null);
   const step = lesson.steps[state.index]!;
   const firstTry = useMemo(() => {
@@ -281,6 +283,7 @@ export function Player({
   }, [celebrate, completionDestination, router]);
   useEffect(() => {
     if (!celebrate && !state.complete) {
+      lastCommitCell.current = null;
       setFormulaReady(false);
       setStepReady(null);
       const initial =
@@ -468,6 +471,14 @@ export function Player({
   const formulaInput = (s: FormulaStep) =>
     sheetRef.current?.getFormula(s.targetCell) ??
     rawInput(sheetRef.current?.get(s.targetCell) ?? null);
+  const resetSheet = () => {
+    lastCommitCell.current = null;
+    setFormulaReady(false);
+    setGridResetNonce((n) => n + 1);
+    requestAnimationFrame(() =>
+      stageRef.current?.querySelector<HTMLElement>('[role="grid"]')?.focus(),
+    );
+  };
   const check = (s: FormulaStep) => {
     const active = document.activeElement;
     if (active instanceof HTMLInputElement && stageRef.current?.contains(active)) {
@@ -475,6 +486,16 @@ export function Player({
       commitRef.current = false;
       active.blur();
       if (!commitRef.current) {
+        const wrongCell = lastCommitCell.current;
+        if (wrongCell) {
+          resetSheet();
+          answer(
+            draft,
+            false,
+            `You typed in ${wrongCell}, but this question asks for ${s.targetCell}. Enter your formula in ${s.targetCell}.`,
+          );
+          return;
+        }
         const result = gradeFormulaStep(s, draft);
         if (result.reason === "parse_error") return;
         answer(
@@ -485,6 +506,16 @@ export function Player({
         stageRef.current?.querySelector<HTMLElement>('[role="grid"]')?.focus();
         return;
       }
+    }
+    const wrongCell = lastCommitCell.current;
+    if (wrongCell) {
+      resetSheet();
+      answer(
+        "",
+        false,
+        `You typed in ${wrongCell}, but this question asks for ${s.targetCell}. Enter your formula in ${s.targetCell}.`,
+      );
+      return;
     }
     const input = formulaInput(s);
     const result = gradeFormulaStep(s, input);
@@ -664,9 +695,19 @@ export function Player({
       e.target instanceof HTMLInputElement &&
       commitRef.current
     ) {
+      commitRef.current = false;
+      const wrongCell = lastCommitCell.current;
+      if (wrongCell) {
+        resetSheet();
+        answer(
+          "",
+          false,
+          `You typed in ${wrongCell}, but this question asks for ${step.targetCell}. Enter your formula in ${step.targetCell}.`,
+        );
+        return;
+      }
       const input = formulaInput(step),
         result = gradeFormulaStep(step, input);
-      commitRef.current = false;
       if (result.reason !== "parse_error")
         answer(
           input,
@@ -676,15 +717,6 @@ export function Player({
     }
   };
 
-  const KIND: Record<string, string> = {
-    formula: "Write a formula",
-    select: "Select the cells",
-    shortcut: "Keyboard shortcut",
-    mcq: "Quick check",
-    picture: "Read the picture",
-    project: "Project question",
-    info: "Read this",
-  };
   const hasBrief = step.type === "formula" || step.type === "select";
   // Same rule as answer(): first try is worth 1.5×, nothing once the answer has been shown.
   const stakes = answerPointsVisible(signedIn)
@@ -700,10 +732,6 @@ export function Player({
     }
     return n;
   })();
-  // The counter only moves on once the learner continues, not the moment they answer.
-  const challengeNo = String(
-    Math.min(state.correct + (feedback === "correct" ? 0 : 1), lesson.requiredCorrect),
-  ).padStart(2, "0");
   const openList = () => listRef.current?.showModal();
   const closeList = () => listRef.current?.close();
   const sidebar = (
@@ -887,32 +915,23 @@ export function Player({
           id="main"
           data-feedback={feedback ?? undefined}
         >
-          {!hasBrief && step.type !== "info" && (
+          {!hasBrief && step.type !== "info" && stakes !== null && feedback !== "correct" && (
             <p
-              className="pl-solo-head [grid-column:1_/_-1] flex items-center gap-s3 m-[0_0_calc(-1_*_var(--s2))]
-          [font:500_var(--fs-xs)/1_var(--mono)] tracking-[0.06em] uppercase text-muted
-          [animation:pl-enter_var(--d3)_var(--ease)]
-          [&_.num]:text-primary-strong
-          [&_.pl-chip-pts]:ml-auto [&_.pl-chip-pts]:tracking-[0] [&_.pl-chip-pts]:[text-transform:none]"
+              className="pl-solo-head [grid-column:1_/_-1] flex items-center justify-end gap-s3 m-[0_0_calc(-1_*_var(--s2))]
+          [font:500_var(--fs-xs)/1_var(--mono)] text-muted
+          [animation:pl-enter_var(--d3)_var(--ease)]"
               key={`head-${state.visit}`}
             >
-              <span className="num">Challenge {challengeNo}</span>
-              <span>{step.topic ?? KIND[step.type]}</span>
-              {stakes !== null && feedback !== "correct" && (
-                <span
-                  className="pl-chip-pts inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
-          bg-highlight text-ink"
-                >
-                  {stakes > 0 ? `+${stakes} pts` : "No points"}
-                </span>
-              )}
+              <span className="pl-chip-pts inline-flex items-center gap-[6px] p-[4px_9px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)] bg-highlight text-ink">
+                {stakes > 0 ? `+${stakes} pts` : "No points"}
+              </span>
             </p>
           )}
           <div
             ref={stageRef}
-            className="pl-stage [grid-column:1_/_-1] min-w-0 py-s4 px-0
-          min-h-[calc(100dvh-280px)] [@media(max-width:640px)]:min-h-[calc(100dvh-400px)]
-          [@media(max-width:640px)]:py-s3
+            className="pl-stage [grid-column:1_/_-1] min-w-0 py-s2 px-0
+          min-h-[calc(100dvh-250px)] [@media(max-width:640px)]:min-h-[calc(100dvh-360px)]
+          [@media(max-width:640px)]:py-s2
           [&_.pl-card]:[box-shadow:none]
           [&_.pl-card:last-child]:mb-0
           [&_.pl-options:last-child]:mb-0
@@ -926,21 +945,38 @@ export function Player({
                 key={`brief-${state.visit}`}
                 aria-label="Challenge"
               >
-                <p
-                  className="pl-brief-kicker flex items-center justify-between gap-s2 m-0 [font:500_var(--fs-xs)/1_var(--mono)] tracking-[0.06em] uppercase
-          text-muted [&_.num]:text-primary-strong"
-                >
-                  <span className="num">Challenge {challengeNo}</span>
-                  <span className="pl-brief-kind p-[4px_8px] [border:1px_solid_var(--border)] rounded-[4px] text-muted">
-                    {step.topic ?? KIND[step.type]}
-                  </span>
-                </p>
-                <p className="pl-prompt block m-0 text-ink">
-                  <RichText text={step.prompt} />
-                </p>
+                {(stakes !== null || firstTryRun >= 2) && feedback !== "correct" && (
+                  <div className="flex flex-wrap items-center gap-s2">
+                    {stakes !== null && (
+                      <span className="pl-chip-pts inline-flex items-center gap-[6px] p-[4px_9px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)] bg-highlight text-ink">
+                        {stakes > 0 ? `+${stakes} pts` : "No points"}
+                      </span>
+                    )}
+                    {firstTryRun >= 2 && (
+                      <span className="pl-chip-run inline-flex items-center gap-[6px] p-[4px_9px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)] bg-mint text-ink [animation:pl-pop-in_var(--d3)_var(--ease)]">
+                        <Icon name="sparkle" size={13} />
+                        {firstTryRun} in a row
+                      </span>
+                    )}
+                  </div>
+                )}
+                <div className="pl-prompt grid gap-s3 m-0 max-w-[66ch] text-ink">
+                  {step.prompt.split(/\n\n+/).map((block, idx) => {
+                    const lines = block.split("\n");
+                    return (
+                      <div key={idx} className="grid gap-[4px]">
+                        {lines.map((line, lineIdx) => (
+                          <p key={lineIdx} className="m-0">
+                            <RichText text={line} />
+                          </p>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
                 {step.keycaps && step.keycaps.length > 0 && (
                   <div
-                    className="flex flex-wrap items-center gap-[8px]"
+                    className="flex flex-wrap items-center gap-[8px] pt-s1"
                     aria-label="Keys and actions"
                   >
                     {step.keycaps.map((label, i) => (
@@ -955,44 +991,6 @@ export function Player({
                     ))}
                   </div>
                 )}
-                {(stakes !== null || firstTryRun >= 2) && feedback !== "correct" && (
-                  <div className="pl-brief-chips flex flex-wrap gap-s2">
-                    {stakes !== null && (
-                      <span
-                        className="pl-chip-pts inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
-          bg-highlight text-ink"
-                      >
-                        {stakes > 0 ? (
-                          <>
-                            +<span className="num">{stakes}</span> pts
-                            {state.firstTry[step.id] === undefined ? " on first try" : ""}
-                          </>
-                        ) : (
-                          "Answer shown · no points"
-                        )}
-                      </span>
-                    )}
-                    {firstTryRun >= 2 && (
-                      <span
-                        className="pl-chip-run inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
-          bg-mint text-ink [animation:pl-pop-in_var(--d3)_var(--ease)]"
-                      >
-                        <Icon name="sparkle" size={13} />
-                        {firstTryRun} in a row
-                      </span>
-                    )}
-                  </div>
-                )}
-                <p className="pl-brief-tip m-0 pt-s3 [border-top:1px_solid_var(--border)] text-ledger-sm text-muted">
-                  {step.type === "formula" ? (
-                    <>
-                      Click <code className="chip">{step.targetCell}</code>, type a formula starting
-                      with <code className="chip">=</code>, then press Enter.
-                    </>
-                  ) : (
-                    <>Click or drag across the cells, then press Enter.</>
-                  )}
-                </p>
               </section>
             )}
             <div
@@ -1001,7 +999,7 @@ export function Player({
             >
               {step.type === "formula" ? (
                 <Grid
-                  key={`${step.id}-${state.visit}`}
+                  key={`${step.id}-${state.visit}-${gridResetNonce}`}
                   grid={step.grid}
                   today={LESSON_TODAY}
                   targetCell={step.targetCell}
@@ -1009,12 +1007,25 @@ export function Player({
                   highlightCells={step.highlightCells}
                   yellowCells={step.yellowCells}
                   sheetRef={sheetRef}
+                  sheetBarRight={
+                    formulaReady && feedback !== "correct" ? (
+                      <button
+                        type="button"
+                        className="cursor-pointer rounded-[4px] border border-solid border-border bg-surface px-[7px] py-[2px] font-ledger-code text-[11px] font-medium text-muted hover:text-ink"
+                        onClick={resetSheet}
+                      >
+                        Reset sheet
+                      </button>
+                    ) : undefined
+                  }
                   onEditStart={() => {
                     setFormulaReady(true);
                     setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
                   }}
-                  onCommit={() => {
+                  onCommit={(addr, input) => {
                     commitRef.current = true;
+                    lastCommitCell.current =
+                      addr !== step.targetCell && input.trim() !== "" ? addr : null;
                     setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
                   }}
                 />

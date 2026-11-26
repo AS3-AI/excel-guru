@@ -487,6 +487,8 @@ export function Grid({
   const pendingCaret = useRef<number | null>(null);
   /** A mouse button went down on a cell in point mode: entering other cells extends the range. */
   const dragging = useRef(false);
+  /** A mouse button went down on a cell to drag-select a range outside of edit mode. */
+  const draggingRange = useRef<Pos | null>(null);
   const idBase = useId();
 
   const setEditing = (ed: Editing | null) => {
@@ -499,6 +501,7 @@ export function Grid({
   if (!sameGrid(grid, loaded.grid)) {
     setLoaded(load(grid, today));
     setActive(initialActive(activeCell));
+    setSelection(null);
     setInspected(null);
     editingRef.current = null;
     setEditingState(null);
@@ -564,6 +567,7 @@ export function Grid({
   useEffect(() => {
     const up = () => {
       dragging.current = false;
+      draggingRange.current = null;
       if (touchHold.current) clearTimeout(touchHold.current);
       touchHold.current = null;
     };
@@ -729,15 +733,28 @@ export function Grid({
     }
     if (key in DELTAS) {
       e.preventDefault();
-      setActive((p) => move(p, key, size));
+      if (e.shiftKey) {
+        const anchor = selection?.anchor ?? active;
+        const cursor = move(selection?.cursor ?? active, key, size);
+        setSelection({ anchor, cursor });
+      } else {
+        setActive((p) => move(p, key, size));
+        setSelection(null);
+      }
+    } else if (key === " " && (e.ctrlKey || e.shiftKey)) {
+      e.preventDefault();
+      const whole = e.ctrlKey ? "column" : "row";
+      setSelection({ anchor: active, cursor: active, whole });
     } else if (key === "Enter") {
       e.preventDefault();
       setActive((p) => move(p, e.shiftKey ? "ArrowUp" : "ArrowDown", size));
+      setSelection(null);
     } else if (key === "Tab") {
       const next = tabStep(active, e.shiftKey, size);
       if (!next) return; // at the edge: let the browser move focus out of the grid
       e.preventDefault();
       setActive(next);
+      setSelection(null);
     } else if (key === "Delete") {
       e.preventDefault();
       write("");
@@ -840,21 +857,40 @@ export function Grid({
         return;
       }
     }
-    setActive(pos);
+    if (e.shiftKey) {
+      const anchor = selection?.anchor ?? active;
+      setSelection({ anchor, cursor: pos });
+      draggingRange.current = e.button === 0 ? anchor : null;
+    } else {
+      setActive(pos);
+      setSelection(null);
+      draggingRange.current = e.button === 0 ? pos : null;
+    }
     // On touch there is no keyboard to type with: a second tap on the active cell edits it.
-    if (same && !editing && lastPointer.current === "touch") {
+    if (same && !editing && !e.shiftKey && lastPointer.current === "touch") {
       e.preventDefault();
       startEdit(contentOf(addressOf(pos)), "cell");
     }
   };
 
-  /** Dragging in point mode: the range runs from where the button went down to this cell. */
+  /** Dragging in point mode or range-select mode extends the range from where the button went down. */
   const onCellEnter = (e: MouseEvent<HTMLDivElement>, pos: Pos) => {
+    if (!(e.buttons & 1)) return;
     const ed = editingRef.current;
-    if (!dragging.current || !ed?.point || !(e.buttons & 1)) return;
-    const { point } = ed;
-    if (point.cursor.row === pos.row && point.cursor.col === pos.col) return;
-    pointTo(ed, point, point.end, point.anchor, pos);
+    if (dragging.current && ed?.point) {
+      const { point } = ed;
+      if (point.cursor.row === pos.row && point.cursor.col === pos.col) return;
+      pointTo(ed, point, point.end, point.anchor, pos);
+      return;
+    }
+    if (draggingRange.current) {
+      const anchor = draggingRange.current;
+      if (anchor.row === pos.row && anchor.col === pos.col) {
+        setSelection(null);
+      } else {
+        setSelection({ anchor, cursor: pos });
+      }
+    }
   };
 
   const onFx = () => {
@@ -871,9 +907,14 @@ export function Grid({
   const spillAnchor = spills.get(addr);
   const hasPreviewDraft = displayOnly && previewDraft !== undefined && inspected === null;
   const previewTarget = previewCell ?? addr;
+  const hasRangeSelection =
+    selection !== null &&
+    (Boolean(selection.whole) ||
+      selection.anchor.row !== selection.cursor.row ||
+      selection.anchor.col !== selection.cursor.col);
   const nameBoxAddress = hasPreviewDraft
     ? previewTarget
-    : selectMode && selection
+    : selection && (selectMode || hasRangeSelection)
       ? selectionRef(selection.anchor, selection.cursor, selection.whole)
       : addr;
   const barValue = editing
@@ -909,9 +950,13 @@ export function Grid({
   const selectedRect =
     displayOnly && selectionProp && inspected === null
       ? parseRef(selectionProp)
-      : selectMode && selection
+      : selection
         ? parseRef(selectionRef(selection.anchor, selection.cursor, selection.whole))
         : null;
+  const multiSelectionArea =
+    selectedRect && (selectedRect.r1 !== selectedRect.r2 || selectedRect.c1 !== selectedRect.c2)
+      ? refArea(selectedRect, size)
+      : null;
 
   const modeLabel = editing
     ? editing.point
@@ -957,7 +1002,7 @@ export function Grid({
       <div className="eg-scroll" ref={scrollEl}>
         <div
           ref={gridEl}
-          className={`eg-grid${selectMode ? " is-select-mode" : ""}`}
+          className={`eg-grid${selectMode ? " is-select-mode" : ""}${multiSelectionArea ? " has-range" : ""}`}
           role="grid"
           aria-label="Spreadsheet"
           aria-rowcount={size.rows + 1}
@@ -1035,11 +1080,56 @@ export function Grid({
             <div className="eg-corner" aria-hidden="true" />
             {cols.map((c) => {
               const letter = colLetter(c);
+              const colInRange =
+                selectedRect !== null && c >= selectedRect.c1 && c <= selectedRect.c2;
               return (
                 <div
                   key={c}
                   role="columnheader"
-                  className={`eg-head${c === headActive.col ? " is-on" : ""}${hlCols.has(letter) ? " is-hl-head" : ""}`}
+                  className={`eg-head${c === headActive.col || colInRange ? " is-on" : ""}${hlCols.has(letter) ? " is-hl-head" : ""}`}
+                  onMouseDown={(e) => {
+                    if (selectMode) return;
+                    const ed = editingRef.current;
+                    if (ed) {
+                      const pt = pointState(ed, editorEl());
+                      if (pt) {
+                        e.preventDefault();
+                        const text =
+                          e.shiftKey && pt.last
+                            ? `${colLetter(Math.min(pt.last.anchor.col, c))}:${colLetter(Math.max(pt.last.anchor.col, c))}`
+                            : `${letter}:${letter}`;
+                        const ins = insertRef(ed.draft, pt.last, pt.caret, text);
+                        pendingCaret.current = ins.end;
+                        setEditing({
+                          draft: ins.draft,
+                          from: ed.from,
+                          entering: true,
+                          point: {
+                            start: ins.start,
+                            end: ins.end,
+                            anchor: { row: 0, col: e.shiftKey && pt.last ? pt.last.anchor.col : c },
+                            cursor: { row: size.rows - 1, col: c },
+                          },
+                        });
+                        return;
+                      }
+                      if (!commit()) {
+                        e.preventDefault();
+                        return;
+                      }
+                    }
+                    const pos = { row: headActive.row, col: c };
+                    const anchor =
+                      e.shiftKey && selection?.whole === "column" ? selection.anchor : pos;
+                    if (displayOnly) {
+                      e.preventDefault();
+                      setInspected(pos);
+                      onDisplayClick?.();
+                    } else {
+                      setActive(pos);
+                    }
+                    setSelection({ anchor, cursor: pos, whole: "column" });
+                  }}
                 >
                   {letter}
                 </div>
@@ -1050,7 +1140,49 @@ export function Grid({
             <div key={r} className="eg-row" role="row">
               <div
                 role="rowheader"
-                className={`eg-head eg-rowhead${r === headActive.row ? " is-on" : ""}${hlRows.has(r + 1) ? " is-hl-head" : ""}`}
+                className={`eg-head eg-rowhead${r === headActive.row || (selectedRect !== null && r >= selectedRect.r1 && r <= selectedRect.r2) ? " is-on" : ""}${hlRows.has(r + 1) ? " is-hl-head" : ""}`}
+                onMouseDown={(e) => {
+                  if (selectMode) return;
+                  const ed = editingRef.current;
+                  if (ed) {
+                    const pt = pointState(ed, editorEl());
+                    if (pt) {
+                      e.preventDefault();
+                      const text =
+                        e.shiftKey && pt.last
+                          ? `${Math.min(pt.last.anchor.row, r) + 1}:${Math.max(pt.last.anchor.row, r) + 1}`
+                          : `${r + 1}:${r + 1}`;
+                      const ins = insertRef(ed.draft, pt.last, pt.caret, text);
+                      pendingCaret.current = ins.end;
+                      setEditing({
+                        draft: ins.draft,
+                        from: ed.from,
+                        entering: true,
+                        point: {
+                          start: ins.start,
+                          end: ins.end,
+                          anchor: { row: e.shiftKey && pt.last ? pt.last.anchor.row : r, col: 0 },
+                          cursor: { row: r, col: size.cols - 1 },
+                        },
+                      });
+                      return;
+                    }
+                    if (!commit()) {
+                      e.preventDefault();
+                      return;
+                    }
+                  }
+                  const pos = { row: r, col: headActive.col };
+                  const anchor = e.shiftKey && selection?.whole === "row" ? selection.anchor : pos;
+                  if (displayOnly) {
+                    e.preventDefault();
+                    setInspected(pos);
+                    onDisplayClick?.();
+                  } else {
+                    setActive(pos);
+                  }
+                  setSelection({ anchor, cursor: pos, whole: "row" });
+                }}
               >
                 {r + 1}
               </div>
@@ -1084,7 +1216,12 @@ export function Grid({
                 if (target && inRects([target], r, c)) cls.push("is-target");
                 if (isActive) cls.push("is-active");
                 const isSelected = selectedRect ? inRects([selectedRect], r, c) : isActive;
-                if ((selectMode || displayOnly) && isSelected) cls.push("is-selection");
+                if (
+                  isSelected &&
+                  (selectMode || (displayOnly && !isActive) || (selectedRect && !isActive))
+                ) {
+                  cls.push("is-selection");
+                }
                 const cellStyles = formatRects
                   .filter(({ rect }) => inRects([rect], r, c))
                   .flatMap(({ styles }) => styles);
@@ -1111,12 +1248,20 @@ export function Grid({
                     onMouseDown={(e) => {
                       if (displayOnly) {
                         e.preventDefault();
-                        setInspected(pos);
+                        if (e.shiftKey) {
+                          const anchor = selection?.anchor ?? shownActive;
+                          setSelection({ anchor, cursor: pos });
+                          draggingRange.current = e.button === 0 ? anchor : null;
+                        } else {
+                          setInspected(pos);
+                          setSelection(null);
+                          draggingRange.current = e.button === 0 ? pos : null;
+                        }
                         onInspectCell?.(a);
                         onDisplayClick?.();
                       } else onCellMouseDown(e, pos);
                     }}
-                    onMouseEnter={displayOnly ? undefined : (e) => onCellEnter(e, pos)}
+                    onMouseEnter={(e) => onCellEnter(e, pos)}
                     onDoubleClick={() => {
                       if (!displayOnly && !selectMode && !editing) startEdit(contentOf(a), "cell");
                     }}
@@ -1178,6 +1323,10 @@ export function Grid({
               })}
             </div>
           ))}
+          {/* Continuous green outline around a multi-cell selection range (Excel-style). */}
+          {multiSelectionArea && (
+            <div className="eg-selbox" style={multiSelectionArea} aria-hidden="true" />
+          )}
           {/* Absolutely placed by grid lines, so they overlay the cells without taking part in the layout. */}
           {outlines.map(({ area, colour, key }) => (
             <div
@@ -1189,13 +1338,15 @@ export function Grid({
           ))}
         </div>
       </div>
-      <div className="eg-sheetbar">
-        <span className="eg-sheet-tab">Sheet1</span>
-        <span className="eg-sheet-status">
-          {sheetBarRight}
-          <span>{modeLabel}</span>
-        </span>
-      </div>
+      {(sheetBarRight || (editing && modeLabel !== "Ready")) && (
+        <div className="eg-sheetbar">
+          <span className="eg-sheet-tab">Sheet1</span>
+          <span className="eg-sheet-status">
+            {sheetBarRight}
+            {editing && <span>{modeLabel}</span>}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

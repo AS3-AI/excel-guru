@@ -12,7 +12,7 @@
       "id": "s1",
       "type": "info",
       "topic": "See a cell",
-      "text": "Every box in a spreadsheet is a **cell** with an address. Columns run across with letters and rows run down with numbers, so ==B2== means column **B**, row **2**.",
+      "text": "Every box in a sheet is a **cell**.\n\nIts address is its **column letter** plus **row number** — so ==B2== is column **B**, row **2**.",
       "grid": [
         ["Supply", "In stock", "Pack total"],
         ["Badges", 5, null],
@@ -32,7 +32,7 @@
       "id": "s2",
       "type": "select",
       "topic": "Find a number",
-      "prompt": "Click the badge count in ==B2==.",
+      "prompt": "Click the badge count in ==B2==, then click **Check**.",
       "grid": [
         ["Supply", "In stock", "Pack total"],
         ["Badges", 5, null],
@@ -40,7 +40,7 @@
         ["Clips", 2, null]
       ],
       "target": "B2",
-      "wrongFeedback": "Point to column **B** at the top and row **2** on the left — where they meet is `B2`.",
+      "wrongFeedback": "Look across to column **B** and down to row **2** — where they meet is `B2`.",
       "clues": [
         "Column **B** is the second column (`In stock`), and row **2** is the `Badges` row."
       ]
@@ -48,8 +48,8 @@
     {
       "id": "s3",
       "type": "info",
-      "topic": "Show the formula",
-      "text": "Every formula starts with [[=]]. In ==C2==, `=B2+B3` starts with [[=]], names the two cells (`B2` and `B3`), and joins them with [[+]] to show ==9==.",
+      "topic": "How formulas work",
+      "text": "To add **Badges** (5) and **Lanyards** (4) in ==C2==, Excel uses this formula:\n\n`=B2+B3`\n\n• `=` tells Excel to calculate\n• **B2** and **B3** point to those two cells\n• `+` adds them together to show **9**",
       "grid": [
         ["Supply", "In stock", "Pack total"],
         ["Badges", 5, "=B2+B3"],
@@ -57,58 +57,13 @@
         ["Clips", 2, null]
       ],
       "activeCell": "C2",
-      "highlightCells": ["B2", "B3"],
-      "yellowCells": ["C2"],
-      "showFormulaBar": true,
-      "keycaps": ["=", "B2", "+", "B3", "Enter"],
-      "animation": {
-        "kind": "formula-build",
-        "targetCell": "C2",
-        "frames": [
-          {
-            "label": "Start with =",
-            "key": "=",
-            "draft": "=",
-            "focusCell": "C2"
-          },
-          {
-            "label": "Point to B2 (5)",
-            "key": "B2",
-            "draft": "=B2",
-            "focusCell": "C2",
-            "highlightCells": ["B2"]
-          },
-          {
-            "label": "Add +",
-            "key": "+",
-            "draft": "=B2+",
-            "focusCell": "C2",
-            "highlightCells": ["B2"]
-          },
-          {
-            "label": "Point to B3 (4)",
-            "key": "B3",
-            "draft": "=B2+B3",
-            "focusCell": "C2",
-            "highlightCells": ["B2", "B3"]
-          },
-          {
-            "label": "Press Enter → 9",
-            "key": "Enter",
-            "draft": "=B2+B3",
-            "focusCell": "C2",
-            "highlightCells": ["B2", "B3"],
-            "yellowCells": ["C2"],
-            "resultCell": "C2"
-          }
-        ]
-      }
+      "showFormulaBar": true
     },
     {
       "id": "s4",
       "type": "formula",
       "topic": "Make the result",
-      "prompt": "In ==C2==, type `=B2+B3` and press [[Enter]].",
+      "prompt": "Now try it yourself. Click cell ==C2==, type the formula below, and press [[Enter]]:\n\n`=B2+B3`",
       "grid": [
         ["Supply", "In stock", "Pack total"],
         ["Badges", 5, null],
@@ -124,9 +79,8 @@
       "mustReference": ["B2", "B3"],
       "disallowFunctions": true,
       "solution": "=B2+B3",
-      "explain": "C2 calculates 9 right away because it adds the values inside B2 and B3.",
+      "explain": "C2 shows 9 right away because it adds the values inside B2 and B3.",
       "mobileButtons": ["=", "+"],
-      "keycaps": ["=", "B2", "+", "B3", "Enter"],
       "clues": [
         "Excel needs `=` at the start to calculate, followed by the two cell addresses joined with `+`.",
         "Use `B2` and `B3` instead of `5` and `4` so the total updates whenever stock changes."
@@ -142,8 +96,8 @@
     {
       "id": "s5",
       "type": "info",
-      "topic": "Midway reveal",
-      "text": "You don't have to memorise addresses: type [[=]], ==click B2==, type [[+]], ==click B3==, and press [[Enter]]. Even better — click the button below to change `B2` from `5` to `6` and watch ==C2== jump from `9` to `10`.",
+      "topic": "Why cell addresses matter",
+      "text": "Tip: you don't have to memorise cell names. You can type `=`, click **B2**, type `+`, click **B3**, and press [[Enter]].\n\nClick **Change B2: 5 → 6** below to see why cell addresses beat fixed numbers — ==C2== updates from **9** to **10** automatically.",
       "grid": [
         ["Supply", "In stock", "Pack total"],
         ["Badges", 5, "=B2+B3"],
@@ -151,51 +105,10 @@
         ["Clips", 2, null]
       ],
       "activeCell": "C2",
-      "highlightCells": ["B2", "B3"],
       "yellowCells": ["C2"],
       "showFormulaBar": true,
-      "keycaps": ["=", "Click B2", "+", "Click B3", "Enter"],
       "animation": {
-        "kind": "formula-build",
-        "targetCell": "C2",
-        "frames": [
-          {
-            "label": "Type =",
-            "key": "=",
-            "draft": "=",
-            "focusCell": "C2"
-          },
-          {
-            "label": "Click B2",
-            "key": "Click B2",
-            "draft": "=B2",
-            "focusCell": "C2",
-            "highlightCells": ["B2"]
-          },
-          {
-            "label": "Type +",
-            "key": "+",
-            "draft": "=B2+",
-            "focusCell": "C2",
-            "highlightCells": ["B2"]
-          },
-          {
-            "label": "Click B3",
-            "key": "Click B3",
-            "draft": "=B2+B3",
-            "focusCell": "C2",
-            "highlightCells": ["B2", "B3"]
-          },
-          {
-            "label": "Press Enter → 9",
-            "key": "Enter",
-            "draft": "=B2+B3",
-            "focusCell": "C2",
-            "highlightCells": ["B2", "B3"],
-            "yellowCells": ["C2"],
-            "resultCell": "C2"
-          }
-        ],
+        "kind": "live-update",
         "liveUpdate": {
           "watchCell": "B2",
           "fromValue": 5,
@@ -210,7 +123,7 @@
       "id": "s6",
       "type": "mcq",
       "topic": "Check the idea",
-      "prompt": "Which formula always uses the ==current values== in `B2` and `B3`?",
+      "prompt": "Which formula always uses the **current values** in `B2` and `B3`?",
       "options": ["`=5+4`", "`=B2+B3`", "`=9`"],
       "answer": 1,
       "explain": "`=B2+B3` reads whatever numbers are in `B2` and `B3` right now, so the answer stays fresh.",
@@ -227,7 +140,7 @@
       "id": "s7",
       "type": "formula",
       "topic": "Try new data",
-      "prompt": "New sheet: morning parcels (`8`) and afternoon parcels (`6`). In ==B4==, write a formula using the ==two source cells==.",
+      "prompt": "Morning parcels are **8** and afternoon parcels are **6**.\n\nClick cell ==B4==, enter a formula that adds those two cells together, and press [[Enter]].",
       "grid": [
         ["Shift", "Parcels"],
         ["Morning", 8],

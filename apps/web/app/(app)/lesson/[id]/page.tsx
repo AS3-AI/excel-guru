@@ -14,6 +14,8 @@ import { Player } from "./Player";
 import { TopbarProgress } from "./TopbarProgress";
 import type { LessonNavItem } from "./LessonList";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

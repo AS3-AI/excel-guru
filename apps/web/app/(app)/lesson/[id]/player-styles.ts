@@ -78,20 +78,18 @@ export const plStatsClasses = [
 ].join(" ");
 
 export const plBriefClasses = [
-  "grid gap-s4 min-w-0 pb-s4 mb-s4 [border-bottom:1px_solid_var(--border)] text-ink",
+  "grid gap-s3 min-w-0 mb-s4 text-ink",
   "[animation:pl-enter_var(--d3)_var(--ease)]",
-  "[&_.pl-prompt]:text-ink [&_.pl-prompt]:[font:600_clamp(1.15rem,_1.8vw,_1.4rem)/1.45_var(--font-display)]",
-  "[&_.pl-prompt]:tracking-[-0.015em]",
+  "[&_.pl-prompt]:text-ink [&_.pl-prompt]:[font:400_1.06rem/1.65_var(--font)]",
 ].join(" ");
 
 export const plActionsClasses = [
   "[grid-column:1_/_-1] mt-0 sticky bottom-0 z-[5] flex flex-wrap items-center gap-[var(--s2)_var(--s3)]",
   "py-s3 px-0 [@media(max-width:640px)]:pb-[max(var(--s3),env(safe-area-inset-bottom))]",
-  "[border-top:1px_solid_var(--border)]",
   "bg-[var(--surface-warm)]",
   "[transition:background-color_var(--d3)_var(--ease),_border-color_var(--d3)_var(--ease)]",
-  "[&.is-correct]:text-ink [&.is-correct]:bg-mint [&.is-correct]:[border-top-color:var(--primary)]",
-  "[&.is-correct]:px-s3 [&.is-correct]:rounded-ledger",
+  "[&.is-correct]:text-ink [&.is-correct]:bg-mint [&.is-correct]:[border:var(--line)]",
+  "[&.is-correct]:px-s4 [&.is-correct]:rounded-ledger",
   "[&.is-correct]:[animation:pl-correct_var(--d3)_var(--ease)]",
   "[&.is-correct_span]:text-ink",
   "[&.is-correct_.chip]:bg-surface [&.is-correct_.chip]:border-ink [&.is-correct_.chip]:text-ink",

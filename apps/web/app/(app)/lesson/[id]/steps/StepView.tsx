@@ -22,20 +22,15 @@ export function StepView({
   const [input, setInput] = useState("");
   if (step.type === "select")
     return (
-      <>
-        <Grid
-          key={step.id}
-          grid={step.grid}
-          highlightCells={step.highlightCells}
-          yellowCells={step.yellowCells}
-          activeCell={step.activeCell}
-          selectMode
-          onSelectionChange={(ref) => setSelectRef?.(ref)}
-        />
-        <p className="pl-hint text-muted text-ledger-sm">
-          Select the requested cell or range in the grid.
-        </p>
-      </>
+      <Grid
+        key={step.id}
+        grid={step.grid}
+        highlightCells={step.highlightCells}
+        yellowCells={step.yellowCells}
+        activeCell={step.activeCell}
+        selectMode
+        onSelectionChange={(ref) => setSelectRef?.(ref)}
+      />
     );
   if (step.type === "mcq")
     return (

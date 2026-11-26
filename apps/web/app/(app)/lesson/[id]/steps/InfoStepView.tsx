@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormulaBuildFrame, GridValue, InfoStep } from "@excel-guru/grader";
 import { Grid, parseRef } from "@/components/grid/Grid";
 import { RichText } from "@/components/RichText";
-import { plCardClasses } from "../player-styles";
 
 function cloneGridWithCell(base: GridValue[][], cell: string, val: GridValue): GridValue[][] {
   const pos = parseRef(cell);
@@ -126,7 +125,7 @@ export function InfoStepView({ step }: { step: InfoStep }) {
     }
   }, [step.id, timeline.length]);
 
-  // Beat 1: smooth column -> row -> cell intersection locate.
+  // Beat 1: smooth single-pass column -> row -> cell intersection locate.
   useEffect(() => {
     if (anim?.kind !== "cell-locate") return;
     if (reducedMotion()) {
@@ -145,19 +144,15 @@ export function InfoStepView({ step }: { step: InfoStep }) {
     };
   }, [step.id, anim?.kind, replayNonce]);
 
-  // Beat 3 & 5: smooth character-by-character / click-to-ref timeline with gentle hold & loop.
+  // Beat 3 & 5 (when formula-build is used): play once cleanly without frantic looping.
   useEffect(() => {
     if (anim?.kind !== "formula-build" || timeline.length === 0 || still || paused) return;
-    const isEnd = tickIndex >= timeline.length - 1;
-    const delay = isEnd ? 3400 : (timeline[tickIndex + 1]?.delayMs ?? 120);
+    if (tickIndex >= timeline.length - 1) return;
+    const delay = timeline[tickIndex + 1]?.delayMs ?? 120;
     const timer = window.setTimeout(() => {
-      if (isEnd) {
-        setTickIndex(0);
-      } else {
-        const next = tickIndex + 1;
-        setTickIndex(next);
-        if (timeline[next]?.resultCell) setFlashKey((k) => k + 1);
-      }
+      const next = tickIndex + 1;
+      setTickIndex(next);
+      if (timeline[next]?.resultCell) setFlashKey((k) => k + 1);
     }, delay);
     return () => window.clearTimeout(timer);
   }, [anim?.kind, timeline, tickIndex, still, paused, replayNonce]);
@@ -221,46 +216,39 @@ export function InfoStepView({ step }: { step: InfoStep }) {
   const activeKey = activeTick?.key;
 
   const sheetControls =
-    !still && (anim?.kind === "cell-locate" || anim?.kind === "formula-build") ? (
-      <span className="inline-flex items-center gap-[6px]">
-        {anim.kind === "formula-build" && (
-          <button
-            type="button"
-            className="cursor-pointer rounded-[4px] border border-solid border-border bg-surface px-[7px] py-[2px] font-ledger-code text-[11px] font-semibold text-ink hover:bg-surface-warm"
-            onClick={() => setPaused((p) => !p)}
-          >
-            {paused ? "Play" : "Pause"}
-          </button>
-        )}
-        <button
-          type="button"
-          className="cursor-pointer rounded-[4px] border border-solid border-border bg-surface px-[7px] py-[2px] font-ledger-code text-[11px] font-semibold text-ink hover:bg-surface-warm"
-          onClick={() => {
-            setPaused(false);
-            setToggled(false);
-            setTickIndex(0);
-            setReplayNonce((n) => n + 1);
-          }}
-        >
-          Replay
-        </button>
-      </span>
+    !still && anim?.kind === "cell-locate" ? (
+      <button
+        type="button"
+        className="cursor-pointer rounded-[4px] border border-solid border-border bg-surface px-[7px] py-[2px] font-ledger-code text-[11px] font-medium text-muted hover:text-ink"
+        onClick={() => {
+          setPaused(false);
+          setReplayNonce((n) => n + 1);
+        }}
+      >
+        Replay
+      </button>
     ) : null;
 
   return (
     <div className="grid gap-s4">
-      <section className={`pl-card mb-0! ${plCardClasses}`}>
-        {step.topic && (
-          <p className="m-[0_0_var(--s2)] [font:600_var(--fs-xs)/1.2_var(--mono)] tracking-[0.06em] uppercase text-primary-strong">
-            {step.topic}
-          </p>
-        )}
-        <p className="pl-prompt block m-0 text-ink text-[1.06rem] leading-[1.6]">
-          <RichText text={step.text} />
-        </p>
+      <section className="grid gap-s3 min-w-0 max-w-[66ch] text-ink">
+        <div className="grid gap-s3 m-0 text-ink text-[1.05rem] leading-[1.65]">
+          {step.text.split(/\n\n+/).map((block, idx) => {
+            const lines = block.split("\n");
+            return (
+              <div key={idx} className="grid gap-[4px]">
+                {lines.map((line, lineIdx) => (
+                  <p key={lineIdx} className="m-0">
+                    <RichText text={line} />
+                  </p>
+                ))}
+              </div>
+            );
+          })}
+        </div>
         {step.keycaps && step.keycaps.length > 0 && (
           <div
-            className="mt-s3 flex flex-wrap items-center gap-[8px]"
+            className="pt-s1 flex flex-wrap items-center gap-[8px]"
             aria-label="Keys and actions"
           >
             {step.keycaps.map((label, i) => {

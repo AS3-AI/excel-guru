@@ -457,13 +457,13 @@
   .chip {
     display: inline-block;
     max-width: 100%;
-    padding: 0.1em 0.42em;
-    border: 1px solid var(--ink);
+    padding: 0.1em 0.44em;
     border-radius: 5px;
-    background: var(--surface-sunk);
-    color: var(--ink);
+    background: #f1f0eb;
+    color: #b42318;
     font-family: var(--mono);
-    font-size: 0.88em;
+    font-size: 0.9em;
+    font-weight: 500;
     white-space: nowrap;
     vertical-align: baseline;
   }
