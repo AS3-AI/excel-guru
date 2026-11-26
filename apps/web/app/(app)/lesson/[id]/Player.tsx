@@ -48,12 +48,6 @@ type Props = {
   signedIn?: boolean;
   inviteNotice?: boolean;
 };
-// Only formula, select and shortcut mistakes get an AI explanation; a value without "=" already has a fixed message.
-function explainable(step: Lesson["steps"][number], input: string): boolean {
-  if (step.type === "formula") return gradeFormulaStep(step, input).reason !== "not_formula";
-  return step.type === "select" || step.type === "shortcut";
-}
-
 function formulaWrongMessage(reason: string | undefined, step: FormulaStep, input: string): string {
   if (input.trim() === "")
     return `${step.targetCell} is still empty. Type your formula in ${step.targetCell}, then press Enter.`;
@@ -102,16 +96,8 @@ export function Player({
   // The grid reports its default A1 on mount; only a later change means the learner picked a cell.
   const [selectTouched, setSelectTouched] = useState(false);
   const [wrongText, setWrongText] = useState("");
-  const [aiExplanation, setAiExplanation] = useState<{
-    id: string;
-    text: string;
-    cached: boolean;
-  } | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiShown, setAiShown] = useState(false);
-  const [aiThanks, setAiThanks] = useState(false);
-  const [aiRated, setAiRated] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
+  const [showCorrectExplain, setShowCorrectExplain] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
   const [savedStats, setSavedStats] = useState<{ points: number; streak: number } | null>(null);
   const [saveNote, setSaveNote] = useState("");
@@ -145,8 +131,6 @@ export function Player({
     });
   };
   const saveStarted = useRef(false);
-  const explainRequest = useRef<{ id: number; controller: AbortController } | null>(null);
-  const explainRequestId = useRef(0);
   const stageRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
   const feedbackRef = useRef<HTMLDivElement>(null);
@@ -166,25 +150,10 @@ export function Player({
       stageRef.current?.querySelector<HTMLElement>("input, button")
     )?.focus({ preventScroll: true });
   };
-  const invalidateExplain = () => {
-    const current = explainRequest.current;
-    if (current) {
-      current.controller.abort();
-      explainRequest.current = null;
-    }
-  };
   const closeWrong = () => {
-    invalidateExplain();
-    setAiLoading(false);
     setFeedback(null);
     requestAnimationFrame(focusAnswerControl);
   };
-  useEffect(
-    () => () => {
-      invalidateExplain();
-    },
-    [],
-  );
 
   useEffect(() => {
     setPlatform(getPlatform());
@@ -357,93 +326,17 @@ export function Player({
 
   const answer = (input: string, correct: boolean, reason?: string) => {
     if (feedback === "correct" || state.complete) return;
-    invalidateExplain();
     dispatch({ type: "answer", stepId: step.id, input, correct });
     setFeedback(correct ? "correct" : "wrong");
-    if (!correct) {
-      setWrongText(reason ?? "Not quite. Try again.");
-      setAiExplanation(null);
-      setAiThanks(false);
-      setAiRated(false);
-      const canExplain = explainable(step, input);
-      setAiShown(canExplain);
-      setAiLoading(canExplain);
-    }
-    if (!correct && explainable(step, input)) {
-      const controller = new AbortController();
-      const requestId = ++explainRequestId.current;
-      explainRequest.current = { id: requestId, controller };
-      const isCurrent = () => explainRequest.current?.id === requestId;
-      void fetch("/api/explain", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        signal: controller.signal,
-        body: JSON.stringify({ lessonId: lesson.id, stepId: step.id, input, os: platform.os }),
-      })
-        .then(async (response) => {
-          if (response.status === 429) {
-            if (isCurrent())
-              setAiExplanation({
-                id: "",
-                text: "You've used today's AI explanations. They reset at midnight.",
-                cached: false,
-              });
-            return;
-          }
-          if (!response.ok) throw new Error("unavailable");
-          const result = (await response.json()) as { id: string; text: string; cached: boolean };
-          if (typeof result.id !== "string" || typeof result.text !== "string")
-            throw new Error("unavailable");
-          if (!isCurrent()) return;
-          setAiExplanation(result);
-          try {
-            setAiRated(window.localStorage.getItem(`eg_explain_rated:${result.id}`) === "1");
-          } catch {
-            setAiRated(false);
-          }
-        })
-        .catch(() => {
-          if (isCurrent())
-            setAiExplanation({
-              id: "",
-              text: "An explanation isn't available right now. Please try again in a moment.",
-              cached: false,
-            });
-        })
-        .finally(() => {
-          if (isCurrent()) {
-            explainRequest.current = null;
-            setAiLoading(false);
-          }
-        });
-    }
-    if (correct) setShowSolution(false);
+    if (!correct) setWrongText(reason ?? "Not quite. Try again.");
     if (correct) {
+      setShowSolution(false);
+      setShowCorrectExplain(false);
       const points = showSolution
         ? 0
         : Math.round(10 * lesson.difficulty * (state.firstTry[step.id] === undefined ? 1.5 : 1));
       setAnswerPoints(points);
     }
-  };
-  const rateExplanation = async (helpful: boolean) => {
-    if (!aiExplanation?.id || aiRated || aiThanks) return;
-    try {
-      const response = await fetch(`/api/explain/${encodeURIComponent(aiExplanation.id)}/rate`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ helpful }),
-      });
-      if (!response.ok) return;
-    } catch {
-      return;
-    }
-    try {
-      window.localStorage.setItem(`eg_explain_rated:${aiExplanation.id}`, "1");
-    } catch {
-      /* storage may be disabled */
-    }
-    setAiRated(true);
-    setAiThanks(true);
   };
   const formulaInput = (s: FormulaStep) =>
     sheetRef.current?.getFormula(s.targetCell) ??
@@ -475,20 +368,23 @@ export function Player({
     );
     if (!result.correct) stageRef.current?.querySelector<HTMLElement>('[role="grid"]')?.focus();
   };
+  const resetStepState = () => {
+    setFeedback(null);
+    setShowSolution(false);
+    setShowCorrectExplain(false);
+    setStepReady(null);
+    setSelectedRef("");
+    setSelectTouched(false);
+  };
   const nextStep = () => {
     if (state.complete) {
       setCelebrate(true);
       setFeedback(null);
+      setShowCorrectExplain(false);
       return;
     }
-    invalidateExplain();
-    setAiLoading(false);
     dispatch({ type: "continue" });
-    setFeedback(null);
-    setShowSolution(false);
-    setStepReady(null);
-    setSelectedRef("");
-    setSelectTouched(false);
+    resetStepState();
   };
   const checkStep = () => {
     if (step.type === "select") {
@@ -510,14 +406,8 @@ export function Player({
     answer(input, correct);
   };
   const skipShortcutStep = () => {
-    invalidateExplain();
-    setAiLoading(false);
     dispatch({ type: "skip" });
-    setFeedback(null);
-    setShowSolution(false);
-    setStepReady(null);
-    setSelectedRef("");
-    setSelectTouched(false);
+    resetStepState();
   };
   const skipShortcutSection = () => {
     const remaining = lesson.steps.slice(state.index);
@@ -539,31 +429,17 @@ export function Player({
     if (node) node.focus({ preventScroll: true });
   }, []);
   const goPrevious = () => {
-    invalidateExplain();
-    setAiLoading(false);
     dispatch({ type: "previous" });
-    setFeedback(null);
-    setShowSolution(false);
-    setStepReady(null);
-    setSelectedRef("");
-    setSelectTouched(false);
+    resetStepState();
   };
   const skipQuestion = () => {
-    invalidateExplain();
-    setAiLoading(false);
     dispatch({ type: "skip" });
-    setFeedback(null);
-    setShowSolution(false);
-    setStepReady(null);
-    setSelectedRef("");
-    setSelectTouched(false);
+    resetStepState();
   };
-  const canGoBack = state.history.length > 0,
-    canSkip =
-      step.type !== "info" && step.type !== "shortcut" && feedback !== "correct" && !celebrate;
+  const canGoBack = state.history.length > 0;
   useEffect(() => {
-    // Tab = skip (also from the grid); Right/Left arrow = skip/previous outside the grid, where arrows move cells.
-    // Never while typing in a field, on shortcut steps, in the sidebar, or with modifiers (Shift+Tab still navigates).
+    // Left arrow = previous outside the grid, where arrows move cells; Enter = Continue.
+    // Never while typing in a field, on shortcut steps, in the sidebar, or with modifiers.
     const onKey = (e: KeyboardEvent) => {
       if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey || step.type === "shortcut") return;
       const t = e.target as HTMLElement | null;
@@ -574,14 +450,7 @@ export function Player({
       )
         return;
       const outsideGrid = !t?.closest("[role=grid], input");
-      if (e.key === "Tab" && canSkip) {
-        e.preventDefault();
-        e.stopPropagation();
-        skipQuestion();
-      } else if (e.key === "ArrowRight" && canSkip && outsideGrid) {
-        e.preventDefault();
-        skipQuestion();
-      } else if (e.key === "ArrowLeft" && canGoBack && outsideGrid) {
+      if (e.key === "ArrowLeft" && canGoBack && outsideGrid) {
         e.preventDefault();
         goPrevious();
       }
@@ -592,7 +461,7 @@ export function Player({
         continueRef.current.click();
       }
     };
-    window.addEventListener("keydown", onKey, true); // capture: run before the grid's own Tab handling
+    window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
   });
   const onStageCapture = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -658,6 +527,15 @@ export function Player({
     info: "Read this",
   };
   const hasBrief = step.type === "formula" || step.type === "select";
+  const canCheck =
+    (step.type === "formula" && formulaReady) ||
+    (step.type === "select" && selectTouched) ||
+    (step.type === "mcq" && Boolean(stepReady)) ||
+    ((step.type === "picture" || step.type === "project") && Boolean(stepReady?.input.trim()));
+  const primaryKeyClasses = `btn pl-key pl-key-enter ${plKeyClasses}
+          [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
+          [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
+          [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`;
   // Same rule as answer(): first try is worth 1.5×, nothing once the answer has been shown.
   const stakes = answerPointsVisible(signedIn)
     ? showSolution
@@ -1025,16 +903,18 @@ export function Player({
                   </span>
                 )}
                 {step.type === "formula" && step.explain ? (
-                  <span>
-                    <RichText text={step.explain} />
-                  </span>
+                  <button
+                    type="button"
+                    className={`btn pl-key ${plKeyClasses}`}
+                    aria-expanded={showCorrectExplain}
+                    onClick={() => setShowCorrectExplain((open) => !open)}
+                  >
+                    {showCorrectExplain ? "Hide explanation" : "View explanation"}
+                  </button>
                 ) : null}
                 <button
                   ref={continueRef}
-                  className={`btn pl-key pl-key-enter ${plKeyClasses}
-          [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
-          [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
-          [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
+                  className={primaryKeyClasses}
                   aria-keyshortcuts="Enter"
                   onClick={nextStep}
                 >
@@ -1050,40 +930,23 @@ export function Player({
                   {step.type === "info" ? (
                     <button
                       ref={continueRef}
-                      className={`btn pl-key pl-key-enter ${plKeyClasses}
-          [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
-          [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
-          [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
+                      className={primaryKeyClasses}
                       aria-keyshortcuts="Enter"
                       onClick={nextStep}
                     >
                       Continue <span aria-hidden="true">⏎</span>
                     </button>
-                  ) : (step.type === "formula" && formulaReady) ||
-                    (step.type === "select" && selectTouched) ||
-                    (step.type === "mcq" && stepReady) ||
-                    ((step.type === "picture" || step.type === "project") &&
-                      !!stepReady?.input.trim()) ? (
+                  ) : step.type !== "shortcut" ? (
                     <button
-                      className={`btn pl-key pl-key-enter ${plKeyClasses}
-          [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
-          [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
-          [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
+                      disabled={!canCheck}
+                      className={`${primaryKeyClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
                       aria-keyshortcuts="Enter"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => (step.type === "formula" ? check(step) : checkStep())}
                     >
                       Check <span aria-hidden="true">⏎</span>
                     </button>
-                  ) : (
-                    <button
-                      className={`btn pl-key ${plKeyClasses}`}
-                      aria-keyshortcuts="Tab ArrowRight"
-                      onClick={skipQuestion}
-                    >
-                      Skip question <span aria-hidden="true">⇥</span>
-                    </button>
-                  )}
+                  ) : null}
                 </span>
               </>
             )}
@@ -1102,6 +965,17 @@ export function Player({
                 {wrongText}
               </p>
             )}
+            {feedback === "correct" &&
+              showCorrectExplain &&
+              step.type === "formula" &&
+              step.explain && (
+                <p
+                  className="pl-explain m-0 p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [border:1px_solid_var(--border)] [overflow-wrap:anywhere]
+          [animation:pl-enter_var(--d2)_var(--ease)]"
+                >
+                  <RichText text={step.explain} />
+                </p>
+              )}
           </div>
           {feedback === "wrong" && (
             <aside
@@ -1115,101 +989,55 @@ export function Player({
                   <Icon name="x" size={18} />
                 </button>
               </header>
-              {state.wrongCount > 0 && !showSolution && (
+              <div className="flex flex-wrap gap-s2 mb-s4">
+                {!showSolution && (
+                  <button
+                    type="button"
+                    className={`btn pl-key ${plKeyClasses}`}
+                    onClick={() => {
+                      dispatch({ type: "show-answer" });
+                      setShowSolution(true);
+                      focusAnswerControl();
+                    }}
+                  >
+                    View explanation
+                  </button>
+                )}
                 <button
-                  className="btn pl-show-answer mb-s4"
-                  onClick={() => {
-                    dispatch({ type: "show-answer" });
-                    setShowSolution(true);
-                    focusAnswerControl();
-                  }}
+                  type="button"
+                  className={showSolution ? primaryKeyClasses : `btn pl-key ${plKeyClasses}`}
+                  onClick={skipQuestion}
                 >
-                  Show Answer
+                  {showSolution ? "Next question →" : "Skip explanation →"}
                 </button>
-              )}
+              </div>
               {showSolution && (
-                <p className="pl-solution p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [overflow-wrap:anywhere]">
-                  {step.type === "formula" ? (
-                    <code className="chip">{step.solution}</code>
-                  ) : step.type === "select" ? (
-                    step.target
-                  ) : step.type === "mcq" ? (
-                    step.options[step.answer]
-                  ) : step.type === "picture" || step.type === "project" ? (
-                    step.accept[0]
-                  ) : step.type === "shortcut" ? (
-                    step.mode === "sequence" ? (
-                      (step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac")
+                <>
+                  <p className="pl-solution p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [overflow-wrap:anywhere]">
+                    {step.type === "formula" ? (
+                      <code className="chip">{step.solution}</code>
+                    ) : step.type === "select" ? (
+                      step.target
+                    ) : step.type === "mcq" ? (
+                      step.options[step.answer]
+                    ) : step.type === "picture" || step.type === "project" ? (
+                      step.accept[0]
+                    ) : step.type === "shortcut" ? (
+                      step.mode === "sequence" ? (
+                        (step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac")
+                      ) : (
+                        (step.keys[platform.os] ?? "Unavailable on Mac")
+                      )
                     ) : (
-                      (step.keys[platform.os] ?? "Unavailable on Mac")
-                    )
-                  ) : (
-                    ""
+                      ""
+                    )}
+                  </p>
+                  {step.type === "formula" && step.explain && (
+                    <p className="pl-solution-explain m-0 p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-warm [border:1px_solid_var(--border)] text-text leading-[1.6] [overflow-wrap:anywhere]">
+                      <RichText text={step.explain} />
+                    </p>
                   )}
-                </p>
-              )}
-              {aiShown && (
-                <div
-                  className="pl-ai-slot min-h-[100px] p-s4 [border:var(--line)] rounded-ledger bg-surface-warm text-muted
-          [&_p]:m-[0_0_var(--s3)] [&_p]:text-text [&_p]:leading-[1.6] [&_p]:[overflow-wrap:anywhere]
-          [&_small]:block [&_small]:mt-s3 [&_small]:text-muted [&_small]:leading-[1.4] [&_small]:text-[0.8rem]"
-                >
-                  {aiLoading ? (
-                    <span
-                      className="pl-ai-loading flex items-center gap-[6px] min-h-[36px]
-          [&_i]:w-[7px] [&_i]:h-[7px] [&_i]:rounded-[50%] [&_i]:bg-primary-strong
-          [&_i]:[animation:pl-ai-dot_1s_infinite_ease-in-out]
-          [&_i:nth-child(2)]:[animation-delay:0.15s]
-          [&_i:nth-child(3)]:[animation-delay:0.3s]"
-                      role="status"
-                      aria-label="Loading explanation"
-                    >
-                      <i />
-                      <i />
-                      <i />
-                    </span>
-                  ) : (
-                    <>
-                      <p>
-                        {aiExplanation?.text ??
-                          "An explanation isn't available right now. Please try again in a moment."}
-                      </p>
-                      {signedIn &&
-                        aiExplanation?.id &&
-                        (aiThanks ? (
-                          <p role="status">Thanks for your feedback!</p>
-                        ) : (
-                          <div
-                            className="pl-ai-rating flex gap-s2
-          [&_button]:grid [&_button]:place-items-center [&_button]:min-w-[44px] [&_button]:min-h-[44px]
-          [&_button]:[border:var(--line)] [&_button]:rounded-ledger [&_button]:bg-surface [&_button]:text-text
-          [&_button]:cursor-pointer
-          [&_button]:[transition:border-color_var(--d2),_color_var(--d2),_background-color_var(--d2)]
-          [&_button:hover:not(:disabled)]:border-primary [&_button:hover:not(:disabled)]:text-primary-strong
-          [&_button:disabled]:opacity-[0.5] [&_button:disabled]:cursor-default"
-                          >
-                            <button
-                              type="button"
-                              aria-label="Helpful"
-                              disabled={aiRated}
-                              onClick={() => void rateExplanation(true)}
-                            >
-                              <Icon name="thumbUp" size={18} />
-                            </button>
-                            <button
-                              type="button"
-                              aria-label="Not helpful"
-                              disabled={aiRated}
-                              onClick={() => void rateExplanation(false)}
-                            >
-                              <Icon name="thumbDown" size={18} />
-                            </button>
-                          </div>
-                        ))}
-                      <small>AI can be wrong. Check the answer before relying on it.</small>
-                    </>
-                  )}
-                </div>
+                </>
               )}
             </aside>
           )}
