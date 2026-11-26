@@ -1,3 +1,29 @@
+// Flip to false to revert to the full-height sidebar beside the topbar.
+const FULL_WIDTH_TOPBAR = true;
+
+export const plTopClasses = [
+  "pl-top flex items-center gap-s5 min-h-[60px] [border-bottom:var(--line)]",
+  FULL_WIDTH_TOPBAR
+    ? "[@media(min-width:900px)]:fixed [@media(min-width:900px)]:top-0 [@media(min-width:900px)]:left-0 [@media(min-width:900px)]:right-0 [@media(min-width:900px)]:z-[35] [@media(min-width:900px)]:h-[60px] [@media(min-width:900px)]:px-s6 [@media(min-width:900px)]:mb-0 [@media(min-width:900px)]:bg-surface [@media(max-width:899px)]:mb-s5"
+    : "mb-s5",
+  "[@media(max-width:640px)]:gap-s3 [@media(max-width:640px)]:mb-s4 [@media(max-width:640px)]:flex-wrap",
+  "[@media(max-width:640px)]:p-[var(--s2)_0]",
+].join(" ");
+
+export const plSidebarClasses = [
+  "hidden [@media(min-width:900px)]:flex flex-col fixed left-0 bottom-0 z-[30]",
+  FULL_WIDTH_TOPBAR ? "top-[60px] h-[calc(100dvh_-_60px)]" : "top-0 h-[100dvh]",
+  "bg-surface text-text [border-right:var(--line)] overflow-hidden",
+  "[transition:width_var(--d3)_var(--ease)]",
+  "[&>header]:flex [&>header]:items-center [&>header]:justify-between [&>header]:min-h-[60px] [&>header]:shrink-0",
+  "[&>header]:px-s4 [&>header]:[border-bottom:var(--line)]",
+  "[&>header_strong]:font-heading [&>header_strong]:text-ink [&>header_strong]:text-[1rem] [&>header_strong]:whitespace-nowrap",
+  "[&>header_button]:grid [&>header_button]:place-items-center [&>header_button]:w-[36px] [&>header_button]:h-[36px]",
+  "[&>header_button]:[border:0] [&>header_button]:rounded-ledger-sm [&>header_button]:[background:none]",
+  "[&>header_button]:text-ink [&>header_button]:cursor-pointer [&>header_button]:shrink-0",
+  "[&>header_button:hover]:bg-surface-sunk",
+].join(" ");
+
 export const plListDialogClasses = [
   "fixed inset-[0_auto_0_0] w-[min(380px,_92vw)] max-w-[none] h-[100dvh] max-h-none m-0 p-0 [border-block:0] [border-left:0]",
   "[border-right:var(--line)] bg-surface text-text [box-shadow:var(--shadow-pop)]",
@@ -59,11 +85,10 @@ export const plBriefClasses = [
 ].join(" ");
 
 export const plActionsClasses = [
-  "[grid-column:2_/_span_10] mt-0 sticky bottom-0 z-[5] flex flex-wrap items-center gap-[var(--s2)_var(--s3)]",
+  "[grid-column:1_/_-1] mt-0 sticky bottom-0 z-[5] flex flex-wrap items-center gap-[var(--s2)_var(--s3)]",
   "py-s3 px-0 [@media(max-width:640px)]:pb-[max(var(--s3),env(safe-area-inset-bottom))]",
   "[border-top:1px_solid_var(--border)]",
   "bg-[var(--surface-warm)]",
-  "[@media(max-width:900px)]:[grid-column:1_/_-1]",
   "[transition:background-color_var(--d3)_var(--ease),_border-color_var(--d3)_var(--ease)]",
   "[&.is-correct]:text-ink [&.is-correct]:bg-mint [&.is-correct]:[border-top-color:var(--primary)]",
   "[&.is-correct]:px-s3 [&.is-correct]:rounded-ledger",
@@ -111,9 +136,9 @@ export const plTileBoardClasses = [
 
 export const plLessonsClasses = [
   "[flex:1] min-h-0 flex flex-col",
-  "[&_h2]:flex [&_h2]:justify-between [&_h2]:items-baseline [&_h2]:m-0 [&_h2]:p-[var(--s3)_var(--s5)]",
+  "[&_h2]:flex [&_h2]:justify-between [&_h2]:items-center [&_h2]:m-0 [&_h2]:p-[var(--s3)_var(--s5)]",
   "[&_h2]:text-muted [&_h2]:[font:500_var(--fs-xs)/1_var(--mono)] [&_h2]:tracking-[0.06em] [&_h2]:uppercase",
-  "[&_ol]:[flex:1] [&_ol]:min-h-0 [&_ol]:[overflow-y:auto] [&_ol]:[overscroll-behavior:contain] [&_ol]:list-none",
+  "[&_ol]:[flex:1] [&_ol]:min-h-0 [&_ol]:[overflow-y:auto] [&_ol]:[overscroll-behavior:contain] [&_ol]:[scrollbar-width:none] [&_ol::-webkit-scrollbar]:hidden [&_ol]:list-none",
   "[&_ol]:m-0 [&_ol]:p-[0_var(--s2)_var(--s4)]",
   "[&_a]:grid [&_a]:grid-cols-[24px_minmax(0,_1fr)_16px] [&_a]:gap-[8px] [&_a]:[align-items:start]",
   "[&_a]:p-[9px_8px] [&_a]:rounded-ledger-sm [&_a]:text-text [&_a]:no-underline [&_a]:text-[0.9rem]",
@@ -147,14 +172,13 @@ export const plOptionsClasses = [
 ].join(" ");
 
 export const plPageClasses = [
-  "max-w-[1440px] pb-s8 [transition:margin_var(--d3)_var(--ease),_max-width_var(--d3)_var(--ease)]",
-  "[@media(min-width:900px)]:[body.has-drawer_&]:ml-[max(var(--s5),_calc((100vw_-_min(400px,_92vw)_-_1440px)_/_2))]",
+  "w-full max-w-none mx-0 pb-s5 [transition:padding_var(--d3)_var(--ease),_margin_var(--d3)_var(--ease)]",
+  FULL_WIDTH_TOPBAR ? "[@media(min-width:900px)]:pt-[calc(60px_+_var(--s5))]" : "",
+  "[@media(min-width:900px)]:pl-[calc(280px_+_var(--s6))] [@media(min-width:900px)]:pr-[var(--s6)]",
+  "[@media(min-width:900px)]:[body.has-sidebar-collapsed_&]:pl-[calc(56px_+_var(--s6))]",
   "[@media(min-width:900px)]:[body.has-drawer_&]:mr-[min(400px,_92vw)]",
-  "[@media(min-width:900px)]:[body.has-drawer_&]:max-w-[calc(100vw_-_min(400px,_92vw)_-_var(--s5)_*_2)]",
-  "[@media(min-width:900px)]:[&:has(.pl-drawer)]:ml-[max(var(--s5),_calc((100vw_-_min(400px,_92vw)_-_1440px)_/_2))]",
   "[@media(min-width:900px)]:[&:has(.pl-drawer)]:mr-[min(400px,_92vw)]",
-  "[@media(min-width:900px)]:[&:has(.pl-drawer)]:max-w-[calc(100vw_-_min(400px,_92vw)_-_var(--s5)_*_2)]",
-  "[@media(max-width:640px)]:p-[0_var(--s4)_var(--s7)]",
+  "[@media(max-width:899px)]:p-[0_var(--s4)_var(--s7)]",
 ].join(" ");
 
 export const plCardClasses = [

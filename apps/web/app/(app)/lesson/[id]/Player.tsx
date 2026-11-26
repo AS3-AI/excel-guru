@@ -8,6 +8,7 @@ import {
   plDrawerClasses,
   plKeyClasses,
   plListDialogClasses,
+  plSidebarClasses,
   plStatsClasses,
 } from "./player-styles";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
@@ -32,6 +33,7 @@ import { getPlatform } from "@/lib/platform";
 import { StepView } from "./steps/StepView";
 import { ShortcutStep as ShortcutPractice, shortcutSkipOutcome } from "./steps/ShortcutStep";
 import { LessonList, type LessonNavItem } from "./LessonList";
+import { LESSON_PROGRESS_EVENT, type LessonProgressDetail } from "./TopbarProgress";
 import { answerPointsVisible } from "@/lib/leaderboard";
 import { PROFILE_HREF } from "@/lib/nav-links";
 import { Icon } from "@/components/icons";
@@ -121,6 +123,27 @@ export function Player({
     () => new Set(),
   );
   const [keyboardUnavailable, setKeyboardUnavailable] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  useEffect(() => {
+    try {
+      if (window.localStorage.getItem("excelguru:lesson-sidebar-collapsed") === "1") {
+        setSidebarCollapsed(true);
+      }
+    } catch {
+      /* ignore storage errors */
+    }
+  }, []);
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem("excelguru:lesson-sidebar-collapsed", next ? "1" : "0");
+      } catch {
+        /* ignore storage errors */
+      }
+      return next;
+    });
+  };
   const saveStarted = useRef(false);
   const explainRequest = useRef<{ id: number; controller: AbortController } | null>(null);
   const explainRequestId = useRef(0);
@@ -131,7 +154,6 @@ export function Player({
   const commitRef = useRef(false);
   const listRef = useRef<HTMLDialogElement>(null);
   const step = lesson.steps[state.index]!;
-  const pct = Math.min(100, Math.round((state.correct / lesson.requiredCorrect) * 100));
   const firstTry = useMemo(() => {
     const results = Object.values(state.firstTry);
     return results.length ? Math.round((results.filter(Boolean).length / results.length) * 100) : 0;
@@ -166,7 +188,33 @@ export function Player({
 
   useEffect(() => {
     setPlatform(getPlatform());
+    try {
+      if (window.localStorage.getItem("excelguru:lesson-sidebar-collapsed") === "1") {
+        setSidebarCollapsed(true);
+      }
+    } catch {
+      /* ignore storage access errors */
+    }
   }, []);
+  useEffect(() => {
+    if (sidebarCollapsed) {
+      document.body.classList.add("has-sidebar-collapsed");
+    } else {
+      document.body.classList.remove("has-sidebar-collapsed");
+    }
+    return () => {
+      document.body.classList.remove("has-sidebar-collapsed");
+    };
+  }, [sidebarCollapsed]);
+
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent<LessonProgressDetail>(LESSON_PROGRESS_EVENT, {
+        detail: { correct: state.correct, total: lesson.requiredCorrect },
+      }),
+    );
+  }, [state.correct, lesson.requiredCorrect]);
+
   useEffect(() => {
     if (!state.complete || saveStarted.current) return;
     saveStarted.current = true;
@@ -630,57 +678,48 @@ export function Player({
   ).padStart(2, "0");
   const openList = () => listRef.current?.showModal();
   const closeList = () => listRef.current?.close();
+  const sidebar = (
+    <aside
+      className={`pl-sidebar ${sidebarCollapsed ? "w-[56px]" : "w-[280px]"} ${plSidebarClasses}`}
+      aria-label="Lessons sidebar"
+    >
+      {sidebarCollapsed && (
+        <header className="justify-center! px-0!">
+          <button
+            type="button"
+            aria-label="Expand lessons sidebar"
+            aria-expanded={false}
+            title="Expand lessons"
+            onClick={toggleSidebar}
+          >
+            <Icon name="chevronRight" size={18} />
+          </button>
+        </header>
+      )}
+      <LessonList
+        items={lessons}
+        currentId={lesson.id}
+        collapsed={sidebarCollapsed}
+        onCollapse={toggleSidebar}
+      />
+    </aside>
+  );
   const hud = (
-    <header className="pl-hud grid grid-cols-[repeat(12,_minmax(0,_1fr))] gap-[var(--s4)_var(--s5)] mb-s3">
+    <header className="pl-hud [@media(min-width:900px)]:hidden flex items-center gap-s3 mb-s3">
       <h1 className="sr-only">{lesson.title}</h1>
-      <div className="[grid-column:2_/_span_10] [@media(max-width:900px)]:[grid-column:1_/_-1] flex items-center gap-s3 min-w-0">
-        <button
-          type="button"
-          className="pl-hud-btn inline-flex items-center gap-[8px] min-h-[40px] p-[8px_12px] [border:var(--line)] rounded-ledger bg-surface
+      <button
+        type="button"
+        className="pl-hud-btn inline-flex items-center gap-[8px] min-h-[40px] p-[8px_12px] [border:var(--line)] rounded-ledger bg-surface
           text-ink text-ledger-sm font-medium cursor-pointer
           [transition:background-color_var(--d2),_border-color_var(--d2)] [box-shadow:2px_2px_0_var(--ink)]
           [&:hover]:bg-butter
-          [@media(max-width:640px)]:[&_span]:hidden
           [&:active]:[transform:translate(2px,_2px)] [&:active]:[box-shadow:none]"
-          onClick={openList}
-          aria-haspopup="dialog"
-        >
-          <Icon name="menu" size={16} />
-          <span>Lessons</span>
-        </button>
-        <div className="pl-progress flex-1 min-w-0 flex items-center gap-s3">
-          <ol
-            className="pl-cells [flex:1] grid [grid-auto-flow:column] [grid-auto-columns:minmax(0,_1fr)] gap-[3px] m-0 p-[3px] list-none
-          [border:var(--line)] rounded-ledger-sm bg-surface
-          [&_li]:h-[14px] [&_li]:rounded-[1px] [&_li]:bg-surface
-          [&_li]:[transition:background-color_var(--d3)_var(--ease)] [&_li]:[border:1.5px_solid_var(--ink)]
-          [&_li.is-on]:bg-primary [&_li.is-on]:[animation:pl-cell-pop_420ms_var(--ease)]
-          [&_li.is-next]:bg-butter [&_li.is-next]:[box-shadow:none]
-          [&_li.is-next]:[animation:pl-cell-pulse_1.6s_ease-in-out_infinite]"
-            role="progressbar"
-            aria-label="Lesson progress"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={pct}
-          >
-            {Array.from({ length: lesson.requiredCorrect }, (_, i) => (
-              <li
-                key={i}
-                className={
-                  i < state.correct
-                    ? "is-on"
-                    : i === state.correct && !state.complete
-                      ? "is-next"
-                      : undefined
-                }
-              />
-            ))}
-          </ol>
-          <span className="pl-pct num [font:600_var(--fs-sm)_var(--mono)] text-ink whitespace-nowrap">
-            {state.correct}/{lesson.requiredCorrect}
-          </span>
-        </div>
-      </div>
+        onClick={openList}
+        aria-haspopup="dialog"
+      >
+        <Icon name="menu" size={16} />
+        <span>Lessons</span>
+      </button>
     </header>
   );
   const list = (
@@ -705,6 +744,7 @@ export function Player({
   if (keyboardUnavailable)
     return (
       <div className="pl-board">
+        {sidebar}
         {hud}
         <main className={`pl-arena is-solo ${plArenaClasses}`} id="main">
           <section className={`pl-card ${plCardClasses}`}>
@@ -728,6 +768,7 @@ export function Player({
     );
   return (
     <div className="pl-board">
+      {sidebar}
       {hud}
       {celebrate ? (
         <main
@@ -820,10 +861,9 @@ export function Player({
         >
           {!hasBrief && step.type !== "info" && (
             <p
-              className="pl-solo-head [grid-column:2_/_span_10] flex items-center gap-s3 m-[0_0_calc(-1_*_var(--s2))]
+              className="pl-solo-head [grid-column:1_/_-1] flex items-center gap-s3 m-[0_0_calc(-1_*_var(--s2))]
           [font:500_var(--fs-xs)/1_var(--mono)] tracking-[0.06em] uppercase text-muted
           [animation:pl-enter_var(--d3)_var(--ease)]
-          [@media(max-width:900px)]:[grid-column:1_/_-1]
           [&_.num]:text-primary-strong
           [&_.pl-chip-pts]:ml-auto [&_.pl-chip-pts]:tracking-[0] [&_.pl-chip-pts]:[text-transform:none]"
               key={`head-${state.visit}`}
@@ -842,9 +882,8 @@ export function Player({
           )}
           <div
             ref={stageRef}
-            className="pl-stage [grid-column:2_/_span_10] min-w-0 py-s4 px-0
-          min-h-[calc(100dvh-250px)] [@media(max-width:640px)]:min-h-[calc(100dvh-400px)]
-          [@media(max-width:900px)]:[grid-column:1_/_-1]
+            className="pl-stage [grid-column:1_/_-1] min-w-0 py-s4 px-0
+          min-h-[calc(100dvh-280px)] [@media(max-width:640px)]:min-h-[calc(100dvh-400px)]
           [@media(max-width:640px)]:py-s3
           [&_.pl-card]:[box-shadow:none]
           [&_.pl-card:last-child]:mb-0

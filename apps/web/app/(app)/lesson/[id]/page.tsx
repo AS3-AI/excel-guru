@@ -1,4 +1,4 @@
-import { plPageClasses } from "./player-styles";
+import { plPageClasses, plTopClasses } from "./player-styles";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -11,6 +11,7 @@ import { Icon } from "@/components/icons";
 import { VideoModal } from "@/components/VideoModal";
 import { LeaderboardRank } from "@/components/LeaderboardRank";
 import { Player } from "./Player";
+import { TopbarProgress } from "./TopbarProgress";
 import type { LessonNavItem } from "./LessonList";
 
 type Props = { params: Promise<{ id: string }> };
@@ -107,12 +108,8 @@ export default async function LessonPage({ params }: Props) {
   });
 
   return (
-    <div className={`wrap pl-page ${plPageClasses}`}>
-      <header
-        className="pl-top flex items-center gap-s5 min-h-[60px] mb-s5 [border-bottom:var(--line)]
-          [@media(max-width:640px)]:gap-s3 [@media(max-width:640px)]:mb-s4 [@media(max-width:640px)]:flex-wrap
-          [@media(max-width:640px)]:p-[var(--s2)_0]"
-      >
+    <div className={`pl-page ${plPageClasses}`}>
+      <header className={plTopClasses}>
         <Logo />
         <nav
           className="pl-breadcrumb flex items-center gap-[6px] min-w-0 text-muted text-ledger-sm pl-s5 [border-left:2px_solid_var(--ink)]
@@ -130,6 +127,7 @@ export default async function LessonPage({ params }: Props) {
           <span aria-current="page">{lesson.title}</span>
         </nav>
         <div className="ml-auto flex flex-wrap items-center gap-s3 min-w-0 max-w-full">
+          <TopbarProgress requiredCorrect={lesson.requiredCorrect} />
           <VideoModal videoId={lesson.video} />
           <a
             className="pl-workbook-link inline-flex items-center gap-[6px] text-ledger-sm text-muted no-underline hover:text-ink hover:underline"
