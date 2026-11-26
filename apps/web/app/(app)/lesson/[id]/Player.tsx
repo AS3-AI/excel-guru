@@ -842,13 +842,10 @@ export function Player({
           )}
           <div
             ref={stageRef}
-            className="pl-stage [grid-column:2_/_span_10] min-w-0 p-s4 bg-surface
+            className="pl-stage [grid-column:2_/_span_10] min-w-0 py-s4 px-0
           min-h-[calc(100dvh-250px)] [@media(max-width:640px)]:min-h-[calc(100dvh-400px)]
-          [border-top:var(--line)] [border-inline:var(--line)] [border-bottom:0]
-          rounded-ledger-lg rounded-b-none [box-shadow:5px_0_0_var(--ink)]
-          [transition:box-shadow_var(--d3)_var(--ease),_border-color_var(--d3)_var(--ease)]
           [@media(max-width:900px)]:[grid-column:1_/_-1]
-          [@media(max-width:640px)]:p-s3
+          [@media(max-width:640px)]:py-s3
           [&_.pl-card]:[box-shadow:none]
           [&_.pl-card:last-child]:mb-0
           [&_.pl-options:last-child]:mb-0

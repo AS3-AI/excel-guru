@@ -1,6 +1,6 @@
 # Roadmap
 
-Last updated: 26 Nov 2026 (T60: single lesson box, progress on box edge, no repeated title)
+Last updated: 26 Nov 2026 (T61: lesson content sits on the page, no box)
 
 ## Start here (17 Nov 2026) — for the human review
 
