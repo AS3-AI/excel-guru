@@ -1,37 +1,90 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { createClient, createAdminClient, requestGeminiExplanation } = vi.hoisted(() => ({
-  createClient: vi.fn(), createAdminClient: vi.fn(), requestGeminiExplanation: vi.fn(),
+  createClient: vi.fn(),
+  createAdminClient: vi.fn(),
+  requestGeminiExplanation: vi.fn(),
 }));
 vi.mock("../../../lib/supabase/server", () => ({ createClient }));
 vi.mock("../../../lib/supabase/admin", () => ({ createAdminClient }));
-vi.mock("../../../lib/explain", async (importOriginal) => ({ ...(await importOriginal<object>()), requestGeminiExplanation }));
+vi.mock("../../../lib/explain", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  requestGeminiExplanation,
+}));
 import { POST } from "./route";
 
 async function post(input: string) {
-  return POST(new Request("http://localhost/api/explain", { method: "POST", headers: { "Content-Type": "application/json", "x-forwarded-for": "203.0.113.4, 10.0.0.1" }, body: JSON.stringify({ lessonId: "intro", stepId: "s3", input }) }));
+  return POST(
+    new Request("http://localhost/api/explain", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-forwarded-for": "203.0.113.4, 10.0.0.1" },
+      body: JSON.stringify({ lessonId: "intro", stepId: "s9", input }),
+    }),
+  );
 }
 
-function adminDb({ cache = [], count = 0, countError = null, insertError = null }: { cache?: any[]; count?: number; countError?: Error | null; insertError?: Error | null } = {}) {
+interface MockQuery {
+  select: () => MockQuery;
+  eq: () => MockQuery;
+  gte: () => MockQuery;
+  order: () => MockQuery;
+  limit: () => MockQuery;
+  maybeSingle: () => Promise<{ data: unknown; error: null }>;
+  update: () => MockQuery;
+  insert: (row?: unknown) => unknown;
+  single: () => Promise<{ data: { id: string }; error: null }>;
+  then: (resolve: (value: unknown) => unknown) => unknown;
+}
+
+function adminDb({
+  cache = [],
+  count = 0,
+  countError = null,
+  insertError = null,
+}: {
+  cache?: unknown[];
+  count?: number;
+  countError?: Error | null;
+  insertError?: Error | null;
+} = {}) {
   const events: string[] = [];
-  const client = { from: (table: string) => {
-    let data: any;
-    const q: any = {
-      select: () => q, eq: () => q, gte: () => q, order: () => q, limit: () => q,
-      maybeSingle: async () => ({ data: cache[0] ?? null, error: null }),
-      update: () => { events.push("cache-update"); return q; },
-      insert: (row: any) => { data = row; events.push(table === "explain_calls" ? "call-insert" : "cache-insert"); return q; },
-      single: async () => ({ data: { id: "new" }, error: null }),
-      then: (resolve: (value: unknown) => unknown) => resolve(table === "explain_calls" ? { count, error: countError } : { data: [], error: null }),
-    };
-    if (table === "explain_calls") {
-      q.then = (resolve: (value: unknown) => unknown) => resolve({ count, error: countError });
-      const oldInsert = q.insert;
-      q.insert = (row: any) => { events.push("call-insert"); return { then: (resolve: (value: unknown) => unknown) => resolve({ error: insertError }) }; };
-      void oldInsert;
-    }
-    return q;
-  } };
+  const client = {
+    from: (table: string) => {
+      const q: MockQuery = {
+        select: () => q,
+        eq: () => q,
+        gte: () => q,
+        order: () => q,
+        limit: () => q,
+        maybeSingle: async () => ({ data: cache[0] ?? null, error: null }),
+        update: () => {
+          events.push("cache-update");
+          return q;
+        },
+        insert: () => {
+          events.push(table === "explain_calls" ? "call-insert" : "cache-insert");
+          return q;
+        },
+        single: async () => ({ data: { id: "new" }, error: null }),
+        then: (resolve: (value: unknown) => unknown) =>
+          resolve(
+            table === "explain_calls" ? { count, error: countError } : { data: [], error: null },
+          ),
+      };
+      if (table === "explain_calls") {
+        q.then = (resolve: (value: unknown) => unknown) => resolve({ count, error: countError });
+        const oldInsert = q.insert;
+        q.insert = () => {
+          events.push("call-insert");
+          return {
+            then: (resolve: (value: unknown) => unknown) => resolve({ error: insertError }),
+          };
+        };
+        void oldInsert;
+      }
+      return q;
+    },
+  };
   return { client, events };
 }
 
@@ -62,7 +115,7 @@ describe("explain route guards", () => {
   });
 
   it("rejects a correct answer", async () => {
-    const response = await post("=B2+B3");
+    const response = await post("=B2+B3+B4+B5+B6");
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: "not_wrong" });
   });
@@ -111,7 +164,9 @@ describe("explain route guards", () => {
 
   it("serves a cache hit without counting or inserting", async () => {
     process.env.EXPLAIN_IP_SALT = "test-salt";
-    const db = adminDb({ cache: [{ id: "cached", text: "Cached help", score: 0, served_count: 1 }] });
+    const db = adminDb({
+      cache: [{ id: "cached", text: "Cached help", score: 0, served_count: 1 }],
+    });
     createAdminClient.mockReturnValue(db.client);
     const response = await post("=B2-B3");
     expect(response.status).toBe(200);
@@ -135,7 +190,9 @@ describe("explain route guards", () => {
 
   it("allows signed-in callers without the IP salt", async () => {
     delete process.env.EXPLAIN_IP_SALT;
-    createClient.mockResolvedValue({ auth: { getUser: async () => ({ data: { user: { id: "user-1" } } }) } });
+    createClient.mockResolvedValue({
+      auth: { getUser: async () => ({ data: { user: { id: "user-1" } } }) },
+    });
     const db = adminDb({ count: 0 });
     createAdminClient.mockReturnValue(db.client);
     requestGeminiExplanation.mockResolvedValue("Check the range.");

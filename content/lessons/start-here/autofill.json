@@ -1,0 +1,224 @@
+{
+  "id": "autofill",
+  "module": "start-here",
+  "title": "AutoFill: fill a whole sheet in seconds",
+  "goal": "Let Excel continue days, months and number patterns, write one formula and copy it down or across with Ctrl + D and Ctrl + R, and understand why the copied formulas still give the right answers.",
+  "difficulty": 1,
+  "requiredCorrect": 8,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "The fill handle",
+      "text": "Look at the green box around the selected cells. Its bottom-right corner has a tiny square: the **fill handle**.\n\nDrag it and Excel **continues the pattern**. Type **Mon**, drag down, and you get Tue, Wed, Thu… all the way to Sun.\n\nThis topic is about never typing the same thing twice.",
+      "grid": [
+        ["Day", "Sales"],
+        ["Mon", null],
+        ["Tue", null],
+        ["Wed", null],
+        ["Thu", null],
+        ["Fri", null],
+        ["Sat", null],
+        ["Sun", null]
+      ],
+      "activeCell": "A2",
+      "selection": "A2:A8"
+    },
+    {
+      "id": "s2",
+      "type": "mcq",
+      "topic": "Predict: months",
+      "prompt": "You type **Jan** in `A2`, then drag the fill handle down three cells.\n\nWhat appears in `A3`, `A4` and `A5`?",
+      "grid": [["Month"], ["Jan"], [null], [null], [null]],
+      "activeCell": "A2",
+      "yellowCells": ["A3:A5"],
+      "options": ["Jan, Jan, Jan", "Feb, Mar, Apr", "Jan1, Jan2, Jan3"],
+      "answer": 1,
+      "explain": "Excel knows days, months and quarters (Q1, Q2…). It works for full names too: **January** fills February, March…",
+      "wrongFeedback": [
+        "That happens with text Excel doesn't recognise, like “Rent”. Months it knows.",
+        null,
+        "Excel adds numbers to text like “Item1”. A month name it simply continues."
+      ],
+      "clues": ["Excel has a built-in list of month names."]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "Predict: numbers",
+      "prompt": "`A2` holds **5** and `A3` holds **10**. You select **both**, then drag the fill handle down.\n\nWhat comes next?",
+      "grid": [["Step"], [5], [10], [null], [null]],
+      "activeCell": "A3",
+      "highlightCells": ["A2:A3"],
+      "yellowCells": ["A4:A5"],
+      "options": ["5, 10, 5, 10", "15, 20", "11, 12"],
+      "answer": 1,
+      "explain": "With **two** cells selected, Excel learns the step (+5) and keeps going. With only one number selected, it would just copy it: 5, 5, 5.",
+      "wrongFeedback": [
+        "Excel repeats a pattern only when it can't see a step. Here the gap is clear.",
+        null,
+        "Look at the gap between 5 and 10. That's the step Excel repeats."
+      ],
+      "clues": ["What do you add to 5 to get 10?"]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "One formula first",
+      "prompt": "Here's where AutoFill really pays off: formulas.\n\nIn ==D2==, work out what the pens cost: type `=B2*C2` and press [[Enter]]. The `*` means **multiply**.",
+      "grid": [
+        ["Item", "Price", "Qty", "Cost"],
+        ["Pens", 10, 12, null],
+        ["Notebooks", 45, 4, null],
+        ["Files", 30, 6, null],
+        ["Markers", 25, 8, null],
+        ["Tape", 15, 5, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "highlightCells": ["B2:C2"],
+      "yellowCells": ["D2"],
+      "expectedValue": 120,
+      "mustReference": ["B2", "C2"],
+      "disallowFunctions": true,
+      "solution": "=B2*C2",
+      "explain": "**120**: 10 rupees × 12 pens. Four more rows to go, but you won't type them.",
+      "mobileButtons": ["=", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingReference": "Multiply the price in `B2` by the quantity in `C2`.",
+        "wrongValue": "Type `=B2*C2`: price times quantity."
+      },
+      "clues": ["`*` is Shift + 8 on most keyboards."]
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Fill down: Ctrl + D",
+      "prompt": "`D2` to `D6` are selected, with your formula at the top.\n\nPress [[Ctrl]] + [[D]] to **fill down**. D is for **down**: it copies the top cell into every selected cell below it.",
+      "keys": { "win": "Ctrl+D", "mac": "Cmd+D" },
+      "grid": [
+        ["Item", "Price", "Qty", "Cost"],
+        ["Pens", 10, 12, "=B2*C2"],
+        ["Notebooks", 45, 4, null],
+        ["Files", 30, 6, null],
+        ["Markers", 25, 8, null],
+        ["Tape", 15, 5, null]
+      ],
+      "activeCell": "D2:D6",
+      "postcondition": {
+        "grid": [
+          ["Item", "Price", "Qty", "Cost"],
+          ["Pens", 10, 12, "=B2*C2"],
+          ["Notebooks", 45, 4, "=B3*C3"],
+          ["Files", 30, 6, "=B4*C4"],
+          ["Markers", 25, 8, "=B5*C5"],
+          ["Tape", 15, 5, "=B6*C6"]
+        ],
+        "selection": "D2:D6"
+      },
+      "clues": ["Hold Ctrl, then tap D once."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Why it works",
+      "prompt": "Every row got its **own** right answer, not 120 five times.\n\nSo what formula is now in `D4`?",
+      "grid": [
+        ["Item", "Price", "Qty", "Cost"],
+        ["Pens", 10, 12, "=B2*C2"],
+        ["Notebooks", 45, 4, "=B3*C3"],
+        ["Files", 30, 6, "=B4*C4"],
+        ["Markers", 25, 8, "=B5*C5"],
+        ["Tape", 15, 5, "=B6*C6"]
+      ],
+      "activeCell": "D4",
+      "yellowCells": ["D4"],
+      "options": ["`=B2*C2`", "`=B4*C4`", "`=D2`"],
+      "answer": 1,
+      "explain": "A copied formula **slides along with its cell**. Moved two rows down, `B2` became `B4`. In plain words, the formula means “price × qty **on my row**”, which is right on every row.",
+      "wrongFeedback": [
+        "Then every row would show 120. Look at the answers: they're all different.",
+        null,
+        "Fill down copies the formula, not a link to the first cell."
+      ],
+      "clues": ["`D4` is two rows below `D2`. What happens to the row numbers inside?"]
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Fill right: Ctrl + R",
+      "prompt": "Same idea, sideways. `B4` totals January, and `B4` to `D4` are selected.\n\nPress [[Ctrl]] + [[R]] to **fill right** into February and March.",
+      "keys": { "win": "Ctrl+R", "mac": "Cmd+R" },
+      "grid": [
+        ["Expense", "Jan", "Feb", "Mar"],
+        ["Rent", 1200, 1200, 1300],
+        ["Food", 300, 350, 320],
+        ["Total", "=SUM(B2:B3)", null, null]
+      ],
+      "activeCell": "B4:D4",
+      "postcondition": {
+        "grid": [
+          ["Expense", "Jan", "Feb", "Mar"],
+          ["Rent", 1200, 1200, 1300],
+          ["Food", 300, 350, 320],
+          ["Total", "=SUM(B2:B3)", "=SUM(C2:C3)", "=SUM(D2:D3)"]
+        ],
+        "selection": "B4:D4"
+      },
+      "clues": ["R is for right. Hold Ctrl, tap R."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Thousands of rows",
+      "prompt": "Your sheet has **3,000** orders, and the formula is in `D2`. What's the fastest way to fill it all the way down?",
+      "options": [
+        "Drag the fill handle down for a long time",
+        "Double-click the fill handle",
+        "Copy and paste it 3,000 times"
+      ],
+      "answer": 1,
+      "explain": "**Double-click** the fill handle and Excel fills down as far as the column next to it has data, whether that's 30 rows or 30,000.",
+      "wrongFeedback": [
+        "That works, but you'll be scrolling for a minute. There's a one-click way.",
+        null,
+        "Far too slow. The fill handle has a trick for this."
+      ],
+      "clues": ["Try the mouse button twice, on the tiny square."]
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Challenge",
+      "prompt": "`D2` works out the profit on one item, and `D2` to `D6` are selected.\n\nCopy the formula down to the rest with one shortcut.",
+      "keys": { "win": "Ctrl+D", "mac": "Cmd+D" },
+      "grid": [
+        ["Item", "Cost", "Price", "Profit"],
+        ["Mug", 80, 150, "=C2-B2"],
+        ["Cap", 120, 200, null],
+        ["Tote", 90, 180, null],
+        ["Diary", 60, 110, null],
+        ["Poster", 25, 70, null]
+      ],
+      "activeCell": "D2:D6",
+      "postcondition": {
+        "grid": [
+          ["Item", "Cost", "Price", "Profit"],
+          ["Mug", 80, 150, "=C2-B2"],
+          ["Cap", 120, 200, "=C3-B3"],
+          ["Tote", 90, 180, "=C4-B4"],
+          ["Diary", 60, 110, "=C5-B5"],
+          ["Poster", 25, 70, "=C6-B6"]
+        ],
+        "selection": "D2:D6"
+      },
+      "clues": ["Copying down. Which letter?"]
+    }
+  ]
+}

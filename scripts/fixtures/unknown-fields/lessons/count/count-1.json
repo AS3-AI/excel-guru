@@ -14,133 +14,65 @@
       "type": "formula",
       "prompt": "Count B2:B4.",
       "grid": [
-        [
-          "Item",
-          "Qty"
-        ],
-        [
-          "Pens",
-          12
-        ],
-        [
-          "Tape",
-          "n/a"
-        ],
-        [
-          "Clips",
-          40
-        ]
+        ["Item", "Qty"],
+        ["Pens", 12],
+        ["Tape", "n/a"],
+        ["Clips", 40]
       ],
       "targetCell": "C2",
       "expectedValue": 2,
       "solution": "=COUNT(B2:B4)",
-      "mustuse": [
-        "COUNT"
-      ]
+      "mustuse": ["COUNT"]
     },
     {
       "id": "f2",
       "type": "formula",
       "prompt": "Count B2:B4.",
       "grid": [
-        [
-          "Item",
-          "Qty"
-        ],
-        [
-          "Pens",
-          12
-        ],
-        [
-          "Tape",
-          "n/a"
-        ],
-        [
-          "Clips",
-          40
-        ]
+        ["Item", "Qty"],
+        ["Pens", 12],
+        ["Tape", "n/a"],
+        ["Clips", 40]
       ],
       "targetCell": "C2",
       "expectedValue": 2,
       "solution": "=COUNT(B2:B4)",
-      "must_use": [
-        "COUNT"
-      ]
+      "must_use": ["COUNT"]
     },
     {
       "id": "f3",
       "type": "formula",
       "prompt": "Count B2:B4.",
       "grid": [
-        [
-          "Item",
-          "Qty"
-        ],
-        [
-          "Pens",
-          12
-        ],
-        [
-          "Tape",
-          "n/a"
-        ],
-        [
-          "Clips",
-          40
-        ]
+        ["Item", "Qty"],
+        ["Pens", 12],
+        ["Tape", "n/a"],
+        ["Clips", 40]
       ],
       "targetCell": "C2",
       "expectedValue": 2,
       "solution": "=COUNT(B2:B4)",
-      "MustUse": [
-        "COUNT"
-      ]
+      "MustUse": ["COUNT"]
     },
     {
       "id": "s1",
       "type": "select",
       "prompt": "Click B2.",
       "grid": [
-        [
-          "Item",
-          "Qty"
-        ],
-        [
-          "Pens",
-          12
-        ],
-        [
-          "Tape",
-          "n/a"
-        ],
-        [
-          "Clips",
-          40
-        ]
+        ["Item", "Qty"],
+        ["Pens", 12],
+        ["Tape", "n/a"],
+        ["Clips", 40]
       ],
       "target": "B2",
-      "highlight_cells": [
-        "B2"
-      ],
+      "highlight_cells": ["B2"],
       "ActiveCell": "B2",
       "postcondition": {
         "grid": [
-          [
-            "Item",
-            "Qty"
-          ],
-          [
-            "Pens",
-            12
-          ],
-          [
-            "Tape",
-            "n/a"
-          ],
-          [
-            "Clips",
-            40
-          ]
+          ["Item", "Qty"],
+          ["Pens", 12],
+          ["Tape", "n/a"],
+          ["Clips", 40]
         ],
         "Selection": "B2"
       }
@@ -160,12 +92,9 @@
       "id": "m1",
       "type": "mcq",
       "prompt": "Pick.",
-      "options": [
-        "A",
-        "B"
-      ],
+      "options": ["A", "B"],
       "answer": 0,
-      "explain": "A is right."
+      "rationale": "A is right."
     },
     {
       "id": "i1",

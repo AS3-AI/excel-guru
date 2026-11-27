@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
   const now = new Date();
   const bounds = getIstDayUtcBounds(now);
   const today = getIstDate(now);
-  const [board, ownPoints, ownStreak, profile] = await Promise.all([
+  const [board, ownPoints, ownStreak, profile, ownRank] = await Promise.all([
     admin
       .from(view)
       .select(leaderboardColumns(type))
@@ -51,8 +51,11 @@ export async function GET(request: NextRequest) {
     user
       ? admin.from("profiles").select("shared_on_linkedin").eq("user_id", user.id).maybeSingle()
       : Promise.resolve({ data: null, error: null }),
+    user
+      ? admin.from(view).select("rank").eq("user_id", user.id).maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
   ]);
-  if (board.error || ownPoints.error || ownStreak.error || profile.error)
+  if (board.error || ownPoints.error || ownStreak.error || profile.error || ownRank.error)
     return NextResponse.json({ error: "Leaderboard unavailable" }, { status: 500 });
   const boardRows = (board.data ?? []) as unknown as Array<{
     username: string;
@@ -69,8 +72,15 @@ export async function GET(request: NextRequest) {
   }));
   const entries = topThree(rankEntries(rows));
   const pointsToday = (ownPoints.data ?? []).reduce((sum, row) => sum + row.points, 0);
+  const ownRankRow = ownRank.data as { rank?: number | string | null } | null;
+  const parsedRank =
+    ownRankRow?.rank === null || ownRankRow?.rank === undefined ? null : Number(ownRankRow.rank);
+  const rank = parsedRank !== null && Number.isFinite(parsedRank) ? parsedRank : null;
   let yours = null;
-  if (user && type === "points") yours = youLine(pointsToday, true);
+  if (user && type === "points") {
+    const base = youLine(pointsToday, true);
+    if (base) yours = { ...base, rank };
+  }
   if (user && type === "streak") {
     const current = ownStreak.data?.current ?? 0;
     const last = ownStreak.data?.last_active_date;
@@ -79,7 +89,12 @@ export async function GET(request: NextRequest) {
     const yesterdayText = getIstDate(yesterday);
     const offset = last === today ? 0 : last === yesterdayText ? 1 : 2;
     const activeCurrent = currentStreakForOffset(current, offset);
-    yours = { value: activeCurrent, label: "you", copy: streakCopy(activeCurrent, offset, true) };
+    yours = {
+      value: activeCurrent,
+      label: "you",
+      copy: streakCopy(activeCurrent, offset, true),
+      rank,
+    };
   }
   return NextResponse.json({
     type,

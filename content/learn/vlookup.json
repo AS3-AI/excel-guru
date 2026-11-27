@@ -50,9 +50,9 @@
     },
     {
       "heading": "Common mistake: omitting FALSE",
-      "text": "If you leave out the fourth argument, Excel defaults to `TRUE` for an approximate match. On unsorted tables, this can quietly return the wrong row. Always use `FALSE` when you need an exact match. Remember also that **VLOOKUP** can only search the leftmost column of your table—it cannot look to the left."
+      "text": "If you leave out the fourth argument, Excel defaults to `TRUE` for an approximate match. On unsorted tables, this can quietly return the wrong row. Always use `FALSE` when you need an exact match. Remember also that **VLOOKUP** can only search the leftmost column of your tableâ€”it cannot look to the left."
     }
   ],
-  "lessonId": "lookup-1",
+  "lessonId": "intro",
   "related": ["sum"]
 }

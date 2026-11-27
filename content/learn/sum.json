@@ -3,10 +3,18 @@
   "fn": "SUM",
   "title": "How to use SUM in Excel",
   "description": "Learn how Excel SUM adds values across cells and ranges, with a simple worked example and a link to hands-on practice.",
-  "syntax": "=SUM(number1, [number2], …)",
+  "syntax": "=SUM(number1, [number2], â€¦)",
   "args": [
-    { "name": "number1", "required": true, "text": "The first number, cell reference, or range to add." },
-    { "name": "number2", "required": false, "text": "More numbers, references, or ranges to include in the total." }
+    {
+      "name": "number1",
+      "required": true,
+      "text": "The first number, cell reference, or range to add."
+    },
+    {
+      "name": "number2",
+      "required": false,
+      "text": "More numbers, references, or ranges to include in the total."
+    }
   ],
   "sections": [
     {
@@ -16,7 +24,13 @@
     {
       "heading": "A small example",
       "text": "Here are three daily totals. The formula in the blank result cell adds the values above it.",
-      "grid": [["Day", "Sales"], ["Mon", 12], ["Tue", 18], ["Wed", 25], ["Total", null]],
+      "grid": [
+        ["Day", "Sales"],
+        ["Mon", 12],
+        ["Tue", 18],
+        ["Wed", 25],
+        ["Total", null]
+      ],
       "formula": "=SUM(B2:B4)",
       "result": 55
     },
@@ -25,6 +39,6 @@
       "text": "Use commas to pass more than one range: `=SUM(B2:B6,D2:D6)`. This is useful when the values you want are in separate columns."
     }
   ],
-  "lessonId": "sum-1",
+  "lessonId": "intro",
   "related": []
 }

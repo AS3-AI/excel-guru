@@ -8,16 +8,16 @@ import {
   plDrawerClasses,
   plKeyClasses,
   plListDialogClasses,
+  plSidebarClasses,
   plStatsClasses,
-  plTileBoardClasses,
-  plTileStatClasses,
 } from "./player-styles";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { FormulaStep, Lesson, Os } from "@excel-guru/grader";
+import type { EntryResult, EntryStep, FormulaStep, Lesson, Os } from "@excel-guru/grader";
 import {
   gradeAcceptStep,
+  gradeEntryStep,
   gradeFormulaStep,
   gradeMcqStep,
   gradeSelectStep,
@@ -28,15 +28,13 @@ import {
 import { Sheet } from "@excel-guru/engine";
 import { Grid, formatValue, rawInput } from "@/components/grid/Grid";
 import { RichText } from "@/components/RichText";
-import { createPlayerState, playerReducer } from "@/lib/player-state";
+import { countLessonProgress, createPlayerState, playerReducer } from "@/lib/player-state";
 import { mergeLocalProgress, writeLocalProgress } from "@/lib/local-progress";
 import { getPlatform } from "@/lib/platform";
 import { StepView } from "./steps/StepView";
 import { ShortcutStep as ShortcutPractice, shortcutSkipOutcome } from "./steps/ShortcutStep";
 import { LessonList, type LessonNavItem } from "./LessonList";
-import { Leaderboards } from "@/components/Leaderboards";
-import { ShareBonus } from "@/components/ShareBonus";
-import { VideoModal } from "@/components/VideoModal";
+import { LESSON_PROGRESS_EVENT, type LessonProgressDetail } from "./TopbarProgress";
 import { answerPointsVisible } from "@/lib/leaderboard";
 import { PROFILE_HREF } from "@/lib/nav-links";
 import { Icon } from "@/components/icons";
@@ -51,20 +49,33 @@ type Props = {
   signedIn?: boolean;
   inviteNotice?: boolean;
 };
-// Only formula, select and shortcut mistakes get an AI explanation; a value without "=" already has a fixed message.
-function explainable(step: Lesson["steps"][number], input: string): boolean {
-  if (step.type === "formula") return gradeFormulaStep(step, input).reason !== "not_formula";
-  return step.type === "select" || step.type === "shortcut";
-}
+const EXPLAIN_PREF_KEY = "excelguru:show-explanation";
 
 function formulaWrongMessage(reason: string | undefined, step: FormulaStep, input: string): string {
   if (input.trim() === "")
     return `${step.targetCell} is still empty. Type your formula in ${step.targetCell}, then press Enter.`;
   if (reason === "not_formula")
-    return "That's a value, not a formula. Formulas start with an equals sign (=).";
+    return (
+      step.wrongFeedback?.notFormula ??
+      "That's a value, not a formula. Formulas start with an equals sign (=)."
+    );
   if (reason === "parse_error")
-    return "That formula can't be read. Check for a typo, a missing bracket or a stray symbol.";
+    return (
+      step.wrongFeedback?.parseError ??
+      "That formula can't be read. Check for a typo, a missing bracket or a stray symbol."
+    );
+  if (reason === "missing_reference")
+    return (
+      step.wrongFeedback?.missingReference ??
+      "Use cell addresses (like B2) instead of fixed numbers so the result updates when data changes."
+    );
+  if (reason === "disallowed_function")
+    return (
+      step.wrongFeedback?.disallowedFunction ??
+      "No functions needed here — combine the cell addresses directly with +."
+    );
   if (reason === "wrong_value") {
+    if (step.wrongFeedback?.wrongValue) return step.wrongFeedback.wrongValue;
     const sheet = new Sheet(step.grid, { today: LESSON_TODAY });
     try {
       sheet.set(step.targetCell, input);
@@ -74,8 +85,26 @@ function formulaWrongMessage(reason: string | undefined, step: FormulaStep, inpu
     return `Your formula gives ${formatValue(sheet.get(step.targetCell)) || "an empty result"}, which isn't the answer. Check which cells it uses.`;
   }
   if (reason === "missing_function")
-    return `Your formula needs to use ${(step.mustUse ?? []).join(", ")}.`;
+    return (
+      step.wrongFeedback?.missingFunction ??
+      `Your formula needs to use ${(step.mustUse ?? []).join(", ")}.`
+    );
   return `Not quite. Your answer was ${input || "blank"}.`;
+}
+function entryWrongMessage(result: EntryResult, step: EntryStep): string {
+  const cell = result.cell ?? "";
+  const want = cell ? step.expect[cell] : undefined;
+  if (result.reason === "empty")
+    return step.wrongFeedback?.empty ?? `${cell} is still empty. Click it, type, then press Enter.`;
+  if (result.reason === "text_not_number")
+    return (
+      step.wrongFeedback?.textNotNumber ??
+      `Excel sees ${cell} as text, not a number (see how it sits on the left?). Type just the digits: ${String(want)}.`
+    );
+  return (
+    step.wrongFeedback?.wrongValue ??
+    `${cell} should show ${String(want)}. Click it and type again.`
+  );
 }
 export function Player({
   lesson,
@@ -92,9 +121,8 @@ export function Player({
     : nextLessonId
       ? `/lesson/${nextLessonId}`
       : "/";
-  const [boardsReady, setBoardsReady] = useState(!signedIn);
   useEffect(() => {
-    if (signedIn) void mergeLocalProgress().finally(() => setBoardsReady(true));
+    if (signedIn) void mergeLocalProgress();
   }, [signedIn]);
   const [state, dispatch] = useReducer(playerReducer, undefined, () =>
     createPlayerState(lesson.steps.length, lesson.requiredCorrect),
@@ -106,16 +134,67 @@ export function Player({
   // The grid reports its default A1 on mount; only a later change means the learner picked a cell.
   const [selectTouched, setSelectTouched] = useState(false);
   const [wrongText, setWrongText] = useState("");
-  const [aiExplanation, setAiExplanation] = useState<{
-    id: string;
-    text: string;
-    cached: boolean;
-  } | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiShown, setAiShown] = useState(false);
-  const [aiThanks, setAiThanks] = useState(false);
-  const [aiRated, setAiRated] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
+  const [gridResetNonce, setGridResetNonce] = useState(0);
+  const [showCorrectExplain, setShowCorrectExplain] = useState(false);
+  /** Whether explanations open by themselves on a correct answer: the learner's last toggle, kept on this device. */
+  const explainPref = useRef(true);
+  useEffect(() => {
+    try {
+      explainPref.current = window.localStorage.getItem(EXPLAIN_PREF_KEY) !== "0";
+    } catch {
+      /* storage unavailable: keep the default (open) */
+    }
+  }, []);
+  const toggleCorrectExplain = () => {
+    const next = !showCorrectExplain;
+    explainPref.current = next;
+    setShowCorrectExplain(next);
+    try {
+      window.localStorage.setItem(EXPLAIN_PREF_KEY, next ? "1" : "0");
+    } catch {
+      /* ignore storage errors */
+    }
+  };
+  /**
+   * The explanation opens above the bar without moving it: the stage's spare min-height gives up the room,
+   * and the page scrolls by whatever the stage couldn't give.
+   */
+  const revealExplain = useCallback((node: HTMLElement | null) => {
+    const stage = stageRef.current;
+    const arena = stage?.parentElement;
+    if (!stage || !arena) return;
+    if (!node) {
+      stage.style.removeProperty("--pl-explain-h");
+      arena.style.removeProperty("padding-bottom");
+      return;
+    }
+    const bar = node.nextElementSibling!;
+    node.style.display = "none";
+    const stageBefore = stage.offsetHeight;
+    const barBefore = bar.getBoundingClientRect().top;
+    node.style.display = "";
+    const added =
+      node.offsetHeight + (parseFloat(getComputedStyle(node.parentElement!).rowGap) || 0);
+    stage.style.setProperty("--pl-explain-h", `${added}px`);
+    // Scroll by what the stage couldn't give up, so the sheet slides up instead of being covered.
+    window.scrollBy(0, added - (stageBefore - stage.offsetHeight));
+    // Spare height under the page can leave too little to scroll; pad until the bar is back where it was.
+    let pad = 0;
+    for (let i = 0; i < 3; i++) {
+      const off = Math.round(bar.getBoundingClientRect().top - barBefore);
+      if (!off) break;
+      if (off > 0) {
+        // Padding first fills any blank strip under the page before the page can scroll.
+        const page =
+          arena.closest(".pl-page")?.getBoundingClientRect().bottom ?? window.innerHeight;
+        pad += off + Math.max(0, window.innerHeight - page);
+        arena.style.paddingBottom = `${pad}px`;
+      }
+      window.scrollBy(0, off);
+    }
+  }, []);
+  const [completedInfoIds, setCompletedInfoIds] = useState<string[]>([]);
   const [celebrate, setCelebrate] = useState(false);
   const [savedStats, setSavedStats] = useState<{ points: number; streak: number } | null>(null);
   const [saveNote, setSaveNote] = useState("");
@@ -127,17 +206,39 @@ export function Player({
     () => new Set(),
   );
   const [keyboardUnavailable, setKeyboardUnavailable] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  useEffect(() => {
+    try {
+      if (window.localStorage.getItem("excelguru:lesson-sidebar-collapsed") === "1") {
+        setSidebarCollapsed(true);
+      }
+    } catch {
+      /* ignore storage errors */
+    }
+  }, []);
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem("excelguru:lesson-sidebar-collapsed", next ? "1" : "0");
+      } catch {
+        /* ignore storage errors */
+      }
+      return next;
+    });
+  };
   const saveStarted = useRef(false);
-  const explainRequest = useRef<{ id: number; controller: AbortController } | null>(null);
-  const explainRequestId = useRef(0);
   const stageRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
   const feedbackRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<Sheet | null>(null);
   const commitRef = useRef(false);
+  const lastCommitCell = useRef<string | null>(null);
+  /** Entry steps: the learner's final text per cell, sent as the attempt input. */
+  const entryEdits = useRef<Record<string, string>>({});
+  const [entryFlash, setEntryFlash] = useState(0);
   const listRef = useRef<HTMLDialogElement>(null);
   const step = lesson.steps[state.index]!;
-  const pct = Math.min(100, Math.round((state.correct / lesson.requiredCorrect) * 100));
   const firstTry = useMemo(() => {
     const results = Object.values(state.firstTry);
     return results.length ? Math.round((results.filter(Boolean).length / results.length) * 100) : 0;
@@ -146,33 +247,55 @@ export function Player({
   const focusAnswerControl = () => {
     (
       stageRef.current?.querySelector<HTMLElement>(".shortcut-practice") ??
-      stageRef.current?.querySelector<HTMLElement>('[role="grid"]') ??
+      stageRef.current?.querySelector<HTMLElement>('[role="grid"][tabindex]') ??
       stageRef.current?.querySelector<HTMLElement>("input, button")
     )?.focus({ preventScroll: true });
   };
-  const invalidateExplain = () => {
-    const current = explainRequest.current;
-    if (current) {
-      current.controller.abort();
-      explainRequest.current = null;
-    }
-  };
   const closeWrong = () => {
-    invalidateExplain();
-    setAiLoading(false);
     setFeedback(null);
     requestAnimationFrame(focusAnswerControl);
   };
-  useEffect(
-    () => () => {
-      invalidateExplain();
-    },
-    [],
-  );
 
   useEffect(() => {
     setPlatform(getPlatform());
+    try {
+      if (window.localStorage.getItem("excelguru:lesson-sidebar-collapsed") === "1") {
+        setSidebarCollapsed(true);
+      }
+    } catch {
+      /* ignore storage access errors */
+    }
   }, []);
+  useEffect(() => {
+    if (sidebarCollapsed) {
+      document.body.classList.add("has-sidebar-collapsed");
+    } else {
+      document.body.classList.remove("has-sidebar-collapsed");
+    }
+    return () => {
+      document.body.classList.remove("has-sidebar-collapsed");
+    };
+  }, [sidebarCollapsed]);
+
+  const lessonProgress = useMemo(
+    () =>
+      countLessonProgress(
+        lesson.steps.length,
+        completedInfoIds.length,
+        state.correct,
+        state.complete,
+      ),
+    [lesson.steps.length, completedInfoIds.length, state.correct, state.complete],
+  );
+
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent<LessonProgressDetail>(LESSON_PROGRESS_EVENT, {
+        detail: { completed: lessonProgress.completed, total: lessonProgress.total },
+      }),
+    );
+  }, [lessonProgress.completed, lessonProgress.total]);
+
   useEffect(() => {
     if (!state.complete || saveStarted.current) return;
     saveStarted.current = true;
@@ -219,11 +342,13 @@ export function Player({
   }, [celebrate, completionDestination, router]);
   useEffect(() => {
     if (!celebrate && !state.complete) {
+      lastCommitCell.current = null;
+      entryEdits.current = {};
       setFormulaReady(false);
       setStepReady(null);
       const initial =
         stageRef.current?.querySelector<HTMLElement>(
-          step.type === "shortcut" ? ".shortcut-practice" : '[role="grid"]',
+          step.type === "shortcut" ? ".shortcut-practice" : '[role="grid"][tabindex]',
         ) ?? stageRef.current?.querySelector<HTMLElement>("input, button");
       if (initial) initial.focus({ preventScroll: true });
       else continueRef.current?.focus({ preventScroll: true });
@@ -315,97 +440,29 @@ export function Player({
 
   const answer = (input: string, correct: boolean, reason?: string) => {
     if (feedback === "correct" || state.complete) return;
-    invalidateExplain();
     dispatch({ type: "answer", stepId: step.id, input, correct });
     setFeedback(correct ? "correct" : "wrong");
-    if (!correct) {
-      setWrongText(reason ?? "Not quite. Try again.");
-      setAiExplanation(null);
-      setAiThanks(false);
-      setAiRated(false);
-      const canExplain = explainable(step, input);
-      setAiShown(canExplain);
-      setAiLoading(canExplain);
-    }
-    if (!correct && explainable(step, input)) {
-      const controller = new AbortController();
-      const requestId = ++explainRequestId.current;
-      explainRequest.current = { id: requestId, controller };
-      const isCurrent = () => explainRequest.current?.id === requestId;
-      void fetch("/api/explain", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        signal: controller.signal,
-        body: JSON.stringify({ lessonId: lesson.id, stepId: step.id, input, os: platform.os }),
-      })
-        .then(async (response) => {
-          if (response.status === 429) {
-            if (isCurrent())
-              setAiExplanation({
-                id: "",
-                text: "You've used today's AI explanations. They reset at midnight.",
-                cached: false,
-              });
-            return;
-          }
-          if (!response.ok) throw new Error("unavailable");
-          const result = (await response.json()) as { id: string; text: string; cached: boolean };
-          if (typeof result.id !== "string" || typeof result.text !== "string")
-            throw new Error("unavailable");
-          if (!isCurrent()) return;
-          setAiExplanation(result);
-          try {
-            setAiRated(window.localStorage.getItem(`eg_explain_rated:${result.id}`) === "1");
-          } catch {
-            setAiRated(false);
-          }
-        })
-        .catch(() => {
-          if (isCurrent())
-            setAiExplanation({
-              id: "",
-              text: "An explanation isn't available right now. Please try again in a moment.",
-              cached: false,
-            });
-        })
-        .finally(() => {
-          if (isCurrent()) {
-            explainRequest.current = null;
-            setAiLoading(false);
-          }
-        });
-    }
-    if (correct) setShowSolution(false);
+    if (!correct) setWrongText(reason ?? "Not quite. Try again.");
     if (correct) {
+      setShowSolution(false);
+      setShowCorrectExplain(explainPref.current);
       const points = showSolution
         ? 0
         : Math.round(10 * lesson.difficulty * (state.firstTry[step.id] === undefined ? 1.5 : 1));
       setAnswerPoints(points);
     }
   };
-  const rateExplanation = async (helpful: boolean) => {
-    if (!aiExplanation?.id || aiRated || aiThanks) return;
-    try {
-      const response = await fetch(`/api/explain/${encodeURIComponent(aiExplanation.id)}/rate`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ helpful }),
-      });
-      if (!response.ok) return;
-    } catch {
-      return;
-    }
-    try {
-      window.localStorage.setItem(`eg_explain_rated:${aiExplanation.id}`, "1");
-    } catch {
-      /* storage may be disabled */
-    }
-    setAiRated(true);
-    setAiThanks(true);
-  };
   const formulaInput = (s: FormulaStep) =>
     sheetRef.current?.getFormula(s.targetCell) ??
     rawInput(sheetRef.current?.get(s.targetCell) ?? null);
+  const resetSheet = () => {
+    lastCommitCell.current = null;
+    setFormulaReady(false);
+    setGridResetNonce((n) => n + 1);
+    requestAnimationFrame(() =>
+      stageRef.current?.querySelector<HTMLElement>('[role="grid"]')?.focus(),
+    );
+  };
   const check = (s: FormulaStep) => {
     const active = document.activeElement;
     if (active instanceof HTMLInputElement && stageRef.current?.contains(active)) {
@@ -413,6 +470,16 @@ export function Player({
       commitRef.current = false;
       active.blur();
       if (!commitRef.current) {
+        const wrongCell = lastCommitCell.current;
+        if (wrongCell) {
+          resetSheet();
+          answer(
+            draft,
+            false,
+            `You typed in ${wrongCell}, but this question asks for ${s.targetCell}. Enter your formula in ${s.targetCell}.`,
+          );
+          return;
+        }
         const result = gradeFormulaStep(s, draft);
         if (result.reason === "parse_error") return;
         answer(
@@ -424,6 +491,16 @@ export function Player({
         return;
       }
     }
+    const wrongCell = lastCommitCell.current;
+    if (wrongCell) {
+      resetSheet();
+      answer(
+        "",
+        false,
+        `You typed in ${wrongCell}, but this question asks for ${s.targetCell}. Enter your formula in ${s.targetCell}.`,
+      );
+      return;
+    }
     const input = formulaInput(s);
     const result = gradeFormulaStep(s, input);
     answer(
@@ -433,29 +510,55 @@ export function Player({
     );
     if (!result.correct) stageRef.current?.querySelector<HTMLElement>('[role="grid"]')?.focus();
   };
-  const nextStep = () => {
-    if (state.complete) {
-      setCelebrate(true);
-      setFeedback(null);
-      return;
-    }
-    invalidateExplain();
-    setAiLoading(false);
-    dispatch({ type: "continue" });
+  /** Grades the typed cells. `committed`: only fail if that cell itself is wrong (typing elsewhere, or a cell
+   * still to come, isn't a mistake yet). Without it (the Check button) any miss fails. */
+  const checkEntry = (s: EntryStep, committed?: string) => {
+    if (feedback === "correct" || state.complete) return;
+    const input = JSON.stringify(entryEdits.current);
+    const result = gradeEntryStep(s, entryEdits.current);
+    if (result.correct) {
+      setEntryFlash((n) => n + 1);
+      answer(input, true);
+    } else if (!committed || (result.cell === committed && result.reason !== "empty"))
+      answer(input, false, entryWrongMessage(result, s));
+  };
+  const resetStepState = () => {
     setFeedback(null);
     setShowSolution(false);
+    setShowCorrectExplain(false);
     setStepReady(null);
     setSelectedRef("");
     setSelectTouched(false);
   };
+  const nextStep = () => {
+    if (step.type === "info") {
+      setCompletedInfoIds((prev) => (prev.includes(step.id) ? prev : [...prev, step.id]));
+    }
+    if (state.complete) {
+      setCelebrate(true);
+      setFeedback(null);
+      setShowCorrectExplain(false);
+      return;
+    }
+    dispatch({ type: "continue" });
+    resetStepState();
+  };
   const checkStep = () => {
     if (step.type === "select") {
       const ref = selectedRef;
-      answer(ref, Boolean(ref) && gradeSelectStep(step, ref));
+      const ok = Boolean(ref) && gradeSelectStep(step, ref);
+      answer(ref, ok, ok ? undefined : (step.wrongFeedback ?? "Not quite. Try again."));
       return;
     }
-    if (step.type === "mcq" && stepReady)
-      answer(stepReady.input, gradeMcqStep(step, Number(stepReady.input)));
+    if (step.type === "mcq" && stepReady) {
+      const idx = Number(stepReady.input);
+      const ok = gradeMcqStep(step, idx);
+      answer(
+        stepReady.input,
+        ok,
+        ok ? undefined : (step.wrongFeedback?.[idx] ?? "Not quite. Try again."),
+      );
+    }
     if ((step.type === "picture" || step.type === "project") && stepReady)
       answer(stepReady.input, gradeAcceptStep(step, stepReady.input));
   };
@@ -468,14 +571,8 @@ export function Player({
     answer(input, correct);
   };
   const skipShortcutStep = () => {
-    invalidateExplain();
-    setAiLoading(false);
     dispatch({ type: "skip" });
-    setFeedback(null);
-    setShowSolution(false);
-    setStepReady(null);
-    setSelectedRef("");
-    setSelectTouched(false);
+    resetStepState();
   };
   const skipShortcutSection = () => {
     const remaining = lesson.steps.slice(state.index);
@@ -497,33 +594,21 @@ export function Player({
     if (node) node.focus({ preventScroll: true });
   }, []);
   const goPrevious = () => {
-    invalidateExplain();
-    setAiLoading(false);
     dispatch({ type: "previous" });
-    setFeedback(null);
-    setShowSolution(false);
-    setStepReady(null);
-    setSelectedRef("");
-    setSelectTouched(false);
+    resetStepState();
   };
   const skipQuestion = () => {
-    invalidateExplain();
-    setAiLoading(false);
     dispatch({ type: "skip" });
-    setFeedback(null);
-    setShowSolution(false);
-    setStepReady(null);
-    setSelectedRef("");
-    setSelectTouched(false);
+    resetStepState();
   };
-  const canGoBack = state.history.length > 0,
-    canSkip =
-      step.type !== "info" && step.type !== "shortcut" && feedback !== "correct" && !celebrate;
+  const canGoBack = state.history.length > 0;
   useEffect(() => {
-    // Tab = skip (also from the grid); Right/Left arrow = skip/previous outside the grid, where arrows move cells.
-    // Never while typing in a field, on shortcut steps, in the sidebar, or with modifiers (Shift+Tab still navigates).
+    // Left arrow = previous outside the grid, where arrows move cells; Enter = Continue.
+    // Never while typing in a field, in the sidebar, or with modifiers.
     const onKey = (e: KeyboardEvent) => {
-      if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey || step.type === "shortcut") return;
+      if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return;
+      // On shortcut steps keys are the answer; only Enter after a correct answer means Continue.
+      if (step.type === "shortcut" && (e.key !== "Enter" || feedback !== "correct")) return;
       const t = e.target as HTMLElement | null;
       if (
         t?.closest(
@@ -532,14 +617,7 @@ export function Player({
       )
         return;
       const outsideGrid = !t?.closest("[role=grid], input");
-      if (e.key === "Tab" && canSkip) {
-        e.preventDefault();
-        e.stopPropagation();
-        skipQuestion();
-      } else if (e.key === "ArrowRight" && canSkip && outsideGrid) {
-        e.preventDefault();
-        skipQuestion();
-      } else if (e.key === "ArrowLeft" && canGoBack && outsideGrid) {
+      if (e.key === "ArrowLeft" && canGoBack && outsideGrid) {
         e.preventDefault();
         goPrevious();
       }
@@ -550,7 +628,7 @@ export function Player({
         continueRef.current.click();
       }
     };
-    window.addEventListener("keydown", onKey, true); // capture: run before the grid's own Tab handling
+    window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
   });
   const onStageCapture = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -594,9 +672,19 @@ export function Player({
       e.target instanceof HTMLInputElement &&
       commitRef.current
     ) {
+      commitRef.current = false;
+      const wrongCell = lastCommitCell.current;
+      if (wrongCell) {
+        resetSheet();
+        answer(
+          "",
+          false,
+          `You typed in ${wrongCell}, but this question asks for ${step.targetCell}. Enter your formula in ${step.targetCell}.`,
+        );
+        return;
+      }
       const input = formulaInput(step),
         result = gradeFormulaStep(step, input);
-      commitRef.current = false;
       if (result.reason !== "parse_error")
         answer(
           input,
@@ -606,50 +694,57 @@ export function Player({
     }
   };
 
-  const KIND: Record<string, string> = {
-    formula: "Write a formula",
-    select: "Select the cells",
-    shortcut: "Keyboard shortcut",
-    mcq: "Quick check",
-    picture: "Read the picture",
-    project: "Project question",
-    info: "Read this",
-  };
-  const hasBrief = step.type === "formula" || step.type === "select";
-  // Same rule as answer(): first try is worth 1.5×, nothing once the answer has been shown.
-  const stakes = answerPointsVisible(signedIn)
-    ? showSolution
-      ? 0
-      : Math.round(10 * lesson.difficulty * (state.firstTry[step.id] === undefined ? 1.5 : 1))
-    : null;
-  const firstTryRun = (() => {
-    let n = 0;
-    for (const ok of Object.values(state.firstTry).reverse()) {
-      if (!ok) break;
-      n++;
-    }
-    return n;
-  })();
-  const answered = Object.keys(state.firstTry).length;
-  // The counter only moves on once the learner continues, not the moment they answer.
-  const challengeNo = String(
-    Math.min(state.correct + (feedback === "correct" ? 0 : 1), lesson.requiredCorrect),
-  ).padStart(2, "0");
+  const hasBrief = step.type === "formula" || step.type === "entry" || step.type === "select";
+  const explainText =
+    step.type === "formula" || step.type === "mcq" || step.type === "entry"
+      ? step.explain
+      : undefined;
+  const canCheck =
+    ((step.type === "formula" || step.type === "entry") && formulaReady) ||
+    (step.type === "select" && selectTouched) ||
+    (step.type === "mcq" && Boolean(stepReady)) ||
+    ((step.type === "picture" || step.type === "project") && Boolean(stepReady?.input.trim()));
+  const primaryKeyClasses = `btn pl-key pl-key-enter ${plKeyClasses}
+          [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
+          [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
+          [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`;
   const openList = () => listRef.current?.showModal();
   const closeList = () => listRef.current?.close();
-  const hud = (
-    <header
-      className="pl-hud grid grid-cols-[auto_minmax(0,_1fr)_minmax(220px,_420px)] items-center gap-s5 mb-s5
-          [@media(max-width:900px)]:grid-cols-[auto_minmax(0,_1fr)]
-          [@media(max-width:640px)]:gap-s3"
+  const sidebar = (
+    <aside
+      className={`pl-sidebar ${sidebarCollapsed ? "w-[56px]" : "w-[280px]"} ${plSidebarClasses}`}
+      aria-label="Lessons sidebar"
     >
+      {sidebarCollapsed && (
+        <header className="justify-center! px-0!">
+          <button
+            type="button"
+            aria-label="Expand lessons sidebar"
+            aria-expanded={false}
+            title="Expand lessons"
+            onClick={toggleSidebar}
+          >
+            <Icon name="chevronRight" size={18} />
+          </button>
+        </header>
+      )}
+      <LessonList
+        items={lessons}
+        currentId={lesson.id}
+        collapsed={sidebarCollapsed}
+        onCollapse={toggleSidebar}
+      />
+    </aside>
+  );
+  const hud = (
+    <header className="pl-hud [@media(min-width:900px)]:hidden flex items-center gap-s3 mb-s3">
+      <h1 className="sr-only">{lesson.title}</h1>
       <button
         type="button"
         className="pl-hud-btn inline-flex items-center gap-[8px] min-h-[40px] p-[8px_12px] [border:var(--line)] rounded-ledger bg-surface
           text-ink text-ledger-sm font-medium cursor-pointer
           [transition:background-color_var(--d2),_border-color_var(--d2)] [box-shadow:2px_2px_0_var(--ink)]
           [&:hover]:bg-butter
-          [@media(max-width:640px)]:[&_span]:hidden
           [&:active]:[transform:translate(2px,_2px)] [&:active]:[box-shadow:none]"
         onClick={openList}
         aria-haspopup="dialog"
@@ -657,54 +752,6 @@ export function Player({
         <Icon name="menu" size={16} />
         <span>Lessons</span>
       </button>
-      <div
-        className="pl-hud-title min-w-0
-          [&>span]:block [&>span]:[font:500_var(--fs-xs)/1_var(--mono)] [&>span]:tracking-[0.06em] [&>span]:uppercase
-          [&>span]:text-muted [&>span]:mb-[6px]"
-      >
-        <span>{lesson.module}</span>
-        <h1
-          className="pl-title m-0 text-[clamp(1.35rem,_2.6vw,_1.85rem)] tracking-[-0.025em] overflow-hidden [text-overflow:ellipsis]
-          whitespace-nowrap"
-        >
-          {lesson.title}
-        </h1>
-      </div>
-      <div
-        className="pl-progress flex items-center gap-s3
-          [@media(max-width:900px)]:[grid-column:1_/_-1]"
-      >
-        <ol
-          className="pl-cells [flex:1] grid [grid-auto-flow:column] [grid-auto-columns:minmax(0,_1fr)] gap-[3px] m-0 p-[3px] list-none
-          [border:var(--line)] rounded-ledger-sm bg-surface
-          [&_li]:h-[14px] [&_li]:rounded-[1px] [&_li]:bg-surface
-          [&_li]:[transition:background-color_var(--d3)_var(--ease)] [&_li]:[border:1.5px_solid_var(--ink)]
-          [&_li.is-on]:bg-primary [&_li.is-on]:[animation:pl-cell-pop_420ms_var(--ease)]
-          [&_li.is-next]:bg-butter [&_li.is-next]:[box-shadow:none]
-          [&_li.is-next]:[animation:pl-cell-pulse_1.6s_ease-in-out_infinite]"
-          role="progressbar"
-          aria-label="Lesson progress"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={pct}
-        >
-          {Array.from({ length: lesson.requiredCorrect }, (_, i) => (
-            <li
-              key={i}
-              className={
-                i < state.correct
-                  ? "is-on"
-                  : i === state.correct && !state.complete
-                    ? "is-next"
-                    : undefined
-              }
-            />
-          ))}
-        </ol>
-        <span className="pl-pct num [font:600_var(--fs-sm)_var(--mono)] text-ink whitespace-nowrap">
-          {state.correct}/{lesson.requiredCorrect}
-        </span>
-      </div>
     </header>
   );
   const list = (
@@ -729,6 +776,7 @@ export function Player({
   if (keyboardUnavailable)
     return (
       <div className="pl-board">
+        {sidebar}
         {hud}
         <main className={`pl-arena is-solo ${plArenaClasses}`} id="main">
           <section className={`pl-card ${plCardClasses}`}>
@@ -752,6 +800,7 @@ export function Player({
     );
   return (
     <div className="pl-board">
+      {sidebar}
       {hud}
       {celebrate ? (
         <main
@@ -842,95 +891,11 @@ export function Player({
           id="main"
           data-feedback={feedback ?? undefined}
         >
-          {hasBrief && (
-            <section
-              className={`pl-brief ${plBriefClasses}`}
-              key={`brief-${state.visit}`}
-              aria-label="Challenge"
-            >
-              <p
-                className="pl-brief-kicker flex items-center justify-between gap-s2 m-0 [font:500_var(--fs-xs)/1_var(--mono)] tracking-[0.06em] uppercase
-          [&_.num]:text-highlight"
-              >
-                <span className="num">Challenge {challengeNo}</span>
-                <span className="pl-brief-kind p-[4px_8px] [border:1px_solid_rgb(255_255_255_/_0.18)] rounded-[4px] [color:rgb(255_255_255_/_0.75)]">
-                  {KIND[step.type]}
-                </span>
-              </p>
-              <p className="pl-prompt block m-0 text-ink text-[1.06rem] leading-[1.55]">
-                <RichText text={step.prompt} />
-              </p>
-              {(stakes !== null || firstTryRun >= 2) && feedback !== "correct" && (
-                <div className="pl-brief-chips flex flex-wrap gap-s2">
-                  {stakes !== null && (
-                    <span
-                      className="pl-chip-pts inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
-          bg-highlight text-ink"
-                    >
-                      {stakes > 0 ? (
-                        <>
-                          +<span className="num">{stakes}</span> pts
-                          {state.firstTry[step.id] === undefined ? " on first try" : ""}
-                        </>
-                      ) : (
-                        "Answer shown · no points"
-                      )}
-                    </span>
-                  )}
-                  {firstTryRun >= 2 && (
-                    <span
-                      className="pl-chip-run inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
-          [background:rgb(255_255_255_/_0.1)] [color:#fff] [animation:pl-pop-in_var(--d3)_var(--ease)]"
-                    >
-                      <Icon name="sparkle" size={13} />
-                      {firstTryRun} in a row
-                    </span>
-                  )}
-                </div>
-              )}
-              <p
-                className="pl-brief-tip relative z-[1] m-0 pt-s3 [border-top:1px_solid_rgb(255_255_255_/_0.12)] text-ledger-sm
-          [color:rgb(255_255_255_/_0.65)]"
-              >
-                {step.type === "formula" ? (
-                  <>
-                    Click <code className="chip">{step.targetCell}</code>, type a formula starting
-                    with <code className="chip">=</code>, then press Enter.
-                  </>
-                ) : (
-                  <>Click or drag across the cells, then press Enter.</>
-                )}
-              </p>
-            </section>
-          )}
-          {!hasBrief && step.type !== "info" && (
-            <p
-              className="pl-solo-head [grid-column:2_/_span_10] flex items-center gap-s3 m-[0_0_calc(-1_*_var(--s2))]
-          [font:500_var(--fs-xs)/1_var(--mono)] tracking-[0.06em] uppercase text-muted
-          [animation:pl-enter_var(--d3)_var(--ease)]
-          [@media(max-width:900px)]:[grid-column:1_/_-1]
-          [&_.num]:text-primary-strong
-          [&_.pl-chip-pts]:ml-auto [&_.pl-chip-pts]:tracking-[0] [&_.pl-chip-pts]:[text-transform:none]"
-              key={`head-${state.visit}`}
-            >
-              <span className="num">Challenge {challengeNo}</span>
-              <span>{KIND[step.type]}</span>
-              {stakes !== null && feedback !== "correct" && (
-                <span
-                  className="pl-chip-pts inline-flex items-center gap-[6px] p-[5px_10px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)]
-          bg-highlight text-ink"
-                >
-                  {stakes > 0 ? `+${stakes} pts` : "No points"}
-                </span>
-              )}
-            </p>
-          )}
           <div
             ref={stageRef}
-            className="pl-stage [grid-column:span_8] min-w-0 p-s4 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-2)]
-          [transition:box-shadow_var(--d3)_var(--ease),_border-color_var(--d3)_var(--ease)]
-          [@media(max-width:900px)]:[grid-column:1_/_-1]
-          [@media(max-width:640px)]:p-s3
+            className="pl-stage [grid-column:1_/_-1] min-w-0 py-s2 px-0
+          min-h-[calc(100dvh_-_250px_-_var(--pl-explain-h,0px))] [@media(max-width:640px)]:min-h-[calc(100dvh_-_360px_-_var(--pl-explain-h,0px))]
+          [@media(max-width:640px)]:py-s2
           [&_.pl-card]:[box-shadow:none]
           [&_.pl-card:last-child]:mb-0
           [&_.pl-options:last-child]:mb-0
@@ -938,24 +903,104 @@ export function Player({
             onKeyDownCapture={onStageCapture}
             onKeyDown={onStageKey}
           >
+            {hasBrief && (
+              <section
+                className={`pl-brief ${plBriefClasses}`}
+                key={`brief-${state.visit}`}
+                aria-label="Challenge"
+              >
+                <div className="pl-prompt grid gap-s3 m-0 max-w-[66ch] text-ink">
+                  {step.prompt.split(/\n\n+/).map((block, idx) => {
+                    const lines = block.split("\n");
+                    return (
+                      <div key={idx} className="grid gap-[4px]">
+                        {lines.map((line, lineIdx) => (
+                          <p key={lineIdx} className="m-0">
+                            <RichText text={line} />
+                          </p>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+                {step.keycaps && step.keycaps.length > 0 && (
+                  <div
+                    className="flex flex-wrap items-center gap-[8px] pt-s1"
+                    aria-label="Keys and actions"
+                  >
+                    {step.keycaps.map((label, i) => (
+                      <span key={`${label}-${i}`} className="inline-flex items-center gap-[8px]">
+                        <kbd className="eg-kbd">{label}</kbd>
+                        {i < step.keycaps!.length - 1 && (
+                          <span className="text-muted text-ledger-xs" aria-hidden="true">
+                            →
+                          </span>
+                        )}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
             <div
               className="pl-stage-in [animation:pl-enter_var(--d3)_var(--ease)]"
               key={`stage-${state.visit}`}
             >
               {step.type === "formula" ? (
                 <Grid
-                  key={`${step.id}-${state.visit}`}
+                  key={`${step.id}-${state.visit}-${gridResetNonce}`}
                   grid={step.grid}
                   today={LESSON_TODAY}
                   targetCell={step.targetCell}
+                  activeCell={step.activeCell}
                   highlightCells={step.highlightCells}
+                  yellowCells={step.yellowCells}
                   sheetRef={sheetRef}
+                  disableSheetActions={feedback === "correct"}
                   onEditStart={() => {
                     setFormulaReady(true);
                     setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
                   }}
-                  onCommit={() => {
+                  onCommit={(addr, input) => {
                     commitRef.current = true;
+                    lastCommitCell.current =
+                      addr !== step.targetCell && input.trim() !== "" ? addr : null;
+                    setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
+                  }}
+                  onHistoryChange={(edits) => {
+                    const last = edits[edits.length - 1];
+                    lastCommitCell.current =
+                      last && last.addr !== step.targetCell && last.input.trim() !== ""
+                        ? last.addr
+                        : null;
+                    setFormulaReady(edits.length > 0);
+                    setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
+                  }}
+                />
+              ) : step.type === "entry" ? (
+                <Grid
+                  key={`${step.id}-${state.visit}`}
+                  grid={step.grid}
+                  today={LESSON_TODAY}
+                  activeCell={step.activeCell}
+                  highlightCells={step.highlightCells}
+                  yellowCells={feedback === "correct" ? undefined : step.yellowCells}
+                  flashCells={Object.keys(step.expect)}
+                  flashKey={entryFlash}
+                  sheetRef={sheetRef}
+                  disableSheetActions={feedback === "correct"}
+                  onEditStart={() => {
+                    setFormulaReady(true);
+                    setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
+                  }}
+                  onCommit={(addr, input) => {
+                    entryEdits.current = { ...entryEdits.current, [addr]: input };
+                    setFormulaReady(true);
+                    checkEntry(step, addr);
+                  }}
+                  onHistoryChange={(edits) => {
+                    entryEdits.current = Object.fromEntries(edits.map((e) => [e.addr, e.input]));
+                    setFormulaReady(edits.length > 0);
                     setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
                   }}
                 />
@@ -988,103 +1033,108 @@ export function Player({
               )}
             </div>
           </div>
-          <div
-            className={`pl-actions${feedback === "correct" ? " is-correct" : ""} ${plActionsClasses}`}
-          >
-            {feedback === "correct" ? (
-              <>
-                <strong className="pl-correct-label inline-flex items-center gap-[10px] [color:#fff] [font:650_1.15rem_var(--font-display)]">
-                  <span
-                    className="pl-correct-icon grid place-items-center w-[28px] h-[28px] rounded-[50%] bg-primary [color:#fff]
+          {/* Sticky as one block: the explanation sits in flow above the bar, so it never covers the sheet. */}
+          <div className="pl-dock [grid-column:1_/_-1] sticky bottom-0 z-[5] grid gap-s2">
+            {feedback === "correct" && showCorrectExplain && explainText && (
+              <p
+                id="pl-correct-explain"
+                ref={revealExplain}
+                className="pl-explain m-0 p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [border:1px_solid_var(--border)] [overflow-wrap:anywhere]
+            [animation:pl-enter_var(--d2)_var(--ease)]"
+              >
+                <RichText text={explainText} />
+              </p>
+            )}
+            <div
+              className={`pl-actions${feedback === "correct" ? " is-correct" : ""} ${plActionsClasses}`}
+            >
+              {feedback === "correct" ? (
+                <>
+                  <strong className="pl-correct-label inline-flex items-center gap-[10px] [color:#fff] [font:650_1.15rem_var(--font-display)]">
+                    <span
+                      className="pl-correct-icon grid place-items-center w-[28px] h-[28px] rounded-[50%] bg-primary [color:#fff]
           [animation:pl-pop_420ms_var(--ease)] [border:2px_solid_var(--ink)]"
-                    aria-hidden="true"
-                  >
-                    <Icon name="check" size={14} strokeWidth={3} />
-                  </span>
-                  Correct!
-                </strong>
-                {answerPointsVisible(signedIn) && (
-                  <span
-                    className="pl-points-earned p-[3px_9px] rounded-[4px] bg-highlight text-ink! [font:700_var(--fs-sm)_var(--mono)] tabular-nums
+                      aria-hidden="true"
+                    >
+                      <Icon name="check" size={14} strokeWidth={3} />
+                    </span>
+                    Correct!
+                  </strong>
+                  {answerPointsVisible(signedIn) && (
+                    <span
+                      className="pl-points-earned p-[3px_9px] rounded-[4px] bg-highlight text-ink! [font:700_var(--fs-sm)_var(--mono)] tabular-nums
           [animation:pl-float_600ms_var(--ease)]"
-                    aria-live="polite"
-                  >
-                    +{shownPoints} pts
-                  </span>
-                )}
-                {step.type === "formula" && step.explain ? (
-                  <span>
-                    <RichText text={step.explain} />
-                  </span>
-                ) : null}
-                <button
-                  ref={continueRef}
-                  className={`btn pl-key pl-key-enter ${plKeyClasses}
-          [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
-          [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
-          [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
-                  aria-keyshortcuts="Enter"
-                  onClick={nextStep}
-                >
-                  Continue <span aria-hidden="true">⏎</span>
-                </button>
-              </>
-            ) : (
-              <>
-                {canGoBack && (
+                      aria-live="polite"
+                    >
+                      +{shownPoints} pts
+                    </span>
+                  )}
+                  {explainText ? (
+                    <button
+                      type="button"
+                      className={`btn pl-key ${plKeyClasses}`}
+                      aria-expanded={showCorrectExplain}
+                      aria-controls="pl-correct-explain"
+                      onClick={toggleCorrectExplain}
+                    >
+                      {showCorrectExplain ? "Hide explanation" : "View explanation"}
+                    </button>
+                  ) : null}
                   <button
-                    className={`btn pl-key ${plKeyClasses}`}
-                    aria-label="Previous"
-                    aria-keyshortcuts="ArrowLeft"
-                    onClick={goPrevious}
+                    ref={continueRef}
+                    className={primaryKeyClasses}
+                    aria-keyshortcuts="Enter"
+                    onClick={nextStep}
                   >
-                    <span aria-hidden="true">←</span> Prev
+                    Continue <span aria-hidden="true">⏎</span>
                   </button>
-                )}
-                <span
-                  className="pl-actions-end ml-auto flex gap-s2
-          [@media(max-width:640px)]:[flex:1]"
-                >
-                  {step.type === "info" ? (
-                    <button
-                      ref={continueRef}
-                      className={`btn pl-key pl-key-enter ${plKeyClasses}
-          [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
-          [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
-          [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
-                      aria-keyshortcuts="Enter"
-                      onClick={nextStep}
-                    >
-                      Continue <span aria-hidden="true">⏎</span>
-                    </button>
-                  ) : (step.type === "formula" && formulaReady) ||
-                    (step.type === "select" && selectTouched) ||
-                    (step.type === "mcq" && stepReady) ||
-                    ((step.type === "picture" || step.type === "project") &&
-                      !!stepReady?.input.trim()) ? (
-                    <button
-                      className={`btn pl-key pl-key-enter ${plKeyClasses}
-          [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
-          [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
-          [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`}
-                      aria-keyshortcuts="Enter"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => (step.type === "formula" ? check(step) : checkStep())}
-                    >
-                      Check <span aria-hidden="true">⏎</span>
-                    </button>
-                  ) : (
+                </>
+              ) : (
+                <>
+                  {canGoBack && (
                     <button
                       className={`btn pl-key ${plKeyClasses}`}
-                      aria-keyshortcuts="Tab ArrowRight"
-                      onClick={skipQuestion}
+                      aria-label="Previous"
+                      aria-keyshortcuts="ArrowLeft"
+                      onClick={goPrevious}
                     >
-                      Skip question <span aria-hidden="true">⇥</span>
+                      <span aria-hidden="true">←</span> Prev
                     </button>
                   )}
-                </span>
-              </>
-            )}
+                  <span
+                    className="pl-actions-end ml-auto flex gap-s2
+          [@media(max-width:640px)]:[flex:1]"
+                  >
+                    {step.type === "info" ? (
+                      <button
+                        ref={continueRef}
+                        className={primaryKeyClasses}
+                        aria-keyshortcuts="Enter"
+                        onClick={nextStep}
+                      >
+                        Continue <span aria-hidden="true">⏎</span>
+                      </button>
+                    ) : step.type !== "shortcut" ? (
+                      <button
+                        disabled={!canCheck}
+                        className={`${primaryKeyClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
+                        aria-keyshortcuts="Enter"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() =>
+                          step.type === "formula"
+                            ? check(step)
+                            : step.type === "entry"
+                              ? checkEntry(step)
+                              : checkStep()
+                        }
+                      >
+                        Check <span aria-hidden="true">⏎</span>
+                      </button>
+                    ) : null}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
           <div
             ref={feedbackRef}
@@ -1097,7 +1147,7 @@ export function Player({
                 className="pl-wrong-summary m-0 p-[10px_14px] rounded-ledger bg-rose text-ink [border:var(--line)]
           [animation:pl-enter_var(--d2)_var(--ease)]"
               >
-                {wrongText}
+                <RichText text={wrongText} />
               </p>
             )}
           </div>
@@ -1113,223 +1163,82 @@ export function Player({
                   <Icon name="x" size={18} />
                 </button>
               </header>
-              {state.wrongCount > 0 && !showSolution && (
-                <button
-                  className="btn pl-show-answer mb-s4"
-                  onClick={() => {
-                    dispatch({ type: "show-answer" });
-                    setShowSolution(true);
-                    focusAnswerControl();
-                  }}
-                >
-                  Show Answer
-                </button>
+              {step.clues && step.clues.length > 0 && (
+                <div className="mb-s4 grid gap-s2">
+                  {step.clues.slice(0, Math.max(1, state.wrongCount)).map((clue, i) => (
+                    <p
+                      key={i}
+                      className="m-0 p-[10px_12px] rounded-ledger bg-butter text-ink [border:var(--line)] text-ledger-sm leading-[1.5]"
+                    >
+                      <strong>Clue {i + 1}: </strong>
+                      <RichText text={clue} />
+                    </p>
+                  ))}
+                </div>
               )}
-              {showSolution && (
-                <p className="pl-solution p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [overflow-wrap:anywhere]">
-                  {step.type === "formula" ? (
-                    <code className="chip">{step.solution}</code>
-                  ) : step.type === "select" ? (
-                    step.target
-                  ) : step.type === "mcq" ? (
-                    step.options[step.answer]
-                  ) : step.type === "picture" || step.type === "project" ? (
-                    step.accept[0]
-                  ) : step.type === "shortcut" ? (
-                    step.mode === "sequence" ? (
-                      (step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac")
-                    ) : (
-                      (step.keys[platform.os] ?? "Unavailable on Mac")
-                    )
-                  ) : (
-                    ""
-                  )}
+              {state.wrongCount < (step.revealAfter ?? 1) && !showSolution && (
+                <p className="m-[0_0_var(--s4)] text-ledger-sm text-muted">
+                  Use the clue above and try once more — the full answer unlocks after another try.
                 </p>
               )}
-              {aiShown && (
-                <div
-                  className="pl-ai-slot min-h-[100px] p-s4 [border:var(--line)] rounded-ledger bg-surface-warm text-muted
-          [&_p]:m-[0_0_var(--s3)] [&_p]:text-text [&_p]:leading-[1.6] [&_p]:[overflow-wrap:anywhere]
-          [&_small]:block [&_small]:mt-s3 [&_small]:text-muted [&_small]:leading-[1.4] [&_small]:text-[0.8rem]"
+              <div className="flex flex-wrap gap-s2 mb-s4">
+                {state.wrongCount >= (step.revealAfter ?? 1) && !showSolution && (
+                  <button
+                    type="button"
+                    className={`btn pl-key ${plKeyClasses}`}
+                    onClick={() => {
+                      dispatch({ type: "show-answer" });
+                      setShowSolution(true);
+                      focusAnswerControl();
+                    }}
+                  >
+                    View explanation
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={showSolution ? primaryKeyClasses : `btn pl-key ${plKeyClasses}`}
+                  onClick={skipQuestion}
                 >
-                  {aiLoading ? (
-                    <span
-                      className="pl-ai-loading flex items-center gap-[6px] min-h-[36px]
-          [&_i]:w-[7px] [&_i]:h-[7px] [&_i]:rounded-[50%] [&_i]:bg-primary-strong
-          [&_i]:[animation:pl-ai-dot_1s_infinite_ease-in-out]
-          [&_i:nth-child(2)]:[animation-delay:0.15s]
-          [&_i:nth-child(3)]:[animation-delay:0.3s]"
-                      role="status"
-                      aria-label="Loading explanation"
-                    >
-                      <i />
-                      <i />
-                      <i />
-                    </span>
-                  ) : (
-                    <>
-                      <p>
-                        {aiExplanation?.text ??
-                          "An explanation isn't available right now. Please try again in a moment."}
-                      </p>
-                      {signedIn &&
-                        aiExplanation?.id &&
-                        (aiThanks ? (
-                          <p role="status">Thanks for your feedback!</p>
-                        ) : (
-                          <div
-                            className="pl-ai-rating flex gap-s2
-          [&_button]:grid [&_button]:place-items-center [&_button]:min-w-[44px] [&_button]:min-h-[44px]
-          [&_button]:[border:var(--line)] [&_button]:rounded-ledger [&_button]:bg-surface [&_button]:text-text
-          [&_button]:cursor-pointer
-          [&_button]:[transition:border-color_var(--d2),_color_var(--d2),_background-color_var(--d2)]
-          [&_button:hover:not(:disabled)]:border-primary [&_button:hover:not(:disabled)]:text-primary-strong
-          [&_button:disabled]:opacity-[0.5] [&_button:disabled]:cursor-default"
-                          >
-                            <button
-                              type="button"
-                              aria-label="Helpful"
-                              disabled={aiRated}
-                              onClick={() => void rateExplanation(true)}
-                            >
-                              <Icon name="thumbUp" size={18} />
-                            </button>
-                            <button
-                              type="button"
-                              aria-label="Not helpful"
-                              disabled={aiRated}
-                              onClick={() => void rateExplanation(false)}
-                            >
-                              <Icon name="thumbDown" size={18} />
-                            </button>
-                          </div>
-                        ))}
-                      <small>AI can be wrong. Check the answer before relying on it.</small>
-                    </>
+                  {showSolution ? "Next question →" : "Skip explanation →"}
+                </button>
+              </div>
+              {showSolution && (
+                <>
+                  <p className="pl-solution p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [overflow-wrap:anywhere]">
+                    {step.type === "formula" ? (
+                      <code className="chip">{step.solution}</code>
+                    ) : step.type === "entry" ? (
+                      Object.entries(step.expect)
+                        .map(([cell, v]) => `${cell}: ${String(v)}`)
+                        .join(" · ")
+                    ) : step.type === "select" ? (
+                      step.target
+                    ) : step.type === "mcq" ? (
+                      <RichText text={step.options[step.answer]!} />
+                    ) : step.type === "picture" || step.type === "project" ? (
+                      step.accept[0]
+                    ) : step.type === "shortcut" ? (
+                      step.mode === "sequence" ? (
+                        (step.keys[platform.os]?.join(" → ") ?? "Unavailable on Mac")
+                      ) : (
+                        (step.keys[platform.os] ?? "Unavailable on Mac")
+                      )
+                    ) : (
+                      ""
+                    )}
+                  </p>
+                  {explainText && (
+                    <p className="pl-solution-explain m-0 p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-warm [border:1px_solid_var(--border)] text-text leading-[1.6] [overflow-wrap:anywhere]">
+                      <RichText text={explainText} />
+                    </p>
                   )}
-                </div>
+                </>
               )}
             </aside>
           )}
         </main>
       )}
-      <section
-        className="pl-tiles grid grid-cols-[repeat(12,_minmax(0,_1fr))] gap-s4 mt-s7 pt-s5 [border-top:1px_solid_var(--border)]"
-        aria-label="Your session"
-      >
-        <div
-          className={`pl-tile pl-tile-stat min-w-0
-          [&:empty]:hidden
-          ${plTileStatClasses}`}
-        >
-          <span>First-try accuracy</span>
-          <b className="num">{answered ? `${firstTry}%` : "—"}</b>
-          <small>
-            {answered ? `${answered} answered this lesson` : "Answer a question to start"}
-          </small>
-        </div>
-        <div
-          className={`pl-tile pl-tile-stat min-w-0
-          [&:empty]:hidden
-          ${plTileStatClasses}`}
-        >
-          <span>In a row</span>
-          <b className="num">{firstTryRun}</b>
-          <small>first-try answers</small>
-        </div>
-        {boardsReady && (
-          <>
-            <div
-              className={`pl-tile pl-tile-board min-w-0
-          [&:empty]:hidden
-          ${plTileBoardClasses}`}
-            >
-              <Leaderboards type="points" />
-            </div>
-            <div
-              className={`pl-tile pl-tile-board min-w-0
-          [&:empty]:hidden
-          ${plTileBoardClasses}`}
-            >
-              <Leaderboards type="streak" />
-            </div>
-            <div
-              className="pl-tile pl-tile-wide min-w-0
-          [&:empty]:hidden
-          [grid-column:1_/_-1] [order:9]
-          [&_.share-bonus-card]:mt-0"
-            >
-              <ShareBonus signedIn={signedIn} />
-            </div>
-          </>
-        )}
-        <div
-          className="pl-tile pl-tile-extras min-w-0
-          [&:empty]:hidden
-          [&>span]:[font:500_var(--fs-xs)/1.2_var(--mono)] [&>span]:tracking-[0.06em] [&>span]:uppercase
-          [&>span]:text-muted
-          [grid-column:span_2] grid [align-content:start] gap-s2 p-s4 bg-lilac [border:var(--line)] rounded-ledger-lg
-          [box-shadow:var(--shadow-1)]
-          [@media(900px<width<=1100px)]:[grid-column:span_6]
-          [@media(max-width:900px)]:[grid-column:1_/_-1]
-          [&_.btn]:w-full [&_.btn]:whitespace-normal"
-        >
-          <span>Extras</span>
-          <VideoModal videoId={lesson.video} />
-          <a
-            className="btn btn-quiet pl-workbook-link"
-            href={`/api/lessons/${encodeURIComponent(lesson.id)}/workbook`}
-          >
-            <Icon name="download" size={16} />
-            Practice workbook
-          </a>
-          <div
-            className="pl-share grid grid-cols-4 gap-[6px] mt-[4px]
-          [&_a]:flex [&_a]:items-center [&_a]:justify-center [&_a]:h-[36px] [&_a]:bg-surface
-          [&_a]:[border:var(--line)] [&_a]:rounded-ledger-sm [&_a]:text-muted [&_a]:no-underline
-          [&_a]:[box-shadow:var(--shadow-1)]
-          [&_a]:[transition:border-color_var(--d2),_color_var(--d2),_transform_var(--d1),_box-shadow_var(--d1)]
-          [&_a:hover]:border-primary [&_a:hover]:text-primary-strong [&_a:hover]:[box-shadow:var(--shadow-2)] [&_a:hover]:[transform:translate(-1px,_-1px)]"
-            aria-label="Share"
-          >
-            <a
-              href="https://www.linkedin.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Share on LinkedIn"
-              title="Share on LinkedIn"
-            >
-              <Icon name="linkedin" size={17} />
-            </a>
-            <a
-              href="https://www.facebook.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Share on Facebook"
-              title="Share on Facebook"
-            >
-              <Icon name="facebook" size={17} />
-            </a>
-            <a
-              href="https://x.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Share on X"
-              title="Share on X"
-            >
-              <Icon name="xTwitter" size={17} />
-            </a>
-            <a
-              href="mailto:?subject=Excel%20Guru"
-              aria-label="Share via Email"
-              title="Share via Email"
-            >
-              <Icon name="mail" size={17} />
-            </a>
-          </div>
-          <span className="text-[0.68rem] text-muted text-center block mt-[1px]">Share lesson</span>
-        </div>
-      </section>
       {list}
     </div>
   );

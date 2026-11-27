@@ -1,0 +1,586 @@
+{
+  "free": 5,
+  "levels": [
+    {
+      "title": "Start here",
+      "topics": [
+        {
+          "n": 1,
+          "title": "Excel Basics: your first total",
+          "lesson": "intro",
+          "covers": [
+            "Rows, columns and cell addresses",
+            "Typing with Enter and Tab",
+            "Your first formula",
+            "AutoSum with Alt + =",
+            "A total that updates itself"
+          ]
+        },
+        {
+          "n": 2,
+          "title": "SUM: total a list",
+          "lesson": "sum-total",
+          "covers": [
+            "Selecting a range",
+            "Writing SUM yourself",
+            "Rows, blocks and separate ranges",
+            "Why SUM skips text-numbers"
+          ]
+        },
+        {
+          "n": 3,
+          "title": "AutoFill: fill a whole sheet in seconds",
+          "lesson": "autofill",
+          "covers": [
+            "The fill handle and patterns",
+            "Fill down (Ctrl + D) and right (Ctrl + R)",
+            "Why copied formulas still work",
+            "Double-click to fill 3,000 rows"
+          ]
+        },
+        {
+          "n": 4,
+          "title": "Select & Move Fast: then total it",
+          "lesson": "select-fast",
+          "covers": [
+            "Jump with Ctrl + arrows",
+            "Select to the end with Ctrl + Shift + arrows",
+            "Whole rows, columns and tables",
+            "Back to A1 with Ctrl + Home"
+          ]
+        },
+        {
+          "n": 5,
+          "title": "Flash Fill: clean a contact list in one key",
+          "lesson": "flash-fill",
+          "covers": [
+            "Split names from one example",
+            "Build email addresses",
+            "Clean phone numbers",
+            "Fix a wrong guess"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Everyday essentials",
+      "topics": [
+        {
+          "n": 6,
+          "title": "Tables: make your data smart",
+          "lesson": "tables",
+          "covers": [
+            "Clean data rules",
+            "Create a Table in one key",
+            "Columns that fill themselves",
+            "Tables that grow",
+            "Readable table names"
+          ]
+        },
+        {
+          "n": 7,
+          "title": "Sort & Filter: find what matters",
+          "lesson": "sort-filter",
+          "covers": [
+            "Sort without scrambling rows",
+            "Largest first, smallest first",
+            "Filters on and off (Ctrl + Shift + L)",
+            "The hidden-rows SUM trap",
+            "Multi-level sorts"
+          ]
+        },
+        {
+          "n": 8,
+          "title": "Number Formatting: %, ₹ and dates that look right",
+          "lesson": "number-format",
+          "covers": [
+            "Looks vs value",
+            "Percent, separators and currency keys",
+            "Lakhs vs millions",
+            "Dates are numbers",
+            "Format Cells (Ctrl + 1)"
+          ]
+        },
+        {
+          "n": 9,
+          "title": "Copy, Paste & Paste Special",
+          "lesson": "copy-paste",
+          "covers": [
+            "Copy, paste and undo",
+            "What happens when formulas are pasted",
+            "Paste values",
+            "Transpose rows into columns",
+            "Cut vs copy"
+          ]
+        },
+        {
+          "n": 10,
+          "title": "Cell Formatting & Format Painter",
+          "lesson": "cell-format",
+          "covers": [
+            "Bold, borders and centring from the keyboard",
+            "Repeat with F4",
+            "Format Painter",
+            "Fixing ####",
+            "Center Across Selection instead of merging"
+          ]
+        },
+        {
+          "n": 11,
+          "title": "Rows, Columns, Sheets & Freeze Panes",
+          "lesson": null,
+          "covers": [
+            "Insert and delete rows and columns",
+            "Hide, unhide and resize",
+            "Add, rename and move sheets",
+            "Freeze the header row"
+          ]
+        },
+        {
+          "n": 12,
+          "title": "Find & Replace, Go To Special",
+          "lesson": null,
+          "covers": [
+            "Find anything (Ctrl + F)",
+            "Replace across a sheet (Ctrl + H)",
+            "Jump to blanks, formulas or errors (F5)",
+            "Fill every blank at once"
+          ]
+        },
+        {
+          "n": 13,
+          "title": "Print, Protect & Share",
+          "lesson": null,
+          "covers": [
+            "Page setup and print titles",
+            "Fit to one page and save as PDF",
+            "Lock cells and protect a sheet",
+            "Share and co-edit safely"
+          ]
+        },
+        {
+          "n": 14,
+          "title": "Checkpoint: a small weekly report",
+          "lesson": null,
+          "covers": ["Build a tidy weekly report from raw data using everything so far"]
+        }
+      ]
+    },
+    {
+      "title": "Formula foundations",
+      "topics": [
+        {
+          "n": 15,
+          "title": "Cell References: relative, absolute & mixed",
+          "lesson": null,
+          "covers": [
+            "Why some formulas break when copied",
+            "Lock a cell with $ (F4)",
+            "Mixed references for grids"
+          ]
+        },
+        {
+          "n": 16,
+          "title": "Percentages, Rounding & Basic Math",
+          "lesson": null,
+          "covers": [
+            "Percent of total, change and growth",
+            "ROUND, ROUNDUP and ROUNDDOWN",
+            "Order of operations"
+          ]
+        },
+        {
+          "n": 17,
+          "title": "AVERAGE, MIN & MAX",
+          "lesson": null,
+          "covers": ["Average a list", "Find the smallest and largest", "Blanks vs zeros"]
+        },
+        {
+          "n": 18,
+          "title": "COUNT, COUNTA & COUNTBLANK",
+          "lesson": null,
+          "covers": ["Count numbers", "Count anything filled in", "Find what's missing"]
+        },
+        {
+          "n": 19,
+          "title": "Named Ranges",
+          "lesson": null,
+          "covers": ["Name a cell or range", "Use names in formulas", "Manage names"]
+        }
+      ]
+    },
+    {
+      "title": "Formulas that decide",
+      "topics": [
+        {
+          "n": 20,
+          "title": "IF: make a decision",
+          "lesson": null,
+          "covers": [
+            "Pass or fail, yes or no",
+            "Comparing with >, <, =",
+            "Returning text or numbers"
+          ]
+        },
+        {
+          "n": 21,
+          "title": "AND, OR & NOT",
+          "lesson": null,
+          "covers": ["Two conditions at once", "Either condition", "Combining with IF"]
+        },
+        {
+          "n": 22,
+          "title": "IFS & SWITCH",
+          "lesson": null,
+          "covers": ["Grades and bands without nesting", "Match one value to many results"]
+        },
+        {
+          "n": 23,
+          "title": "COUNTIF & COUNTIFS",
+          "lesson": null,
+          "covers": ["Count matches", "Counts with several conditions", "Wildcards"]
+        },
+        {
+          "n": 24,
+          "title": "SUMIF, SUMIFS & AVERAGEIFS",
+          "lesson": null,
+          "covers": ["Total by category", "Totals with several conditions", "Conditional averages"]
+        },
+        {
+          "n": 25,
+          "title": "Formula Errors, IFERROR & Auditing",
+          "lesson": null,
+          "covers": [
+            "What each # error means",
+            "IFERROR for clean output",
+            "Show formulas and trace precedents"
+          ]
+        },
+        {
+          "n": 26,
+          "title": "Checkpoint: answer questions from an orders sheet",
+          "lesson": null,
+          "covers": ["Use IF, COUNTIFS and SUMIFS to answer real business questions"]
+        }
+      ]
+    },
+    {
+      "title": "Text & dates",
+      "topics": [
+        {
+          "n": 27,
+          "title": "LEFT, RIGHT, MID & LEN",
+          "lesson": null,
+          "covers": ["Pull out codes and parts of text", "Count characters"]
+        },
+        {
+          "n": 28,
+          "title": "FIND & SEARCH",
+          "lesson": null,
+          "covers": ["Find where text sits", "Combine with LEFT and MID"]
+        },
+        {
+          "n": 29,
+          "title": "TRIM, PROPER & SUBSTITUTE",
+          "lesson": null,
+          "covers": ["Remove stray spaces", "Fix capitalisation", "Swap characters"]
+        },
+        {
+          "n": 30,
+          "title": "TEXTBEFORE, TEXTAFTER, TEXTSPLIT & TEXTJOIN",
+          "lesson": null,
+          "covers": ["Split text at a separator", "Join a list with commas"]
+        },
+        {
+          "n": 31,
+          "title": "Dates & Time: the real kind",
+          "lesson": null,
+          "covers": [
+            "Real dates vs text dates",
+            "Today's date (Ctrl + ;)",
+            "TODAY, DATE and fixing text dates"
+          ]
+        },
+        {
+          "n": 32,
+          "title": "Date Calculations",
+          "lesson": null,
+          "covers": ["Days between dates", "Working days and deadlines", "Month ends and ages"]
+        }
+      ]
+    },
+    {
+      "title": "Lookups",
+      "topics": [
+        {
+          "n": 33,
+          "title": "XLOOKUP: find a matching value",
+          "lesson": null,
+          "covers": ["Look up a price or name", "Exact matches"]
+        },
+        {
+          "n": 34,
+          "title": "XLOOKUP: across sheets & missing matches",
+          "lesson": null,
+          "covers": [
+            "Look up from another sheet",
+            "Handle not-found values",
+            "Approximate matches for bands"
+          ]
+        },
+        {
+          "n": 35,
+          "title": "VLOOKUP & HLOOKUP",
+          "lesson": null,
+          "covers": ["Read older workbooks", "The column-number trap", "When to switch to XLOOKUP"]
+        },
+        {
+          "n": 36,
+          "title": "INDEX & XMATCH",
+          "lesson": null,
+          "covers": ["Find a position", "Two-way lookups"]
+        },
+        {
+          "n": 37,
+          "title": "Checkpoint: check a reference list",
+          "lesson": null,
+          "covers": ["Match two lists and flag what's missing"]
+        }
+      ]
+    },
+    {
+      "title": "Visual & interactive",
+      "topics": [
+        {
+          "n": 38,
+          "title": "Conditional Formatting",
+          "lesson": null,
+          "covers": [
+            "Highlight above or below a value",
+            "Colour scales, data bars and icons",
+            "Duplicates"
+          ]
+        },
+        {
+          "n": 39,
+          "title": "Conditional Formatting with Formulas",
+          "lesson": null,
+          "covers": ["Highlight whole rows", "Overdue dates", "Rules that use other cells"]
+        },
+        {
+          "n": 40,
+          "title": "Drop-downs, Checkboxes & Validation",
+          "lesson": null,
+          "covers": ["Drop-down lists", "Checkboxes in cells", "Stop bad data at entry"]
+        },
+        {
+          "n": 41,
+          "title": "Charts: the basics",
+          "lesson": null,
+          "covers": [
+            "Pick the right chart",
+            "Instant chart (Alt + F1)",
+            "Titles, labels and colours"
+          ]
+        },
+        {
+          "n": 42,
+          "title": "Charts: combo, formatting & sparklines",
+          "lesson": null,
+          "covers": [
+            "Two measures on one chart",
+            "Clean, honest formatting",
+            "Tiny in-cell sparklines"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "PivotTables",
+      "topics": [
+        {
+          "n": 43,
+          "title": "PivotTables: the basics",
+          "lesson": null,
+          "covers": ["Summarise thousands of rows by dragging", "Rows, columns, values and filters"]
+        },
+        {
+          "n": 44,
+          "title": "PivotTables: group, % of total & calculated fields",
+          "lesson": null,
+          "covers": ["Group dates into months", "Show % of total", "Add a calculated field"]
+        },
+        {
+          "n": 45,
+          "title": "Slicers, Timelines & PivotCharts",
+          "lesson": null,
+          "covers": ["Clickable filters", "Date timelines", "Charts from a pivot"]
+        }
+      ]
+    },
+    {
+      "title": "Modern Excel",
+      "topics": [
+        {
+          "n": 46,
+          "title": "Dynamic Arrays & Spill",
+          "lesson": null,
+          "covers": ["One formula, many results", "The spill range and #SPILL!"]
+        },
+        {
+          "n": 47,
+          "title": "UNIQUE, SORT & SORTBY",
+          "lesson": null,
+          "covers": ["A list of distinct values", "Sorted lists that update themselves"]
+        },
+        {
+          "n": 48,
+          "title": "FILTER",
+          "lesson": null,
+          "covers": ["Pull matching rows with a formula", "Several conditions", "Empty results"]
+        },
+        {
+          "n": 49,
+          "title": "SEQUENCE, VSTACK, TAKE & DROP",
+          "lesson": null,
+          "covers": ["Number lists", "Stack tables", "Top and bottom N"]
+        },
+        {
+          "n": 50,
+          "title": "GROUPBY & PIVOTBY",
+          "lesson": null,
+          "covers": ["Pivot-style summaries as formulas"]
+        },
+        {
+          "n": 51,
+          "title": "REGEX Functions",
+          "lesson": null,
+          "covers": ["Test, extract and replace text patterns"]
+        },
+        {
+          "n": 52,
+          "title": "LET",
+          "lesson": null,
+          "covers": ["Name parts of a long formula", "Faster, readable formulas"]
+        },
+        {
+          "n": 53,
+          "title": "LAMBDA",
+          "lesson": null,
+          "covers": ["Make your own reusable function"]
+        }
+      ]
+    },
+    {
+      "title": "Clean & analyse data",
+      "topics": [
+        {
+          "n": 54,
+          "title": "Clean a Messy Export",
+          "lesson": null,
+          "covers": ["Text-numbers, stray spaces, duplicates and split columns, fixed step by step"]
+        },
+        {
+          "n": 55,
+          "title": "Power Query: import & transform",
+          "lesson": null,
+          "covers": [
+            "Load a file",
+            "Clean it with recorded steps",
+            "Refresh next month in one click"
+          ]
+        },
+        {
+          "n": 56,
+          "title": "Power Query: merge & append",
+          "lesson": null,
+          "covers": ["Combine monthly files", "Join two tables"]
+        },
+        {
+          "n": 57,
+          "title": "What-If Analysis & Forecasting",
+          "lesson": null,
+          "covers": ["Goal Seek", "Scenarios and data tables", "Forecast Sheet"]
+        }
+      ]
+    },
+    {
+      "title": "Excel + AI",
+      "topics": [
+        {
+          "n": 58,
+          "title": "AI with Spreadsheets: privacy & checking answers",
+          "lesson": null,
+          "covers": [
+            "What's safe to share",
+            "Spotting confident wrong answers",
+            "Checking AI output"
+          ]
+        },
+        {
+          "n": 59,
+          "title": "Write a Good Excel Prompt",
+          "lesson": null,
+          "covers": [
+            "Describe your columns",
+            "Ask for one step at a time",
+            "Get explanations, not just answers"
+          ]
+        },
+        {
+          "n": 60,
+          "title": "AI for Formulas",
+          "lesson": null,
+          "covers": ["Generate, explain and fix formulas"]
+        },
+        {
+          "n": 61,
+          "title": "AI for Cleaning & Analysis",
+          "lesson": null,
+          "covers": ["Clean data with AI help", "Ask questions of your data"]
+        },
+        {
+          "n": 62,
+          "title": "Copilot Agent Mode",
+          "lesson": null,
+          "covers": ["Plan and edit a workbook with Copilot", "Review every change"]
+        },
+        {
+          "n": 63,
+          "title": "ChatGPT, Claude & Gemini with Excel",
+          "lesson": null,
+          "covers": ["Upload files safely", "Turn answers back into formulas you own"]
+        }
+      ]
+    },
+    {
+      "title": "Projects",
+      "topics": [
+        {
+          "n": 64,
+          "title": "Project: messy export → report (with AI)",
+          "lesson": null,
+          "covers": ["Clean, summarise and present a real export"]
+        },
+        {
+          "n": 65,
+          "title": "Project: budget & expense tracker",
+          "lesson": null,
+          "covers": ["Build a monthly tracker you'll actually use"]
+        },
+        {
+          "n": 66,
+          "title": "Project: interactive dashboard",
+          "lesson": null,
+          "covers": ["Pivots, charts and slicers on one page"]
+        },
+        {
+          "n": 67,
+          "title": "Final Exam & Certificate",
+          "lesson": null,
+          "covers": ["Mixed tasks from every level"]
+        }
+      ]
+    }
+  ]
+}

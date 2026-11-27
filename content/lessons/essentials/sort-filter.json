@@ -1,0 +1,243 @@
+{
+  "id": "sort-filter",
+  "module": "essentials",
+  "title": "Sort & Filter: find what matters",
+  "goal": "Sort a list smallest-to-largest or largest-to-smallest without scrambling rows, switch filters on and off with one key, and avoid the classic trap of totalling hidden rows.",
+  "difficulty": 1,
+  "requiredCorrect": 8,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Reorder or hide",
+      "text": "Two questions come up every day: **“Who sold the most?”** and **“Show me only Pune.”**\n\n**Sort** reorders whole rows. **Filter** hides the rows you don't need right now.\n\nNeither one deletes anything, so you can always undo or clear them.",
+      "grid": [
+        ["Rep", "City", "Sales"],
+        ["Asha", "Pune", 4200],
+        ["Ben", "Delhi", 6100],
+        ["Chitra", "Pune", 3500],
+        ["Dev", "Mumbai", 7800],
+        ["Esha", "Delhi", 2900],
+        ["Farhan", "Pune", 5400]
+      ],
+      "activeCell": "C3"
+    },
+    {
+      "id": "s2",
+      "type": "mcq",
+      "topic": "The classic mistake",
+      "prompt": "You select **only column C** (Sales) and sort it smallest to largest, and you tell Excel to sort just your selection.\n\nWhat goes wrong?",
+      "grid": [
+        ["Rep", "City", "Sales"],
+        ["Asha", "Pune", 4200],
+        ["Ben", "Delhi", 6100],
+        ["Chitra", "Pune", 3500],
+        ["Dev", "Mumbai", 7800],
+        ["Esha", "Delhi", 2900],
+        ["Farhan", "Pune", 5400]
+      ],
+      "highlightCells": ["C2:C7"],
+      "options": [
+        "Nothing; the sales get sorted",
+        "The sales move but the names don't, so every row is now wrong",
+        "Excel deletes columns A and B"
+      ],
+      "answer": 1,
+      "explain": "Asha would end up next to Esha's 2900. That's how real reports get ruined. Fix: **click one cell** in the column and sort. Excel then moves whole rows together.",
+      "wrongFeedback": [
+        "The numbers do get sorted, but look at what's next to them afterwards.",
+        null,
+        "Nothing is deleted, but something worse happens."
+      ],
+      "clues": ["Who would 2900 belong to after the sort?"]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Sort A → Z",
+      "prompt": "You're on one cell in Sales, which is all you need.\n\nExcel's ribbon has a key for every button. Tap these **one after another** (don't hold them): [[Alt]], [[A]], [[S]], [[A]]. That's **Data → Sort → Ascending**, smallest first.",
+      "keys": { "win": ["Alt", "A", "S", "A"], "mac": null },
+      "grid": [
+        ["Rep", "City", "Sales"],
+        ["Asha", "Pune", 4200],
+        ["Ben", "Delhi", 6100],
+        ["Chitra", "Pune", 3500],
+        ["Dev", "Mumbai", 7800],
+        ["Esha", "Delhi", 2900],
+        ["Farhan", "Pune", 5400]
+      ],
+      "activeCell": "C3",
+      "postcondition": {
+        "grid": [
+          ["Rep", "City", "Sales"],
+          ["Esha", "Delhi", 2900],
+          ["Chitra", "Pune", 3500],
+          ["Asha", "Pune", 4200],
+          ["Farhan", "Pune", 5400],
+          ["Ben", "Delhi", 6100],
+          ["Dev", "Mumbai", 7800]
+        ],
+        "selection": "C2"
+      },
+      "clues": ["Press and release Alt, then A, then S, then A."]
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Sort Z → A",
+      "prompt": "Your manager wants the **top seller first**. Same keys, but finish with **D** for **descending**: [[Alt]], [[A]], [[S]], [[D]].",
+      "keys": { "win": ["Alt", "A", "S", "D"], "mac": null },
+      "grid": [
+        ["Rep", "City", "Sales"],
+        ["Esha", "Delhi", 2900],
+        ["Chitra", "Pune", 3500],
+        ["Asha", "Pune", 4200],
+        ["Farhan", "Pune", 5400],
+        ["Ben", "Delhi", 6100],
+        ["Dev", "Mumbai", 7800]
+      ],
+      "activeCell": "C4",
+      "postcondition": {
+        "grid": [
+          ["Rep", "City", "Sales"],
+          ["Dev", "Mumbai", 7800],
+          ["Ben", "Delhi", 6100],
+          ["Farhan", "Pune", 5400],
+          ["Asha", "Pune", 4200],
+          ["Chitra", "Pune", 3500],
+          ["Esha", "Delhi", 2900]
+        ],
+        "selection": "C2"
+      },
+      "clues": ["Alt, A, S, then D."]
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Filters on: Ctrl + Shift + L",
+      "prompt": "Now filtering. Press [[Ctrl]] + [[Shift]] + [[L]] and a small ▾ button appears on every header. Click one to pick what to show.",
+      "keys": { "win": "Ctrl+Shift+L", "mac": "Shift+Cmd+F" },
+      "grid": [
+        ["Rep", "City", "Sales"],
+        ["Dev", "Mumbai", 7800],
+        ["Ben", "Delhi", 6100],
+        ["Farhan", "Pune", 5400],
+        ["Asha", "Pune", 4200],
+        ["Chitra", "Pune", 3500],
+        ["Esha", "Delhi", 2900]
+      ],
+      "activeCell": "B3",
+      "postcondition": {
+        "selection": "A1:C1",
+        "format": { "A1:C1": ["bold", "border"] }
+      },
+      "clues": ["Hold Ctrl and Shift, tap L. Press it again later to turn filters off."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Where did they go?",
+      "prompt": "You filter City to **Pune**. Now the sheet shows only Farhan, Asha and Chitra, and the row numbers jump: 1, 4, 5, 6.\n\nWhat happened to the other rows?",
+      "grid": [
+        ["Rep", "City", "Sales"],
+        ["Farhan", "Pune", 5400],
+        ["Asha", "Pune", 4200],
+        ["Chitra", "Pune", 3500]
+      ],
+      "options": [
+        "They were deleted",
+        "They're hidden; clear the filter to bring them back",
+        "They moved to a new sheet"
+      ],
+      "answer": 1,
+      "explain": "Filtered rows are only **hidden**. The tell-tale signs are blue row numbers that skip. Press [[Ctrl]] + [[Shift]] + [[L]] again (or choose **Clear Filter**) and everything is back.",
+      "wrongFeedback": [
+        "Filters never delete. That's why they're safe to play with.",
+        null,
+        "They're still on this sheet, just out of sight."
+      ],
+      "clues": ["Why would the row numbers skip?"]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "The hidden-rows trap",
+      "prompt": "With only Pune showing, a SUM under the list still says **29,900**, but the three Pune rows add up to **13,100**.\n\nWhy?",
+      "grid": [
+        ["Rep", "City", "Sales"],
+        ["Farhan", "Pune", 5400],
+        ["Asha", "Pune", 4200],
+        ["Chitra", "Pune", 3500],
+        ["Total", null, 29900]
+      ],
+      "activeCell": "C5",
+      "yellowCells": ["C5"],
+      "options": [
+        "SUM still adds the hidden rows",
+        "The filter broke the formula",
+        "Excel adds the header too"
+      ],
+      "answer": 0,
+      "explain": "**SUM counts hidden rows.** For a quick visible-only total, select the cells and read the **Sum** in the bottom-right status bar, or turn the list into a Table and use its Total Row, which ignores hidden rows.",
+      "wrongFeedback": [
+        null,
+        "The formula is fine; it's doing exactly what SUM always does.",
+        "SUM skips text, so the header adds nothing."
+      ],
+      "clues": ["Hidden isn't the same as gone."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Sort by two things",
+      "prompt": "You want the list grouped **by City**, and within each city, **biggest sales first**. Where do you do that?",
+      "options": [
+        "Sort Sales, then sort City, and hope",
+        "Data → Sort (the big button), then add a second level",
+        "It can't be done in Excel"
+      ],
+      "answer": 1,
+      "explain": "The big **Sort** button opens a box where you list levels: **Sort by** City, **then by** Sales, largest to smallest. One click, no guessing.",
+      "wrongFeedback": [
+        "That can work if you get the order exactly right, but it's easy to get backwards. There's a clearer way.",
+        null,
+        "It's built in, and very common."
+      ],
+      "clues": ["Look for “Add Level”."]
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Challenge",
+      "prompt": "The biggest orders should be at the top. You're in the Amount column.\n\nSort it largest to smallest using the ribbon keys.",
+      "keys": { "win": ["Alt", "A", "S", "D"], "mac": null },
+      "grid": [
+        ["Order", "Customer", "Amount"],
+        [2001, "Lata", 850],
+        [2002, "Manoj", 2400],
+        [2003, "Nisha", 1200],
+        [2004, "Om", 300],
+        [2005, "Parul", 1750]
+      ],
+      "activeCell": "C2",
+      "postcondition": {
+        "grid": [
+          ["Order", "Customer", "Amount"],
+          [2002, "Manoj", 2400],
+          [2005, "Parul", 1750],
+          [2003, "Nisha", 1200],
+          [2001, "Lata", 850],
+          [2004, "Om", 300]
+        ],
+        "selection": "C2"
+      },
+      "clues": ["Descending ends with D."]
+    }
+  ]
+}

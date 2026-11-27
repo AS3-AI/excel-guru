@@ -13,7 +13,7 @@
     {
       "name": "criteria",
       "required": true,
-      "text": "The condition that determines which cells to add, such as \">50\", 10, or \"Bread\"."
+      "text": "The condition that determines which cells to add, such as \"\u003e50\", 10, or \"Bread\"."
     },
     {
       "name": "sum_range",
@@ -37,7 +37,7 @@
         ["Plate", 45],
         ["Total", null]
       ],
-      "formula": "=SUMIF(B2:B5,\">50\")",
+      "formula": "=SUMIF(B2:B5,\"\u003e50\")",
       "result": 150
     },
     {
@@ -56,12 +56,9 @@
     },
     {
       "heading": "Common mistake: missing quotes around operators",
-      "text": "When your criteria uses comparison operators such as `>`, `<`, or `<>`, you must enclose both the operator and the number in quotation marks, like `\">50\"`. Writing `=SUMIF(B2:B5, >50)` without quotes causes a syntax error. To combine an operator with a cell reference such as `C1`, join them with an ampersand: `\">\"&C1`."
+      "text": "When your criteria uses comparison operators such as `\u003e`, `\u003c`, or `\u003c\u003e`, you must enclose both the operator and the number in quotation marks, like `\"\u003e50\"`. Writing `=SUMIF(B2:B5, \u003e50)` without quotes causes a syntax error. To combine an operator with a cell reference such as `C1`, join them with an ampersand: `\"\u003e\"\u0026C1`."
     }
   ],
-  "lessonId": "sum-3",
-  "related": [
-    "sum",
-    "countif"
-  ]
+  "lessonId": "intro",
+  "related": ["sum", "countif"]
 }

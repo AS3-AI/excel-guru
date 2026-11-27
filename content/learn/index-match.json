@@ -33,32 +33,14 @@
     },
     {
       "heading": "A basic lookup example",
-      "text": "Here is a menu price list for a café. The formula in cell `B6` uses `MATCH` to find Mocha in the drink list, then uses `INDEX` to return its price from the price column.",
+      "text": "Here is a menu price list for a cafÃ©. The formula in cell `B6` uses `MATCH` to find Mocha in the drink list, then uses `INDEX` to return its price from the price column.",
       "grid": [
-        [
-          "Drink",
-          "Price"
-        ],
-        [
-          "Latte",
-          4
-        ],
-        [
-          "Mocha",
-          5
-        ],
-        [
-          "Chai",
-          3
-        ],
-        [
-          "Espresso",
-          2
-        ],
-        [
-          "Mocha",
-          null
-        ]
+        ["Drink", "Price"],
+        ["Latte", 4],
+        ["Mocha", 5],
+        ["Chai", 3],
+        ["Espresso", 2],
+        ["Mocha", null]
       ],
       "formula": "=INDEX(B2:B5,MATCH(A6,A2:A5,0))",
       "result": 5
@@ -67,30 +49,12 @@
       "heading": "Look up to the left",
       "text": "`VLOOKUP` can only search columns to the right of your lookup value. `INDEX MATCH` does not have this limit. In this kitchen inventory, the item code is in column B and the item name is in column A. The formula in `A6` finds code `K-25` in column B and returns the item name from column A.",
       "grid": [
-        [
-          "Item",
-          "Code"
-        ],
-        [
-          "Apron",
-          "K-12"
-        ],
-        [
-          "Whisk",
-          "K-18"
-        ],
-        [
-          "Blender",
-          "K-25"
-        ],
-        [
-          "Timer",
-          "K-31"
-        ],
-        [
-          null,
-          "K-25"
-        ]
+        ["Item", "Code"],
+        ["Apron", "K-12"],
+        ["Whisk", "K-18"],
+        ["Blender", "K-25"],
+        ["Timer", "K-31"],
+        [null, "K-25"]
       ],
       "formula": "=INDEX(A2:A5,MATCH(B6,B2:B5,0))",
       "result": "Blender"
@@ -100,8 +64,6 @@
       "text": "A common mistake is using ranges that start or end on different rows. If your return range is `B2:B5` and your lookup range is `A1:A5`, `MATCH` counts from row 1 while `INDEX` counts from row 2. Every result will be shifted by one row. Always give both ranges the same starting row and length. In addition, always pass `0` as the third argument in `MATCH` to avoid unexpected approximate matches."
     }
   ],
-  "lessonId": "index-match-3",
-  "related": [
-    "sum"
-  ]
+  "lessonId": "intro",
+  "related": ["sum"]
 }

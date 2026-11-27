@@ -1,8 +1,31 @@
 import { describe, expect, it } from "vitest";
 import { ParseError, Sheet, TokenizeError } from "@excel-guru/engine";
 import {
-  addressOf, colLetter, colMinChars, editOutcome, formatValue, gridColumns, gridSize, inRects, isTypingKey, move, parseRef,
-  rawInput, rangeRef, refArea, sameGrid, selectionRef, tabStep,
+  addressOf,
+  autoSumFormula,
+  colLetter,
+  colMinChars,
+  editOutcome,
+  EMPTY_HISTORY,
+  enterStep,
+  formatValue,
+  gridColumns,
+  gridSize,
+  inRects,
+  isAutoSumKey,
+  isTypingKey,
+  move,
+  parseRef,
+  pushEdit,
+  rawInput,
+  rangeRef,
+  rebuildLoaded,
+  redoEdit,
+  refArea,
+  sameGrid,
+  selectionRef,
+  tabStep,
+  undoEdit,
 } from "./Grid";
 
 describe("colLetter / addressOf", () => {
@@ -96,7 +119,10 @@ describe("formatValue / rawInput", () => {
 });
 
 describe("isTypingKey", () => {
-  const k = (key: string, mods: Partial<{ ctrlKey: boolean; metaKey: boolean; altKey: boolean }> = {}) => ({
+  const k = (
+    key: string,
+    mods: Partial<{ ctrlKey: boolean; metaKey: boolean; altKey: boolean }> = {},
+  ) => ({
     key,
     ctrlKey: false,
     metaKey: false,
@@ -154,9 +180,17 @@ describe("editOutcome (an unchanged draft is never re-written)", () => {
 
 describe("sameGrid (when a new grid prop resets the sheet)", () => {
   it("is true for the same reference or an equal copy", () => {
-    const g = [[1, "a", null], [true, "=SUM(A1:A2)"]];
+    const g = [
+      [1, "a", null],
+      [true, "=SUM(A1:A2)"],
+    ];
     expect(sameGrid(g, g)).toBe(true);
-    expect(sameGrid(g, [[1, "a", null], [true, "=SUM(A1:A2)"]])).toBe(true);
+    expect(
+      sameGrid(g, [
+        [1, "a", null],
+        [true, "=SUM(A1:A2)"],
+      ]),
+    ).toBe(true);
     expect(sameGrid([], [])).toBe(true);
   });
   it("is false when any cell, row length or row count differs", () => {
@@ -170,13 +204,20 @@ describe("sameGrid (when a new grid prop resets the sheet)", () => {
 });
 
 describe("colMinChars (columns wide enough for the lesson's own text)", () => {
-  const fruit = [["Fruit", "Price"], ["Apples", 3], ["Bananas", 2], ["Cherries", 4]];
+  const fruit = [
+    ["Fruit", "Price"],
+    ["Apples", 3],
+    ["Bananas", 2],
+    ["Cherries", 4],
+  ];
   it("is the longest shown text per column, 0 for empty columns", () => {
     expect(colMinChars(new Sheet(fruit), gridSize(fruit))).toEqual([8, 5, 0, 0, 0, 0, 0]);
     expect(colMinChars(new Sheet([]), gridSize([]))).toEqual([0, 0, 0, 0, 0, 0, 0]);
   });
   it("measures what the cell shows, not what was typed", () => {
-    expect(colMinChars(new Sheet([[0.1 + 0.2, true, "=1/0", "=10*10"]]), { rows: 1, cols: 4 })).toEqual([3, 4, 7, 3]);
+    expect(
+      colMinChars(new Sheet([[0.1 + 0.2, true, "=1/0", "=10*10"]]), { rows: 1, cols: 4 }),
+    ).toEqual([3, 4, 7, 3]);
   });
   it("caps very long text so one column can't take over the grid", () => {
     const long = [["A very long product description indeed"]];
@@ -190,7 +231,9 @@ describe("gridColumns (the grid-template-columns value)", () => {
     expect(gridColumns([0, 0])).toBe("var(--eg-rowhead) minmax(0, 1fr) minmax(0, 1fr)");
   });
   it("gives text columns a minimum of their text plus the cell padding, sharing space equally", () => {
-    expect(gridColumns([8, 0])).toBe("var(--eg-rowhead) minmax(calc(8ch + 8px), 1fr) minmax(0, 1fr)");
+    expect(gridColumns([8, 0])).toBe(
+      "var(--eg-rowhead) minmax(calc(8ch + 8px), 1fr) minmax(0, 1fr)",
+    );
   });
 });
 
@@ -254,5 +297,143 @@ describe("refArea (where a coloured reference is outlined)", () => {
   });
   it("is null for a reference entirely off the grid", () => {
     expect(refArea(parseRef("Z99")!, size)).toBeNull();
+  });
+});
+
+describe("sheet edit history (undo, redo, reset)", () => {
+  const base = [
+    ["Supply", "In stock", "Pack total"],
+    ["Badges", 5, null],
+    ["Lanyards", 4, null],
+    ["007", 2, null],
+  ];
+
+  it("tracks edits, steps back with undo, restores with redo, and clears redo on a new edit", () => {
+    let h = pushEdit(EMPTY_HISTORY, { addr: "B2", pos: { row: 1, col: 1 }, input: "10" });
+    h = pushEdit(h, { addr: "C2", pos: { row: 1, col: 2 }, input: "=B2+B3" });
+    expect(h.past).toHaveLength(2);
+
+    const step1 = undoEdit(h);
+    expect(step1.undone?.addr).toBe("C2");
+    expect(step1.history.past).toHaveLength(1);
+    expect(step1.history.future).toHaveLength(1);
+
+    const step2 = undoEdit(step1.history);
+    expect(step2.undone?.addr).toBe("B2");
+    expect(step2.history.past).toHaveLength(0);
+    expect(step2.history.future).toHaveLength(2);
+    expect(undoEdit(step2.history).undone).toBeNull();
+
+    const r1 = redoEdit(step2.history);
+    expect(r1.redone?.input).toBe("10");
+    expect(r1.history.past).toHaveLength(1);
+
+    const branched = pushEdit(r1.history, { addr: "C2", pos: { row: 1, col: 2 }, input: "=B2+B4" });
+    expect(branched.future).toEqual([]);
+  });
+
+  it("rebuilds exact initial literals and recalculates dependent formulas on undo and redo", () => {
+    const edits = [
+      { addr: "B2", pos: { row: 1, col: 1 }, input: "10" },
+      { addr: "A4", pos: { row: 3, col: 0 }, input: "99" },
+      { addr: "C2", pos: { row: 1, col: 2 }, input: "=B2+B3" },
+    ];
+    const edited = rebuildLoaded(base, edits);
+    expect(edited.sheet.get("B2")).toBe(10);
+    expect(edited.sheet.get("A4")).toBe(99);
+    expect(edited.sheet.get("C2")).toBe(14);
+    expect(edited.literals.has("C2")).toBe(false);
+
+    const afterUndoOne = rebuildLoaded(base, edits.slice(0, 2));
+    expect(afterUndoOne.sheet.get("C2")).toBeNull();
+    expect(afterUndoOne.sheet.get("A4")).toBe(99);
+
+    const reset = rebuildLoaded(base, []);
+    expect(reset.sheet.get("B2")).toBe(5);
+    expect(reset.sheet.get("A4")).toBe("007");
+    expect(reset.sheet.get("C2")).toBeNull();
+    expect(reset.literals.has("A4")).toBe(true);
+  });
+});
+
+describe("enterStep", () => {
+  const size = { rows: 8, cols: 7 };
+  it("moves down when no Tab run is open", () => {
+    expect(enterStep({ row: 2, col: 1 }, null, false, size)).toEqual({ row: 3, col: 1 });
+  });
+  it("returns to the column the Tab run started in, one row down (Excel)", () => {
+    expect(enterStep({ row: 2, col: 3 }, 0, false, size)).toEqual({ row: 3, col: 0 });
+  });
+  it("Shift+Enter moves up and ignores the Tab run", () => {
+    expect(enterStep({ row: 2, col: 3 }, 0, true, size)).toEqual({ row: 1, col: 3 });
+  });
+  it("stays on the last row at the bottom edge", () => {
+    expect(enterStep({ row: 7, col: 2 }, 0, false, size)).toEqual({ row: 7, col: 0 });
+  });
+});
+
+describe("autoSumFormula", () => {
+  const budget = new Sheet([
+    ["Expense", "Amount"],
+    ["Rent", 1200],
+    ["Groceries", 350],
+    ["Transport", 90],
+    ["Total", null, null],
+  ]);
+  it("sums the run of numbers directly above, stopping at the header", () => {
+    expect(autoSumFormula(budget, { row: 4, col: 1 })).toBe("=SUM(B2:B4)");
+  });
+  it("sums numbers to the left when there are none above", () => {
+    const row = new Sheet([[5, 6, 7, null]]);
+    expect(autoSumFormula(row, { row: 0, col: 3 })).toBe("=SUM(A1:C1)");
+  });
+  it("names a single cell without a range", () => {
+    const one = new Sheet([["Head"], [4], [null]]);
+    expect(autoSumFormula(one, { row: 2, col: 0 })).toBe("=SUM(A2)");
+  });
+  it("counts a formula result as a number", () => {
+    const sub = new Sheet([[1], [2], ["=A1+A2"], [null]]);
+    expect(autoSumFormula(sub, { row: 3, col: 0 })).toBe("=SUM(A1:A3)");
+  });
+  it("leaves an empty SUM() when nothing is next to the cell", () => {
+    expect(autoSumFormula(budget, { row: 0, col: 4 })).toBe("=SUM()");
+  });
+  it("ignores the cell itself, so it can replace an existing total", () => {
+    const withTotal = new Sheet([[1], [2], ["=A1+A2"]]);
+    expect(autoSumFormula(withTotal, { row: 2, col: 0 })).toBe("=SUM(A1:A2)");
+  });
+});
+
+describe("isAutoSumKey", () => {
+  const k = (
+    o: Partial<{
+      key: string;
+      code: string;
+      altKey: boolean;
+      ctrlKey: boolean;
+      metaKey: boolean;
+      shiftKey: boolean;
+    }>,
+  ) => ({
+    key: "",
+    code: "",
+    altKey: false,
+    ctrlKey: false,
+    metaKey: false,
+    shiftKey: false,
+    ...o,
+  });
+  it("accepts Alt+= on Windows", () => {
+    expect(isAutoSumKey(k({ key: "=", code: "Equal", altKey: true }))).toBe(true);
+  });
+  it("accepts Option+= on a Mac, which types ≠", () => {
+    expect(isAutoSumKey(k({ key: "≠", code: "Equal", altKey: true }))).toBe(true);
+  });
+  it("accepts Cmd+Shift+T, Excel for Mac's AutoSum", () => {
+    expect(isAutoSumKey(k({ key: "T", code: "KeyT", metaKey: true, shiftKey: true }))).toBe(true);
+  });
+  it("rejects a plain = and Ctrl+Alt+= (AltGr layouts)", () => {
+    expect(isAutoSumKey(k({ key: "=", code: "Equal" }))).toBe(false);
+    expect(isAutoSumKey(k({ key: "=", code: "Equal", altKey: true, ctrlKey: true }))).toBe(false);
   });
 });

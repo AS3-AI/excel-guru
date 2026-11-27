@@ -8,7 +8,7 @@
     {
       "name": "logical_test",
       "required": true,
-      "text": "A condition that evaluates to TRUE or FALSE, such as `B2>=50` or `A2=\"Done\"`."
+      "text": "A condition that evaluates to TRUE or FALSE, such as `B2\u003e=50` or `A2=\"Done\"`."
     },
     {
       "name": "value_if_true",
@@ -35,7 +35,7 @@
         ["INV-102", 35, "Overdue"],
         ["INV-103", 21, null]
       ],
-      "formula": "=IF(B4<=30,\"On time\",\"Overdue\")",
+      "formula": "=IF(B4\u003c=30,\"On time\",\"Overdue\")",
       "result": "On time"
     },
     {
@@ -47,16 +47,14 @@
         ["#202", 2, 5],
         ["#203", 3, null]
       ],
-      "formula": "=IF(B4>=5,0,5)",
+      "formula": "=IF(B4\u003e=5,0,5)",
       "result": 5
     },
     {
       "heading": "Common mistake: missing quotes around text",
-      "text": "If you write `=IF(B2>=50,Pass,Fail)` without quotes, Excel looks for named ranges called `Pass` and `Fail`. When it cannot find them, it returns a `#NAME?` error. Always put text outputs in double quotes, such as `\"Pass\"` and `\"Fail\"`. Cell references and numbers do not use quotes."
+      "text": "If you write `=IF(B2\u003e=50,Pass,Fail)` without quotes, Excel looks for named ranges called `Pass` and `Fail`. When it cannot find them, it returns a `#NAME?` error. Always put text outputs in double quotes, such as `\"Pass\"` and `\"Fail\"`. Cell references and numbers do not use quotes."
     }
   ],
-  "lessonId": "logical-3",
-  "related": [
-    "sum"
-  ]
+  "lessonId": "intro",
+  "related": ["sum"]
 }

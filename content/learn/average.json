@@ -3,10 +3,18 @@
   "fn": "AVERAGE",
   "title": "How to use AVERAGE in Excel",
   "description": "Learn how to calculate averages in Excel with the AVERAGE function. See clear examples, avoid common mistakes, and practice hands-on.",
-  "syntax": "=AVERAGE(number1, [number2], …)",
+  "syntax": "=AVERAGE(number1, [number2], â€¦)",
   "args": [
-    { "name": "number1", "required": true, "text": "The first number, cell reference, or range to average." },
-    { "name": "number2", "required": false, "text": "More numbers, references, or ranges to include in the average." }
+    {
+      "name": "number1",
+      "required": true,
+      "text": "The first number, cell reference, or range to average."
+    },
+    {
+      "name": "number2",
+      "required": false,
+      "text": "More numbers, references, or ranges to include in the average."
+    }
   ],
   "sections": [
     {
@@ -35,8 +43,6 @@
       "text": "Excel ignores empty cells, but it counts cells that contain `0`. If you enter `0` for a missed day, it pulls the average down. Leave the cell blank if you want Excel to skip it. Also note that a range with no numbers returns a `#DIV/0!` error."
     }
   ],
-  "lessonId": "statistical-1",
-  "related": [
-    "sum"
-  ]
+  "lessonId": "intro",
+  "related": ["sum"]
 }

@@ -1,9 +1,15 @@
-import { ParseError, Sheet, TokenizeError, type CellValue } from "@excel-guru/engine";
+import { ParseError, Sheet, TokenizeError, tokenize, type CellValue } from "@excel-guru/engine";
 import type { FormulaStep } from "./types";
 
 export type GradeResult = {
   correct: boolean;
-  reason?: "not_formula" | "parse_error" | "wrong_value" | "missing_function";
+  reason?:
+    | "not_formula"
+    | "parse_error"
+    | "wrong_value"
+    | "missing_function"
+    | "disallowed_function"
+    | "missing_reference";
 };
 
 const TOLERANCE = 1e-9;
@@ -13,7 +19,7 @@ export const LESSON_TODAY = "2026-01-15";
 
 /**
  * Grades a learner's formula on a fresh sheet built from the step's grid.
- * Order: not_formula → parse_error → wrong_value → missing_function.
+ * Order: not_formula → parse_error → wrong_value → missing_function → disallowed_function → missing_reference.
  */
 export function gradeFormulaStep(step: FormulaStep, input: string): GradeResult {
   if (!input.startsWith("=")) return { correct: false, reason: "not_formula" };
@@ -47,8 +53,39 @@ export function gradeFormulaStep(step: FormulaStep, input: string): GradeResult 
   if ((step.mustUse ?? []).some((n) => !used.has(n.toUpperCase()))) {
     return { correct: false, reason: "missing_function" };
   }
+  if (step.disallowFunctions && used.size > 0) {
+    return { correct: false, reason: "disallowed_function" };
+  }
+
+  if (step.mustReference?.length) {
+    const refs = formulaReferences(input);
+    const missing = step.mustReference.some((req) => !refs.has(normalizeRef(req)));
+    if (missing) return { correct: false, reason: "missing_reference" };
+  }
 
   return { correct: true };
+}
+
+function normalizeRef(ref: string): string {
+  return ref.replace(/[\s$]/g, "").toUpperCase();
+}
+
+/** Standalone cell references and range references present in a formula, uppercased without $. */
+function formulaReferences(formula: string): Set<string> {
+  const out = new Set<string>();
+  const toks = tokenize(formula);
+  for (let i = 0; i < toks.length; i++) {
+    const t = toks[i]!;
+    const next = toks[i + 1];
+    const end = toks[i + 2];
+    if (t.type === "REF" && next?.type === "COLON" && end?.type === "REF") {
+      out.add(`${normalizeRef(t.value)}:${normalizeRef(end.value)}`);
+      i += 2;
+    } else if (t.type === "REF") {
+      out.add(normalizeRef(t.value));
+    }
+  }
+  return out;
 }
 
 /** Finds cells filled by a spill using only the frozen Sheet API and the original grid. */
@@ -62,7 +99,8 @@ function spillValues(before: Sheet, after: Sheet, target: string): Map<string, C
       const address = cellName(row, col);
       const previous = before.get(address);
       const current = after.get(address);
-      if (previous === null && current !== null) out.set(`${row - anchor.row},${col - anchor.col}`, current);
+      if (previous === null && current !== null)
+        out.set(`${row - anchor.row},${col - anchor.col}`, current);
     }
   }
   return out;

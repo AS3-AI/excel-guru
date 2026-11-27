@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { gradeFormulaStep, type FormulaStep, type GradeResult, type Lesson, type Step } from "../src/index";
+import {
+  gradeFormulaStep,
+  type FormulaStep,
+  type GradeResult,
+  type Lesson,
+  type Step,
+} from "../src/index";
 
 const grid = [
   ["Item", "Qty"],
@@ -24,25 +30,86 @@ const fail = (reason: GradeResult["reason"]): GradeResult => ({ correct: false, 
 
 // The Product spec §5 example, verbatim in shape: it must typecheck as a Lesson.
 const countLesson = {
-  id: "count-1", module: "count", title: "COUNT Function",
-  difficulty: 1, requiredCorrect: 6, isIntro: false, video: null,
+  id: "count-1",
+  module: "count",
+  title: "COUNT Function",
+  difficulty: 1,
+  requiredCorrect: 6,
+  isIntro: false,
+  video: null,
   steps: [
-    { id: "s1", type: "select", prompt: "Click cell B2.",
-      grid: [["Item", "Qty"], ["Pens", 12], ["Tape", "n/a"], ["Clips", 40], ["Glue", 7], ["Ink", 3]], target: "B2" },
-    { id: "s2", type: "formula", prompt: "In C2, count the numbers in B2:B6.",
-      grid: [["Item", "Qty"], ["Pens", 12], ["Tape", "n/a"], ["Clips", 40], ["Glue", 7], ["Ink", 3]],
-      targetCell: "C2", expectedValue: 4, mustUse: ["COUNT"], solution: "=COUNT(B2:B6)",
+    {
+      id: "s1",
+      type: "select",
+      prompt: "Click cell B2.",
+      grid: [
+        ["Item", "Qty"],
+        ["Pens", 12],
+        ["Tape", "n/a"],
+        ["Clips", 40],
+        ["Glue", 7],
+        ["Ink", 3],
+      ],
+      target: "B2",
+    },
+    {
+      id: "s2",
+      type: "formula",
+      prompt: "In C2, count the numbers in B2:B6.",
+      grid: [
+        ["Item", "Qty"],
+        ["Pens", 12],
+        ["Tape", "n/a"],
+        ["Clips", 40],
+        ["Glue", 7],
+        ["Ink", 3],
+      ],
+      targetCell: "C2",
+      expectedValue: 4,
+      mustUse: ["COUNT"],
+      solution: "=COUNT(B2:B6)",
       explain: "COUNT counts cells that hold numbers, so the text in B3 is skipped.",
-      highlightCells: ["B2:B6"], mobileButtons: ["(", ")", ":"] },
-    { id: "s3", type: "shortcut", mode: "chord", prompt: "Extend the selection one cell right.",
-      keys: { win: "Shift+ArrowRight", mac: "Shift+ArrowRight" }, activeCell: "B2",
-      postcondition: { selection: "B2:C2" } },
-    { id: "s4", type: "shortcut", mode: "sequence", prompt: "Make the text bold with key tips.",
-      keys: { win: ["Alt", "H", "1"], mac: null }, pics: ["r0.png", "r1.png", "r2.png", "r3.png"] },
-    { id: "s5", type: "mcq", prompt: "Which function counts only cells that contain numbers?",
-      options: ["COUNTA", "COUNT", "COUNTBLANK"], answer: 1 },
-    { id: "s6", type: "picture", prompt: "Which function is shown?", image: "q.png", accept: ["sumif"] },
-    { id: "s7", type: "project", prompt: "What is the total in cell F20?", file: "dataset.xlsx", accept: ["1840"] },
+      highlightCells: ["B2:B6"],
+      mobileButtons: ["(", ")", ":"],
+    },
+    {
+      id: "s3",
+      type: "shortcut",
+      mode: "chord",
+      prompt: "Extend the selection one cell right.",
+      keys: { win: "Shift+ArrowRight", mac: "Shift+ArrowRight" },
+      activeCell: "B2",
+      postcondition: { selection: "B2:C2" },
+    },
+    {
+      id: "s4",
+      type: "shortcut",
+      mode: "sequence",
+      prompt: "Make the text bold with key tips.",
+      keys: { win: ["Alt", "H", "1"], mac: null },
+      pics: ["r0.png", "r1.png", "r2.png", "r3.png"],
+    },
+    {
+      id: "s5",
+      type: "mcq",
+      prompt: "Which function counts only cells that contain numbers?",
+      options: ["COUNTA", "COUNT", "COUNTBLANK"],
+      answer: 1,
+    },
+    {
+      id: "s6",
+      type: "picture",
+      prompt: "Which function is shown?",
+      image: "q.png",
+      accept: ["sumif"],
+    },
+    {
+      id: "s7",
+      type: "project",
+      prompt: "What is the total in cell F20?",
+      file: "dataset.xlsx",
+      accept: ["1840"],
+    },
     { id: "s8", type: "info", text: "COUNT ignores text and blanks." },
   ],
 } satisfies Lesson;
@@ -66,7 +133,9 @@ describe("gradeFormulaStep: Done-when cases", () => {
   });
 
   it("=B2+B3+B4 fails with missing_function when mustUse is [SUM]", () => {
-    expect(gradeFormulaStep(step({ mustUse: ["SUM"] }), "=B2+B3+B4")).toEqual(fail("missing_function"));
+    expect(gradeFormulaStep(step({ mustUse: ["SUM"] }), "=B2+B3+B4")).toEqual(
+      fail("missing_function"),
+    );
   });
 
   it("the Product spec §5 COUNT step passes with =COUNT(B2:B6)", () => {
@@ -95,6 +164,20 @@ describe("gradeFormulaStep: Done-when cases", () => {
 
   it('"=1/0" matches expectedValue {error: "#DIV/0!"}', () => {
     expect(gradeFormulaStep(step({ expectedValue: { error: "#DIV/0!" } }), "=1/0")).toEqual(pass);
+  });
+
+  it("rejects hardcoded numbers with missing_reference when mustReference is set", () => {
+    const refStep = step({
+      expectedValue: 17,
+      mustReference: ["B2", "B3"],
+      disallowFunctions: true,
+      solution: "=B2+B3",
+    });
+    expect(gradeFormulaStep(refStep, "=12+5")).toEqual(fail("missing_reference"));
+    expect(gradeFormulaStep(refStep, "=B2+5")).toEqual(fail("missing_reference"));
+    expect(gradeFormulaStep(refStep, "=SUM(B2:B3)")).toEqual(fail("disallowed_function"));
+    expect(gradeFormulaStep(refStep, "=b2+b3")).toEqual(pass);
+    expect(gradeFormulaStep(refStep, "=B3+B2")).toEqual(pass);
   });
 });
 
@@ -162,7 +245,9 @@ describe("gradeFormulaStep: value compare", () => {
   });
 
   it("numbers further apart than 1e-9 do not match", () => {
-    expect(gradeFormulaStep(step({ expectedValue: 1 }), "=1+0.00000001")).toEqual(fail("wrong_value"));
+    expect(gradeFormulaStep(step({ expectedValue: 1 }), "=1+0.00000001")).toEqual(
+      fail("wrong_value"),
+    );
   });
 
   it("strings match exactly", () => {
@@ -170,7 +255,9 @@ describe("gradeFormulaStep: value compare", () => {
   });
 
   it("strings are case-sensitive", () => {
-    expect(gradeFormulaStep(step({ expectedValue: "penstape" }), "=A2&A3")).toEqual(fail("wrong_value"));
+    expect(gradeFormulaStep(step({ expectedValue: "penstape" }), "=A2&A3")).toEqual(
+      fail("wrong_value"),
+    );
   });
 
   it("booleans match exactly", () => {
@@ -179,7 +266,9 @@ describe("gradeFormulaStep: value compare", () => {
   });
 
   it("errors compare by code", () => {
-    expect(gradeFormulaStep(step({ expectedValue: { error: "#N/A" } }), "=1/0")).toEqual(fail("wrong_value"));
+    expect(gradeFormulaStep(step({ expectedValue: { error: "#N/A" } }), "=1/0")).toEqual(
+      fail("wrong_value"),
+    );
   });
 
   it("an error result never matches a number", () => {
@@ -187,7 +276,9 @@ describe("gradeFormulaStep: value compare", () => {
   });
 
   it("number vs numeric string is a type mismatch", () => {
-    expect(gradeFormulaStep(step({ expectedValue: "57" }), "=SUM(B2:B4)")).toEqual(fail("wrong_value"));
+    expect(gradeFormulaStep(step({ expectedValue: "57" }), "=SUM(B2:B4)")).toEqual(
+      fail("wrong_value"),
+    );
     expect(gradeFormulaStep(step({ expectedValue: 57 }), '="57"')).toEqual(fail("wrong_value"));
   });
 
@@ -225,22 +316,40 @@ describe("lesson types", () => {
   it("the Product spec §5 example is a Lesson with every step type", () => {
     const steps: Step[] = countLesson.steps;
     expect(steps.map((s) => s.type)).toEqual([
-      "select", "formula", "shortcut", "shortcut", "mcq", "picture", "project", "info",
+      "select",
+      "formula",
+      "shortcut",
+      "shortcut",
+      "mcq",
+      "picture",
+      "project",
+      "info",
     ]);
   });
 });
 
 describe("gradeFormulaStep: dynamic array spills", () => {
   const arrayStep: FormulaStep = {
-    id: "spill", type: "formula", prompt: "Return unique items.",
-    grid: [["A"], ["B"], ["A"], ["C"]], targetCell: "B1",
-    expectedValue: "A", solution: "=UNIQUE(A1:A4)",
+    id: "spill",
+    type: "formula",
+    prompt: "Return unique items.",
+    grid: [["A"], ["B"], ["A"], ["C"]],
+    targetCell: "B1",
+    expectedValue: "A",
+    solution: "=UNIQUE(A1:A4)",
   };
 
   it("rejects a spilled answer when the step expects one value", () => {
     const scalar = step({
-      grid: [[0, 0, 0], [0, 2, 3], [0, 4, 5], [0, 6, 7]],
-      targetCell: "D2", expectedValue: 6, solution: "=B2*C2",
+      grid: [
+        [0, 0, 0],
+        [0, 2, 3],
+        [0, 4, 5],
+        [0, 6, 7],
+      ],
+      targetCell: "D2",
+      expectedValue: 6,
+      solution: "=B2*C2",
     });
     expect(gradeFormulaStep(scalar, "=B2:B4*C2:C4")).toEqual(fail("wrong_value"));
     expect(gradeFormulaStep(scalar, "=B2*C2")).toEqual(pass);
