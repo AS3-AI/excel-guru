@@ -1,0 +1,333 @@
+{
+  "id": "conditional-format-formulas",
+  "module": "visual",
+  "title": "Conditional Formatting with Formulas",
+  "goal": "Colour whole rows with a TRUE/FALSE rule, pin the right part with $, flag overdue dates, and make rules look at other cells.",
+  "difficulty": 2,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Colour the whole row",
+      "text": "The rules from the last lesson colour one cell at a time. But often you want the **whole row** coloured, like every Overdue invoice here: ==A2:D2== and ==A5:D5==.\n\nFor that you write a **formula rule**: a test that gives TRUE or FALSE. Excel colours every cell where the test is TRUE. The test can look at other columns, or at a date in another cell.\n\nThe one thing to get exactly right is a **$** sign. You'll see why.",
+      "grid": [
+        ["Invoice", "Client", "Status", "Amount", "Rule test"],
+        ["INV-201", "Meera", "Overdue", 850, null],
+        ["INV-202", "Joseph", "Paid", 1200, null],
+        ["INV-203", "Kavya", "Pending", 400, null],
+        ["INV-204", "Omar", "Overdue", 2300, null],
+        ["INV-205", "Liam", "Paid", 760, null],
+        ["INV-206", "Priya", "Pending", 1500, null]
+      ],
+      "yellowCells": ["A2:D2", "A5:D5"],
+      "activeCell": "C2"
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Select first",
+      "prompt": "Select the cells to colour: the whole table body, **not** the header.\n\nClick ==A2==, drag to ==D7==, then press [[Enter]].",
+      "grid": [
+        ["Invoice", "Client", "Status", "Amount", "Rule test"],
+        ["INV-201", "Meera", "Overdue", 850, null],
+        ["INV-202", "Joseph", "Paid", 1200, null],
+        ["INV-203", "Kavya", "Pending", 400, null],
+        ["INV-204", "Omar", "Overdue", 2300, null],
+        ["INV-205", "Liam", "Paid", 760, null],
+        ["INV-206", "Priya", "Pending", 1500, null]
+      ],
+      "target": "A2:D7",
+      "wrongFeedback": "Start in `A2` and drag to `D7`: all four columns, six rows. The header stays out.",
+      "clues": ["Drag from the first invoice number to the last amount."],
+      "yellowCells": ["A2:D7"]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "New Rule",
+      "prompt": "Tap [[Alt]], [[H]], [[L]], [[N]] one after another: Home → Conditional Formatting → **New Rule**.\n\nIn the box that opens, pick the last type, **Use a formula to determine which cells to format**. On a Mac, click Home → Conditional Formatting → New Rule.",
+      "keys": {
+        "win": ["Alt", "H", "L", "N"],
+        "mac": null
+      },
+      "grid": [
+        ["Invoice", "Client", "Status", "Amount", "Rule test"],
+        ["INV-201", "Meera", "Overdue", 850, null],
+        ["INV-202", "Joseph", "Paid", 1200, null],
+        ["INV-203", "Kavya", "Pending", 400, null],
+        ["INV-204", "Omar", "Overdue", 2300, null],
+        ["INV-205", "Liam", "Paid", 760, null],
+        ["INV-206", "Priya", "Pending", 1500, null]
+      ],
+      "postcondition": {
+        "selection": "A2:D7"
+      },
+      "clues": ["Alt, then H, then L, then N. Tap them one at a time."],
+      "activeCell": "A2:D7"
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "The $ that pins the column",
+      "prompt": "Excel wants a test written for the **first row** of your selection (row 2). It repeats it on every other row for you.\n\nCheck it in ==E2==: type `=$C2=\"Overdue\"`. The `$` in front of `C` pins the column.",
+      "grid": [
+        ["Invoice", "Client", "Status", "Amount", "Rule test"],
+        ["INV-201", "Meera", "Overdue", 850, null],
+        ["INV-202", "Joseph", "Paid", 1200, null],
+        ["INV-203", "Kavya", "Pending", 400, null],
+        ["INV-204", "Omar", "Overdue", 2300, null],
+        ["INV-205", "Liam", "Paid", 760, null],
+        ["INV-206", "Priya", "Pending", 1500, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": true,
+      "solution": "=$C2=\"Overdue\"",
+      "explain": "**TRUE**, because `C2` says Overdue. Excel repeats the test down the rows (`C3`, `C4`…), but the `$` keeps the column on **C** for every cell in a row, so all four cells get the same verdict: the whole row is coloured.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Text in a formula goes in “straight” quotes: `\"Overdue\"`.",
+        "wrongValue": "Row 2's Status is in `C2`. Compare it to the word **Overdue**, in quotes.",
+        "missingReference": "The test must look at the Status cell, `C2`."
+      },
+      "mobileButtons": ["=", "$", "\"", "(", ")", ",", ">", "<"],
+      "clues": ["Type it exactly: `=$C2=\"Overdue\"`."],
+      "highlightCells": ["C2:C7"],
+      "mustReference": ["C2"],
+      "yellowCells": ["E2"],
+      "activeCell": "E2"
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Predict: forget the $",
+      "prompt": "A colleague writes `=C2=\"Overdue\"` with **no $** and applies it to `A2:D7`.\n\nWhat gets coloured?",
+      "options": [
+        "The whole Overdue rows, same as with the $",
+        "Only the Invoice cell (column A) of each Overdue row",
+        "Nothing at all"
+      ],
+      "answer": 1,
+      "explain": "Without `$`, the `C` slides right with the cell: column A checks `C`, column B checks `D`, column C checks `E`… Only column A looks at Status, so only the invoice numbers light up. That half-coloured row is the classic sign of a missing `$`.",
+      "wrongFeedback": [
+        "That's the job of the `$`. Without it, the `C` slides one column right for every cell you move across.",
+        null,
+        "Column A's cells do look at column C, so those cells do get coloured. Think about what B, C and D look at."
+      ],
+      "clues": ["Which column does the test look at for a cell in column B?"],
+      "grid": [
+        ["Invoice", "Client", "Status", "Amount", "Rule test"],
+        ["INV-201", "Meera", "Overdue", 850, null],
+        ["INV-202", "Joseph", "Paid", 1200, null],
+        ["INV-203", "Kavya", "Pending", 400, null],
+        ["INV-204", "Omar", "Overdue", 2300, null],
+        ["INV-205", "Liam", "Paid", 760, null],
+        ["INV-206", "Priya", "Pending", 1500, null]
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Two conditions",
+      "prompt": "The finance team only chases big debts: colour the row when the status is Overdue **and** the amount is over 1000.\n\nTest that rule for row 2 in ==E2==.",
+      "grid": [
+        ["Invoice", "Client", "Status", "Amount", "Rule test"],
+        ["INV-201", "Meera", "Overdue", 850, null],
+        ["INV-202", "Joseph", "Paid", 1200, null],
+        ["INV-203", "Kavya", "Pending", 400, null],
+        ["INV-204", "Omar", "Overdue", 2300, null],
+        ["INV-205", "Liam", "Paid", 760, null],
+        ["INV-206", "Priya", "Pending", 1500, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": false,
+      "solution": "=AND($C2=\"Overdue\",$D2>1000)",
+      "explain": "**FALSE**: Meera's invoice is Overdue, but 850 is not over 1000, and `AND` needs both parts TRUE. With `OR` her row would wrongly be coloured.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets, commas and quotes.",
+        "wrongValue": "Row 2 is Overdue, but is 850 over 1000? A row is coloured only if **both** tests pass.",
+        "missingFunction": "Join the two tests with `AND( , )` so both must be true.",
+        "missingReference": "Test the Status in `C2` and the Amount in `D2`."
+      },
+      "mobileButtons": ["=", "$", "\"", "(", ")", ",", ">", "<"],
+      "clues": [
+        "`AND(test1, test2)`: the status test, then the amount test.",
+        "Pin the columns with `$` in both tests."
+      ],
+      "mustUse": ["AND"],
+      "mustReference": ["C2", "D2"],
+      "highlightCells": ["C2:D2"],
+      "yellowCells": ["E2"],
+      "activeCell": "E2"
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Overdue dates",
+      "prompt": "Now **overdue dates**. A task is late when its due date is before today.\n\nPut today's date in one cell (`D2`) and compare against it. (In real sheets you'd use `TODAY()`.)\n\nTest row 2 in ==E2==: type `=$C2<$D$2`. Two dollars on `D2`: the rule slides down the rows, but today's date lives in **one** cell, so it must stay put.",
+      "grid": [
+        ["Task", "Owner", "Due", "Today", "Late?"],
+        ["Report", "Asha", "=DATE(2026,1,10)", "=DATE(2026,1,15)", null],
+        ["Invoices", "Ben", "=DATE(2026,1,15)", null, null],
+        ["Audit", "Chitra", "=DATE(2026,1,22)", null, null],
+        ["Payroll", "Dev", "=DATE(2026,1,12)", null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": true,
+      "solution": "=$C2<$D$2",
+      "explain": "**TRUE**: the Report was due 10 Jan and today is 15 Jan. `$D$2` stays on the same cell for every row, while `$C2` moves down with each row.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the symbols: `=$C2<$D$2`.",
+        "wrongValue": "Late means the due date is **before** today. Is `C2` smaller than `D2`?",
+        "missingReference": "Compare the due date `C2` with today's date in `D2`."
+      },
+      "mobileButtons": ["=", "$", "\"", "(", ")", ",", ">", "<"],
+      "clues": ["`<` means “is earlier than” for dates."],
+      "mustReference": ["C2", "D2"],
+      "highlightCells": ["C2", "D2"],
+      "yellowCells": ["E2"],
+      "activeCell": "E2"
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Due today is not late",
+      "prompt": "The Invoices task in row 3 is due on **15 Jan**, the same day as today.\n\nIs it overdue? Test row 3 in ==E3== with the same kind of rule.",
+      "grid": [
+        ["Task", "Owner", "Due", "Today", "Late?"],
+        ["Report", "Asha", "=DATE(2026,1,10)", "=DATE(2026,1,15)", null],
+        ["Invoices", "Ben", "=DATE(2026,1,15)", null, null],
+        ["Audit", "Chitra", "=DATE(2026,1,22)", null, null],
+        ["Payroll", "Dev", "=DATE(2026,1,12)", null, null]
+      ],
+      "targetCell": "E3",
+      "expectedValue": false,
+      "solution": "=$C3<$D$2",
+      "explain": "**FALSE**: a task due today isn't late yet, because 15 Jan is not before 15 Jan. Using `<=` here would colour it a day too early. Today's date stays pinned as `$D$2`; `D3` is empty.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the symbols: `<` and `$D$2`.",
+        "wrongValue": "Due today isn't late yet. Use “before” (`<`), not “before or equal” (`<=`).",
+        "missingReference": "Today's date lives only in `D2`. Pin it as `$D$2`."
+      },
+      "mobileButtons": ["=", "$", "\"", "(", ")", ",", ">", "<"],
+      "clues": ["Write it for row 3: `$C3`, but keep `$D$2` pinned."],
+      "mustReference": ["C3", "D2"],
+      "highlightCells": ["C3", "D2"],
+      "yellowCells": ["E3"],
+      "activeCell": "E3"
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Predict: a limit in a cell",
+      "prompt": "The rule `=$B2>$C$2` colours any department whose Spend is **over the limit** in `C2`. The limit is 4000 now, and `D2` counts the coloured rows (2).\n\nThe boss lowers the limit to **3000**. Before you change it: how many rows will be coloured?",
+      "options": ["3", "4", "5"],
+      "answer": 0,
+      "explain": "Over 3000: Sales (4200), IT (5000) and Admin (3800) = **3**. HR is exactly 3000, and “over” doesn't include it. Next, change the limit and see.",
+      "wrongFeedback": [
+        null,
+        "HR spends exactly 3000. That is not **over** 3000, so it isn't coloured.",
+        "Ops spends only 2600, and HR is exactly 3000. Neither is over the limit."
+      ],
+      "clues": ["Go down the Spend column: which are strictly bigger than 3000?"],
+      "grid": [
+        ["Dept", "Spend", "Limit", "Over limit"],
+        ["Sales", 4200, 4000, "=COUNTIF(B2:B6,\">\"&C2)"],
+        ["HR", 3000, null, null],
+        ["IT", 5000, null, null],
+        ["Ops", 2600, null, null],
+        ["Admin", 3800, null, null]
+      ],
+      "activeCell": "C2",
+      "yellowCells": ["C2"],
+      "highlightCells": ["D2"]
+    },
+    {
+      "id": "s10",
+      "type": "entry",
+      "topic": "Change one cell, change the colours",
+      "prompt": "A rule that points at a **cell** means you never edit the rule itself.\n\nClick ==C2==, type **3000**, press [[Enter]] and watch `D2`.",
+      "grid": [
+        ["Dept", "Spend", "Limit", "Over limit"],
+        ["Sales", 4200, 4000, "=COUNTIF(B2:B6,\">\"&C2)"],
+        ["HR", 3000, null, null],
+        ["IT", 5000, null, null],
+        ["Ops", 2600, null, null],
+        ["Admin", 3800, null, null]
+      ],
+      "expect": {
+        "C2": 3000,
+        "D2": 3
+      },
+      "explain": "One number changed and the count went from 2 to **3**. In Excel, those three rows would light up while the rule stayed untouched. Keep limits, targets and dates in a cell, never inside the rule.",
+      "clues": ["Change only `C2`."],
+      "activeCell": "A2",
+      "yellowCells": ["C2"],
+      "highlightCells": ["D2"]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "A real mistake: the row above",
+      "prompt": "Anita selected `A2:C7`, then wrote the rule `=$C3=\"Overdue\"`. The coloured rows are the ones **above** each Overdue row (yellow).\n\nWhat went wrong?",
+      "options": [
+        "The rule was written for row 3, but the selection starts at row 2",
+        "Excel always colours the row above",
+        "The $ should be on the row number"
+      ],
+      "answer": 0,
+      "explain": "The rule must be written for the **first row of the selection**. She selected from row 2 but typed row 3, so every row is testing the row **below** it. Fix: edit the rule to `=$C2=\"Overdue\"`.",
+      "wrongFeedback": [
+        null,
+        "Excel colours exactly the cells where the test is TRUE. The test itself was off by one.",
+        "A `$` on the row number would make every row test the same row. The problem is that the rule's row doesn't match the selection's first row."
+      ],
+      "clues": ["Which row does a cell in row 2 end up testing?"],
+      "grid": [
+        ["Task", "Owner", "Status"],
+        ["Pack", "Asha", "Done"],
+        ["Label", "Ben", "Done"],
+        ["Ship", "Chitra", "Overdue"],
+        ["Bill", "Dev", "Done"],
+        ["Audit", "Esha", "Overdue"],
+        ["Clean", "Farhan", "Done"]
+      ],
+      "yellowCells": ["A3:C3", "A5:C5"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A rule will colour the whole row when the Status is **Pending** and the Amount is **1000 or more**.\n\nHow many rows will be coloured? Put the answer in ==E2==.",
+      "grid": [
+        ["Invoice", "Client", "Status", "Amount", "Rows coloured"],
+        ["INV-301", "Neha", "Pending", 1000, null],
+        ["INV-302", "Tom", "Paid", 2500, null],
+        ["INV-303", "Ria", "Pending", 600, null],
+        ["INV-304", "Sam", "Pending", 1800, null],
+        ["INV-305", "Ali", "Overdue", 1400, null],
+        ["INV-306", "Zara", "Pending", 1000, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": 3,
+      "solution": "=COUNTIFS(C2:C7,\"Pending\",D2:D7,\">=1000\")",
+      "explain": "**3**: INV-301 (1000 counts), INV-304 and INV-306. Pending alone would give 4, and 1000-or-more alone 5.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets, commas and quotes.",
+        "wrongValue": "Both conditions must hold. Does exactly 1000 count? “1000 or more” says yes.",
+        "missingFunction": "Count rows that meet **two** conditions at once."
+      },
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "clues": ["Two conditions on two columns, both must be true."],
+      "mustUse": ["COUNTIFS"],
+      "activeCell": "A1"
+    }
+  ]
+}

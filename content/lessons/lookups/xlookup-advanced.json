@@ -1,0 +1,327 @@
+{
+  "id": "xlookup-advanced",
+  "module": "lookups",
+  "title": "XLOOKUP: across sheets & missing matches",
+  "goal": "Look up values on another sheet, show a friendly message when nothing matches, and use XLOOKUP's match modes to price discount and shipping bands.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Another sheet, same idea",
+      "text": "Real workbooks keep the price list on its **own sheet**, say one called **Prices**, and the orders on another. Your formula reaches across by putting the sheet name and a `!` in front of the range:\n\n`=XLOOKUP(A2,Prices!A:A,Prices!B:B)`\n\n• `Prices!A:A` means “column A, on the sheet named Prices”\n• A name with spaces needs quotes: `'Price List'!A:A`\n• Easiest way: while typing the formula, click the other sheet's tab and select the columns. Excel writes the name for you.\n\nThis practice grid can't switch sheets, so the price list sits **beside** the orders. Everything else works the same way.",
+      "grid": [
+        ["Code", "Qty", "Price", null, "Code", "Price"],
+        ["G103", 2, null, null, "G101", 60],
+        ["G105", 5, null, null, "G102", 120],
+        ["G199", 1, null, null, "G103", 150],
+        ["G101", 3, null, null, "G104", 45],
+        [null, null, null, null, "G105", 20],
+        [null, null, null, null, "G106", 55]
+      ],
+      "activeCell": "C2",
+      "yellowCells": ["E1:F7"]
+    },
+    {
+      "id": "s2",
+      "type": "mcq",
+      "topic": "Sheet names",
+      "prompt": "Orders are on one sheet. The codes and prices are on a sheet called **Prices** (codes in column A, prices in column B).\n\nWhich formula in ==C2== looks up the code in `A2` on that sheet?",
+      "grid": [
+        ["Code", "Qty", "Price", null, "Code", "Price"],
+        ["G103", 2, null, null, "G101", 60],
+        ["G105", 5, null, null, "G102", 120],
+        ["G199", 1, null, null, "G103", 150],
+        ["G101", 3, null, null, "G104", 45],
+        [null, null, null, null, "G105", 20],
+        [null, null, null, null, "G106", 55]
+      ],
+      "activeCell": "C2",
+      "yellowCells": ["C2"],
+      "options": [
+        "`=XLOOKUP(A2,Prices!A:A,Prices!B:B)`",
+        "`=XLOOKUP(A2,Prices!A:A,B:B)`",
+        "`=XLOOKUP(A2,Prices.A:A,Prices.B:B)`"
+      ],
+      "answer": 0,
+      "explain": "Each range carries its own sheet name and a `!`. In the second option the prices are read from column B of the **orders** sheet, which is the wrong place. A dot instead of `!` is not how Excel spells it.",
+      "wrongFeedback": [
+        null,
+        "Both ranges need the sheet name. Without it, Excel reads `B:B` from the sheet you're typing on.",
+        "Excel uses an exclamation mark `!`, not a dot."
+      ],
+      "clues": ["Every range that lives on the other sheet needs its own “Prices!” in front."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Whole columns",
+      "prompt": "Pretend the price list in `E:F` is on another sheet. Using **whole columns** means new codes added at the bottom are found without editing the formula.\n\nIn ==C2==, look up the code in `A2` and bring back its price. Type `E:E` and `F:F` for the two lists.",
+      "grid": [
+        ["Code", "Qty", "Price", null, "Code", "Price"],
+        ["G103", 2, null, null, "G101", 60],
+        ["G105", 5, null, null, "G102", 120],
+        ["G199", 1, null, null, "G103", 150],
+        ["G101", 3, null, null, "G104", 45],
+        [null, null, null, null, "G105", 20],
+        [null, null, null, null, "G106", 55]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "highlightCells": ["E:F"],
+      "yellowCells": ["C2"],
+      "expectedValue": 150,
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["A2"],
+      "solution": "=XLOOKUP(A2,E:E,F:F)",
+      "explain": "**150.** `E:E` means “all of column E”. The heading **Code** is in there too, but it can't match a code like G103, so it does no harm.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas: `=XLOOKUP(A2,E:E,F:F)`.",
+        "missingFunction": "Use **XLOOKUP**: the code, the code column, the price column.",
+        "wrongValue": "G103 should cost **150**. Search the codes (`E:E`) and bring back the prices (`F:F`)."
+      },
+      "clues": ["`=XLOOKUP(A2,E:E,F:F)`: the code, then the code column, then the price column."]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "Order 3 uses the code **G199**, which isn't on the price list. The same formula sits in `C4`.\n\nWhat will `C4` show?",
+      "grid": [
+        ["Code", "Qty", "Price", null, "Code", "Price"],
+        ["G103", 2, "=XLOOKUP(A2,E:E,F:F)", null, "G101", 60],
+        ["G105", 5, "=XLOOKUP(A3,E:E,F:F)", null, "G102", 120],
+        ["G199", 1, null, null, "G103", 150],
+        ["G101", 3, "=XLOOKUP(A5,E:E,F:F)", null, "G104", 45],
+        [null, null, null, null, "G105", 20],
+        [null, null, null, null, "G106", 55]
+      ],
+      "activeCell": "C4",
+      "yellowCells": ["A4", "C4"],
+      "options": ["`0`: Excel assumes no price", "`#N/A`: Excel can't find G199", "A blank cell"],
+      "answer": 1,
+      "explain": "When XLOOKUP finds nothing it shows **#N/A**, “not available”. It never guesses a price. That's honest, but ugly in a report you hand to your boss.",
+      "wrongFeedback": [
+        "Excel won't invent a 0. It tells you nothing was found.",
+        null,
+        "A formula never leaves its cell blank. It shows a result or an error."
+      ],
+      "clues": ["What does Excel do when the code isn't in the list?"]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Say “Not found”",
+      "prompt": "Replace the error with words. XLOOKUP has an optional **fourth part**: what to show if nothing matches.\n\nIn ==C4==, type `=XLOOKUP(A4,E:E,F:F,\"Not found\")`. The words go in quotes.",
+      "grid": [
+        ["Code", "Qty", "Price", null, "Code", "Price"],
+        ["G103", 2, "=XLOOKUP(A2,E:E,F:F)", null, "G101", 60],
+        ["G105", 5, "=XLOOKUP(A3,E:E,F:F)", null, "G102", 120],
+        ["G199", 1, null, null, "G103", 150],
+        ["G101", 3, "=XLOOKUP(A5,E:E,F:F)", null, "G104", 45],
+        [null, null, null, null, "G105", 20],
+        [null, null, null, null, "G106", 55]
+      ],
+      "targetCell": "C4",
+      "activeCell": "A4",
+      "highlightCells": ["A4"],
+      "yellowCells": ["C4"],
+      "expectedValue": "Not found",
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["A4"],
+      "solution": "=XLOOKUP(A4,E:E,F:F,\"Not found\")",
+      "explain": "**Not found.** Any other code still returns its price, and only a missing one shows your message. Tip: `=IFNA(XLOOKUP(A4,E:E,F:F),\"Not found\")` does the same, and you'll see that style in older workbooks.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets, commas and quotes: `=XLOOKUP(A4,E:E,F:F,\"Not found\")`.",
+        "missingFunction": "Keep using **XLOOKUP** and add the fourth part.",
+        "wrongValue": "The cell should read **Not found**. The words must be in straight quotes, as the fourth part, after `F:F`."
+      },
+      "clues": ["Four parts now, separated by commas. The last one is `\"Not found\"`."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Bands: match mode -1",
+      "prompt": "A shop gives a discount by **band**: 0 to 999 spent gets 0%, 1000 to 4999 gets 5%, and so on. The table lists only where each band **starts**. A customer spent **7200** (==D2==), which isn't in the table.\n\nIn ==E2==, type `=XLOOKUP(D2,A2:A5,B2:B5,0,-1)`. The last part, **-1**, means “exact match, or else the next **smaller** one”.",
+      "grid": [
+        ["Spend from", "Discount %", null, "Spend", "Discount %"],
+        [0, 0, null, 7200, null],
+        [1000, 5, null, null, null],
+        [5000, 10, null, null, null],
+        [10000, 15, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "highlightCells": ["A2:B5"],
+      "yellowCells": ["E2"],
+      "expectedValue": 10,
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["D2"],
+      "solution": "=XLOOKUP(D2,A2:A5,B2:B5,0,-1)",
+      "explain": "**10%.** 7200 isn't listed, so Excel stepped down to the band that starts at 5000. Without the `-1` it only accepts an exact match and shows `#N/A`.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the commas and brackets: `=XLOOKUP(D2,A2:A5,B2:B5,0,-1)`.",
+        "missingFunction": "Use **XLOOKUP** with five parts, ending in `-1`.",
+        "wrongValue": "7200 sits in the band starting at 5000, so the answer is **10**. Make sure the fifth part is `-1`."
+      },
+      "clues": ["`=XLOOKUP(D2,A2:A5,B2:B5,0,-1)`"]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "Now a plan where discounts only start at 1000. A customer spent **800**, below every band. The formula says \"No discount\" if nothing matches, and uses `-1`.\n\nWhat will `E2` show?",
+      "grid": [
+        ["Spend from", "Discount %", null, "Spend", "Discount %"],
+        [1000, 5, null, 800, "=XLOOKUP(D2,A2:A4,B2:B4,\"No discount\",-1)"],
+        [5000, 10, null, null, null],
+        [10000, 15, null, null, null]
+      ],
+      "activeCell": "E2",
+      "yellowCells": ["D2", "E2"],
+      "showFormulaBar": true,
+      "options": [
+        "`5`: the closest band",
+        "`No discount`: no band starts at 800 or less",
+        "`#N/A`"
+      ],
+      "answer": 1,
+      "explain": "Match mode **-1** only steps **down**. Nothing in the table is 800 or less, so the fourth part kicks in and shows “No discount”. That's why bands tables usually start at 0, or carry a message like this.",
+      "wrongFeedback": [
+        "The 1000 band is **bigger** than 800. `-1` never steps up.",
+        null,
+        "There'd be an `#N/A` only if you hadn't given a fourth part. You did."
+      ],
+      "clues": ["Is there a band that starts at 800 or lower?"]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Next larger: match mode 1",
+      "prompt": "Courier charges work the other way round: a parcel pays for the **bracket it fits under**. A 1.5 kg parcel pays the 2 kg price.\n\nIn ==E2==, look up the weight in `D2`. Use **1** as the last part (“exact, or the next **larger**”), and show \"Too heavy\" if it's over 10 kg.",
+      "grid": [
+        ["Up to (kg)", "Charge", null, "Parcel (kg)", "Charge"],
+        [1, 40, null, 1.5, null],
+        [2, 70, null, null, null],
+        [5, 120, null, null, null],
+        [10, 200, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "highlightCells": ["A2:B5"],
+      "yellowCells": ["E2"],
+      "expectedValue": 70,
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["D2"],
+      "solution": "=XLOOKUP(D2,A2:A5,B2:B5,\"Too heavy\",1)",
+      "explain": "**70.** 1.5 kg isn't listed, so Excel stepped **up** to the 2 kg row. With `-1` you'd get 40, which undercharges. Pick the direction that matches how your bands work.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the commas, quotes and brackets: five parts in all.",
+        "missingFunction": "Use **XLOOKUP** with the weight, the weights, the charges, a message and a match mode.",
+        "wrongValue": "A 1.5 kg parcel pays the **2 kg** price, 70. Is your last part `1` (next larger) rather than `-1`?"
+      },
+      "clues": ["Parts: weight, weights, charges, \"Too heavy\", then 1."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Bands inside a sum",
+      "prompt": "A sales team earns commission by band: nothing under 10000, then **2%**, **3%** and **5%** from 10000, 50000 and 100000. A rep sold **60000** (==D2==).\n\nIn ==E2==, work out the commission **in rupees**. The table shows percentages as whole numbers, so divide by 100.",
+      "grid": [
+        ["Sales from", "Commission %", null, "Sales", "Commission"],
+        [10000, 2, null, 60000, null],
+        [50000, 3, null, null, null],
+        [100000, 5, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "highlightCells": ["A2:B4"],
+      "yellowCells": ["E2"],
+      "expectedValue": 1800,
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["D2"],
+      "solution": "=D2*XLOOKUP(D2,A2:A4,B2:B4,0,-1)/100",
+      "explain": "**1800** (60000 × 3 ÷ 100). 60000 falls in the 50000 band. The `0` makes someone with sales under 10000 earn 0 instead of an error, which is exactly what you want in a payroll sum.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "-", "*", "/"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas.",
+        "missingFunction": "The percentage must come from a lookup on the bands: use **XLOOKUP**.",
+        "wrongValue": "60000 falls in the 50000 band (3%). Commission = sales × that % ÷ 100. Without `-1`, an inexact value gives an error or 0."
+      },
+      "clues": ["Look up the percentage with `-1`, multiply by the sales, divide by 100."]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Return several columns",
+      "prompt": "You want the **Name and Dept** for ID 1003 together. In ==F2== you type `=XLOOKUP(E2,A2:A6,B2:C6)`: the third part now covers **two** columns.\n\nWhat happens?",
+      "grid": [
+        ["ID", "Name", "Dept", "Salary", "ID to find", "Result", null],
+        [1001, "Asha", "Sales", 28000, 1003, "Meera", "Accounts"],
+        [1002, "Ben", "HR", 31000, null, null, null],
+        [1003, "Meera", "Accounts", 36000, null, null, null],
+        [1004, "Dev", "Sales", 30000, null, null, null],
+        [1005, "Esha", "HR", 27000, null, null, null]
+      ],
+      "activeCell": "F2",
+      "yellowCells": ["F2", "G2"],
+      "options": [
+        "It shows only the Name",
+        "The Name appears in `F2` and the Dept spills into `G2` beside it",
+        "Excel refuses: one column only"
+      ],
+      "answer": 1,
+      "explain": "A multi-column result **spills** into the cells to its right (and rows below, for several rows). Keep those cells empty, or Excel shows `#SPILL!`. In this browser sheet you'll see only the first cell, but in Excel, you'll see them both.",
+      "wrongFeedback": [
+        "That's all this practice grid would show, but real Excel fills the next cell too.",
+        null,
+        "It's allowed, and very handy: one formula brings back a whole block."
+      ],
+      "clues": ["Count the columns in `B2:C6`."]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A library fines late books by band. A book came back **20 days** late (==D2==).\n\nWhat's the fee? Put it in ==E2==.",
+      "grid": [
+        ["Days late from", "Fee", null, "Days late", "Fee"],
+        [0, 0, null, 20, null],
+        [1, 10, null, null, null],
+        [8, 25, null, null, null],
+        [15, 50, null, null, null],
+        [30, 100, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "A1",
+      "yellowCells": ["E2"],
+      "expectedValue": 50,
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["D2"],
+      "solution": "=XLOOKUP(D2,A2:A6,B2:B6,0,-1)",
+      "explain": "**50.** 20 days isn't a listed row, so the band that **starts** at 15 applies. Bands that list where each step starts need match mode `-1`.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas.",
+        "missingFunction": "Look the days up in the bands table.",
+        "wrongValue": "20 days isn't in the list, so you need the closest **smaller** band (15 days, fee 50). Add `0,-1` at the end."
+      },
+      "clues": [
+        "The table lists where each band starts, and 20 isn't listed. Which match mode steps down?"
+      ]
+    }
+  ]
+}

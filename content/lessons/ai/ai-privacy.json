@@ -1,0 +1,282 @@
+{
+  "id": "ai-privacy",
+  "module": "ai",
+  "title": "AI with Spreadsheets: privacy & checking answers",
+  "goal": "Decide what's safe to paste into an AI tool, swap names and phone numbers for IDs, and check an AI's numbers against your own sheet before you trust them.",
+  "difficulty": 1,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Two rules before you start",
+      "text": "An AI tool can explain a formula, clean a list or summarise sales in seconds. It's a fast helper, with **two rules**.\n\n**Rule 1: share only what you must.** Whatever you paste or upload leaves your computer. Check your workplace's policy, and read the tool's privacy settings: free and business versions often treat your data differently.\n\n**Rule 2: check every number.** An AI sounds just as sure when it's wrong.\n\nHere's a customer sheet. To count orders per city, the AI needs only ==C== and ==D==. The names and phone numbers in ==A== and ==B== can stay home.",
+      "grid": [
+        ["Customer", "Phone", "City", "Orders"],
+        ["Meera Nair", 9820011122, "Pune", 4],
+        ["Joseph D'Souza", 9811122233, "Goa", 2],
+        ["Li Wei", 9900033344, "Pune", 7],
+        ["Farida Khan", 9876544455, "Delhi", 3]
+      ],
+      "activeCell": "C1",
+      "highlightCells": ["C2:D5"],
+      "yellowCells": ["A2:B5"]
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Spot the contact column",
+      "prompt": "Some columns point straight at a real person. Click the **column letter** of the one column here that would let a stranger phone a customer, then press [[Enter]].",
+      "grid": [
+        ["Customer", "City", "Phone", "Orders"],
+        ["Meera Nair", "Pune", 9820011122, 4],
+        ["Li Wei", "Goa", 9900033344, 7],
+        ["Farida Khan", "Delhi", 9876544455, 3]
+      ],
+      "target": "C:C",
+      "wrongFeedback": "Not that one. Look for the column of digits someone could dial: that's **Phone**, column C.",
+      "clues": ["The letters A, B, C, D sit in the grey bar above the first row."]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "What's safe to share?",
+      "prompt": "You want an AI to help write a formula for this staff sheet. What's the **safest** thing to paste into the chat?",
+      "grid": [
+        ["Name", "Dept", "Salary"],
+        ["Asha", "Sales", 30000],
+        ["Ben", "Ops", 28000],
+        ["Chitra", "Sales", 34000]
+      ],
+      "options": [
+        "The header row and 3 made-up sample rows",
+        "The whole sheet, names and salaries included",
+        "Only the salary column, no names"
+      ],
+      "answer": 0,
+      "explain": "The AI needs the **shape** of your sheet (column names and the kind of value in each), not the real data. A made-up row like “Asha, Sales, 30000” teaches it just as well.",
+      "wrongFeedback": [
+        null,
+        "Real names beside real salaries is exactly the data that shouldn't leave your workplace.",
+        "In a small team a salary on its own can still point to one person. Made-up rows are safer."
+      ],
+      "clues": ["Ask: does the AI need the real values, or only the layout?"],
+      "highlightCells": ["A1:C1"]
+    },
+    {
+      "id": "s4",
+      "type": "entry",
+      "topic": "Swap names for IDs",
+      "prompt": "Before sharing sales by customer, replace the real names with IDs.\n\nIn ==A2:A4== type **C1**, **C2**, **C3** (press [[Enter]] after each). Then type **hidden** over the three phone numbers in ==C2:C4==.\n\nKeep your own private list of who C1, C2 and C3 are.",
+      "grid": [
+        ["Customer", "Orders", "Phone"],
+        ["Meera Nair", 4, 9820011122],
+        ["Li Wei", 7, 9900033344],
+        ["Farida Khan", 3, 9876544455]
+      ],
+      "expect": {
+        "A2": "C1",
+        "A3": "C2",
+        "A4": "C3",
+        "C2": "hidden",
+        "C3": "hidden",
+        "C4": "hidden"
+      },
+      "explain": "The orders stay, so the AI can still total and compare them, but nobody can tell who C2 is without your private list. To swap a name everywhere at once, [[Ctrl]] + [[H]] opens Find & Replace.",
+      "wrongFeedback": {
+        "empty": "There are still real names or phone numbers left. Fill all six cells: three IDs in column A, three “hidden” in column C.",
+        "wrongValue": "Check the spelling. Column A should read C1, C2, C3 in order, and column C should say hidden."
+      },
+      "clues": [
+        "Click ==A2==, type C1, Enter, then C2, Enter, then C3. Do the phone cells the same way."
+      ],
+      "activeCell": "A2",
+      "yellowCells": ["A2:A4", "C2:C4"]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Hidden is not removed",
+      "prompt": "You **hide** column C (Phone) and then upload the file to an AI tool. Is the phone data still shared?",
+      "options": [
+        "No, hidden columns are left out",
+        "Yes, hidden columns still travel with the file",
+        "No, as long as the sheet has a password"
+      ],
+      "answer": 1,
+      "explain": "Hiding only changes what you see on screen; every number is still inside the file. Make a **copy**, delete the private columns there, and upload that. Sheet protection isn't a lock on the data either.",
+      "wrongFeedback": [
+        "Hiding is cosmetic. Anyone who opens the file can unhide the column.",
+        null,
+        "A protect-sheet password stops editing, not reading. Delete the data from the copy instead."
+      ],
+      "clues": ["Think about what happens if the person you send it to clicks “Unhide”."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Does that sound right?",
+      "prompt": "An AI tool says: “Your six items cost **2,320** in total.” Looking at the sheet, the biggest cost is 250.\n\nWithout calculating anything exactly: can 2,320 be right?",
+      "grid": [
+        ["Item", "Cost"],
+        ["Bag", 150],
+        ["Lunchbox", 200],
+        ["Shoes", 250],
+        ["Socks", 120],
+        ["Cap", 240],
+        ["Bottle", 200],
+        ["Total", "=SUM(B2:B7)"]
+      ],
+      "options": [
+        "No: six items of at most 250 can't pass 1,500",
+        "Yes, AI tools are good at sums",
+        "Yes, if the prices include tax"
+      ],
+      "answer": 0,
+      "explain": "6 × 250 = 1,500 is the most the column could ever reach. A rough size check takes five seconds and catches many AI slips. Next you'll find out what really happened.",
+      "wrongFeedback": [
+        null,
+        "AI tools can slip on arithmetic, especially on longer tables. Never assume.",
+        "Even with tax, 1,500 plus a little is nowhere near 2,320."
+      ],
+      "clues": ["What's the biggest total six numbers of 250 or less could make?"],
+      "highlightCells": ["B2:B7"]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Recalculate it",
+      "prompt": "Now find the real number. Click ==D2== and total the six costs (`B2:B7`) yourself.",
+      "grid": [
+        ["Item", "Cost", null, "Check"],
+        ["Bag", 150, null, null],
+        ["Lunchbox", 200, null, null],
+        ["Shoes", 250, null, null],
+        ["Socks", 120, null, null],
+        ["Cap", 240, null, null],
+        ["Bottle", 200, null, null],
+        ["Total", "=SUM(B2:B7)", null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 1160,
+      "solution": "=SUM(B2:B7)",
+      "explain": "**1,160.** The AI's 2,320 is exactly double: it most likely added the **Total row** (`B8`) into the total. A total sitting inside the range is one of the most common AI and human slips.",
+      "wrongFeedback": {
+        "missingFunction": "Use `SUM` on the six cost cells.",
+        "wrongValue": "Add only the six items, `B2:B7`. Leave out the Total row.",
+        "missingReference": "Use the six costs, `B2:B7`, so the check is really yours."
+      },
+      "clues": ["`=SUM(B2:B7)`: first item to last item, nothing else."],
+      "mobileButtons": ["=", "(", ")", ":"],
+      "mustUse": ["SUM"],
+      "mustReference": ["B2:B7"],
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["D2"],
+      "activeCell": "D1"
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Check one claim",
+      "prompt": "An AI summary says: “**North** sold **1,200** this week.” Check it. Type a formula in ==D2== that gives North's real total.",
+      "grid": [
+        ["Region", "Sales", null, "Real North"],
+        ["North", 300, null, null],
+        ["South", 450, null, null],
+        ["North", 250, null, null],
+        ["East", 500, null, null],
+        ["South", 150, null, null],
+        ["North", 200, null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 750,
+      "solution": "=SUMIF(A2:A7,\"North\",B2:B7)",
+      "explain": "**750**, not 1,200. The AI's figure is 750 plus South's 450, so it probably grabbed a wrong row. One `SUMIF` is all it takes to catch that.",
+      "wrongFeedback": {
+        "missingFunction": "Add up only the rows where the region is North: that's a job for `SUMIF`.",
+        "wrongValue": "North appears three times (300, 250, 200). Add only those rows."
+      },
+      "clues": ["`=SUMIF(range to look in, \"North\", range to add)`."],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "mustUse": ["SUMIF"],
+      "activeCell": "D1",
+      "yellowCells": ["D2"]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Words matter",
+      "prompt": "The AI says: “**4** orders were **over** 500.” Check it. In ==D2== count the orders with an amount **over** 500.",
+      "grid": [
+        ["Order", "Amount", null, "Over 500"],
+        ["A101", 320, null, null],
+        ["A102", 500, null, null],
+        ["A103", 780, null, null],
+        ["A104", 610, null, null],
+        ["A105", 450, null, null],
+        ["A106", 900, null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 3,
+      "solution": "=COUNTIF(B2:B7,\">500\")",
+      "explain": "**3.** The AI's 4 counted the order of exactly 500. “Over 500” leaves 500 out; “500 or more” would keep it. Wording like “over”, “at least” and “up to” is where AI answers slip most.",
+      "wrongFeedback": {
+        "missingFunction": "Count the amounts that pass a test. `COUNTIF` does that.",
+        "wrongValue": "You're probably counting the 500 as well. “Over 500” means 501 and up, so use `>` and not `>=`."
+      },
+      "clues": ["`=COUNTIF(B2:B7,\">500\")`: the test goes in quotes."],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "mustUse": ["COUNTIF"],
+      "activeCell": "D1",
+      "yellowCells": ["D2"]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "How to check",
+      "prompt": "An AI gives you a total that looks believable. What's the **best** way to check it?",
+      "options": [
+        "Reply “are you sure?” and see if it changes",
+        "Trust it if it explains how it got there",
+        "Recalculate that number yourself with a formula on the sheet"
+      ],
+      "answer": 2,
+      "explain": "Your own `SUM`, `COUNTIF` or `SUMIF` on the real cells is an independent check. Do it for every number that goes into a report, a bill or an email.",
+      "wrongFeedback": [
+        "Asking again isn't a check. It may flip a right answer to a wrong one, or repeat the same mistake.",
+        "A neat explanation can sit on top of a wrong number. Recalculate; don't judge the story.",
+        null
+      ],
+      "clues": ["Which option uses the actual cells, not the AI's word?"]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "An AI report says: “The **average score for Mumbai** is **78**.” What is it really? Put your answer in ==D2==.",
+      "grid": [
+        ["Branch", "Score", null, "Real Mumbai"],
+        ["Mumbai", 84, null, null],
+        ["Pune", 60, null, null],
+        ["Mumbai", 72, null, null],
+        ["Delhi", 90, null, null],
+        ["Mumbai", 66, null, null],
+        ["Delhi", 96, null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 74,
+      "solution": "=AVERAGEIF(A2:A7,\"Mumbai\",B2:B7)",
+      "explain": "**74.** The AI's 78 is the average of **all six** scores. It answered for the whole sheet, not for Mumbai. Always check that the AI used the filter you asked for.",
+      "wrongFeedback": {
+        "wrongValue": "78 is the average of every branch. Average only the three Mumbai rows.",
+        "missingReference": "Look at both columns: branch in `A2:A7`, scores in `B2:B7`."
+      },
+      "clues": ["Which rows say Mumbai? Average just their scores."],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "mustReference": ["A2:A7", "B2:B7"],
+      "activeCell": "A1"
+    }
+  ]
+}

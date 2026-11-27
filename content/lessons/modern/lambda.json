@@ -1,0 +1,278 @@
+{
+  "id": "lambda",
+  "module": "modern",
+  "title": "LAMBDA",
+  "goal": "Understand how a LAMBDA becomes your own reusable function, how its parameters and calculation order work, and check what it returns with plain formulas.",
+  "difficulty": 3,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Your own function",
+      "text": "Every row needs GST at 18%. So you type `=B2*18%` again and again, in sheet after sheet. Then the rate changes. Ugh.\n\n**LAMBDA** lets you build your **own function**. Save one called `GST`, and any cell can use it: `=GST(B2)`. If the rate changes, you fix it **once**.\n\nIn Excel: Formulas tab → **Name Manager** → New. Name: `GST`. Refers to:\n\n`=LAMBDA(price, price*18%)`\n\n`price` is a **parameter**: a placeholder for whatever you pass in. Calling `GST(B3)` fills `price` with the value in `B3`.\n\nHonest notes: LAMBDA needs Microsoft 365, and this practice sheet can't run it. So you'll work out what your function would return using plain formulas.",
+      "grid": [
+        ["Item", "Price", "GST(price)"],
+        ["Pen", 50, 9],
+        ["Bag", 800, 144],
+        ["Book", 250, 45],
+        ["Bottle", 100, 18]
+      ],
+      "yellowCells": ["C2:C5"]
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "What it returns",
+      "prompt": "`GST(B3)` hands the Bag's price to `price`, and the function returns **price × 18%**.\n\nIn ==C3==, work out what `=GST(B3)` would show, using a plain formula.",
+      "grid": [
+        ["Item", "Price", "GST(price)"],
+        ["Pen", 50, null],
+        ["Bag", 800, null],
+        ["Book", 250, null],
+        ["Bottle", 100, null]
+      ],
+      "targetCell": "C3",
+      "mustReference": ["B3"],
+      "highlightCells": ["B3"],
+      "activeCell": "C3",
+      "expectedValue": 144,
+      "solution": "=B3*18%",
+      "explain": "144: 800 × 18% is 144. A custom function is just your recipe with `price` standing in for `B3`.",
+      "mobileButtons": ["=", "*", "%"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Try `=B3*18%`.",
+        "missingReference": "The Bag's price is in `B3`.",
+        "wrongValue": "GST is the **tax amount**: price × 18%, not price + 18%."
+      },
+      "clues": ["Multiply the price in B3 by 18%."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Use it in a bigger formula",
+      "prompt": "A bill shows price **plus** GST. You'd write `=B4+GST(B4)`.\n\nIn ==C4==, work out what that would show for the Book, using plain formulas.",
+      "grid": [
+        ["Item", "Price", "Total"],
+        ["Pen", 50, null],
+        ["Bag", 800, null],
+        ["Book", 250, null],
+        ["Bottle", 100, null]
+      ],
+      "targetCell": "C4",
+      "mustReference": ["B4"],
+      "highlightCells": ["B4"],
+      "activeCell": "C4",
+      "expectedValue": 295,
+      "solution": "=B4+B4*18%",
+      "explain": "295: 250 + 45 GST. Inside a longer formula, `GST(B4)` simply becomes the 45 it returns.",
+      "mobileButtons": ["=", "+", "*", "%"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingReference": "The Book's price is in `B4`.",
+        "wrongValue": "Price plus its GST: 250 + (250 × 18%)."
+      },
+      "clues": ["Price, plus the GST on that price."]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Where does it live?",
+      "prompt": "Where do you save `=LAMBDA(price, price*18%)` so every cell in the workbook can call it as `GST`?",
+      "options": [
+        "In **Name Manager** (Formulas tab)",
+        "In **Data Validation**",
+        "In cell **E1**, then copy it down"
+      ],
+      "answer": 0,
+      "explain": "A custom function is a **named** formula. You give the LAMBDA a name in Name Manager, and from then on `=GST(…)` works anywhere in that workbook.",
+      "wrongFeedback": [
+        null,
+        "Data Validation limits what can be typed into cells; it doesn't store formulas as functions.",
+        "A LAMBDA typed into a cell isn't a reusable function: it has no name to call. Names live in Name Manager."
+      ],
+      "clues": ["Which tool deals with names for formulas?"]
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Open Name Manager",
+      "prompt": "Open Name Manager from the keyboard. Tap **one after another**: [[Alt]], [[M]], [[N]]. That's **Formulas → Name Manager**. Then **New** is where you'd type the name `GST` and its LAMBDA.\n\nOn a Mac, use the **Formulas** tab → **Define Name**. This practice sheet only checks your keys.",
+      "keys": {
+        "win": ["Alt", "M", "N"],
+        "mac": null
+      },
+      "grid": [
+        ["Item", "Price", "GST(price)"],
+        ["Pen", 50, null],
+        ["Bag", 800, null],
+        ["Book", 250, null],
+        ["Bottle", 100, null]
+      ],
+      "activeCell": "C2",
+      "postcondition": {
+        "grid": [
+          ["Item", "Price", "GST(price)"],
+          ["Pen", 50, null],
+          ["Bag", 800, null],
+          ["Book", 250, null],
+          ["Bottle", 100, null]
+        ],
+        "selection": "C2"
+      },
+      "clues": ["Press and release Alt, then M, then N."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "#CALC!",
+      "prompt": "A learner types `=LAMBDA(price, price*18%)` straight into a cell and sees **#CALC!**. What's missing?",
+      "options": [
+        "It's never called: add `(B2)` on the end",
+        "It needs curly brackets",
+        "The % sign isn't allowed inside LAMBDA"
+      ],
+      "answer": 0,
+      "explain": "A bare LAMBDA is a recipe nobody asked to cook. To test it in a cell, call it right away: `=LAMBDA(price, price*18%)(B2)`. Or save it in Name Manager and call it by name.",
+      "wrongFeedback": [
+        null,
+        "Curly brackets aren't part of LAMBDA's syntax. It's missing a **call**.",
+        "`%` is fine inside a LAMBDA, exactly as in any formula."
+      ],
+      "clues": ["What would tell the LAMBDA which price to use?"]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Two parameters",
+      "prompt": "A second function, `SALE(price, pct)`, is saved as `=LAMBDA(price, pct, price*(1-pct))`.\n\nIn ==D2==, work out what `=SALE(B2, C2)` would return for the Bag.",
+      "grid": [
+        ["Item", "Price", "Discount", "SALE(B,C)", "SALE(C,B)"],
+        ["Bag", 800, 0.25, null, null],
+        ["Pen", 50, 0.1, null, null]
+      ],
+      "targetCell": "D2",
+      "mustReference": ["B2", "C2"],
+      "highlightCells": ["B2:C2"],
+      "activeCell": "D2",
+      "expectedValue": 600,
+      "solution": "=B2*(1-C2)",
+      "explain": "600: the Bag costs 800 and the discount is 0.25, so 800 × (1 − 0.25). Arguments fill the parameters **in order**: first value → `price`, second → `pct`.",
+      "mobileButtons": ["=", "(", ")", "*", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check brackets: `=B2*(1-C2)`.",
+        "missingReference": "Use the price in `B2` and the discount in `C2`.",
+        "wrongValue": "Price × (1 − discount). Forgetting the “1 −” would give 200, the discount amount only."
+      },
+      "clues": ["price is B2, pct is C2: price*(1-pct)."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "A teammate types `=SALE(C2, B2)`: discount first, price second. Excel fills the parameters by **position**. What does it return for the Bag?",
+      "grid": [
+        ["Item", "Price", "Discount", "SALE(B,C)", "SALE(C,B)"],
+        ["Bag", 800, 0.25, null, null],
+        ["Pen", 50, 0.1, null, null]
+      ],
+      "options": ["`600`", "`-199.75`", "`#VALUE!`"],
+      "answer": 1,
+      "explain": "The first value (0.25) lands in `price`, the second (800) in `pct`. So the function works out 0.25 × (1 − 800) = −199.75. No error, just a quietly wrong answer. Prove it next.",
+      "wrongFeedback": [
+        "That's the answer for `SALE(B2, C2)`. With the arguments swapped, the parameters get the wrong values.",
+        null,
+        "Both are numbers, so Excel happily calculates. It just calculates nonsense."
+      ],
+      "clues": ["Which number goes into `price` now? Which into `pct`?"]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Prove the swap",
+      "prompt": "Prove it. In ==E2==, work out what the swapped call gives: `price` = ==C2== and `pct` = ==B2==. Use the formula `price*(1-pct)` with those cells.",
+      "grid": [
+        ["Item", "Price", "Discount", "SALE(B,C)", "SALE(C,B)"],
+        ["Bag", 800, 0.25, null, null],
+        ["Pen", 50, 0.1, null, null]
+      ],
+      "targetCell": "E2",
+      "mustReference": ["B2", "C2"],
+      "activeCell": "E2",
+      "expectedValue": -199.75,
+      "solution": "=C2*(1-B2)",
+      "explain": "−199.75: 0.25 × (1 − 800) = 0.25 × −799. Parameters get values by **position**, so always match the order the function was defined with.",
+      "mobileButtons": ["=", "(", ")", "*", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check brackets: `=C2*(1-B2)`.",
+        "missingReference": "Use `C2` as the price and `B2` as the discount.",
+        "wrongValue": "Swap the roles: price is now `C2`, and pct is `B2`."
+      },
+      "clues": ["Take the formula from before and swap B2 and C2."]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Calculation order",
+      "prompt": "`PLUS2(a, b)` is saved as `=LAMBDA(a, b, a+b*2)`. What does `=PLUS2(3, 4)` return?",
+      "options": ["`11`", "`14`", "`10`"],
+      "answer": 0,
+      "explain": "Inside the LAMBDA the usual order applies: multiplication first, so b×2 = 8, then a + 8 = 11. Brackets would change it: `(a+b)*2` gives 14.",
+      "wrongFeedback": [
+        null,
+        "That adds first, which only happens with brackets: `(a+b)*2`. Without them, multiplication goes first.",
+        "That doubles `a` (3×2) and adds `b`. The ×2 belongs to `b`."
+      ],
+      "clues": ["With a=3 and b=4: which part is worked out first, the + or the *?"]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Who can use it?",
+      "prompt": "A colleague with Excel 2016 opens your workbook, where cells use `=GST(B2)`. What happens?",
+      "options": [
+        "The cells can't calculate: LAMBDA needs Microsoft 365",
+        "They work: Excel installs it automatically",
+        "They show 0 and nothing else"
+      ],
+      "answer": 0,
+      "explain": "A named LAMBDA lives in your workbook, but older Excel has no LAMBDA to run it. For files you send widely, paste the results as values or keep plain formulas.",
+      "wrongFeedback": [
+        null,
+        "Excel doesn't download functions. A version without LAMBDA can't calculate one.",
+        "Cells with an unsupported function show an error, not a harmless 0."
+      ],
+      "clues": ["Which Excel version does LAMBDA need?"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Your team's custom function `FARE(km)` charges a fixed **40** plus **12 for every km**. What would `FARE(B3)` return for the airport run? Put the answer in ==C3==.",
+      "grid": [
+        ["Trip", "km", "Fare"],
+        ["Home to office", 4, null],
+        ["Airport run", 7, null]
+      ],
+      "targetCell": "C3",
+      "mustReference": ["B3"],
+      "activeCell": "A1",
+      "expectedValue": 124,
+      "solution": "=40+B3*12",
+      "explain": "124: 7 km × 12 = 84, plus the fixed 40. The fixed fee is added once; only the kilometres are multiplied.",
+      "mobileButtons": ["=", "+", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingReference": "The airport run's distance is in `B3`.",
+        "wrongValue": "Only the distance is multiplied by 12. The fixed 40 is added once (not multiplied)."
+      },
+      "clues": ["Fixed fee + (km × 12)."]
+    }
+  ]
+}

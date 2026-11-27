@@ -1,0 +1,239 @@
+{
+  "id": "named-ranges",
+  "module": "formulas",
+  "title": "Named Ranges",
+  "goal": "Name a cell or range in Excel, understand how names replace locked addresses in formulas, open Name Manager, and write the same logic with `$` addresses.",
+  "difficulty": 2,
+  "requiredCorrect": 9,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "A name instead of an address",
+      "text": "Which is easier to read a month later?\n\n`=B2*(1+$E$2)`\n`=B2*(1+TaxRate)`\n\nA **named range** is a label you give to a cell or range. Name ==E2== **TaxRate** and any formula can use that word instead of `$E$2`.\n\nOne honest note: this practice sheet only understands **addresses**, not names. So you'll learn how names work in Excel, then write the `$` formula that does the same job.",
+      "grid": [
+        ["Item", "Price", "With tax", null, "TaxRate"],
+        ["Pen", 100, "=B2*(1+$E$2)", null, 0.18],
+        ["Book", 250, "=B3*(1+$E$2)", null, null]
+      ],
+      "activeCell": "E2",
+      "yellowCells": ["E2"],
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Select what to name",
+      "prompt": "To name a range, you **select it first**. Here you'd name the four prices **Prices**.\n\nClick ==B2==, drag down to `B5`, then press [[Enter]].",
+      "grid": [
+        ["Item", "Price"],
+        ["Pen", 120],
+        ["Book", 80],
+        ["Bag", 150],
+        ["Cap", 50]
+      ],
+      "yellowCells": ["B2:B5"],
+      "target": "B2:B5",
+      "wrongFeedback": "Select just the four prices: start on `B2` and drag to `B5`. Leave the header and the item names out.",
+      "clues": ["Click `B2` and drag down to `B5`: four cells."]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "The Name Box",
+      "prompt": "`B2:B5` is selected. Where do you type the name **Prices**?",
+      "grid": [
+        ["Item", "Price"],
+        ["Pen", 120],
+        ["Book", 80],
+        ["Bag", 150],
+        ["Cap", 50]
+      ],
+      "activeCell": "B2:B5",
+      "options": ["In the Name Box, then Enter", "In the formula bar after `=`", "In cell `A1`"],
+      "answer": 0,
+      "explain": "The **Name Box** sits at the left of the formula bar and normally shows the address (like `B2`). Click it, type **Prices**, press [[Enter]]. That's all it takes to name a range.",
+      "wrongFeedback": [
+        null,
+        "The formula bar is where formulas go. Names are made in the Name Box beside it.",
+        "Typing in `A1` just puts text in that cell. The name has to go in the Name Box."
+      ],
+      "clues": ["It's the small box showing the cell address, left of the formula bar."]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Manage names",
+      "prompt": "Names can go stale: a range moves, or a name is misspelt. Excel keeps every name in the **Name Manager**, where you can edit or delete them.\n\nWhich shortcut opens it on Windows?",
+      "options": ["`Ctrl + F3`", "`Ctrl + Shift + F3`", "`Ctrl + N`"],
+      "answer": 0,
+      "explain": "**Ctrl + F3** opens Name Manager: a list of every name and the cells it **refers to**. On a Mac, look for Name Manager on the Formulas tab. A typo in a name shows `#NAME?` in the cell.",
+      "wrongFeedback": [
+        null,
+        "Close! Ctrl + Shift + F3 **creates** names from the labels around your selection. Opening the manager is Ctrl + F3.",
+        "Ctrl + N opens a new workbook. Names live behind F3."
+      ],
+      "clues": ["It's a function key combination, with just one extra key."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Read a name as an address",
+      "prompt": "In Excel you'd type `=B3*(1+TaxRate)` once `E2` is named TaxRate. Since names aren't available here, write what it means with addresses.\n\nIn ==C3==, add the tax to the Book's price. Lock the rate with `$`, so it would still work copied down.",
+      "grid": [
+        ["Item", "Price", "With tax", null, "TaxRate"],
+        ["Pen", 100, "=B2*(1+$E$2)", null, 0.18],
+        ["Book", 250, null, null, null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A1",
+      "yellowCells": ["C3"],
+      "highlightCells": ["E2"],
+      "expectedValue": 295,
+      "mustReference": ["B3", "E2"],
+      "disallowFunctions": true,
+      "solution": "=B3*(1+$E$2)",
+      "explain": "**295**: 250 plus 18%. `TaxRate` and `$E$2` point at the same cell, but the name needs no `$` and is easier to read. Without the lock, `E3` would be empty and the answer would be 250.",
+      "mobileButtons": ["=", "*", "(", ")", "+", "$"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingReference": "Use the Book's price in `B3` and the rate in `E2`.",
+        "wrongValue": "Price × (1 + the rate in `E2`). The rate cell sits in row 2 for every item."
+      },
+      "clues": ["The rate never moves, so write it as `$E$2`."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "A named range, in addresses",
+      "prompt": "The quiz scores in `B2:B6` are named **Scores**. In Excel, `=AVERAGE(Scores)` would average them.\n\nIn ==B7==, write the same thing using the locked addresses.",
+      "grid": [
+        ["Quiz", "Score"],
+        ["Q1", 70],
+        ["Q2", 85],
+        ["Q3", 90],
+        ["Q4", 55],
+        ["Q5", 100],
+        ["Average", null]
+      ],
+      "targetCell": "B7",
+      "activeCell": "A7",
+      "yellowCells": ["B7"],
+      "expectedValue": 80,
+      "mustUse": ["AVERAGE"],
+      "solution": "=AVERAGE($B$2:$B$6)",
+      "explain": "**80**: 400 ÷ 5. A name always points at the same fixed cells, just like `$B$2:$B$6`. That's why a named range behaves as if every part of it were locked.",
+      "mobileButtons": ["=", "(", ")", ":", "$"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Use **AVERAGE**, as in `=AVERAGE(Scores)`.",
+        "wrongValue": "Average all five scores, `B2` to `B6`."
+      },
+      "clues": ["`=AVERAGE(` then `$B$2:$B$6`."]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "Which name works?",
+      "prompt": "Excel is picky about names. Which of these is a **valid** name?",
+      "options": ["`Tax_Rate`", "`Tax Rate`", "`Q1`"],
+      "answer": 0,
+      "explain": "Names can't contain **spaces** (use `_` or capitals), can't **start with a digit**, and can't look like a **cell address**. `Q1` is a real cell on every sheet, so Excel refuses it.",
+      "wrongFeedback": [
+        null,
+        "A space ends a word in a formula, so names can't hold one. Use `Tax_Rate` or `TaxRate`.",
+        "`Q1` is also the address of a cell (column Q, row 1), so Excel won't let you use it as a name."
+      ],
+      "clues": ["One option has a space, one looks like a cell address."]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Share with a named range",
+      "prompt": "The four bill amounts `B2:B5` are named **Items**. In Excel, a share would be `=B4/SUM(Items)`.\n\nIn ==C4==, work out Juice's share of the bill. Use locked addresses for the whole list.",
+      "grid": [
+        ["Item", "Cost", "Share"],
+        ["Tea", 60, null],
+        ["Samosa", 90, null],
+        ["Juice", 120, null],
+        ["Cake", 30, null]
+      ],
+      "targetCell": "C4",
+      "activeCell": "A1",
+      "yellowCells": ["C4"],
+      "highlightCells": ["B2:B5"],
+      "expectedValue": 0.4,
+      "mustUse": ["SUM"],
+      "mustReference": ["B4"],
+      "solution": "=B4/SUM($B$2:$B$5)",
+      "explain": "**0.4**, or 40%: Juice 120 out of 300. Locking `$B$2:$B$5` means every row's share divides by the same full list.",
+      "mobileButtons": ["=", "(", ")", ":", "/", "$"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Total the whole list with **SUM**, then divide by it.",
+        "wrongValue": "Juice (`B4`) ÷ the total of `B2:B5`."
+      },
+      "clues": ["Part ÷ total: `B4` divided by `SUM($B$2:$B$5)`."]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Predict: a new row",
+      "prompt": "**Sales** is a name for `B2:B6`, and `B8` holds `=SUM(Sales)`. You type a new sale of 70 in the next free cell, `B7`.\n\nDoes the total include it?",
+      "grid": [
+        ["Day", "Sales"],
+        ["Mon", 40],
+        ["Tue", 55],
+        ["Wed", 60],
+        ["Thu", 35],
+        ["Fri", 50],
+        ["Sat", 70],
+        ["Total", "=SUM(B2:B6)"]
+      ],
+      "activeCell": "B7",
+      "yellowCells": ["B7"],
+      "highlightCells": ["B8"],
+      "options": ["Yes, names always grow", "No, it still covers `B2:B6`", "It shows `#NAME?`"],
+      "answer": 1,
+      "explain": "A name keeps pointing at the **cells you gave it**. Type just outside, and it isn't included. Fix it in Name Manager (Ctrl + F3) by editing what it refers to, or insert the new row **inside** the range.",
+      "wrongFeedback": [
+        "Not on their own. A name covers the exact cells you chose, nothing more.",
+        null,
+        "The name still exists, so there's no `#NAME?`. It simply doesn't reach row 7."
+      ],
+      "clues": ["Where does the name stop?"]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A shop takes 10% off the **whole bill**. The discount rate is in `E2`.\n\nWhat do the four items cost together after the discount? Put the answer in ==B6==. Write it so every address stays fixed, the way a named range behaves.",
+      "grid": [
+        ["Item", "Price", null, null, "Discount"],
+        ["Mug", 120, null, null, 0.1],
+        ["Plate", 80, null, null, null],
+        ["Bowl", 150, null, null, null],
+        ["Jug", 50, null, null, null],
+        ["Total", null, null, null, null]
+      ],
+      "targetCell": "B6",
+      "activeCell": "A1",
+      "expectedValue": 360,
+      "mustReference": ["E2"],
+      "solution": "=SUM($B$2:$B$5)*(1-$E$2)",
+      "explain": "**360**: 400 less 10%. Both the price list and the discount are fixed, and these are the two things you'd name in a real workbook.",
+      "mobileButtons": ["=", "(", ")", ":", "*", "-", "$"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingReference": "Use the whole price list `B2:B5` and the discount cell `E2`.",
+        "wrongValue": "Add the four prices, then take the discount off the total: total × (1 − rate)."
+      },
+      "clues": [
+        "Total first, then × (1 − the discount).",
+        "Use `$` so nothing slides: `$B$2:$B$5` and `$E$2`."
+      ]
+    }
+  ]
+}

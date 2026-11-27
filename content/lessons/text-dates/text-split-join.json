@@ -1,0 +1,351 @@
+{
+  "id": "text-split-join",
+  "module": "text-dates",
+  "title": "TEXTBEFORE, TEXTAFTER, TEXTSPLIT & TEXTJOIN",
+  "goal": "Cut text at a separator with TEXTBEFORE and TEXTAFTER, predict what TEXTSPLIT spills, and join a list into one cell with TEXTJOIN or &.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "One function, one cut",
+      "text": "In Topic 28 you cut an email at the `@` with FIND and LEFT. It worked, but it was a mouthful.\n\nMicrosoft 365 (and Excel 2024) has shortcuts: **TEXTBEFORE** gives everything before a character, **TEXTAFTER** gives everything after it. No counting, no `-1`.\n\nPress **Play** to watch one being built. Older Excel versions don't have these, so keep the FIND recipe in mind.",
+      "grid": [
+        ["Email", "User", "Domain"],
+        ["asha@shop.in", "=TEXTBEFORE(A2,\"@\")", "=TEXTAFTER(A2,\"@\")"],
+        ["ben.d@cafe.co", "=TEXTBEFORE(A3,\"@\")", "=TEXTAFTER(A3,\"@\")"],
+        ["chitra@mailbox.com", "=TEXTBEFORE(A4,\"@\")", "=TEXTAFTER(A4,\"@\")"]
+      ],
+      "activeCell": "B2",
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "formula-build",
+        "targetCell": "B2",
+        "frames": [
+          {
+            "label": "Click the cell for the answer",
+            "draft": "",
+            "focusCell": "B2"
+          },
+          {
+            "label": "Type =TEXTBEFORE( and click the text: A2",
+            "draft": "=TEXTBEFORE(A2",
+            "focusCell": "B2",
+            "highlightCells": ["A2"]
+          },
+          {
+            "label": "Add a comma and the character to cut at, in quotes",
+            "draft": "=TEXTBEFORE(A2,\"@\")",
+            "focusCell": "B2"
+          },
+          {
+            "label": "Press Enter",
+            "key": "Enter",
+            "draft": "=TEXTBEFORE(A2,\"@\")",
+            "resultCell": "B2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "TEXTBEFORE",
+      "prompt": "Your turn. In ==B2==, type `=TEXTBEFORE(A2,\"@\")` to get the part of the email before the `@`.",
+      "grid": [
+        ["Email", "User"],
+        ["meera@cafe.co", null],
+        ["tara.d@mailbox.com", null],
+        ["ravi_k@shop.in", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "meera",
+      "mustUse": ["TEXTBEFORE"],
+      "solution": "=TEXTBEFORE(A2,\"@\")",
+      "explain": "**meera.** One function replaced `LEFT(A2,FIND(\"@\",A2)-1)`. The `@` goes in quotes because it's text you're looking for.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=TEXTBEFORE(A2,\"@\")`.",
+        "parseError": "Put the `@` in quotes after a comma: `=TEXTBEFORE(A2,\"@\")`.",
+        "wrongValue": "You want the part **before** the `@`: `=TEXTBEFORE(A2,\"@\")`.",
+        "missingFunction": "Use `TEXTBEFORE`."
+      },
+      "clues": [
+        "`=TEXTBEFORE(text, where to cut)`.",
+        "If your Excel says #NAME?, it's an older version without this function."
+      ]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "TEXTAFTER",
+      "prompt": "Same idea, other direction. **TEXTAFTER** gives everything **after** the character.\n\nIn ==B2==, get the website part of the first email (after the `@`).",
+      "grid": [
+        ["Email", "Website"],
+        ["tara.d@mailbox.com", null],
+        ["sana@cafe.co", null],
+        ["ravi_k@shop.in", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "mailbox.com",
+      "mustUse": ["TEXTAFTER"],
+      "solution": "=TEXTAFTER(A2,\"@\")",
+      "explain": "**mailbox.com.** TEXTAFTER keeps everything to the right of the first `@`. Together, TEXTBEFORE and TEXTAFTER split any text in two.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets and the quotes around `@`.",
+        "wrongValue": "After the `@`: `=TEXTAFTER(A2,\"@\")`.",
+        "missingFunction": "Use `TEXTAFTER` for the part that comes after."
+      },
+      "clues": ["Swap BEFORE for AFTER."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Which dash?",
+      "prompt": "Order codes have **two** dashes. A plain TEXTAFTER cuts at the **first** dash. An optional third argument picks which one: `2` means the second dash.\n\nIn ==B2==, get just the number part of `KOL-2025-0733`: everything after the **second** dash.",
+      "grid": [
+        ["Order code", "Number"],
+        ["KOL-2025-0733", null],
+        ["HYD-2026-0318", null],
+        ["JAI-2025-0044", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "0733",
+      "mustUse": ["TEXTAFTER"],
+      "solution": "=TEXTAFTER(A2,\"-\",2)",
+      "explain": "**0733.** With just `\"-\"`, you'd get “2025-0733”, everything after the first dash. The `2` made Excel skip to the second one. (`-1` counts from the end instead, handy when you always want the last piece.)",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets, quotes and commas: `=TEXTAFTER(A2,\"-\",2)`.",
+        "wrongValue": "You want only what follows the **second** dash: add `,2` after the dash.",
+        "missingFunction": "Use `TEXTAFTER`."
+      },
+      "clues": [
+        "Add a third argument: `=TEXTAFTER(A2,\"-\",2)`.",
+        "Without it, you get “2025-0733”."
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "info",
+      "topic": "TEXTSPLIT: many pieces at once",
+      "text": "**TEXTSPLIT** cuts text at every separator and puts each piece in its **own cell**, in one go. You type it in one cell and the results **spill** to the right.\n\nIn Excel you'd type `=TEXTSPLIT(A2,\",\")` in ==B2== and press Enter. Excel fills ==B2:D2== by itself. Same for row 3.\n\nThis practice sheet can't run TEXTSPLIT, so here's what Excel shows. Like TEXTBEFORE, it needs Microsoft 365 or Excel 2024.",
+      "grid": [
+        ["Staff record", "Name", "City", "Team"],
+        ["Asha,Pune,Sales", "Asha", "Pune", "Sales"],
+        ["Ben,Delhi,Admin", "Ben", "Delhi", "Admin"]
+      ],
+      "highlightCells": ["B2:D2"],
+      "yellowCells": ["B2"]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Predict the spill",
+      "prompt": "`A2` holds `Asha,Pune,Sales`. You type `=TEXTSPLIT(A2,\",\")` in ==B2== and press Enter.\n\nWhat ends up in ==C2==, the cell next to the formula, which you never typed in?",
+      "grid": [
+        ["Staff record", "Name", "City", "Team"],
+        ["Asha,Pune,Sales", null, null, null]
+      ],
+      "activeCell": "B2",
+      "yellowCells": ["B2"],
+      "highlightCells": ["C2"],
+      "options": ["Nothing: only `B2` is filled", "`Pune`", "`Asha,Pune,Sales` again"],
+      "answer": 1,
+      "explain": "**Pune.** The first piece (Asha) lands in B2, and the rest **spill** into C2 and D2. You only wrote one formula, but it fills three cells. Spilling is why those cells must stay free.",
+      "wrongFeedback": [
+        "That's how most formulas behave, but TEXTSPLIT returns several values, one per cell.",
+        null,
+        "It splits at each comma, so every piece is separate."
+      ],
+      "clues": ["How many pieces does the text have? Where do they go?"]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "Why #SPILL!?",
+      "prompt": "You type `=TEXTSPLIT(A2,\",\")` in `B2`, but `D2` already has the word **Leave** typed in it.\n\nWhat does Excel show in `B2`?",
+      "grid": [
+        ["Staff record", "Name", "City", "Team"],
+        ["Asha,Pune,Sales", null, null, "Leave"]
+      ],
+      "activeCell": "B2",
+      "yellowCells": ["D2"],
+      "options": [
+        "Asha and Pune, and it overwrites `D2`",
+        "`#SPILL!`: the spill is blocked",
+        "Asha, Pune and Sales, with `Leave` pushed right"
+      ],
+      "answer": 1,
+      "explain": "**`#SPILL!`.** Excel won't overwrite your data. Clear `D2` (or move the formula somewhere with room) and the pieces appear. Hover the error's warning sign to see which cell is in the way.",
+      "wrongFeedback": [
+        "Excel never overwrites typed cells for you. It stops and shows an error instead.",
+        null,
+        "Excel doesn't push data aside. It warns you."
+      ],
+      "clues": ["What does Excel do when something is in the way?"]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "TEXTJOIN: the reverse",
+      "prompt": "Now the opposite job: **gluing** a list together. **TEXTJOIN** takes three things: the **separator**, whether to **skip blanks** (TRUE), and the **range**.\n\nIn ==B2==, type `=TEXTJOIN(\", \",TRUE,A2:A6)` to list the volunteers on one line.",
+      "grid": [
+        ["Volunteer", "Invite line"],
+        ["Asha", null],
+        ["Ben", null],
+        ["Chitra", null],
+        ["Dev", null],
+        ["Esha", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2:A6"],
+      "yellowCells": ["B2"],
+      "expectedValue": "Asha, Ben, Chitra, Dev, Esha",
+      "mustUse": ["TEXTJOIN"],
+      "solution": "=TEXTJOIN(\", \",TRUE,A2:A6)",
+      "explain": "**Asha, Ben, Chitra, Dev, Esha.** The separator `\", \"` (comma and space) went between every pair of names. Great for invite lists and email “To” lines.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "&", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Three parts: `=TEXTJOIN(\", \",TRUE,A2:A6)`.",
+        "wrongValue": "Separator `\", \"`, then `TRUE`, then the names `A2:A6`.",
+        "missingFunction": "Use `TEXTJOIN`."
+      },
+      "clues": [
+        "`=TEXTJOIN(separator, skip blanks, range)`.",
+        "The separator is a comma and a space, in quotes."
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "TEXTJOIN skips blanks",
+      "prompt": "One volunteer cell is empty. The middle argument decides what happens: **TRUE** skips blank cells; **FALSE** leaves a double separator where each blank was.\n\nIn ==B2==, join the names with ` / ` between them and **no gaps**.",
+      "grid": [
+        ["Volunteer", "Roster"],
+        ["Kavya", null],
+        ["Rohan", null],
+        [null, null],
+        ["Neha", null],
+        ["Zoya", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2:A6"],
+      "yellowCells": ["B2"],
+      "expectedValue": "Kavya / Rohan / Neha / Zoya",
+      "mustUse": ["TEXTJOIN"],
+      "solution": "=TEXTJOIN(\" / \",TRUE,A2:A6)",
+      "explain": "**Kavya / Rohan / Neha / Zoya.** TRUE skipped the empty `A4`. With FALSE you'd see “Rohan /  / Neha” with an empty slot in the middle.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "&", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the quotes around the separator, then TRUE, then the range.",
+        "wrongValue": "Use ` / ` as the separator (spaces included) and TRUE to skip the empty cell.",
+        "missingFunction": "Use `TEXTJOIN`."
+      },
+      "clues": ["Separator `\" / \"`, then TRUE.", "Which value skips blanks: TRUE or FALSE?"]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "The & glue",
+      "prompt": "For just **two or three** pieces, `&` is quicker than TEXTJOIN. It glues text together, but it adds nothing on its own, so **you** supply the space: a space in quotes.\n\nIn ==C2==, join First and Last into `Anil Kapoor`.",
+      "grid": [
+        ["First", "Last", "Full name"],
+        ["Anil", "Kapoor", null],
+        ["Rhea", "Sen", null],
+        ["Omar", "Sheikh", null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "B2",
+      "highlightCells": ["A2:B2"],
+      "yellowCells": ["C2"],
+      "expectedValue": "Anil Kapoor",
+      "solution": "=A2&\" \"&B2",
+      "explain": "**Anil Kapoor.** `A2&\" \"&B2` glues three things: the first name, a space, the last name. Forget the space and you get “AnilKapoor”.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=A2&\" \"&B2`.",
+        "parseError": "Check the quotes around the space: `\" \"`.",
+        "wrongValue": "Glue first name, a space in quotes, then last name: `=A2&\" \"&B2`. Missing the space gives “AnilKapoor”."
+      },
+      "clues": ["`=A2&\" \"&B2`."]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Fix the #N/A",
+      "prompt": "TEXTBEFORE shows `#N/A` when the character it's looking for **isn't there**. Row 3 has no email, so ==B3== shows an error.\n\nChange ==B3== so it shows the original text (`not provided`) when there's no `@`. You met the tool for this in Topic 25.",
+      "grid": [
+        ["Contact", "User"],
+        ["tara@cafe.co", "=TEXTBEFORE(A2,\"@\")"],
+        ["not provided", "=TEXTBEFORE(A3,\"@\")"],
+        ["sana@shop.in", "=TEXTBEFORE(A4,\"@\")"]
+      ],
+      "targetCell": "B3",
+      "activeCell": "A3",
+      "highlightCells": ["A3"],
+      "yellowCells": ["B3"],
+      "expectedValue": "not provided",
+      "mustUse": ["TEXTBEFORE"],
+      "solution": "=IFERROR(TEXTBEFORE(A3,\"@\"),A3)",
+      "explain": "**not provided.** IFERROR tries TEXTBEFORE first, and if it fails, shows `A3` instead. Real lists always have a few rows that don't fit the pattern.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets and commas.",
+        "wrongValue": "Wrap the TEXTBEFORE so that an error falls back to the original text in `A3`.",
+        "missingFunction": "Keep `TEXTBEFORE` in your formula and wrap it."
+      },
+      "clues": [
+        "`=IFERROR(your formula, what to show instead)`.",
+        "What should it show instead? The original text, `A3`."
+      ]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nThe event sheet lists each guest as `Kavya Rao | Pune`: name, a bar, then the city. In ==B2==, show just the **city**, with no extra space at the front.",
+      "grid": [
+        ["Guest", "City"],
+        ["Kavya Rao | Pune", null],
+        ["Ben Shah | Delhi", null],
+        ["Tara Dutt | Mumbai", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A1",
+      "expectedValue": "Pune",
+      "solution": "=TEXTAFTER(A2,\" | \")",
+      "explain": "**Pune.** The separator can be longer than one character: `\" | \"` includes its spaces, so nothing is left over. Cutting at just `\"|\"` leaves a leading space, which `TRIM` could also remove.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check your brackets and quotes.",
+        "wrongValue": "Take what comes after the bar, but watch for a stray space at the front of the city."
+      },
+      "clues": [
+        "The bar `|` has spaces around it in the text.",
+        "Either include the spaces in the separator, or tidy up afterwards."
+      ]
+    }
+  ]
+}

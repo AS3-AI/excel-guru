@@ -1,0 +1,304 @@
+{
+  "id": "date-calc",
+  "module": "text-dates",
+  "title": "Date Calculations",
+  "goal": "Count days between dates, work out ages and service with DATEDIF, find working days and deadlines with NETWORKDAYS and WORKDAY, and set due dates and month ends with EDATE and EOMONTH.",
+  "difficulty": 2,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Questions about dates",
+      "text": "Once dates are real numbers, Excel can answer the questions that fill a business week:\n\n• **How many days** between two dates? Just subtract.\n• **How old** is someone, or how long has an employee worked? **DATEDIF**.\n• **How many working days**, or **when is the deadline** if weekends don't count? **NETWORKDAYS** and **WORKDAY**.\n• **When is it due** in 3 months, or what's the **last day of the month**? **EDATE** and **EOMONTH**.\n\nIn every example, “today” is **28 November 2026**, so your answers match ours.",
+      "grid": [
+        ["Task", "Start", "End", "Days"],
+        ["Design", "=DATE(2026,11,2)", "=DATE(2026,11,16)", "=C2-B2"],
+        ["Build", "=DATE(2026,11,16)", "=DATE(2026,11,27)", "=C3-B3"]
+      ],
+      "activeCell": "D2",
+      "yellowCells": ["D2"],
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Days between: subtract",
+      "prompt": "To count the days between two dates, subtract the earlier from the later.\n\nIn ==D2==, work out how many days the tea order took: delivered minus ordered.",
+      "grid": [
+        ["Item", "Ordered", "Delivered", "Days"],
+        ["Tea", "=DATE(2026,11,9)", "=DATE(2026,11,24)", null],
+        ["Coffee", "=DATE(2026,11,10)", "=DATE(2026,11,13)", null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "C2",
+      "highlightCells": ["B2:C2"],
+      "yellowCells": ["D2"],
+      "expectedValue": 15,
+      "solution": "=C2-B2",
+      "explain": "**15 days.** 24 minus 9, with Excel handling the month for you. Subtract the **earlier** from the **later**, or you'll get a negative number.",
+      "mobileButtons": ["=", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=C2-B2`.",
+        "parseError": "Try `=C2-B2`.",
+        "wrongValue": "Later date minus earlier date: `=C2-B2`."
+      },
+      "clues": ["`=C2-B2`: delivered minus ordered."]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "The weird 1900 date",
+      "prompt": "You subtract two dates in a column that was already formatted as dates, and the cell shows **15-Jan-1900** instead of 15. The formula is right.\n\nWhat's going on?",
+      "options": [
+        "Excel added 1900 by mistake",
+        "The answer is a number, but the cell is formatted as a date",
+        "You can't subtract dates"
+      ],
+      "answer": 1,
+      "explain": "The cell kept a date format, so Excel dresses the number up as a date. 15 days is “day 15” on the date calendar, which is 15-Jan-1900. Change the cell's format to **General** or **Number** and the 15 appears.",
+      "wrongFeedback": [
+        "The formula is fine. It's the cell's **format** that's misleading.",
+        null,
+        "Subtracting dates is exactly how you count days. It works, but the display needs fixing."
+      ],
+      "clues": ["What does the Number Format box on the Home tab say for that cell?"]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "DATEDIF: complete years",
+      "prompt": "**DATEDIF** counts **complete** years, months or days between two dates. Excel doesn't list it as you type, but it works.\n\n`=DATEDIF(start, end, \"y\")`: the \"y\" means years. In ==D2==, find Meera's age as of the date in `C2`.",
+      "grid": [
+        ["Name", "Birthday", "As of", "Age"],
+        ["Meera", "=DATE(1990,12,20)", "=DATE(2026,11,28)", null],
+        ["Ravi", "=DATE(1985,11,28)", "=DATE(2026,11,28)", null],
+        ["Sana", "=DATE(2000,1,15)", "=DATE(2026,11,28)", null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "C2",
+      "highlightCells": ["B2:C2"],
+      "yellowCells": ["D2"],
+      "expectedValue": 35,
+      "mustUse": ["DATEDIF"],
+      "solution": "=DATEDIF(B2,C2,\"y\")",
+      "explain": "**35.** Meera turns 36 on 20 December, so she's still 35. Just taking the years apart (2026 minus 1990) would say 36, one too many. DATEDIF only counts a year once it's complete.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Three parts: start date, end date, and `\"y\"` in quotes.",
+        "wrongValue": "Use DATEDIF with the birthday, the as-of date and `\"y\"`. Subtracting years gives 36, which is wrong until her birthday.",
+        "missingFunction": "Use `DATEDIF`."
+      },
+      "clues": ["`=DATEDIF(B2,C2,\"y\")`.", "The earlier date comes first."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "DATEDIF: years and months",
+      "prompt": "Other units: `\"m\"` is total complete months, and `\"ym\"` is the months left over after the whole years.\n\nIn ==D2==, show Asha's service as text like `5 years 3 months`. Join two DATEDIFs with `&`.",
+      "grid": [
+        ["Name", "Joined", "As of", "Service"],
+        ["Asha", "=DATE(2021,8,15)", "=DATE(2026,11,28)", null],
+        ["Dev", "=DATE(2019,11,28)", "=DATE(2026,11,28)", null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "C2",
+      "highlightCells": ["B2:C2"],
+      "yellowCells": ["D2"],
+      "expectedValue": "5 years 3 months",
+      "mustUse": ["DATEDIF"],
+      "solution": "=DATEDIF(B2,C2,\"y\")&\" years \"&DATEDIF(B2,C2,\"ym\")&\" months\"",
+      "explain": "**5 years 3 months.** `\"y\"` gave the 5 whole years; `\"ym\"` gave the 3 months beyond them (15 Aug to 15 Nov). Copy it down and Dev, who joined exactly 7 years ago today, shows 7 years 0 months.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the quotes: the words ` years ` and ` months` need spaces inside them.",
+        "wrongValue": "Use `\"y\"` for the years and `\"ym\"` for the months, joined with `&` and the words `\" years \"` and `\" months\"`.",
+        "missingFunction": "Use `DATEDIF`."
+      },
+      "clues": [
+        "First part: `DATEDIF(B2,C2,\"y\")&\" years \"`.",
+        "Second part: `DATEDIF(B2,C2,\"ym\")&\" months\"`."
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "NETWORKDAYS: working days",
+      "prompt": "Subtracting counts Saturdays and Sundays too. **NETWORKDAYS** counts only **Monday to Friday**, including both the start and end days.\n\nIn ==D2==, count the working days from Monday 2 Nov to Friday 27 Nov.",
+      "grid": [
+        ["Project", "Start", "End", "Working days"],
+        ["Website", "=DATE(2026,11,2)", "=DATE(2026,11,27)", null],
+        ["Audit", "=DATE(2026,11,9)", "=DATE(2026,11,20)", null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "C2",
+      "highlightCells": ["B2:C2"],
+      "yellowCells": ["D2"],
+      "expectedValue": 20,
+      "mustUse": ["NETWORKDAYS"],
+      "solution": "=NETWORKDAYS(B2,C2)",
+      "explain": "**20 working days.** Four full weeks, five days each. Subtracting would say 25, because it counts the weekends too.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=NETWORKDAYS(B2,C2)`.",
+        "parseError": "Start date, comma, end date: `=NETWORKDAYS(B2,C2)`.",
+        "wrongValue": "Use `=NETWORKDAYS(B2,C2)`. Subtracting gives 25: it includes weekends.",
+        "missingFunction": "Use `NETWORKDAYS`."
+      },
+      "clues": ["`=NETWORKDAYS(start, end)`."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Skip a holiday too",
+      "prompt": "Companies have holidays on weekdays. NETWORKDAYS takes an optional third argument: a cell (or range) of dates to skip.\n\nIn ==E2==, count the working days again, but skip the holiday in `D2`.",
+      "grid": [
+        ["Project", "Start", "End", "Holiday", "Working days"],
+        ["Website", "=DATE(2026,11,2)", "=DATE(2026,11,27)", "=DATE(2026,11,11)", null],
+        ["Audit", "=DATE(2026,11,9)", "=DATE(2026,11,20)", "=DATE(2026,11,14)", null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "highlightCells": ["B2:D2"],
+      "yellowCells": ["E2"],
+      "expectedValue": 19,
+      "mustUse": ["NETWORKDAYS"],
+      "solution": "=NETWORKDAYS(B2,C2,D2)",
+      "explain": "**19.** The same 20 working days, minus Wednesday 11 Nov. A holiday that falls on a weekend would make no difference, since weekends are already skipped.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Three parts: start, end, holiday: `=NETWORKDAYS(B2,C2,D2)`.",
+        "wrongValue": "Add the holiday cell as a third argument: `=NETWORKDAYS(B2,C2,D2)`.",
+        "missingFunction": "Use `NETWORKDAYS`."
+      },
+      "clues": ["Add `,D2` before the closing bracket."]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "WORKDAY: the deadline",
+      "prompt": "Now the reverse question: delivery is promised in **10 working days**. What date is that? **WORKDAY** adds working days to a start date.\n\nIn ==C2==, find the delivery date for the order placed on Thursday 12 Nov. Excel shows it as a date.",
+      "grid": [
+        ["Order", "Placed", "Deliver by"],
+        ["Bags", "=DATE(2026,11,12)", null],
+        ["Shoes", "=DATE(2026,11,2)", null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "B2",
+      "highlightCells": ["B2"],
+      "yellowCells": ["C2"],
+      "expectedValue": 46352,
+      "mustUse": ["WORKDAY"],
+      "solution": "=WORKDAY(B2,10)",
+      "explain": "**Thursday 26 Nov.** Counting only weekdays from the 12th gives the 26th. `=B2+10` would say Sunday 22 Nov, which ignores the weekend and promises a delivery on a day nobody works.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=WORKDAY(B2,10)`.",
+        "parseError": "Start date, comma, number of working days: `=WORKDAY(B2,10)`.",
+        "wrongValue": "Use WORKDAY, not `+10`: `=WORKDAY(B2,10)`.",
+        "missingFunction": "Use `WORKDAY`: plain `+10` counts weekends."
+      },
+      "clues": ["`=WORKDAY(start, working days)`."]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Predict: month end",
+      "prompt": "**EDATE** moves a date by whole **months**. `=EDATE(date, 1)` means “same day next month”.\n\nBut `31 Jan 2027` plus one month has a problem: February has no 31st. What does `=EDATE(DATE(2027,1,31),1)` give?",
+      "options": ["`3 March 2027`: 31 days later", "`28 February 2027`", "`#VALUE!`: no 31 Feb"],
+      "answer": 1,
+      "explain": "**28 Feb 2027.** EDATE moves by calendar months, not days, and if the day doesn't exist it uses the **last day** of the month. That's exactly what you want for monthly bills and subscriptions.",
+      "wrongFeedback": [
+        "That's what `+31` days would give. EDATE counts months, not days.",
+        null,
+        "EDATE handles this gracefully: it gives the month's last day."
+      ],
+      "clues": ["Does EDATE count days or months?"]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "EDATE: due date",
+      "prompt": "Payment terms are “3 months from invoice”.\n\nIn ==C2==, use **EDATE** to find the due date for the invoice dated 15 Nov 2026.",
+      "grid": [
+        ["Invoice", "Invoice date", "Due date"],
+        ["INV-201", "=DATE(2026,11,15)", null],
+        ["INV-202", "=DATE(2026,12,1)", null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "B2",
+      "highlightCells": ["B2"],
+      "yellowCells": ["C2"],
+      "expectedValue": 46433,
+      "mustUse": ["EDATE"],
+      "solution": "=EDATE(B2,3)",
+      "explain": "**15 Feb 2027.** Same day, three months on. Adding 90 days would land on 13 Feb, because months have different lengths.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=EDATE(B2,3)`.",
+        "parseError": "Date, comma, months: `=EDATE(B2,3)`.",
+        "wrongValue": "Move the date by 3 months: `=EDATE(B2,3)`. Adding 90 days would be off by 2 days.",
+        "missingFunction": "Use `EDATE`."
+      },
+      "clues": ["`=EDATE(date, months)`."]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "EOMONTH: the last day",
+      "prompt": "**EOMONTH** gives the **last day of a month**. `=EOMONTH(date, 0)` is this month's end; `1` is next month's end.\n\nThe terms are “payment due at the **end of next month**”. In ==C2==, find the due date for the invoice dated 28 Nov 2026.",
+      "grid": [
+        ["Invoice", "Invoice date", "Due date"],
+        ["INV-301", "=DATE(2026,11,28)", null],
+        ["INV-302", "=DATE(2027,1,5)", null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "B2",
+      "highlightCells": ["B2"],
+      "yellowCells": ["C2"],
+      "expectedValue": 46387,
+      "mustUse": ["EOMONTH"],
+      "solution": "=EOMONTH(B2,1)",
+      "explain": "**31 Dec 2026.** `1` jumped to next month, and EOMONTH picked its last day, without you knowing whether it has 30 or 31. With `0` you'd get 30 Nov instead.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=EOMONTH(B2,1)`.",
+        "parseError": "Date, comma, months: `=EOMONTH(B2,1)`.",
+        "wrongValue": "End of **next** month means 1 month ahead: `=EOMONTH(B2,1)`. A `0` gives 30 Nov.",
+        "missingFunction": "Use `EOMONTH`."
+      },
+      "clues": ["`=EOMONTH(date, months ahead)`."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nThe laptop was bought on 10 Dec 2025 with a **12-month warranty**. As of the date in `C2` (28 Nov 2026), how many **days of warranty are left**? Put the number in ==D2==.",
+      "grid": [
+        ["Item", "Bought", "As of", "Days left"],
+        ["Laptop", "=DATE(2025,12,10)", "=DATE(2026,11,28)", null],
+        ["Phone", "=DATE(2026,3,1)", "=DATE(2026,11,28)", null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A1",
+      "expectedValue": 12,
+      "solution": "=EDATE(B2,12)-C2",
+      "explain": "**12 days.** First find when the warranty ends (EDATE, 12 months on: 10 Dec 2026), then subtract today's date. Two skills in one formula.",
+      "mobileButtons": ["=", "(", ")", ",", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check your brackets.",
+        "wrongValue": "Work out the **end date** of the warranty first, then count the days from the as-of date to it."
+      },
+      "clues": [
+        "Warranty end = bought date plus 12 months.",
+        "Days left = end date minus the as-of date."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,247 @@
+{
+  "id": "regex",
+  "module": "modern",
+  "title": "REGEX Functions",
+  "goal": "Test, extract and replace text with REGEXTEST, REGEXEXTRACT and REGEXREPLACE using beginner patterns, and know how the old LEFT/MID/FIND way compares.",
+  "difficulty": 3,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Patterns in text",
+      "text": "These notes mix words and numbers. The invoice number sits in a different place each time, and it's a different length: 4821, 17, 5017…\n\nThe old way needs `FIND`, `MID` and a guess about lengths. Microsoft 365 has **regular expressions** (“regex”): a tiny code that describes a pattern. Three functions use it:\n\n• `REGEXTEST(text, pattern)`: is the pattern in the text? TRUE or FALSE\n• `REGEXEXTRACT(text, pattern)`: pull out the first match\n• `REGEXREPLACE(text, pattern, replacement)`: swap every match\n\nIn ==B2== you'd type `=REGEXEXTRACT(A2, \"\\d+\")` and fill down. The text goes first, the pattern second, in quotes.\n\nHonest note: this practice sheet can't run regex, so you'll do the same jobs the old way and predict what the regex gives.",
+      "grid": [
+        ["Note", "ID"],
+        ["Invoice 4821 paid", "4821"],
+        ["Invoice 17 paid", "17"],
+        ["Paid invoice 5017", "5017"],
+        ["Invoice 903 pending", "903"],
+        ["Chased invoice 62 twice", "62"]
+      ],
+      "yellowCells": ["B2:B6"]
+    },
+    {
+      "id": "s2",
+      "type": "info",
+      "topic": "The beginner toolkit",
+      "text": "Six pieces are enough to start:\n\n• `\\d`: one digit, 0 to 9\n• `[0-9]`: the same thing, written as a range\n• `+`: “one or more” of the piece before it, so `\\d+` is a whole number\n• `[A-Z]`: one capital letter\n• `.`: any one character\n• `^` and `$`: the start and the end of the text\n\nThe table shows what `REGEXEXTRACT` would return. Regex is **case-sensitive** by default, so `[A-Z]` ignores lowercase. If nothing matches, REGEXEXTRACT gives #N/A.",
+      "grid": [
+        ["Text", "Pattern", "Returns"],
+        ["Room 12", "\\d+", "12"],
+        ["Room 12", "\\d", "1"],
+        ["ab9 CD", "[A-Z]", "C"],
+        ["CAT", "^C", "C"],
+        ["CAT", "T$", "T"],
+        ["Room 12", "^\\d+", "#N/A"]
+      ]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "Which pattern matches?",
+      "prompt": "Which pattern pulls just the digits out of **Invoice 4821 paid**?",
+      "grid": [["Note"], ["Invoice 4821 paid"]],
+      "options": ["`\\d+`", "`[A-Z]+`", "`^\\d+`"],
+      "answer": 0,
+      "explain": "`\\d+` finds a run of digits wherever it sits, here 4821. Only the pattern changes; the formula shape stays the same.",
+      "wrongFeedback": [
+        null,
+        "`[A-Z]+` looks for capital letters. In this note it would only find the “I” of Invoice.",
+        "`^` means “at the very start”. The digits are in the middle, so there's no match and you'd get #N/A."
+      ],
+      "clues": ["Which pattern describes digits?"]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "The old way",
+      "prompt": "First the **old way**, to see why regex is a relief. The number starts right after the first space and is 4 digits long.\n\nIn ==B2==, use `FIND` to locate the space, `MID` to take 4 characters after it, and wrap everything in `VALUE` to turn it into a number.",
+      "grid": [
+        ["Note", "ID"],
+        ["Invoice 4821 paid", null],
+        ["Invoice 17 paid", null]
+      ],
+      "targetCell": "B2",
+      "mustUse": ["MID", "FIND"],
+      "yellowCells": ["B2"],
+      "highlightCells": ["A2"],
+      "activeCell": "B2",
+      "expectedValue": 4821,
+      "solution": "=VALUE(MID(A2,FIND(\" \",A2)+1,4))",
+      "explain": "4821. It works, but only because every number here has exactly 4 digits. That is a guess baked into the formula.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "+"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets and commas: `MID(text, start, length)`.",
+        "missingFunction": "Use MID (and FIND) to cut the number out.",
+        "wrongValue": "FIND gives the position of the space; add 1 to start at the first digit, then take 4 characters."
+      },
+      "clues": ["MID(A2, position of first digit, 4). The first digit is FIND(\" \",A2)+1."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "You fill that formula down to row 3, **Invoice 17 paid**. MID still takes exactly 4 characters. What does `B3` show?",
+      "grid": [
+        ["Note", "ID"],
+        ["Invoice 4821 paid", 4821],
+        ["Invoice 17 paid", null]
+      ],
+      "activeCell": "B3",
+      "options": ["`17`", "`#VALUE!`", "`17 p`"],
+      "answer": 1,
+      "explain": "MID grabs “17 p” and VALUE can't turn that into a number. The regex `\\d+` doesn't count characters; it takes however many digits are there and returns 17.",
+      "wrongFeedback": [
+        "The formula doesn't know where the number ends: it takes exactly 4 characters, “17 p”.",
+        null,
+        "“17 p” is what MID alone returns. But VALUE wraps it, and it can't read letters, so you get #VALUE!."
+      ],
+      "clues": ["How many characters does MID take, and how many does “17” have?"]
+    },
+    {
+      "id": "s6",
+      "type": "select",
+      "topic": "REGEXTEST and case",
+      "prompt": "A rule checks each product code with `=REGEXTEST(A2, \"^[A-Z]\")`: TRUE if the code **starts with a capital letter**.\n\nClick the **one code** that would get FALSE, then press [[Enter]].",
+      "grid": [["Code"], ["A104"], ["B220"], ["c315"], ["D407"]],
+      "target": "A4",
+      "wrongFeedback": "Look for the code whose first letter is **lowercase**: `[A-Z]` only accepts capitals.",
+      "clues": ["Four codes start with a letter; one of them isn't a capital."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Test the start",
+      "prompt": "`=REGEXTEST(A2, \"^Paid\")` is TRUE only when the note **starts** with Paid. Do the old way in ==B2==: compare the first 4 characters of the note with Paid.\n\nWatch the note: it says **Unpaid**.",
+      "grid": [
+        ["Note", "Starts with Paid?"],
+        ["Unpaid 5120", null],
+        ["Paid 4821 by card", null]
+      ],
+      "targetCell": "B2",
+      "mustUse": ["LEFT"],
+      "yellowCells": ["B2"],
+      "activeCell": "B2",
+      "expectedValue": false,
+      "solution": "=LEFT(A2,4)=\"Paid\"",
+      "explain": "FALSE: “Unpa” isn't “Paid”. A search for “paid” anywhere would say TRUE, but the `^` in the pattern means start only, and `LEFT` checks the start too.",
+      "mobileButtons": ["=", "(", ")", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Compare with `=`: `=LEFT(A2,4)=\"Paid\"`.",
+        "missingFunction": "Use LEFT to take the first 4 characters.",
+        "wrongValue": "“Unpaid” contains “paid” in the middle, but it doesn't start with it. Check only the first 4 characters."
+      },
+      "clues": ["LEFT(A2,4) gives the first four characters. Compare that to \"Paid\"."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Dot, start and end",
+      "prompt": "`REGEXTEST(A2, \"^C.T$\")`: which text gets TRUE?",
+      "options": ["`COT`", "`CT`", "`COAT`"],
+      "answer": 0,
+      "explain": "`^C` starts with C, `.` is exactly **one** any-character, `T$` ends with T. COT fits; CT has no middle character; COAT has two.",
+      "wrongFeedback": [
+        null,
+        "`.` stands for exactly one character, and CT has none between C and T.",
+        "COAT has two characters between C and T, but `.` allows just one."
+      ],
+      "clues": ["Count the characters: C, one of anything, T."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Extract the letters",
+      "prompt": "`=REGEXEXTRACT(A3, \"[A-Z]+\")` returns the capital letters at the start of a code. Do it the old way in ==B3==: take everything **before the dash**.\n\nThe airline code has a different length from the city code above it.",
+      "grid": [
+        ["Order", "Code letters"],
+        ["PUN-0042", null],
+        ["GO-0108", null]
+      ],
+      "targetCell": "B3",
+      "mustReference": ["A3"],
+      "yellowCells": ["B3"],
+      "activeCell": "B3",
+      "expectedValue": "GO",
+      "solution": "=TEXTBEFORE(A3,\"-\")",
+      "explain": "GO. `LEFT(A3,3)` would wrongly give “GO-”. Cutting at the dash works for any length, just like `[A-Z]+` does.",
+      "mobileButtons": ["=", "(", ")", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the quotes around the dash.",
+        "missingReference": "Use `A3`, the airline code.",
+        "wrongValue": "You want only the letters before the dash. Taking a fixed 3 characters includes the dash."
+      },
+      "clues": ["TEXTBEFORE(A3,\"-\") returns what comes before the dash."]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "What will REGEXREPLACE return?",
+      "prompt": "`=REGEXREPLACE(A2, \"\\d+\", \"#\")` on **Order 12 of 345**. What comes back?",
+      "grid": [["Text"], ["Order 12 of 345"]],
+      "options": ["`Order # of #`", "`Order # of 345`", "`Order ## of ###`"],
+      "answer": 0,
+      "explain": "`\\d+` treats 12 and 345 each as one whole number, and REGEXREPLACE replaces **every** match by default. So each number becomes a single #.",
+      "wrongFeedback": [
+        null,
+        "REGEXREPLACE replaces every match unless you ask for just one, so 345 changes too.",
+        "`\\d` (without +) would give that, one # per digit. With `+`, each whole number becomes a single #."
+      ],
+      "clues": ["How many separate runs of digits are in the text?"]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Replace",
+      "prompt": "`=REGEXREPLACE(A2, \"-\", \"\")` swaps the dash for nothing. The classic old way is `SUBSTITUTE`.\n\nIn ==B2==, clean this phone number so it has no dash.",
+      "grid": [
+        ["Phone", "Clean"],
+        ["98765-43210", null]
+      ],
+      "targetCell": "B2",
+      "mustUse": ["SUBSTITUTE"],
+      "yellowCells": ["B2"],
+      "activeCell": "B2",
+      "expectedValue": "9876543210",
+      "solution": "=SUBSTITUTE(A2,\"-\",\"\")",
+      "explain": "9876543210. For one fixed character, SUBSTITUTE is enough. Regex earns its keep when the thing to replace is a pattern, like “any run of digits”.",
+      "mobileButtons": ["=", "(", ")", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the quotes: `SUBSTITUTE(text, old, new)`, and the new text is empty quotes.",
+        "missingFunction": "Use SUBSTITUTE to swap the dash for nothing.",
+        "wrongValue": "The result should be the ten digits with no dash."
+      },
+      "clues": ["SUBSTITUTE(A2, \"-\", \"\") replaces the dash with empty text."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "The note in ==A2== hides an invoice number. Put just the invoice number, as a **number** you could add up, in ==B2==.",
+      "grid": [
+        ["Note", "Invoice no."],
+        ["Refund for invoice 7305 sent", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A1",
+      "expectedValue": 7305,
+      "solution": "=VALUE(TEXTBEFORE(TEXTAFTER(A2,\"invoice \"),\" \"))",
+      "explain": "7305. You cut after “invoice ”, then before the next space, then turned the text into a number. In a regex-enabled Excel it's `=VALUE(REGEXEXTRACT(A2,\"\\d+\"))`; REGEXEXTRACT always returns text, so VALUE matters for maths.",
+      "mobileButtons": ["=", "(", ")", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "wrongValue": "You need only the digits 7305, and as a real number (right-aligned), not the whole note and not text."
+      },
+      "clues": [
+        "Cut the text after “invoice ”, then before the next space, then turn it into a number."
+      ]
+    }
+  ]
+}

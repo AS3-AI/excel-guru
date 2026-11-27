@@ -1,0 +1,287 @@
+{
+  "id": "power-query",
+  "module": "clean-data",
+  "title": "Power Query: import & transform",
+  "goal": "Load a CSV with Power Query, understand the cleaning steps it records, spot the data-type trap, and refresh next month's file in one go.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Clean once, refresh forever",
+      "text": "Every month the bank emails the same messy CSV. Cleaning it with formulas means **redoing every fix, every month**.\n\n**Power Query** is Excel's built-in cleaning robot. You clean the file **once**, and it writes down each action as a list called **Applied Steps** (shown below). Next month you click **Refresh** and it replays the whole list on the new file.\n\nThe journey has three parts:\n• **Load**: on the **Data** tab, choose **Get Data → From File → From Text/CSV** and pick the file.\n• **Clean**: click **Transform Data** to open the Power Query Editor. Remove columns, set data types, split, trim. Each action adds a line to Applied Steps.\n• **Close & Load**: the clean table lands in your sheet.\n\nThe editor can't run inside this lesson, so you'll practise by working out what each step would produce.",
+      "grid": [
+        ["Applied Steps"],
+        ["Source"],
+        ["Promoted Headers"],
+        ["Changed Type"],
+        ["Removed Columns"],
+        ["Trimmed Text"],
+        ["Split Column by Delimiter"]
+      ],
+      "activeCell": "A5",
+      "yellowCells": ["A5"]
+    },
+    {
+      "id": "s2",
+      "type": "mcq",
+      "topic": "The right order",
+      "prompt": "A new `sales_aug.csv` arrives and you want a **repeatable** clean-up.\n\nWhich order is right?",
+      "options": [
+        "Get Data → clean in the editor → Close & Load",
+        "Close & Load → fix the sheet by hand → Get Data",
+        "Clean the CSV in Excel → then Get Data"
+      ],
+      "answer": 0,
+      "explain": "**Get Data → Transform Data → Close & Load** records every action as a step. If you fix the data by hand before or after loading, nothing is recorded, and next month you start from zero.",
+      "wrongFeedback": [
+        null,
+        "Hand edits on the loaded sheet are never recorded, and a refresh will overwrite them.",
+        "That cleans this month once, but Power Query has recorded nothing to replay next month."
+      ],
+      "clues": ["Where does Power Query write the steps down? Inside the editor."]
+    },
+    {
+      "id": "s3",
+      "type": "select",
+      "topic": "Remove Columns",
+      "prompt": "You opened the file in the editor. The bank adds an **Internal code** you never use.\n\nClick the header of the column you'd remove (in the editor: right-click it → **Remove Columns**), then press [[Enter]].",
+      "grid": [
+        ["Date", "Customer", "Amount", "Internal code", "Status"],
+        ["15/08", "Priya Shah", 1250, "X-91", "Paid"],
+        ["16/08", "Rahul Mehta", 450, "X-92", "Pending"],
+        ["17/08", "Amit Jain", 2300, "X-93", "Paid"]
+      ],
+      "target": "D:D",
+      "wrongFeedback": "That column is useful. The one to drop is **Internal code**: click its letter, `D`.",
+      "clues": ["Which column would nobody in your team read?"]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Split Column",
+      "prompt": "**Split Column → By Delimiter** cuts one column into several at a divider. Splitting `TEE-BLUE-L` at every `-` gives three columns: `TEE`, `BLUE`, `L`.\n\nIn ==B3==, work out what the **middle** column will hold for the second row. Take everything after the first dash, then everything before the next one.",
+      "grid": [
+        ["SKU", "Colour"],
+        ["TEE-RED-M", null],
+        ["TEE-BLUE-L", null],
+        ["CAP-RED-S", null]
+      ],
+      "targetCell": "B3",
+      "activeCell": "A3",
+      "highlightCells": ["A3"],
+      "yellowCells": ["B3"],
+      "expectedValue": "BLUE",
+      "mustReference": ["A3"],
+      "solution": "=TEXTBEFORE(TEXTAFTER(A3,\"-\"),\"-\")",
+      "explain": "**BLUE**. `TEXTAFTER(A3,\"-\")` leaves `BLUE-L`, then `TEXTBEFORE(...,\"-\")` keeps `BLUE`. Power Query does this with one click and remembers it as a **Split Column** step.",
+      "mobileButtons": ["=", "(", ")", "\"", ",", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets and quotes: `=TEXTBEFORE(TEXTAFTER(A3,\"-\"),\"-\")`.",
+        "wrongValue": "You want only the middle piece. After the first dash you still have `BLUE-L`: cut again at the next dash.",
+        "missingReference": "Work from the SKU in `A3`."
+      },
+      "clues": ["`=TEXTAFTER(A3,\"-\")` gives `BLUE-L`. Wrap it in TEXTBEFORE with the same dash."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Changed Type: a trap",
+      "prompt": "Power Query guesses each column's **data type** from its first rows, and adds a **Changed Type** step. Usually that's a help. Here it's a trap.\n\nThe IDs `00417`, `00532` look like numbers, so Power Query picks **Whole Number**. In ==B2==, show what the first ID becomes.",
+      "grid": [
+        ["Order ID", "After Changed Type"],
+        ["00417", null],
+        ["00532", null],
+        ["01208", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": 417,
+      "mustUse": ["VALUE"],
+      "mustReference": ["A2"],
+      "solution": "=VALUE(A2)",
+      "explain": "**417**: the leading zeros are gone. A number has no “leading zeros”, so `00417` quietly becomes `417`. Always scan the **Changed Type** step for IDs, phone numbers and postcodes.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use **VALUE** to turn the text into a number, like Whole Number does.",
+        "missingReference": "Start from the ID in `A2`.",
+        "wrongValue": "A whole number drops the zeros. Try `=VALUE(A2)`."
+      },
+      "clues": ["`=VALUE(A2)` mimics the type change."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Fix the type",
+      "prompt": "The loaded table now shows `417`, but your shipping labels need `00417`.\n\nWhat's the best fix?",
+      "grid": [
+        ["Order ID", "Customer"],
+        [417, "Asha"],
+        [532, "Ben"],
+        [1208, "Chen"]
+      ],
+      "options": [
+        "Set the column's type to **Text** in the editor",
+        "Retype the zeros on the sheet",
+        "Format the cells as `00000`"
+      ],
+      "answer": 0,
+      "explain": "Changing the type to **Text** is itself a recorded step, so next month's refresh keeps the zeros too. Fixing it on the sheet is wiped by the next refresh.",
+      "wrongFeedback": [
+        null,
+        "Edits on the loaded sheet are overwritten when you refresh, and you'd redo them every month.",
+        "That only changes how the number looks. The ID is still a number, so a lookup against text IDs elsewhere would fail."
+      ],
+      "clues": ["Fix it where the steps are recorded."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Filter Rows",
+      "prompt": "The ▾ on a column header in the editor works like a filter, and adds a **Filtered Rows** step. You keep **only Paid** rows.\n\nIn ==B8==, work out what the **Amount** column of the loaded table adds up to.",
+      "grid": [
+        ["Customer", "Amount", "Status"],
+        ["Priya", 1250, "Paid"],
+        ["Rahul", 450, "Pending"],
+        ["Amit", 2300, "Paid"],
+        ["Neha", 600, "Refunded"],
+        ["Zoya", 800, "Paid"],
+        ["Kabir", 300, "Pending"],
+        ["Total", null, null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "highlightCells": ["B2:C7"],
+      "yellowCells": ["B8"],
+      "expectedValue": 4350,
+      "mustUse": ["SUMIF"],
+      "solution": "=SUMIF(C2:C7,\"Paid\",B2:B7)",
+      "explain": "**4350** = 1250 + 2300 + 800. Rahul, Neha and Kabir are filtered out of the table. The same filter runs again on next month's file, whatever it contains.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Add up only the rows that match **Paid**.",
+        "wrongValue": "Only the three Paid rows: 1250, 2300 and 800. A plain SUM of the column gives 5700."
+      },
+      "clues": ["Condition column is `C2:C7`, the numbers to add are `B2:B7`."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Predict the refresh",
+      "prompt": "Next month the bank sends a new file with **5 more orders** and the same messy habits. You save it over the old file (same name, same folder) and click **Refresh**.\n\nWhat will the loaded table do?",
+      "grid": [
+        ["Customer", "Amount"],
+        ["Priya Shah", 1250],
+        ["Rahul Mehta", 450],
+        ["Amit Jain", 2300]
+      ],
+      "options": [
+        "Add the 5 new rows, already cleaned",
+        "Add the 5 new rows, still messy",
+        "Stay exactly as it is"
+      ],
+      "answer": 0,
+      "explain": "Refresh re-reads the file and replays every Applied Step on **all** of it, so the new rows come out trimmed, typed and filtered like the old ones. Keep the file name and column headings the same, or the steps can't find their columns.",
+      "wrongFeedback": [
+        null,
+        "The steps are the whole point: they run on every row in the file, new ones included.",
+        "The query is a live link to the file, not a one-time copy, so a refresh pulls in what changed."
+      ],
+      "clues": ["What did the Applied Steps list do for you the first time?"]
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Refresh All: Ctrl + Alt + F5",
+      "prompt": "The new file is saved. Your query table is selected.\n\nPress [[Ctrl]] + [[Alt]] + [[F5]] to **Refresh All**. It's the same as **Data → Refresh All**, and it refreshes every query in the workbook.\n\nOn a Mac, use **Data → Refresh All**.",
+      "keys": {
+        "win": "Ctrl+Alt+F5",
+        "mac": null
+      },
+      "grid": [
+        ["Customer", "Amount"],
+        ["Priya Shah", 1250],
+        ["Rahul Mehta", 450],
+        ["Amit Jain", 2300]
+      ],
+      "activeCell": "A2",
+      "postcondition": {
+        "grid": [
+          ["Customer", "Amount"],
+          ["Priya Shah", 1250],
+          ["Rahul Mehta", 450],
+          ["Amit Jain", 2300],
+          ["Neha Rao", 600],
+          ["Zoya Khan", 900]
+        ],
+        "selection": "A2"
+      },
+      "clues": ["Hold Ctrl and Alt together, then tap F5."]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "A real mistake",
+      "prompt": "In the loaded table you spot the typo **Rahul Metha** and fix it directly in the cell. Next month you click Refresh.\n\nWhat happens to your fix?",
+      "grid": [
+        ["Customer", "Amount"],
+        ["Priya Shah", 1250],
+        ["Rahul Mehta", 450],
+        ["Amit Jain", 2300]
+      ],
+      "yellowCells": ["A3"],
+      "options": [
+        "It stays forever",
+        "It's overwritten: the typo returns",
+        "Excel refuses to refresh"
+      ],
+      "answer": 1,
+      "explain": "The loaded table is **output**: refresh rebuilds it from the file and the steps. To fix a typo for good, correct the source file or add a **Replace Values** step in the editor.",
+      "wrongFeedback": [
+        "Only the steps persist. Refresh redraws the table from scratch.",
+        null,
+        "Excel refreshes happily and silently overwrites your edit, which is why this mistake is so common."
+      ],
+      "clues": ["Is the table the source of the data, or the result?"]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "This month's file lists some orders twice. The query ends with a **Remove Duplicates** step on the Order column.\n\nIn ==D2==, how many rows will the loaded table have?",
+      "grid": [
+        ["Order", "Customer", "Amount", "Rows kept"],
+        ["R50", "Asha", 450, null],
+        ["R51", "Ben", 800, null],
+        ["R50", "Asha", 450, null],
+        ["R52", "Chen", 1200, null],
+        ["R53", "Divya", 300, null],
+        ["R51", "Ben", 800, null],
+        ["R54", "Esha", 950, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A1",
+      "expectedValue": 5,
+      "solution": "=ROWS(UNIQUE(A2:A8))",
+      "explain": "**5**: R50 to R54. The seven rows contain R50 and R51 twice, and Remove Duplicates keeps the first of each. In the editor it's one click, and it's re-applied on every refresh.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "wrongValue": "Count each Order **once**. Seven rows, but how many different order numbers?"
+      },
+      "clues": [
+        "Count the different Order numbers, not the rows.",
+        "`UNIQUE` lists each value once, and `ROWS` counts them."
+      ]
+    }
+  ]
+}

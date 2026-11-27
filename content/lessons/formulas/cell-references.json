@@ -1,0 +1,300 @@
+{
+  "id": "cell-references",
+  "module": "formulas",
+  "title": "Cell References: relative, absolute & mixed",
+  "goal": "Explain why a copied formula breaks, lock a cell with $ (F4), and use mixed references so one formula fills a whole grid.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "The copy trap",
+      "text": "You price design files in dollars and convert them to rupees. The rate, **80**, sits in one cell, ==E2==.\n\nThe formula in `C2` works. But copy it down and look at `C3`: **0**. Icons cost 25 dollars, so that can't be right.\n\nIn this topic you'll find out why it happens, and fix it with a tiny symbol: **$**.",
+      "grid": [
+        ["Item", "USD", "INR", null, "Rate"],
+        ["Font", 10, "=B2*E2", null, 80],
+        ["Icons", 25, "=B3*E3", null, null],
+        ["Photo", 15, "=B4*E4", null, null],
+        ["Template", 40, "=B5*E5", null, null]
+      ],
+      "activeCell": "C3",
+      "highlightCells": ["E2"],
+      "yellowCells": ["C3"],
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "The first row",
+      "prompt": "Start with the first row. In ==C2==, convert the Font price from dollars to rupees: type `=B2*E2` and press [[Enter]].",
+      "grid": [
+        ["Item", "USD", "INR", null, "Rate"],
+        ["Font", 10, null, null, 80],
+        ["Icons", 25, null, null, null],
+        ["Photo", 15, null, null, null],
+        ["Template", 40, null, null, null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "highlightCells": ["B2", "E2"],
+      "yellowCells": ["C2"],
+      "expectedValue": 800,
+      "mustReference": ["B2", "E2"],
+      "disallowFunctions": true,
+      "solution": "=B2*E2",
+      "explain": "**800**: 10 dollars × 80 rupees. This one is right. The trouble starts when you copy it down.",
+      "mobileButtons": ["=", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingReference": "Multiply the price in `B2` by the rate in `E2`.",
+        "wrongValue": "Type `=B2*E2`: dollars times the rate."
+      },
+      "clues": ["Price is in `B2`, the rate is in `E2`, and `*` means multiply."]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "Predict: what will C3 show?",
+      "prompt": "You copy the formula from `C2` down to `C5`.\n\nWhat will `C3` show?",
+      "grid": [
+        ["Item", "USD", "INR", null, "Rate"],
+        ["Font", 10, "=B2*E2", null, 80],
+        ["Icons", 25, null, null, null],
+        ["Photo", 15, null, null, null],
+        ["Template", 40, null, null, null]
+      ],
+      "activeCell": "C2",
+      "highlightCells": ["E2"],
+      "yellowCells": ["C3"],
+      "showFormulaBar": true,
+      "options": ["`2000`: 25 × 80", "`0`", "An error message"],
+      "answer": 1,
+      "explain": "A copied formula **slides along with its cell**. One row down, `B2` became `B3` (good) but `E2` became `E3` (bad). `E3` is empty, so 25 × nothing = **0**.",
+      "wrongFeedback": [
+        "That's what you want. But every reference in the formula slides, including the rate. Which cell would `E2` turn into one row down?",
+        null,
+        "No error appears: the formula still works, it just multiplies by the wrong cell."
+      ],
+      "clues": ["In AutoFill, `B2*C2` became `B3*C3` one row down. What happens to `E2`?"]
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Prove it: Ctrl + D",
+      "prompt": "Find out. `C2` to `C5` are selected, with your formula at the top.\n\nPress [[Ctrl]] + [[D]] to fill down, then look at the answers: only the first row is right.",
+      "keys": {
+        "win": "Ctrl+D",
+        "mac": "Cmd+D"
+      },
+      "grid": [
+        ["Item", "USD", "INR", null, "Rate"],
+        ["Font", 10, "=B2*E2", null, 80],
+        ["Icons", 25, null, null, null],
+        ["Photo", 15, null, null, null],
+        ["Template", 40, null, null, null]
+      ],
+      "activeCell": "C2:C5",
+      "postcondition": {
+        "grid": [
+          ["Item", "USD", "INR", null, "Rate"],
+          ["Font", 10, "=B2*E2", null, 80],
+          ["Icons", 25, "=B3*E3", null, null],
+          ["Photo", 15, "=B4*E4", null, null],
+          ["Template", 40, "=B5*E5", null, null]
+        ],
+        "selection": "C2:C5"
+      },
+      "clues": ["Hold Ctrl, then tap D once."]
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Lock it: F4",
+      "prompt": "The rate must **stay on `E2`** in every row. A **$** in front of a letter or number locks it: `$E$2` means “always column E, always row 2”.\n\nClick `C2`, press [[F2]] to edit, put the cursor on `E2`, then press [[F4]]. Excel adds both dollar signs for you.\n\nOn a Mac, Excel uses [[Cmd]] + [[T]] instead.",
+      "keys": {
+        "win": "F4",
+        "mac": null
+      },
+      "grid": [
+        ["Item", "USD", "INR", null, "Rate"],
+        ["Font", 10, "=B2*E2", null, 80],
+        ["Icons", 25, null, null, null],
+        ["Photo", 15, null, null, null],
+        ["Template", 40, null, null, null]
+      ],
+      "activeCell": "C2",
+      "postcondition": {
+        "grid": [
+          ["Item", "USD", "INR", null, "Rate"],
+          ["Font", 10, "=B2*$E$2", null, 80],
+          ["Icons", 25, null, null, null],
+          ["Photo", 15, null, null, null],
+          ["Template", 40, null, null, null]
+        ],
+        "selection": "C2"
+      },
+      "clues": ["The key is F4, at the top of your keyboard. Some laptops need Fn held too."]
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Fill down again",
+      "prompt": "Now fill down again with [[Ctrl]] + [[D]], and watch the other rows come out right this time.",
+      "keys": {
+        "win": "Ctrl+D",
+        "mac": "Cmd+D"
+      },
+      "grid": [
+        ["Item", "USD", "INR", null, "Rate"],
+        ["Font", 10, "=B2*$E$2", null, 80],
+        ["Icons", 25, null, null, null],
+        ["Photo", 15, null, null, null],
+        ["Template", 40, null, null, null]
+      ],
+      "activeCell": "C2:C5",
+      "postcondition": {
+        "grid": [
+          ["Item", "USD", "INR", null, "Rate"],
+          ["Font", 10, "=B2*$E$2", null, 80],
+          ["Icons", 25, "=B3*$E$2", null, null],
+          ["Photo", 15, "=B4*$E$2", null, null],
+          ["Template", 40, "=B5*$E$2", null, null]
+        ],
+        "selection": "C2:C5"
+      },
+      "clues": ["Same shortcut as before: Ctrl + D."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Type the $ yourself",
+      "prompt": "New sheet, same trap. Each rep earns a bonus: sales × the rate in `E2` (5%, stored as 0.05).\n\nIn ==C4==, work out **Chen's** bonus. Lock the rate with `$` on both parts (press [[F4]] or type the dollar signs) so the formula would still be right if copied to the other reps.",
+      "grid": [
+        ["Rep", "Sales", "Bonus", null, "Rate"],
+        ["Asha", 12000, null, null, 0.05],
+        ["Ben", 8000, null, null, null],
+        ["Chen", 15000, null, null, null],
+        ["Dev", 6000, null, null, null]
+      ],
+      "targetCell": "C4",
+      "activeCell": "A4",
+      "yellowCells": ["C4"],
+      "expectedValue": 750,
+      "mustReference": ["B4", "E2"],
+      "disallowFunctions": true,
+      "solution": "=B4*$E$2",
+      "explain": "**750**: Chen's 15000 × 0.05. With `$E$2` the rate never moves, so `=B4*$E$2` is right in every row. Without the `$`, this cell would multiply by the empty `E4` and show 0.",
+      "mobileButtons": ["=", "*", "$"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingReference": "Use Chen's sales in `B4` and the rate in `E2`.",
+        "wrongValue": "Chen's bonus is his sales times the rate in `E2`, not the cell beside his row."
+      },
+      "clues": [
+        "Row 4 is Chen. The rate is always `E2`.",
+        "Click `E2` inside the formula and press F4 to add the `$` signs."
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Mixed references",
+      "prompt": "Sometimes you lock only **half** of a reference. This grid shows the price of 1, 2 or 5 items at three prices.\n\n• `$A3` locks the **column**: always the price list in column A, but the row can change.\n• `C$1` locks the **row**: always the quantities in row 1, but the column can change.\n\nIn ==C3==, type `=$A3*C$1` and press [[Enter]]. One formula like this fills the whole grid.",
+      "grid": [
+        ["Price", 1, 2, 5],
+        [10, null, null, null],
+        [25, null, null, null],
+        [40, null, null, null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A1",
+      "highlightCells": ["A3", "C1"],
+      "yellowCells": ["C3"],
+      "expectedValue": 50,
+      "mustReference": ["A3", "C1"],
+      "disallowFunctions": true,
+      "solution": "=$A3*C$1",
+      "explain": "**50**: 25 rupees × 2 items. A reference with one `$` is **mixed**: the locked half stays put, the free half slides when you copy.",
+      "mobileButtons": ["=", "*", "$"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingReference": "You need the price in `A3` and the quantity in `C1`.",
+        "wrongValue": "Price 25 times quantity 2 is 50. Use `A3` for the price and `C1` for the quantity."
+      },
+      "clues": ["Price from column A, quantity from row 1: `$A3` and `C$1`, multiplied."]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Predict: fill the whole grid",
+      "prompt": "The formula `=$A2*B$1` in `B2` is filled across to `D2` and down to `D4`.\n\nWhat's the formula in `D4`?",
+      "grid": [
+        ["Price", 1, 2, 5],
+        [10, "=$A2*B$1", "=$A2*C$1", "=$A2*D$1"],
+        [25, "=$A3*B$1", "=$A3*C$1", "=$A3*D$1"],
+        [40, "=$A4*B$1", "=$A4*C$1", null]
+      ],
+      "activeCell": "B2",
+      "yellowCells": ["D4"],
+      "options": ["`=$A4*D$1`", "`=$A2*B$1`", "`=A4*D1`"],
+      "answer": 0,
+      "explain": "Across, `B$1` slides to `D$1` and `$A` stays on column A. Down, `$A2` slides to `$A4` and `$1` stays on row 1. So `D4` is `=$A4*D$1`: price 40 × 5 items = **200**.",
+      "wrongFeedback": [
+        null,
+        "That's the formula with nothing sliding. The free halves (row of `$A2`, column of `B$1`) do move.",
+        "The `$` signs are still there after copying. Without them the references would slide everywhere."
+      ],
+      "clues": ["Which part of `$A2` can change, and which part of `B$1`?"]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "A real F4 surprise",
+      "prompt": "You click inside `E2` in a formula and press [[F4]] **three** times, not once.\n\nWhat do you get?",
+      "options": ["`$E$2`", "`E$2`", "`$E2`"],
+      "answer": 2,
+      "explain": "F4 cycles: `$E$2`, then `E$2` (row locked), then `$E2` (column locked), then back to `E2`. Three presses lands on `$E2`. If you overshoot, keep pressing: it loops.",
+      "wrongFeedback": [
+        "That's the first press. Each extra press moves to the next style.",
+        "That's the second press. One more press changes which half is locked.",
+        null
+      ],
+      "clues": ["Press 1: both locked. Press 2: only the row. What's next in the cycle?"]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A shop shows sale prices at three discounts (10%, 20% and 30%, stored as 0.1, 0.2 and 0.3) for three items.\n\nIn ==C3==, work out the sale price of the **450** item at the **20%** discount. Write it in a way that could be filled across and down the whole grid.",
+      "grid": [
+        ["Price", 0.1, 0.2, 0.3],
+        [200, null, null, null],
+        [450, null, null, null],
+        [800, null, null, null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A1",
+      "expectedValue": 360,
+      "mustReference": ["A3", "C1"],
+      "disallowFunctions": true,
+      "solution": "=$A3*(1-C$1)",
+      "explain": "**360**: 450 × (1 − 0.2). `$A3` locks the price column, `C$1` locks the discount row, so one formula fills all nine cells.",
+      "mobileButtons": ["=", "*", "$", "(", ")", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingReference": "Use the price in `A3` and the discount in `C1`.",
+        "wrongValue": "Take the discount **off** the price: price × (1 − discount). Use the 450 price and the 20% column."
+      },
+      "clues": [
+        "Sale price = price × (1 − discount).",
+        "Lock the column of the price and the row of the discount: `$A3` and `C$1`."
+      ]
+    }
+  ]
+}

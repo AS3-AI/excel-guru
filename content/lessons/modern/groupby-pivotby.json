@@ -1,0 +1,326 @@
+{
+  "id": "groupby-pivotby",
+  "module": "modern",
+  "title": "GROUPBY & PIVOTBY",
+  "goal": "Build pivot-style summaries with one formula (GROUPBY and PIVOTBY), know the argument order, and check what they return with SUMIFS and UNIQUE.",
+  "difficulty": 3,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "One formula, whole summary",
+      "text": "Your boss asks: **“How much did each region sell?”**\n\nThe old ways: build a PivotTable (lots of clicks, and you must refresh it), or write `UNIQUE` plus a `SUMIFS` for every row.\n\nMicrosoft 365 has a one-formula answer. Type this once in ==E1==:\n\n`=GROUPBY(A2:A8, C2:C8, SUM)`\n\nExcel fills a whole summary table by itself (a **spill**): each region once, sorted A to Z, with its total, plus a grand **Total** row. Change a sale and the table updates. If something is sitting in the cells it needs, you'll see #SPILL! instead.\n\nThree arguments: **what to group by**, **what to add up**, and **how** (`SUM`, `AVERAGE`, `COUNT`…).\n\nHonest note: this practice sheet can't run GROUPBY. You'll prove its numbers with functions it can run.",
+      "grid": [
+        ["Region", "Product", "Sales", null, "East", 450],
+        ["North", "Tea", 400, null, "North", 1100],
+        ["South", "Tea", 300, null, "South", 900],
+        ["North", "Coffee", 500, null, "Total", 2450],
+        ["South", "Coffee", 600, null, null, null],
+        ["East", "Tea", 350, null, null, null],
+        ["East", "Coffee", 100, null, null, null],
+        ["North", "Tea", 200, null, null, null]
+      ],
+      "yellowCells": ["E1:F4"]
+    },
+    {
+      "id": "s2",
+      "type": "mcq",
+      "topic": "Argument order",
+      "prompt": "You want total **Sales for each Product** (Tea, Coffee). Which formula is right?",
+      "grid": [
+        ["Region", "Product", "Sales"],
+        ["North", "Tea", 400],
+        ["South", "Tea", 300],
+        ["North", "Coffee", 500],
+        ["South", "Coffee", 600],
+        ["East", "Tea", 350],
+        ["East", "Coffee", 100],
+        ["North", "Tea", 200]
+      ],
+      "options": [
+        "`=GROUPBY(B2:B8,C2:C8,SUM)`",
+        "`=GROUPBY(C2:C8,B2:B8,SUM)`",
+        "`=GROUPBY(B2:B8,SUM,C2:C8)`"
+      ],
+      "answer": 0,
+      "explain": "Product (`B2:B8`) is what you group by, Sales (`C2:C8`) is what you add up, and `SUM` says how. Order: group-by, values, function.",
+      "wrongFeedback": [
+        null,
+        "That groups by the Sales numbers and tries to add up product names. Group-by comes first, values second.",
+        "The function always comes last. Excel needs the values (`C2:C8`) before it knows what `SUM` should add."
+      ],
+      "clues": ["Which column holds the labels you want one row for? Which holds the numbers?"]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Prove the total",
+      "prompt": "GROUPBY would show North with a total next to it. Prove that number with a function this sheet can run.\n\nIn ==F2==, use **SUMIFS** to add the Sales where Region equals ==E2==.",
+      "grid": [
+        ["Region", "Product", "Sales", null, "Region", "Total"],
+        ["North", "Tea", 400, null, "North", null],
+        ["South", "Tea", 300, null, null, null],
+        ["North", "Coffee", 500, null, null, null],
+        ["South", "Coffee", 600, null, null, null],
+        ["East", "Tea", 350, null, null, null],
+        ["East", "Coffee", 100, null, null, null],
+        ["North", "Tea", 200, null, null, null]
+      ],
+      "targetCell": "F2",
+      "mustUse": ["SUMIFS"],
+      "highlightCells": ["A2:A8", "C2:C8"],
+      "activeCell": "F2",
+      "expectedValue": 1100,
+      "solution": "=SUMIFS(C2:C8,A2:A8,E2)",
+      "explain": "1100: North appears three times (400, 500 and 200). That's exactly the number GROUPBY puts beside North.",
+      "mobileButtons": ["=", "(", ")", ",", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` and use SUMIFS.",
+        "parseError": "Check the brackets and commas: `=SUMIFS(sum range, criteria range, criteria)`.",
+        "missingFunction": "Use SUMIFS to add up Sales for one region.",
+        "wrongValue": "North has three rows: 400, 500 and 200. Add column C where column A equals `E2`."
+      },
+      "clues": [
+        "SUMIFS starts with the numbers to add, then the Region column, then the region to match."
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "The label column",
+      "prompt": "GROUPBY's first column lists each region **once**, sorted A to Z. Rebuild that list.\n\nIn ==E2==, use **UNIQUE** to drop the repeats and **SORT** to put them in order.",
+      "grid": [
+        ["Region", "Product", "Sales", null, "Region labels"],
+        ["North", "Tea", 400, null, null],
+        ["South", "Tea", 300, null, null],
+        ["North", "Coffee", 500, null, null],
+        ["South", "Coffee", 600, null, null],
+        ["East", "Tea", 350, null, null],
+        ["East", "Coffee", 100, null, null],
+        ["North", "Tea", 200, null, null]
+      ],
+      "targetCell": "E2",
+      "mustUse": ["UNIQUE", "SORT"],
+      "activeCell": "E2",
+      "expectedValue": "East",
+      "solution": "=SORT(UNIQUE(A2:A8))",
+      "explain": "East, North, South: `UNIQUE` kept first-seen order (North, South, East) and `SORT` put them A to Z. The list spills down from `E2` just like GROUPBY's label column.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Wrap one function inside the other: `=SORT(UNIQUE(...))`.",
+        "missingFunction": "Use both UNIQUE and SORT.",
+        "wrongValue": "The first label after sorting A to Z should be East."
+      },
+      "clues": ["UNIQUE(A2:A8) removes repeats. Put that inside SORT( )."]
+    },
+    {
+      "id": "s5",
+      "type": "info",
+      "topic": "PIVOTBY: rows AND columns",
+      "text": "A **PivotTable** puts one field down the side and another across the top. Its formula twin is **PIVOTBY**:\n\n`=PIVOTBY(A2:A8, B2:B8, C2:C8, SUM)`\n\nFour arguments, in this order: **rows** (down the side), **columns** (across the top), **values** (what to add up), **function**.\n\nOn our data it spills this table, with totals added on the right and the bottom and labels sorted A to Z:",
+      "grid": [
+        [null, "Coffee", "Tea", "Total"],
+        ["East", 100, 350, 450],
+        ["North", 500, 600, 1100],
+        ["South", 600, 300, 900],
+        ["Total", 1200, 1250, 2450]
+      ],
+      "yellowCells": ["B2:C4"]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "Using the same data, what number will that PIVOTBY table show where the **North** row meets the **Tea** column?",
+      "grid": [
+        ["Region", "Product", "Sales"],
+        ["North", "Tea", 400],
+        ["South", "Tea", 300],
+        ["North", "Coffee", 500],
+        ["South", "Coffee", 600],
+        ["East", "Tea", 350],
+        ["East", "Coffee", 100],
+        ["North", "Tea", 200]
+      ],
+      "options": ["`600`", "`400`", "`1100`"],
+      "answer": 0,
+      "explain": "North and Tea appear twice (400 and 200), so the crossing cell is 600. Next, prove it.",
+      "wrongFeedback": [
+        null,
+        "400 is only the first North Tea row. There's a second one lower down (200).",
+        "1100 is North's total across both products. That's the Total column, not the Tea column."
+      ],
+      "clues": ["Find every row that is North AND Tea."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Two conditions",
+      "prompt": "Prove the crossing cell. In ==G2==, add the Sales where the Region is ==E2== **and** the Product is ==F2==.",
+      "grid": [
+        ["Region", "Product", "Sales", null, "Region", "Product", "Total"],
+        ["North", "Tea", 400, null, "North", "Tea", null],
+        ["South", "Tea", 300, null, null, null, null],
+        ["North", "Coffee", 500, null, null, null, null],
+        ["South", "Coffee", 600, null, null, null, null],
+        ["East", "Tea", 350, null, null, null, null],
+        ["East", "Coffee", 100, null, null, null, null],
+        ["North", "Tea", 200, null, null, null, null]
+      ],
+      "targetCell": "G2",
+      "mustUse": ["SUMIFS"],
+      "mustReference": ["E2", "F2"],
+      "activeCell": "G2",
+      "expectedValue": 600,
+      "solution": "=SUMIFS(C2:C8,A2:A8,E2,B2:B8,F2)",
+      "explain": "600 = 400 + 200. With only the region you'd get 1100; with only the product, 1250. A PivotTable cell, and PIVOTBY, always mean both labels at once.",
+      "mobileButtons": ["=", "(", ")", ",", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Add each pair after the sum range: criteria range, then criteria.",
+        "missingFunction": "Use SUMIFS with two pairs of criteria.",
+        "missingReference": "Point at the label cells `E2` and `F2` instead of typing the words.",
+        "wrongValue": "Both conditions must hold. North alone gives 1100 and Tea alone gives 1250; you want only where both are true."
+      },
+      "clues": ["SUMIFS(sum range, Region column, E2, Product column, F2)."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Swap rows and columns",
+      "prompt": "Now the boss wants **Products down the side** and **Regions across the top**. Which formula?",
+      "grid": [
+        ["Region", "Product", "Sales"],
+        ["North", "Tea", 400],
+        ["South", "Tea", 300],
+        ["North", "Coffee", 500],
+        ["South", "Coffee", 600],
+        ["East", "Tea", 350],
+        ["East", "Coffee", 100],
+        ["North", "Tea", 200]
+      ],
+      "options": [
+        "`=PIVOTBY(B2:B8,A2:A8,C2:C8,SUM)`",
+        "`=PIVOTBY(A2:A8,B2:B8,C2:C8,SUM)`",
+        "`=PIVOTBY(C2:C8,B2:B8,A2:A8,SUM)`"
+      ],
+      "answer": 0,
+      "explain": "Rows come first, columns second. Put Product (`B2:B8`) first and Region (`A2:A8`) second and the table turns on its side.",
+      "wrongFeedback": [
+        null,
+        "That's the table you just saw: Regions down the side, Products across. Swap the first two arguments.",
+        "The values (`C2:C8`) are the third argument, not the first. Rows, columns, then values."
+      ],
+      "clues": ["First argument = down the side. Second argument = across the top."]
+    },
+    {
+      "id": "s9",
+      "type": "entry",
+      "topic": "It updates itself",
+      "prompt": "A summary built from formulas follows the data. A GROUPBY table does the same, with no Refresh click (a PivotTable needs **Data → Refresh All**).\n\nSouth's Tea sale was really 500, not 300. Click ==C3==, type **500**, press [[Enter]], and watch the totals.",
+      "grid": [
+        ["Region", "Product", "Sales", null, "Region", "Total"],
+        ["North", "Tea", 400, null, "East", "=SUMIFS($C$2:$C$8,$A$2:$A$8,E2)"],
+        ["South", "Tea", 300, null, "North", "=SUMIFS($C$2:$C$8,$A$2:$A$8,E3)"],
+        ["North", "Coffee", 500, null, "South", "=SUMIFS($C$2:$C$8,$A$2:$A$8,E4)"],
+        ["South", "Coffee", 600, null, "Total", "=SUM(F2:F4)"],
+        ["East", "Tea", 350, null, null, null],
+        ["East", "Coffee", 100, null, null, null],
+        ["North", "Tea", 200, null, null, null]
+      ],
+      "activeCell": "A3",
+      "yellowCells": ["C3"],
+      "highlightCells": ["F4", "F5"],
+      "expect": {
+        "C3": 500,
+        "F4": 1100,
+        "F5": 2650
+      },
+      "explain": "South went from 900 to 1100 and the grand total from 2450 to 2650, without touching the table. GROUPBY works like these formulas: it recalculates the moment the data changes.",
+      "wrongFeedback": {
+        "wrongValue": "Change only `C3` (South, Tea) to **500**. The totals should then show 1100 for South and 2650 overall."
+      },
+      "clues": ["Click `C3`, type 500, press Enter."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Other functions",
+      "prompt": "Swap `SUM` for `COUNT` in GROUPBY and it counts rows instead of adding. Grouped by Product, **Tea** would show 4.\n\nWhat would **Coffee** show? Work it out in ==F2== for the product in ==E2==.",
+      "grid": [
+        ["Region", "Product", "Sales", null, "Product", "Rows"],
+        ["North", "Tea", 400, null, "Coffee", null],
+        ["South", "Tea", 300, null, null, null],
+        ["North", "Coffee", 500, null, null, null],
+        ["South", "Coffee", 600, null, null, null],
+        ["East", "Tea", 350, null, null, null],
+        ["East", "Coffee", 100, null, null, null],
+        ["North", "Tea", 200, null, null, null]
+      ],
+      "targetCell": "F2",
+      "mustReference": ["E2"],
+      "activeCell": "F2",
+      "expectedValue": 3,
+      "solution": "=COUNTIF(B2:B8,E2)",
+      "explain": "3: Coffee appears in three rows (500, 600 and 100). `COUNT`, `AVERAGE`, `MAX` and `MIN` all go in that third GROUPBY argument the same way `SUM` does.",
+      "mobileButtons": ["=", "(", ")", ",", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingReference": "Point at the label in `E2`.",
+        "wrongValue": "Count the rows where Product is Coffee. Adding their Sales gives 1200, not a count."
+      },
+      "clues": ["Count rows where column B equals `E2`."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "GROUPBY or PivotTable?",
+      "prompt": "You need a summary you can click and drag around, with slicers, and send to a colleague who has Excel 2019. Which tool?",
+      "options": [
+        "PivotTable: click, drag, works in old Excel",
+        "GROUPBY: one formula",
+        "PIVOTBY: rows and columns"
+      ],
+      "answer": 0,
+      "explain": "GROUPBY and PIVOTBY need Microsoft 365, so Excel 2019 shows #NAME?. A PivotTable works everywhere and is built for clicking and exploring. Use GROUPBY when the summary should be a live formula other cells can build on.",
+      "wrongFeedback": [
+        null,
+        "GROUPBY is a formula and needs Microsoft 365. Excel 2019 can't calculate it. For clicking, dragging and slicers, use a PivotTable.",
+        "PIVOTBY also needs Microsoft 365, and it has no slicers or drag-and-drop."
+      ],
+      "clues": ["Which tool has buttons to click and drag? Which tools only exist in newer Excel?"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A school fair logged every sale. What is the **average** amount taken per sale at the Games stall? Put the answer in ==E2==.",
+      "grid": [
+        ["Stall", "Amount", null, "Stall to check", "Average per sale"],
+        ["Games", 40, null, "Games", null],
+        ["Food", 120, null, null, null],
+        ["Games", 60, null, null, null],
+        ["Food", 80, null, null, null],
+        ["Games", 20, null, null, null],
+        ["Books", 50, null, null, null],
+        ["Food", 100, null, null, null]
+      ],
+      "targetCell": "E2",
+      "mustReference": ["D2"],
+      "activeCell": "A1",
+      "expectedValue": 40,
+      "solution": "=AVERAGEIFS(B2:B8,A2:A8,D2)",
+      "explain": "40: Games had three sales (40, 60, 20) averaging 40. A grouped summary using `AVERAGE` would show exactly this next to Games. Averaging everything gives about 67, and adding the Games rows gives 120.",
+      "mobileButtons": ["=", "(", ")", ",", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "wrongValue": "Only the Games rows count, and you want their average, not their total (120) and not the average of every row (about 67)."
+      },
+      "clues": ["Average the Amounts, but only where Stall equals `D2`."]
+    }
+  ]
+}

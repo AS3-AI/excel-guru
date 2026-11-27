@@ -7,28 +7,108 @@ type Impl = (...args: Arg[]) => CellValue | Matrix;
 
 /** Only these positions receive element-wise single-value evaluation. All other array arguments stay whole. */
 export const liftingArgumentPositions: Readonly<Record<string, readonly number[]>> = {
-  ABS: [0], ROUND: [0, 1], ROUNDUP: [0, 1], ROUNDDOWN: [0, 1], INT: [0], MOD: [0, 1], SQRT: [0], POWER: [0, 1],
-  FLOOR: [0, 1], CEILING: [0, 1], ODD: [0], EVEN: [0], SIGN: [0],
-  LEN: [0], LEFT: [0, 1], RIGHT: [0, 1], MID: [0, 1, 2], UPPER: [0], LOWER: [0], PROPER: [0], TRIM: [0],
-  SUBSTITUTE: [0, 1, 2, 3], REPLACE: [0, 1, 2, 3], FIND: [0, 1, 2], SEARCH: [0, 1, 2],
-  TEXTBEFORE: [0, 1, 2], TEXTAFTER: [0, 1, 2], VALUE: [0], TEXT: [0, 1], CONCATENATE: [-1], EXACT: [0, 1], REPT: [0, 1],
-  NOT: [0], ISNUMBER: [0], ISTEXT: [0], ISBLANK: [0], ISERROR: [0], ISERR: [0], ISNA: [0], ISLOGICAL: [0], ISEVEN: [0], ISODD: [0],
-  DATE: [0, 1, 2], YEAR: [0], MONTH: [0], DAY: [0], WEEKDAY: [0, 1], DATEVALUE: [0], DAYS: [0, 1], DATEDIF: [0, 1, 2],
-  COUNTIF: [1], COUNTIFS: [1, 3, 5, 7], SUMIF: [1], SUMIFS: [2, 4, 6],
-  AVERAGEIF: [1], AVERAGEIFS: [2, 4, 6], VLOOKUP: [0], HLOOKUP: [0], XLOOKUP: [0], MATCH: [0],
+  ABS: [0],
+  ROUND: [0, 1],
+  ROUNDUP: [0, 1],
+  ROUNDDOWN: [0, 1],
+  INT: [0],
+  MOD: [0, 1],
+  SQRT: [0],
+  POWER: [0, 1],
+  FLOOR: [0, 1],
+  CEILING: [0, 1],
+  ODD: [0],
+  EVEN: [0],
+  SIGN: [0],
+  LEN: [0],
+  LEFT: [0, 1],
+  RIGHT: [0, 1],
+  MID: [0, 1, 2],
+  UPPER: [0],
+  LOWER: [0],
+  PROPER: [0],
+  TRIM: [0],
+  SUBSTITUTE: [0, 1, 2, 3],
+  REPLACE: [0, 1, 2, 3],
+  FIND: [0, 1, 2],
+  SEARCH: [0, 1, 2],
+  TEXTBEFORE: [0, 1, 2],
+  TEXTAFTER: [0, 1, 2],
+  VALUE: [0],
+  TEXT: [0, 1],
+  CONCATENATE: [-1],
+  EXACT: [0, 1],
+  REPT: [0, 1],
+  NOT: [0],
+  ISNUMBER: [0],
+  ISTEXT: [0],
+  ISBLANK: [0],
+  ISERROR: [0],
+  ISERR: [0],
+  ISNA: [0],
+  ISLOGICAL: [0],
+  ISEVEN: [0],
+  ISODD: [0],
+  DATE: [0, 1, 2],
+  YEAR: [0],
+  MONTH: [0],
+  DAY: [0],
+  WEEKDAY: [0, 1],
+  DATEVALUE: [0],
+  DAYS: [0, 1],
+  DATEDIF: [0, 1, 2],
+  COUNTIF: [1],
+  COUNTIFS: [1, 3, 5, 7],
+  SUMIF: [1],
+  SUMIFS: [2, 4, 6],
+  AVERAGEIF: [1],
+  AVERAGEIFS: [2, 4, 6],
+  VLOOKUP: [0],
+  HLOOKUP: [0],
+  XLOOKUP: [0],
+  MATCH: [0],
 };
 
 /** Positions that receive full arrays because the function's contract consumes ranges. */
 export const rangeArgumentPositions: Readonly<Record<string, readonly number[]>> = {
-  SUM: [-1], SUMSQ: [-1], PRODUCT: [-1], AVERAGE: [-1], MIN: [-1], MAX: [-1], COUNT: [-1], COUNTA: [-1], COUNTBLANK: [0],
-  COUNTIF: [0], COUNTIFS: [0, 2, 4, 6], SUMIF: [0, 2], SUMIFS: [0, 1, 3, 5],
-  AVERAGEIF: [0, 2], AVERAGEIFS: [0, 1, 3, 5],
-  VLOOKUP: [1], HLOOKUP: [1], XLOOKUP: [1, 2], INDEX: [0], MATCH: [1],
-  UNIQUE: [0], FILTER: [0, 1], SORT: [0], TEXTJOIN: [2], CONCAT: [0],
+  SUM: [-1],
+  SUMSQ: [-1],
+  PRODUCT: [-1],
+  AVERAGE: [-1],
+  MIN: [-1],
+  MAX: [-1],
+  COUNT: [-1],
+  COUNTA: [-1],
+  COUNTBLANK: [0],
+  COUNTIF: [0],
+  COUNTIFS: [0, 2, 4, 6],
+  SUMIF: [0, 2],
+  SUMIFS: [0, 1, 3, 5],
+  AVERAGEIF: [0, 2],
+  AVERAGEIFS: [0, 1, 3, 5],
+  VLOOKUP: [1],
+  HLOOKUP: [1],
+  XLOOKUP: [1, 2],
+  INDEX: [0],
+  MATCH: [1],
+  UNIQUE: [0],
+  FILTER: [0, 1],
+  SORT: [0],
+  TEXTJOIN: [2],
+  CONCAT: [0],
   SUMPRODUCT: [-1],
 };
 
-const CODES: ErrorCode[] = ["#DIV/0!", "#N/A", "#VALUE!", "#REF!", "#NAME?", "#NUM!", "#SPILL!", "#CIRC!"];
+const CODES: ErrorCode[] = [
+  "#DIV/0!",
+  "#N/A",
+  "#VALUE!",
+  "#REF!",
+  "#NAME?",
+  "#NUM!",
+  "#SPILL!",
+  "#CIRC!",
+];
 const LIBRARY = formulajs as unknown as Record<string, unknown>;
 
 // Day 0 of Excel's 1900 date system, so 1900-03-01 onwards matches Excel's serials.
@@ -36,7 +116,8 @@ const EPOCH = Date.UTC(1899, 11, 30);
 const DAY_MS = 86_400_000;
 const ISO_DATE_RE = /^\s*(\d{4})-(\d\d?)-(\d\d?)\s*$/;
 const serialDay = (n: number) => new Date(EPOCH + Math.floor(n) * DAY_MS);
-const serial = (d: Date) => (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - EPOCH) / DAY_MS;
+const serial = (d: Date) =>
+  (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - EPOCH) / DAY_MS;
 
 export function parseDate(text: unknown): number | null {
   if (typeof text !== "string") return null;
@@ -45,10 +126,13 @@ export function parseDate(text: unknown): number | null {
   const iso = ISO_DATE_RE.exec(s);
   let day: number;
   if (iso) {
-    const y = Number(iso[1]), m = Number(iso[2]), d = Number(iso[3]);
+    const y = Number(iso[1]),
+      m = Number(iso[2]),
+      d = Number(iso[3]);
     if (m < 1 || m > 12 || d < 1 || d > 31) return null;
     const utc = new Date(Date.UTC(y, m - 1, d));
-    if (utc.getUTCFullYear() !== y || utc.getUTCMonth() !== m - 1 || utc.getUTCDate() !== d) return null;
+    if (utc.getUTCFullYear() !== y || utc.getUTCMonth() !== m - 1 || utc.getUTCDate() !== d)
+      return null;
     day = utc.getTime();
   } else {
     if (/^[+-]?\d+(\.\d+)?$/.test(s)) return null;
@@ -76,48 +160,87 @@ function dateArgs(args: Arg[]): number[] | ExcelError {
 }
 function dateFunction(args: Arg[]): CellValue {
   if (args.length !== 3) return VALUE;
-  const a = dateArgs(args); if (isError(a)) return a;
-  let [year, month, day] = a;
-  if (year! >= 0 && year! < 1900) year! += 1900;
-  const t = new Date(Date.UTC(year!, month! - 1, day!));
+  const a = dateArgs(args);
+  if (isError(a)) return a;
+  const [y, month, day] = a;
+  const year = y! >= 0 && y! < 1900 ? y! + 1900 : y!;
+  const t = new Date(Date.UTC(year, month! - 1, day!));
   return Number.isNaN(t.getTime()) ? { error: "#NUM!" } : serial(t);
 }
 function datedif(args: Arg[]): CellValue {
   if (args.length !== 3) return VALUE;
-  const a = dateArgs(args.slice(0, 2)); if (isError(a)) return a;
+  const a = dateArgs(args.slice(0, 2));
+  if (isError(a)) return a;
   const unitArg = scalar(args[2]);
   if (isError(unitArg)) return unitArg;
   if (typeof unitArg !== "string") return VALUE;
-  const [start, end] = a!; if (start! > end!) return { error: "#NUM!" };
-  const s = serialDay(start!), e = serialDay(end!);
+  const [start, end] = a!;
+  if (start! > end!) return { error: "#NUM!" };
+  const s = serialDay(start!),
+    e = serialDay(end!);
   const years = e.getUTCFullYear() - s.getUTCFullYear();
   const months = years * 12 + e.getUTCMonth() - s.getUTCMonth();
-  const anniversary = (m: number) => { const d = new Date(Date.UTC(s.getUTCFullYear(), s.getUTCMonth() + m, 1)); const last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate(); d.setUTCDate(Math.min(s.getUTCDate(), last)); return d; };
+  const anniversary = (m: number) => {
+    const d = new Date(Date.UTC(s.getUTCFullYear(), s.getUTCMonth() + m, 1));
+    const last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+    d.setUTCDate(Math.min(s.getUTCDate(), last));
+    return d;
+  };
   const completedMonths = months - (e < anniversary(months) ? 1 : 0);
   const completedYears = Math.floor(completedMonths / 12);
   switch (unitArg.toUpperCase()) {
-    case "D": return end! - start!;
-    case "M": return completedMonths;
-    case "Y": return completedYears;
-    case "YM": return ((completedMonths % 12) + 12) % 12;
-    case "YD": { const endInStartYear = new Date(Date.UTC(s.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate())); const target = endInStartYear < s ? new Date(Date.UTC(s.getUTCFullYear() + 1, e.getUTCMonth(), e.getUTCDate())) : endInStartYear; return (target.getTime() - s.getTime()) / DAY_MS; }
-    case "MD": { const lib = libraryFunction("DATEDIF"); return lib ? fromLibrary(lib(...args.map((x) => Array.isArray(x) ? x : x ?? null))) as CellValue : VALUE; }
-    default: return VALUE;
+    case "D":
+      return end! - start!;
+    case "M":
+      return completedMonths;
+    case "Y":
+      return completedYears;
+    case "YM":
+      return ((completedMonths % 12) + 12) % 12;
+    case "YD": {
+      const endInStartYear = new Date(
+        Date.UTC(s.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate()),
+      );
+      const target =
+        endInStartYear < s
+          ? new Date(Date.UTC(s.getUTCFullYear() + 1, e.getUTCMonth(), e.getUTCDate()))
+          : endInStartYear;
+      return (target.getTime() - s.getTime()) / DAY_MS;
+    }
+    case "MD": {
+      const lib = libraryFunction("DATEDIF");
+      return lib
+        ? (fromLibrary(lib(...args.map((x) => (Array.isArray(x) ? x : (x ?? null))))) as CellValue)
+        : VALUE;
+    }
+    default:
+      return VALUE;
   }
 }
 function dateShift(a: Arg, monthsArg: Arg, endOfMonth = false): CellValue {
-  const vals = dateArgs([a, monthsArg]); if (isError(vals)) return vals;
-  const [day, months] = vals!; const src = serialDay(day!);
+  const vals = dateArgs([a, monthsArg]);
+  if (isError(vals)) return vals;
+  const [day, months] = vals!;
+  const src = serialDay(day!);
   const target = new Date(Date.UTC(src.getUTCFullYear(), src.getUTCMonth() + months!, 1));
-  const last = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate();
+  const last = new Date(
+    Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0),
+  ).getUTCDate();
   target.setUTCDate(endOfMonth ? last : Math.min(src.getUTCDate(), last));
   return serial(target);
 }
 function workday(args: Arg[]): CellValue {
   if (args.length < 2 || args.length > 3) return VALUE;
-  const vals = dateArgs(args.slice(0, 2)); if (isError(vals)) return vals;
-  let day = vals![0]!, left = Math.abs(vals![1]!), direction = Math.sign(vals![1]!);
-  while (left > 0) { day += direction; const wd = serialDay(day).getUTCDay(); if (wd !== 0 && wd !== 6) left--; }
+  const vals = dateArgs(args.slice(0, 2));
+  if (isError(vals)) return vals;
+  const direction = Math.sign(vals![1]!);
+  let day = vals![0]!,
+    left = Math.abs(vals![1]!);
+  while (left > 0) {
+    day += direction;
+    const wd = serialDay(day).getUTCDay();
+    if (wd !== 0 && wd !== 6) left--;
+  }
   return day;
 }
 
@@ -136,7 +259,12 @@ function libraryFunction(name: string): ((...args: unknown[]) => unknown) | null
   if (found === undefined && name.includes(".")) {
     found = LIBRARY[name.replace(/\./g, "")];
     if (found === undefined) {
-      found = name.split(".").reduce<unknown>((obj, key) => (obj as Record<string, unknown> | undefined)?.[key], LIBRARY);
+      found = name
+        .split(".")
+        .reduce<unknown>(
+          (obj, key) => (obj as Record<string, unknown> | undefined)?.[key],
+          LIBRARY,
+        );
     }
   }
   return typeof found === "function" ? (found as (...args: unknown[]) => unknown) : null;
@@ -151,8 +279,15 @@ function toLibrary(arg: Arg): unknown {
 function fromLibrary(result: unknown): CellValue | Matrix {
   if (result instanceof Error) return toExcelError(result.message);
   if (result instanceof Date) {
-    const local = Date.UTC(result.getFullYear(), result.getMonth(), result.getDate(),
-      result.getHours(), result.getMinutes(), result.getSeconds(), result.getMilliseconds());
+    const local = Date.UTC(
+      result.getFullYear(),
+      result.getMonth(),
+      result.getDate(),
+      result.getHours(),
+      result.getMinutes(),
+      result.getSeconds(),
+      result.getMilliseconds(),
+    );
     return (local - EPOCH) / DAY_MS;
   }
   if (typeof result === "number") return Number.isFinite(result) ? result : { error: "#NUM!" };
@@ -211,23 +346,31 @@ function criterion(c: Arg): Test {
     return (v) => (op === "<>" ? v !== b : op === "" || op === "=" ? v === b : false);
   }
   if (op === "" || op === "=" || op === "<>") {
-    const match = operand === ""
-      ? (v: CellValue) => v === null || v === ""
-      : (v: CellValue) => typeof v === "string" && wildcard(operand).test(v);
+    const match =
+      operand === ""
+        ? (v: CellValue) => v === null || v === ""
+        : (v: CellValue) => typeof v === "string" && wildcard(operand).test(v);
     return op === "<>" ? (v) => !match(v) : match;
   }
   const cmp = compareWith(op);
-  return (v) => typeof v === "string" && cmp(v.toUpperCase() < upper ? -1 : v.toUpperCase() > upper ? 1 : 0);
+  return (v) =>
+    typeof v === "string" && cmp(v.toUpperCase() < upper ? -1 : v.toUpperCase() > upper ? 1 : 0);
 }
 
 function compareWith(op: string): (diff: number) => boolean {
   switch (op) {
-    case "<": return (d) => d < 0;
-    case ">": return (d) => d > 0;
-    case "<=": return (d) => d <= 0;
-    case ">=": return (d) => d >= 0;
-    case "<>": return (d) => d !== 0;
-    default: return (d) => d === 0;
+    case "<":
+      return (d) => d < 0;
+    case ">":
+      return (d) => d > 0;
+    case "<=":
+      return (d) => d <= 0;
+    case ">=":
+      return (d) => d >= 0;
+    case "<>":
+      return (d) => d !== 0;
+    default:
+      return (d) => d === 0;
   }
 }
 
@@ -252,7 +395,8 @@ function toNumber(v: CellValue): number | null {
   return null;
 }
 
-const isError = (v: unknown): v is ExcelError => typeof v === "object" && v !== null && "error" in v;
+const isError = (v: unknown): v is ExcelError =>
+  typeof v === "object" && v !== null && "error" in v;
 
 function errorPredicate(arg: Arg, test: (value: CellValue) => boolean): CellValue | Matrix {
   if (Array.isArray(arg)) return arg.map((row) => row.map((value) => test(value)));
@@ -261,7 +405,12 @@ function errorPredicate(arg: Arg, test: (value: CellValue) => boolean): CellValu
 
 function errorType(arg: Arg): CellValue | Matrix {
   const types: Partial<Record<ErrorCode, number>> = {
-    "#DIV/0!": 2, "#VALUE!": 3, "#REF!": 4, "#NAME?": 5, "#NUM!": 6, "#N/A": 7,
+    "#DIV/0!": 2,
+    "#VALUE!": 3,
+    "#REF!": 4,
+    "#NAME?": 5,
+    "#NUM!": 6,
+    "#N/A": 7,
   };
   const typeOf = (value: CellValue): CellValue => {
     if (!isError(value)) return NA;
@@ -276,7 +425,7 @@ function parityPredicate(arg: Arg, name: "ISEVEN" | "ISODD"): CellValue | Matrix
   const test = (value: CellValue): CellValue => {
     if (isError(value)) return value;
     const fn = libraryFunction(name);
-    return fn ? fromLibrary(fn(value)) as CellValue : VALUE;
+    return fn ? (fromLibrary(fn(value)) as CellValue) : VALUE;
   };
   if (Array.isArray(arg)) return arg.map((row) => row.map(test));
   return test(arg ?? null);
@@ -299,7 +448,8 @@ function selected(target: Arg, pairs: Arg[]): CellValue[] | ExcelError {
   }
   const rows = ranges[0]!.length;
   const cols = ranges[0]![0]?.length ?? 0;
-  if (ranges.some((r) => r.length !== rows || (r[0]?.length ?? 0) !== cols)) return { error: "#VALUE!" };
+  if (ranges.some((r) => r.length !== rows || (r[0]?.length ?? 0) !== cols))
+    return { error: "#VALUE!" };
 
   const out: CellValue[] = [];
   for (let r = 0; r < rows; r++) {
@@ -316,6 +466,30 @@ function sum(cells: CellValue[] | ExcelError): CellValue {
   for (const v of cells) {
     if (isError(v)) return v;
     if (typeof v === "number") total += v;
+  }
+  return total;
+}
+
+/** Excel's SUM: ranges add only real numbers; typed arguments convert numeric text and TRUE/FALSE. */
+function sumArgs(args: Arg[]): CellValue {
+  let total = 0;
+  for (const arg of args) {
+    if (Array.isArray(arg)) {
+      for (const v of arg.flat()) {
+        if (isError(v)) return v;
+        if (typeof v === "number") total += v;
+      }
+      continue;
+    }
+    const v = arg ?? null;
+    if (isError(v)) return v;
+    if (typeof v === "number") total += v;
+    else if (typeof v === "boolean") total += v ? 1 : 0;
+    else if (typeof v === "string") {
+      const n = toNumber(v);
+      if (n === null) return VALUE;
+      total += n;
+    }
   }
   return total;
 }
@@ -362,7 +536,7 @@ function orderStatistic(args: Arg[], largest: boolean): CellValue {
   const k = numberArg(args[1], 0);
   if (isError(k)) return k;
   if (k < 1 || k > nums.length) return { error: "#NUM!" };
-  nums.sort((a, b) => largest ? b - a : a - b);
+  nums.sort((a, b) => (largest ? b - a : a - b));
   return nums[k - 1]!;
 }
 
@@ -471,7 +645,7 @@ function vlookup(args: Arg[]): CellValue {
       found = r;
     }
   }
-  return found < 0 ? NA : table[found]![index - 1] ?? null;
+  return found < 0 ? NA : (table[found]![index - 1] ?? null);
 }
 
 // MATCH(lookup_value, lookup_array, [match_type]).
@@ -484,18 +658,19 @@ function match(args: Arg[]): CellValue {
   const rows = array.length;
   const cols = Math.max(0, ...array.map((row) => row.length));
   if (rows !== 1 && cols !== 1) return NA;
-  const values = rows === 1
-    ? Array.from({ length: cols }, (_, c) => array[0]?.[c] ?? null)
-    : Array.from({ length: rows }, (_, r) => array[r]?.[0] ?? null);
+  const values =
+    rows === 1
+      ? Array.from({ length: cols }, (_, c) => array[0]?.[c] ?? null)
+      : Array.from({ length: rows }, (_, r) => array[r]?.[0] ?? null);
   const type = numberArg(args[2], 1);
   if (isError(type)) return type;
   const matchType = Math.sign(type);
 
   if (matchType === 0) {
     const re = typeof key === "string" ? wildcard(key) : null;
-    const found = values.findIndex((cell) => re
-      ? typeof cell === "string" && re.test(cell)
-      : order(cell, key) === 0);
+    const found = values.findIndex((cell) =>
+      re ? typeof cell === "string" && re.test(cell) : order(cell, key) === 0,
+    );
     return found < 0 ? NA : found + 1;
   }
 
@@ -544,12 +719,12 @@ function xlookup(args: Arg[]): CellValue | Matrix {
   if (keys.every((row) => row.length === 1)) {
     cells = keys.map((row) => row[0]!);
     if (ret.length !== cells.length) return VALUE;
-    result = (i) => (ret[i]!.length === 1 ? ret[i]![0] ?? null : [ret[i]!]);
+    result = (i) => (ret[i]!.length === 1 ? (ret[i]![0] ?? null) : [ret[i]!]);
   } else if (keys.length === 1) {
     const row = keys[0]!;
     cells = row;
     if (ret.some((r) => r.length !== row.length)) return VALUE;
-    result = (i) => (ret.length === 1 ? ret[0]![i] ?? null : ret.map((r) => [r[i] ?? null]));
+    result = (i) => (ret.length === 1 ? (ret[0]![i] ?? null) : ret.map((r) => [r[i] ?? null]));
   } else {
     return VALUE;
   }
@@ -613,7 +788,7 @@ function textSplit(args: Arg[], side: "before" | "after"): CellValue {
   const hits: Hit[] = [];
   if (instance > 0) {
     // Scan from the start; match_end adds the end of the text as a last delimiter.
-    for (let i = 0; i <= text.length && hits.length < instance; ) {
+    for (let i = 0; i <= text.length && hits.length < instance;) {
       const d = delims.find((d) => at(i, d));
       if (d === undefined) {
         i++;
@@ -625,7 +800,7 @@ function textSplit(args: Arg[], side: "before" | "after"): CellValue {
     if (matchEnd === 1) hits.push({ start: text.length, end: text.length });
   } else {
     // Scan from the end; match_end adds the start of the text as a last delimiter.
-    for (let i = text.length; i >= 0 && hits.length < -instance; ) {
+    for (let i = text.length; i >= 0 && hits.length < -instance;) {
       const d = delims.find((d) => d.length <= i && at(i - d.length, d));
       if (d === undefined) {
         i--;
@@ -670,15 +845,17 @@ function proper(arg: Arg): CellValue {
   const value = scalar(arg);
   if (isError(value)) return value;
   let atWordStart = true;
-  return [...toText(value)].map((ch) => {
-    if (/\p{L}/u.test(ch)) {
-      const capitalize = atWordStart;
-      atWordStart = false;
-      return capitalize ? ch.toUpperCase() : ch.toLowerCase();
-    }
-    atWordStart = true;
-    return ch;
-  }).join("");
+  return [...toText(value)]
+    .map((ch) => {
+      if (/\p{L}/u.test(ch)) {
+        const capitalize = atWordStart;
+        atWordStart = false;
+        return capitalize ? ch.toUpperCase() : ch.toLowerCase();
+      }
+      atWordStart = true;
+      return ch;
+    })
+    .join("");
 }
 
 function leftRight(args: Arg[], side: "left" | "right"): CellValue {
@@ -806,7 +983,9 @@ function sort(args: Arg[]): CellValue | Matrix {
   const width = lines[0]?.length ?? 0;
   if (index < 1 || index > width) return VALUE;
   // Array.prototype.sort is stable, so ties keep their order.
-  const sorted = [...lines].sort((x, y) => sortCompare(x[index - 1] ?? null, y[index - 1] ?? null, order));
+  const sorted = [...lines].sort((x, y) =>
+    sortCompare(x[index - 1] ?? null, y[index - 1] ?? null, order),
+  );
   return byCol ? transpose(sorted) : sorted;
 }
 
@@ -831,7 +1010,12 @@ function index(args: Arg[]): CellValue | Matrix {
   }
   const negative = (a: Arg) => {
     const value = scalar(a);
-    const n = typeof value === "number" ? value : typeof value === "string" && value.trim() !== "" ? Number(value) : NaN;
+    const n =
+      typeof value === "number"
+        ? value
+        : typeof value === "string" && value.trim() !== ""
+          ? Number(value)
+          : NaN;
     return n < 0;
   };
   if (negative(rowArg) || negative(colArg)) return VALUE;
@@ -885,6 +1069,7 @@ const OWN: Record<string, Impl> = {
   TEXTAFTER: (...args) => textSplit(args, "after"),
   COUNTIF: (range, crit) => count(selected(range, [range, crit])),
   COUNTIFS: (...pairs) => count(selected(pairs[0], pairs)),
+  SUM: (...args) => sumArgs(args),
   SUMIF: (range, crit, sumRange) => sum(selected(sumRange ?? range, [range, crit])),
   SUMIFS: (sumRange, ...pairs) => sum(selected(sumRange, pairs)),
   AVERAGEIF: (range, crit, avgRange) => average(selected(avgRange ?? range, [range, crit])),

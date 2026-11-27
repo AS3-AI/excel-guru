@@ -1,0 +1,309 @@
+{
+  "id": "ai-formulas",
+  "module": "ai",
+  "title": "AI for Formulas",
+  "goal": "Ask an AI for a formula, test it on a case you can count, read what it does, and fix it when it's wrong.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Ask, test, then trust",
+      "text": "AI tools are good at three formula jobs: **generate** one from plain English, **explain** one you don't understand, and **fix** one that's broken. They also write formulas that look perfect and aren't.\n\nSo the loop is always the same:\n• Ask, and give your column letters\n• Paste the reply into **one cell**\n• **Test it** on a case you can count by hand\n• Only then fill it down\n\nHere's a marks sheet. An AI will suggest formulas for it, and you'll be the checker.",
+      "grid": [
+        ["Student", "Maths", "Science"],
+        ["Asha", 72, 45],
+        ["Bilal", 40, 62],
+        ["Chen", 35, 40],
+        ["Divya", 58, 38],
+        ["Eshan", 39, 55],
+        ["Farah", 91, 40]
+      ],
+      "activeCell": "B2",
+      "yellowCells": ["B2:C7"]
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Test a reply you can count",
+      "prompt": "You asked an AI: “How many students scored **40 or more** in Maths (column B)?” It replied with `=COUNTIF(B2:B7,\">=40\")`.\n\nType that into ==B8==, then check it by eye: which marks are 40 or more?",
+      "grid": [
+        ["Student", "Maths", "Science"],
+        ["Asha", 72, 45],
+        ["Bilal", 40, 62],
+        ["Chen", 35, 40],
+        ["Divya", 58, 38],
+        ["Eshan", 39, 55],
+        ["Farah", 91, 40],
+        ["Scored 40+", null, null]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 4,
+      "solution": "=COUNTIF(B2:B7,\">=40\")",
+      "explain": "**4**: Asha 72, Bilal 40, Divya 58 and Farah 91. You counted four by eye and the formula agrees, so this one is safe to trust. That's the habit: test on a case you can count.",
+      "wrongFeedback": {
+        "missingFunction": "Counting with a test is a job for `COUNTIF`.",
+        "wrongValue": "It should give 4. Check the quotes and the `>=`: `\">=40\"`."
+      },
+      "clues": ["`=COUNTIF(B2:B7,\">=40\")`: the test sits in quotes."],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "mustUse": ["COUNTIF"],
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["B8"],
+      "activeCell": "A8"
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Fix a wrong reply",
+      "prompt": "Now Science (column C). The AI replied `=COUNTIF(C2:C7,\">40\")`. By eye, five students scored 40 or more in Science, so something's off.\n\nType the corrected formula in ==C8==.",
+      "grid": [
+        ["Student", "Maths", "Science"],
+        ["Asha", 72, 45],
+        ["Bilal", 40, 62],
+        ["Chen", 35, 40],
+        ["Divya", 58, 38],
+        ["Eshan", 39, 55],
+        ["Farah", 91, 40],
+        ["Scored 40+", "=COUNTIF(B2:B7,\">=40\")", null]
+      ],
+      "targetCell": "C8",
+      "expectedValue": 5,
+      "solution": "=COUNTIF(C2:C7,\">=40\")",
+      "explain": "**5.** The AI's version gave 3: `>40` skips students on exactly 40, and Chen and Farah both have 40. “40 or more” needs `>=`. Always test with a value that sits on the boundary.",
+      "wrongFeedback": {
+        "missingFunction": "Keep counting with `COUNTIF`.",
+        "wrongValue": "Two students scored exactly 40 in Science. “40 or more” includes them, so use `>=`."
+      },
+      "clues": ["Change `>` to `>=`."],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "mustUse": ["COUNTIF"],
+      "highlightCells": ["C2:C7"],
+      "yellowCells": ["C8"],
+      "activeCell": "A8"
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Predict what it does",
+      "prompt": "For a new question, the AI suggests `=SUMIF(B2:B7,\">=40\",C2:C7)`.\n\nRead it as “where column B is 40 or more, add column C”. Before you try it: what will it return?",
+      "grid": [
+        ["Student", "Maths", "Science"],
+        ["Asha", 72, 45],
+        ["Bilal", 40, 62],
+        ["Chen", 35, 40],
+        ["Divya", 58, 38],
+        ["Eshan", 39, 55],
+        ["Farah", 91, 40]
+      ],
+      "options": [
+        "`280`, every student's Science mark",
+        "`185`, Science marks of students who passed Maths",
+        "`4`, the number of students who passed Maths"
+      ],
+      "answer": 1,
+      "explain": "Maths passes are Asha, Bilal, Divya and Farah. Their Science marks: 45 + 62 + 38 + 40 = **185**. Reading a formula aloud like this is also how you check an AI's explanation of it.",
+      "wrongFeedback": [
+        "280 is everyone's Science marks. The test on column B filters out Chen and Eshan.",
+        null,
+        "4 is how many passed. `SUMIF` adds the marks in column C, it doesn't count."
+      ],
+      "clues": ["Which rows have Maths of 40 or more? Add their Science marks."],
+      "highlightCells": ["B2:C7"]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Prove it",
+      "prompt": "Now prove your prediction. Type the AI's formula in ==D2==.",
+      "grid": [
+        ["Student", "Maths", "Science", "Check"],
+        ["Asha", 72, 45, null],
+        ["Bilal", 40, 62, null],
+        ["Chen", 35, 40, null],
+        ["Divya", 58, 38, null],
+        ["Eshan", 39, 55, null],
+        ["Farah", 91, 40, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 185,
+      "solution": "=SUMIF(B2:B7,\">=40\",C2:C7)",
+      "explain": "**185.** Your prediction held, so you understood the formula before trusting it. If a prediction and the result ever disagree, one of you misread something: find out which.",
+      "wrongFeedback": {
+        "missingFunction": "Add values that pass a test with `SUMIF`.",
+        "wrongValue": "Use the test on column B (`B2:B7`) and add column C (`C2:C7`)."
+      },
+      "clues": ["`=SUMIF(B2:B7,\">=40\",C2:C7)`"],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "mustUse": ["SUMIF"],
+      "yellowCells": ["D2"],
+      "activeCell": "D1"
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Fix a shifted range",
+      "prompt": "You asked an AI for the price of the ID in `E2`. It replied `=XLOOKUP(E2,A2:A5,C3:C6)`, and Tea shows **25**, but Tea costs 20.\n\nWhat's wrong? Type the corrected formula in ==F2==.",
+      "grid": [
+        ["ID", "Item", "Price", null, "Find", "Price found"],
+        ["P10", "Coffee", 60, null, "P30", null],
+        ["P20", "Juice", 45, null, null, null],
+        ["P30", "Tea", 20, null, null, null],
+        ["P40", "Samosa", 25, null, null, null]
+      ],
+      "targetCell": "F2",
+      "expectedValue": 20,
+      "solution": "=XLOOKUP(E2,A2:A5,C2:C5)",
+      "explain": "**20.** The AI looked in `A2:A5` but returned from `C3:C6`: one row lower, so every answer was shifted (Tea's 3rd row gave Samosa's 25). The two ranges must start and end on the same rows.",
+      "wrongFeedback": {
+        "missingFunction": "Keep it a lookup with `XLOOKUP`: just fix the return range.",
+        "wrongValue": "The ranges must line up: IDs in `A2:A5` and prices in `C2:C5`, both starting on row 2."
+      },
+      "clues": ["Compare the first row of each range: `A2` and `C3`."],
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "mustUse": ["XLOOKUP"],
+      "highlightCells": ["A2:A5", "C2:C5"],
+      "yellowCells": ["F2"],
+      "activeCell": "F1"
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "What does #NAME? mean?",
+      "prompt": "You paste an AI formula, `=SUMIFTEXT(B2:B9,\"Pune\")`, and the cell shows `#NAME?`. What's the most likely cause?",
+      "grid": [
+        ["City", "Sales"],
+        ["Pune", 400],
+        ["Goa", 250],
+        ["Pune", 300]
+      ],
+      "options": [
+        "“Pune” isn't in the list",
+        "Excel doesn't know that function name",
+        "The numbers are stored as text"
+      ],
+      "answer": 1,
+      "explain": "`#NAME?` means Excel doesn't recognise a name. AI tools sometimes **invent** function names that sound right (`SUMIFTEXT` doesn't exist) or use ones newer than your Excel. Look the name up in Excel's help, or ask for another way using a function you can find there.",
+      "wrongFeedback": [
+        "A missing item would give `0` or `#N/A`, not `#NAME?`.",
+        null,
+        "Text-numbers give a wrong total (often 0), not `#NAME?`."
+      ],
+      "clues": ["`#NAME?` is about a **name** Excel can't find."],
+      "yellowCells": ["A1"]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Why did the tax vanish?",
+      "prompt": "The AI wrote `=B2*E2` for the tax, with the 5% rate in `E2`. Row 2 worked, but after you filled it down, rows 3 and 4 show **0**.\n\nWhat fixes it?",
+      "grid": [
+        ["Item", "Price", "Tax", null, "Rate"],
+        ["Pen", 100, "=B2*E2", null, 0.05],
+        ["Book", 250, "=B3*E3", null, null],
+        ["Bag", 400, "=B4*E4", null, null]
+      ],
+      "options": [
+        "Lock the rate: `=B2*$E$2`",
+        "Type the rate again in `E3` and `E4`",
+        "Use `=B2*E2` only in row 2"
+      ],
+      "answer": 0,
+      "explain": "`E2` is **relative**: filled down, it slid to `E3`, which is empty, so the tax became 0. `$E$2` is **absolute** and never moves. Watch for this whenever one cell (a rate, a limit) feeds many rows.",
+      "wrongFeedback": [
+        null,
+        "That would work today, but you'd have to repeat it for every row and change 100 cells when the rate changes.",
+        "That leaves rows 3 and 4 with no tax at all. You want one formula that works in every row."
+      ],
+      "clues": ["Which part of the formula should stay put when it's copied down?"],
+      "activeCell": "C3",
+      "showFormulaBar": true,
+      "yellowCells": ["C3", "E2"]
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Oops: undo the paste",
+      "prompt": "You pasted an AI formula over the Bonus column, and every bonus turned into 0. Before you do anything else, press [[Ctrl]] + [[Z]] to undo.\n\nTip: try AI formulas on a **copy** of your sheet or in a spare column first.",
+      "keys": {
+        "win": "Ctrl+Z",
+        "mac": "Cmd+Z"
+      },
+      "grid": [
+        ["Name", "Bonus"],
+        ["Asha", 0],
+        ["Ben", 0],
+        ["Chitra", 0]
+      ],
+      "postcondition": {
+        "grid": [
+          ["Name", "Bonus"],
+          ["Asha", 1500],
+          ["Ben", 1200],
+          ["Chitra", 1800]
+        ],
+        "selection": "B2:B4"
+      },
+      "clues": ["Hold Ctrl and tap Z. Mac: Cmd + Z."],
+      "activeCell": "B2:B4"
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "From explanation to formula",
+      "prompt": "You asked an AI to explain what a formula should do. It wrote: “Show **Pass** if **both** the Maths and Science marks are 40 or more, otherwise show **Fail**.”\n\nBuild that formula for Gita's row, in ==D2==.",
+      "grid": [
+        ["Student", "Maths", "Science", "Result"],
+        ["Gita", 40, 38, null],
+        ["Hari", 65, 70, null],
+        ["Isha", 30, 45, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "Fail",
+      "solution": "=IF(AND(B2>=40,C2>=40),\"Pass\",\"Fail\")",
+      "explain": "`Fail`: Gita's Maths 40 passes but Science 38 doesn't, and “both” needs both. If a formula used `OR` instead of `AND`, it would say Pass here. Turning an explanation back into a formula shows whether you really understood it.",
+      "wrongFeedback": {
+        "missingReference": "Both marks matter: your formula must look at `B2` (Maths) and `C2` (Science).",
+        "wrongValue": "Gita passes Maths but not Science, so “both” isn't true: the answer is Fail."
+      },
+      "clues": ["`IF(AND(test 1, test 2), \"Pass\", \"Fail\")`"],
+      "mobileButtons": ["=", "(", ")", ",", "\"", ">"],
+      "mustReference": ["B2", "C2"],
+      "highlightCells": ["B2:C2"],
+      "yellowCells": ["D2"],
+      "activeCell": "D1"
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "An AI wrote the weekly total in an earlier version of this sheet. It stopped at Friday and said **600**. Saturday's 200 has been added since.\n\nPut the total for the whole week in ==B8==.",
+      "grid": [
+        ["Day", "Sales"],
+        ["Mon", 120],
+        ["Tue", 90],
+        ["Wed", 150],
+        ["Thu", 110],
+        ["Fri", 130],
+        ["Sat", 200],
+        ["Total", null]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 800,
+      "solution": "=SUM(B2:B7)",
+      "explain": "**800.** The old formula's range ended one row too early, a classic slip when rows are added. Whenever data grows, check that totals still reach the last row.",
+      "wrongFeedback": {
+        "missingFunction": "Add the whole column of daily sales with `SUM`.",
+        "wrongValue": "The total should include Saturday: 600 + 200 = 800."
+      },
+      "clues": ["Cover Monday to Saturday: `B2` down to `B7`."],
+      "mobileButtons": ["=", "(", ")", ":"],
+      "mustUse": ["SUM"],
+      "activeCell": "A1"
+    }
+  ]
+}

@@ -1,0 +1,270 @@
+{
+  "id": "charts-advanced",
+  "module": "visual",
+  "title": "Charts: combo, formatting & sparklines",
+  "goal": "Put two measures on one chart with a secondary axis, keep axes honest and charts uncluttered, and add sparklines.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Two measures, one chart",
+      "text": "A shop tracks **Revenue** (in the thousands) and **Margin %** (around 10 to 20) every month.\n\nPut both on one chart with a single axis from 0 to 2400, and the Margin % line is a flat thread hugging the bottom. You can't see it rise or fall at all.\n\nThe fix is a **combo chart**: one measure gets its own axis. You'll build that idea, then learn to keep charts honest and clean, and finish with tiny charts that live inside a single cell.",
+      "grid": [
+        ["Month", "Revenue", "Margin %", "Times bigger"],
+        ["Jan", 1200, 12, null],
+        ["Feb", 1500, 15, null],
+        ["Mar", 900, 9, null],
+        ["Apr", 1800, 18, null],
+        ["May", 1500, 15, null],
+        ["Jun", 2100, 21, null]
+      ],
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["C2:C7"],
+      "activeCell": "A1"
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Why one axis fails",
+      "prompt": "How bad is the mismatch? In ==D2==, work out how many times bigger January's Revenue is than its Margin %.",
+      "grid": [
+        ["Month", "Revenue", "Margin %", "Times bigger"],
+        ["Jan", 1200, 12, null],
+        ["Feb", 1500, 15, null],
+        ["Mar", 900, 9, null],
+        ["Apr", 1800, 18, null],
+        ["May", 1500, 15, null],
+        ["Jun", 2100, 21, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 100,
+      "solution": "=B2/C2",
+      "explain": "**100 times** bigger. On one axis that runs to 2400, a margin of 12 is half of one percent of the height: a flat line. Different scales need different axes.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the `/` sign and the cell names.",
+        "wrongValue": "Divide January's Revenue (`B2`) by January's Margin % (`C2`).",
+        "missingReference": "Use the Revenue and Margin % cells of January: `B2` and `C2`."
+      },
+      "mobileButtons": ["=", "/"],
+      "clues": ["Bigger ÷ smaller."],
+      "mustReference": ["B2", "C2"],
+      "highlightCells": ["B2", "C2"],
+      "yellowCells": ["D2"],
+      "activeCell": "D2"
+    },
+    {
+      "id": "s3",
+      "type": "select",
+      "topic": "Choose the second axis",
+      "prompt": "One of the two columns must move to a **secondary axis**, drawn on the right side of the chart.\n\nClick the **letter** of the column whose numbers are being squashed, then press [[Enter]].",
+      "grid": [
+        ["Month", "Revenue", "Margin %", "Times bigger"],
+        ["Jan", 1200, 12, null],
+        ["Feb", 1500, 15, null],
+        ["Mar", 900, 9, null],
+        ["Apr", 1800, 18, null],
+        ["May", 1500, 15, null],
+        ["Jun", 2100, 21, null]
+      ],
+      "target": "C:C",
+      "wrongFeedback": "Revenue's big numbers set the main axis. The column being squashed is the one with the **small** numbers: Margin %, column C.",
+      "clues": ["Which column's numbers are tiny next to the other?"],
+      "yellowCells": ["C:C"]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Set up the combo",
+      "prompt": "Select the table and use **Insert → Combo chart**. Tick **Secondary Axis** next to one of the series.\n\nWhich setup tells the story best?",
+      "options": [
+        "Both as columns on one axis",
+        "Revenue as columns, Margin % as a line on the secondary axis",
+        "Multiply every Margin % by 100 so it fits"
+      ],
+      "answer": 1,
+      "explain": "**Columns for amounts, a line for a rate or percent**, with the line on the secondary axis. Different shapes also tell the reader which axis is which.",
+      "wrongFeedback": [
+        "On one axis, the margin columns would be 1-pixel slivers. Nothing improves.",
+        null,
+        "That hack changes your data to fit the chart, and the numbers on the axis stop meaning “%”. A secondary axis keeps the data true."
+      ],
+      "clues": ["Which setup keeps each measure's real numbers on an axis it can read?"],
+      "grid": [
+        ["Month", "Revenue", "Margin %", "Times bigger"],
+        ["Jan", 1200, 12, null],
+        ["Feb", 1500, 15, null],
+        ["Mar", 900, 9, null],
+        ["Apr", 1800, 18, null],
+        ["May", 1500, 15, null],
+        ["Jun", 2100, 21, null]
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Predict: a cut-off axis",
+      "prompt": "Store A sold **80** and Store B sold **100**: B is 25% higher.\n\nThe chart's axis starts at **70** instead of 0. How many times taller will B's column look than A's?",
+      "options": ["1.25 times", "3 times", "1.5 times"],
+      "answer": 1,
+      "explain": "Only the part **above** 70 is drawn: A shows 10 tall and B shows 30 tall, so B looks **3 times** taller. A 25% difference looks like 200%. Next, calculate it yourself.",
+      "wrongFeedback": [
+        "That's the real ratio, which you only see if the axis starts at 0. Remember, bars only show the part above the axis start.",
+        null,
+        "Don't compare 100 with 80 directly. Subtract what is cut off the bottom first."
+      ],
+      "clues": ["How tall is each bar above 70?"],
+      "grid": [
+        ["Store", "Sales", "Axis starts at", "B looks × taller"],
+        ["A", 80, 70, null],
+        ["B", 100, null, null]
+      ],
+      "highlightCells": ["C2"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Prove it",
+      "prompt": "In ==D2== calculate how many times taller B's bar looks. Each bar's height is its sales **minus** where the axis starts, which is in `C2`.",
+      "grid": [
+        ["Store", "Sales", "Axis starts at", "B looks × taller"],
+        ["A", 80, 70, null],
+        ["B", 100, null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 3,
+      "solution": "=(B3-C2)/(B2-C2)",
+      "explain": "**3**. B is 30 above the axis start and A is 10, so B looks three times as tall, though it sold only 1.25 times as much.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets and the `/` sign.",
+        "wrongValue": "Bar height = sales − axis start. Divide B's height by A's height.",
+        "missingReference": "The axis start lives in `C2`. Use it."
+      },
+      "mobileButtons": ["=", "(", ")", "-", "/"],
+      "clues": ["B's height is `B3-C2`; A's height is `B2-C2`."],
+      "mustReference": ["C2"],
+      "highlightCells": ["C2"],
+      "yellowCells": ["D2"],
+      "activeCell": "D2"
+    },
+    {
+      "id": "s7",
+      "type": "entry",
+      "topic": "The honest axis",
+      "prompt": "Columns show **length**, so their axis must start at **0** (Format Axis → Minimum). Here the axis minimum is stored in `C2`.\n\nClick ==C2==, type **0**, press [[Enter]] and watch `D2`.",
+      "grid": [
+        ["Store", "Sales", "Axis starts at", "B looks × taller"],
+        ["A", 80, 70, "=(B3-C2)/(B2-C2)"],
+        ["B", 100, null, null]
+      ],
+      "expect": {
+        "C2": 0,
+        "D2": 1.25
+      },
+      "explain": "At 0, the bars are 80 and 100, so B looks **1.25 times** as tall: the truth. Line charts may zoom in because they show position and trend, but a column's height must mean its size.",
+      "clues": ["Change only `C2`."],
+      "activeCell": "A2",
+      "yellowCells": ["C2"],
+      "highlightCells": ["D2"]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Declutter",
+      "prompt": "A one-series sales chart has a legend, thick gridlines, a 3-D effect and four colours. Everyone squints at it.\n\nWhich clean-up helps without losing information?",
+      "options": [
+        "Add more colours and a 3-D effect so it stands out",
+        "Delete the legend, lighten the gridlines, switch off the 3-D effect",
+        "Delete the title and axis labels to make room"
+      ],
+      "answer": 1,
+      "explain": "A legend for **one** series says nothing new, heavy gridlines fight the data, and 3-D distorts bar heights. Remove ink that carries no information, but keep the title and labels.",
+      "wrongFeedback": [
+        "More decoration makes the data harder to read. 3-D also distorts the heights.",
+        null,
+        "The title and labels carry meaning. Remove decoration, not information."
+      ],
+      "clues": ["What does each element tell the reader that they don't already know?"]
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Sparklines",
+      "prompt": "A **sparkline** is a tiny chart inside one cell, perfect for a trend beside each row.\n\nSelect Pune's four weeks, ==B2:E2==. Tap [[Alt]], [[N]], [[S]], [[L]] one after another (Insert → Sparklines → **Line**), choose `F2` as the location and press OK. Then drag `F2` down.\n\nOn a Mac: Insert → Sparklines → Line.",
+      "keys": {
+        "win": ["Alt", "N", "S", "L"],
+        "mac": null
+      },
+      "grid": [
+        ["Shop", "W1", "W2", "W3", "W4", "Trend"],
+        ["Pune", 40, 45, 55, 60, null],
+        ["Delhi", 50, 48, 44, 40, null],
+        ["Goa", 30, 30, 35, 31, null]
+      ],
+      "postcondition": {
+        "grid": [
+          ["Shop", "W1", "W2", "W3", "W4", "Trend"],
+          ["Pune", 40, 45, 55, 60, "▁▃▅█"],
+          ["Delhi", 50, 48, 44, 40, null],
+          ["Goa", 30, 30, 35, 31, null]
+        ],
+        "selection": "F2"
+      },
+      "clues": ["Alt, N, S, then L for Line. (C is Column, W is Win/Loss.)"],
+      "activeCell": "B2:E2"
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Same shape, same size?",
+      "prompt": "Chitra's weeks are **10, 20, 30, 40** and Dev's are **1000, 1100, 1200, 1300**. Both sparklines slope upward at a similar angle.\n\nDoes the same shape mean the same size?",
+      "options": [
+        "Yes: same shape means same numbers",
+        "No: each sparkline scales itself. Set the same axis for all of them to compare size",
+        "No: sparklines can never be compared"
+      ],
+      "answer": 1,
+      "explain": "Each sparkline zooms to its own minimum and maximum, so a tiny row and a huge row can look identical. On the **Sparkline** tab, **Axis → Same for All Sparklines** (for minimum and maximum) puts them on one scale. Use the default to compare shapes, and the common axis to compare sizes.",
+      "wrongFeedback": [
+        "Look at the numbers: Dev's are 100 times bigger. The sparklines only look alike because each zooms to fit its own row.",
+        null,
+        "They can be compared fairly once you fix a shared axis. That option exists."
+      ],
+      "clues": ["What scale does each sparkline use by default?"],
+      "grid": [
+        ["Shop", "W1", "W2", "W3", "W4", "Trend"],
+        ["Chitra", 10, 20, 30, 40, "▁▃▅█"],
+        ["Dev", 1000, 1100, 1200, 1300, "▁▃▅█"]
+      ]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A column chart's axis starts at **400**, and the two bars are for last year's sales (450) and this year's (500).\n\nHow many times taller does this year's bar **look** than last year's? Put it in ==C2==.",
+      "grid": [
+        ["Year", "Sales", "Looks × taller"],
+        ["Last year", 450, null],
+        ["This year", 500, null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 2,
+      "solution": "=(B3-400)/(B2-400)",
+      "explain": "**2**: the visible parts are 50 and 100, so this year looks twice as tall, although the real growth is only about 11%. If your chart does this, start the axis at 0.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets and the `/` sign.",
+        "wrongValue": "Only the part above 400 is drawn. Compare 500 − 400 with 450 − 400."
+      },
+      "mobileButtons": ["=", "(", ")", "-", "/"],
+      "clues": ["Bar heights: 50 and 100. Divide the second by the first."],
+      "activeCell": "A1"
+    }
+  ]
+}

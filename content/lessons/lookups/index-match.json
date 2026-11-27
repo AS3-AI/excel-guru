@@ -1,0 +1,352 @@
+{
+  "id": "index-match",
+  "module": "lookups",
+  "title": "INDEX & XMATCH",
+  "goal": "Find the position of an item with MATCH (and its modern twin XMATCH), fetch it with INDEX, and run two-way lookups across a table.",
+  "difficulty": 2,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Where is it in the list?",
+      "text": "Sometimes you don't need the **value**, you need the **position**: “Zoya is the 3rd name in the list.”\n\nThat's **MATCH**. Then **INDEX** does the reverse: give it a list and a position, and it hands you the item there. Together they make a lookup that works in every version of Excel.\n\nThe modern Microsoft 365 version of MATCH is **XMATCH**: `=XMATCH(E2,A2:A7)`. This practice sheet can't run XMATCH, so you'll use `MATCH(…,0)`. The answer is identical, and you'll meet MATCH in lots of older files.",
+      "grid": [
+        ["Student", "House", "Score", null, "Find", "Result"],
+        ["Meera", "Red", 78, null, "Zoya", "=MATCH(E2,A2:A7,0)"],
+        ["Karan", "Blue", 64, null, null, null],
+        ["Zoya", "Green", 91, null, null, null],
+        ["Rohan", "Red", 55, null, null, null],
+        ["Tara", "Blue", 82, null, null, null],
+        ["Imran", "Green", 70, null, null, null]
+      ],
+      "activeCell": "F2",
+      "yellowCells": ["F2"],
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Find a position",
+      "prompt": "Which place is **Tara** in the list of names (==E2==)?\n\nIn ==F2==, type `=MATCH(E2,A2:A7,0)`. The last part, **0**, means “find an exact match”.",
+      "grid": [
+        ["Student", "House", "Score", null, "Find", "Result"],
+        ["Meera", "Red", 78, null, "Tara", null],
+        ["Karan", "Blue", 64, null, null, null],
+        ["Zoya", "Green", 91, null, null, null],
+        ["Rohan", "Red", 55, null, null, null],
+        ["Tara", "Blue", 82, null, null, null],
+        ["Imran", "Green", 70, null, null, null]
+      ],
+      "targetCell": "F2",
+      "activeCell": "E2",
+      "highlightCells": ["A2:A7"],
+      "yellowCells": ["F2"],
+      "expectedValue": 5,
+      "mustUse": ["MATCH"],
+      "mustReference": ["E2"],
+      "solution": "=MATCH(E2,A2:A7,0)",
+      "explain": "**5.** Tara is the fifth name from the top of `A2:A7`. Always finish MATCH with `0` for an exact match. Leave it off and MATCH assumes a sorted list and may return a wrong position, like VLOOKUP's TRUE trap.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas: `=MATCH(E2,A2:A7,0)`.",
+        "missingFunction": "Use **MATCH**: what to find, where to look, then `0`.",
+        "wrongValue": "Tara is the 5th name in `A2:A7`: Meera 1, Karan 2, Zoya 3, Rohan 4, Tara 5."
+      },
+      "clues": ["Three parts: `E2`, the names `A2:A7`, `0`."]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "Position is not row number",
+      "prompt": "MATCH told you Tara is **5th**. The list starts in `A2`.\n\nWhich **sheet row** is Tara actually on?",
+      "grid": [
+        ["Student", "House", "Score", null, "Find", "Result"],
+        ["Meera", "Red", 78, null, "Tara", 5],
+        ["Karan", "Blue", 64, null, null, null],
+        ["Zoya", "Green", 91, null, null, null],
+        ["Rohan", "Red", 55, null, null, null],
+        ["Tara", "Blue", 82, null, null, null],
+        ["Imran", "Green", 70, null, null, null]
+      ],
+      "activeCell": "A6",
+      "yellowCells": ["A6"],
+      "options": ["Row 5", "Row 6", "Row 4"],
+      "answer": 1,
+      "explain": "MATCH counts from the first cell of the range you gave it. The list starts at `A2`, so 1st = row 2, and 5th = **row 6**. That's fine: INDEX counts the same way, so the two always agree.",
+      "wrongFeedback": [
+        "That would be true only if your list started in row 1.",
+        null,
+        "Count from `A2` as number 1. Which row is number 5?"
+      ],
+      "clues": ["Number 1 is `A2`, number 2 is `A3`…"]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Position along a row",
+      "prompt": "MATCH works sideways too. In ==B6==, find which **month position** `Apr` (==B5==) is, counting along the month headings in `B1:F1`.",
+      "grid": [
+        ["Item", "Jan", "Feb", "Mar", "Apr", "May"],
+        ["Tea", 120, 135, 150, 110, 140],
+        ["Coffee", 200, 180, 210, 190, 170],
+        [null, null, null, null, null, null],
+        ["Find", "Apr", null, null, null, null],
+        ["Position", null, null, null, null, null]
+      ],
+      "targetCell": "B6",
+      "activeCell": "B5",
+      "highlightCells": ["B1:F1"],
+      "yellowCells": ["B6"],
+      "expectedValue": 4,
+      "mustUse": ["MATCH"],
+      "mustReference": ["B5"],
+      "solution": "=MATCH(B5,B1:F1,0)",
+      "explain": "**4.** Counting starts at the first cell you gave, `B1` (Jan = 1), not at column A. Give MATCH the heading row only, and its answer lines up with the data below.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas.",
+        "missingFunction": "Use **MATCH** on the month headings, with `0`.",
+        "wrongValue": "Count along `B1:F1` only: Jan 1, Feb 2, Mar 3, Apr 4. Including column A would shift everything by one."
+      },
+      "clues": ["Look in `B1:F1`. Don't forget the `0`."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "XMATCH",
+      "prompt": "In Microsoft 365 you'd rather use **XMATCH**. Which formula does the same job as `=MATCH(E2,A2:A7,0)`?",
+      "grid": [
+        ["Student", "House", "Score", null, "Find", "Result"],
+        ["Meera", "Red", 78, null, "Tara", "=MATCH(E2,A2:A7,0)"],
+        ["Karan", "Blue", 64, null, null, null],
+        ["Zoya", "Green", 91, null, null, null],
+        ["Rohan", "Red", 55, null, null, null],
+        ["Tara", "Blue", 82, null, null, null],
+        ["Imran", "Green", 70, null, null, null]
+      ],
+      "activeCell": "F2",
+      "yellowCells": ["F2"],
+      "showFormulaBar": true,
+      "options": ["`=XMATCH(E2,A2:A7)`", "`=XMATCH(E2,A2:A7,1)`", "`=XMATCH(A2:A7,E2)`"],
+      "answer": 0,
+      "explain": "XMATCH is exact by default, so no `0` is needed. (MATCH assumes the opposite when you leave the last part off, which is why it so often needs its `0`.) A `1` means “exact or next larger”, and the order is always: what to find, then where to look.",
+      "wrongFeedback": [
+        null,
+        "A `1` allows the next larger value, so it isn't a plain exact match.",
+        "The order is swapped: first what to find (`E2`), then where to look (`A2:A7`)."
+      ],
+      "clues": ["Which one skips the extra number?"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "INDEX: the item at a position",
+      "prompt": "**INDEX** is the reverse: give it a list and a position, and it brings back the item there.\n\nThe position `3` is in ==E2==. In ==F2==, bring back the 3rd score: type `=INDEX(C2:C7,E2)`.",
+      "grid": [
+        ["Student", "House", "Score", null, "Position", "Result"],
+        ["Meera", "Red", 78, null, 3, null],
+        ["Karan", "Blue", 64, null, null, null],
+        ["Zoya", "Green", 91, null, null, null],
+        ["Rohan", "Red", 55, null, null, null],
+        ["Tara", "Blue", 82, null, null, null],
+        ["Imran", "Green", 70, null, null, null]
+      ],
+      "targetCell": "F2",
+      "activeCell": "E2",
+      "highlightCells": ["C2:C7"],
+      "yellowCells": ["F2"],
+      "expectedValue": 91,
+      "mustUse": ["INDEX"],
+      "mustReference": ["E2"],
+      "solution": "=INDEX(C2:C7,E2)",
+      "explain": "**91.** The 3rd cell of `C2:C7` is Zoya's score. INDEX doesn't search; it just counts down to the position you give it.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas: `=INDEX(C2:C7,E2)`.",
+        "missingFunction": "Use **INDEX**: the list of scores, then the position.",
+        "wrongValue": "The 3rd score in `C2:C7` is **91**. Give INDEX the Score column and the position cell."
+      },
+      "clues": ["Two parts: the list `C2:C7`, then `E2`."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "INDEX + MATCH together",
+      "prompt": "Now let MATCH find the position for you. Replace the number in INDEX with a MATCH.\n\nWhat's **Rohan's** score? His name is in ==E2==. In ==F2==, type `=INDEX(C2:C7,MATCH(E2,A2:A7,0))`.",
+      "grid": [
+        ["Student", "House", "Score", null, "Find", "Result"],
+        ["Meera", "Red", 78, null, "Rohan", null],
+        ["Karan", "Blue", 64, null, null, null],
+        ["Zoya", "Green", 91, null, null, null],
+        ["Rohan", "Red", 55, null, null, null],
+        ["Tara", "Blue", 82, null, null, null],
+        ["Imran", "Green", 70, null, null, null]
+      ],
+      "targetCell": "F2",
+      "activeCell": "E2",
+      "highlightCells": ["A2:C7"],
+      "yellowCells": ["F2"],
+      "expectedValue": 55,
+      "mustUse": ["INDEX", "MATCH"],
+      "mustReference": ["E2"],
+      "solution": "=INDEX(C2:C7,MATCH(E2,A2:A7,0))",
+      "explain": "**55.** MATCH found Rohan is 4th in the names, and INDEX took the 4th score. It's the same job XLOOKUP does in one step. Read it inside out: find the position, then fetch the item.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check every bracket: `=INDEX(C2:C7,MATCH(E2,A2:A7,0))`.",
+        "missingFunction": "Use both **INDEX** and **MATCH**, with MATCH inside INDEX.",
+        "wrongValue": "Rohan's score is **55**. MATCH searches the names `A2:A7`, and INDEX returns from the scores `C2:C7`."
+      },
+      "clues": ["MATCH goes where INDEX wants its position (the second part)."]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Looking left",
+      "prompt": "Here is a lookup VLOOKUP can't do. A score of **82** (==E2==) is on the list. **Who scored it?** The names are to the **left** of the scores.\n\nIn ==F2==, find the name.",
+      "grid": [
+        ["Student", "House", "Score", null, "Find", "Result"],
+        ["Meera", "Red", 78, null, 82, null],
+        ["Karan", "Blue", 64, null, null, null],
+        ["Zoya", "Green", 91, null, null, null],
+        ["Rohan", "Red", 55, null, null, null],
+        ["Tara", "Blue", 82, null, null, null],
+        ["Imran", "Green", 70, null, null, null]
+      ],
+      "targetCell": "F2",
+      "activeCell": "E2",
+      "yellowCells": ["F2"],
+      "expectedValue": "Tara",
+      "mustUse": ["INDEX", "MATCH"],
+      "mustReference": ["E2"],
+      "solution": "=INDEX(A2:A7,MATCH(E2,C2:C7,0))",
+      "explain": "**Tara.** MATCH searched the scores, then INDEX brought back from the names. INDEX and MATCH don't care which column is on which side. That's why people loved them before XLOOKUP.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check every bracket and comma.",
+        "missingFunction": "Use **INDEX** with **MATCH** inside it.",
+        "wrongValue": "Search the **scores** (`C2:C7`) with MATCH, and let INDEX bring back from the **names** (`A2:A7`)."
+      },
+      "clues": ["Swap the roles: MATCH looks in the scores, INDEX returns the names."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Two-way lookup",
+      "prompt": "A mark table has **students down** and **subjects across**. To find one cell, you need a **row** and a **column**.\n\n`=INDEX(B2:D6,row number,column number)` fetches it. Let two MATCHes work them out. In ==F4==, type:\n\n`=INDEX(B2:D6,MATCH(F2,A2:A6,0),MATCH(F3,B1:D1,0))`",
+      "grid": [
+        ["Student", "Maths", "Science", "English", null, null],
+        ["Meera", 78, 66, 82, "Student", "Zoya"],
+        ["Karan", 64, 71, 59, "Subject", "Science"],
+        ["Zoya", 91, 88, 95, "Marks", null],
+        ["Rohan", 55, 60, 48, null, null],
+        ["Tara", 82, 79, 90, null, null]
+      ],
+      "targetCell": "F4",
+      "activeCell": "F2",
+      "highlightCells": ["A1:D6"],
+      "yellowCells": ["F4"],
+      "expectedValue": 88,
+      "mustUse": ["INDEX", "MATCH"],
+      "mustReference": ["F2", "F3"],
+      "solution": "=INDEX(B2:D6,MATCH(F2,A2:A6,0),MATCH(F3,B1:D1,0))",
+      "explain": "**88**: Zoya's Science mark. The first MATCH finds Zoya's row (3rd name), the second finds Science's column (2nd subject), and INDEX returns where they cross.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check every bracket and comma: it ends with `0))`.",
+        "missingFunction": "Use **INDEX** with two **MATCH**es inside.",
+        "wrongValue": "Zoya + Science should give **88**. The row MATCH searches the **names** (`A2:A6`), the column MATCH searches the **headings** (`B1:D1`). Swapped them?"
+      },
+      "clues": ["Row number first, column number second."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Another two-way lookup",
+      "prompt": "Sales by city and month. Find the sales for the city in ==F2== in the month in ==F3==, and put the answer in ==F4==.",
+      "grid": [
+        ["City", "Jan", "Feb", "Mar", null, null],
+        ["Pune", 120, 150, 180, "City", "Mumbai"],
+        ["Delhi", 200, 170, 210, "Month", "Feb"],
+        ["Mumbai", 160, 190, 140, "Sales", null],
+        ["Chennai", 90, 110, 130, null, null]
+      ],
+      "targetCell": "F4",
+      "activeCell": "F2",
+      "yellowCells": ["F4"],
+      "expectedValue": 190,
+      "mustUse": ["INDEX", "MATCH"],
+      "mustReference": ["F2", "F3"],
+      "solution": "=INDEX(B2:D5,MATCH(F2,A2:A5,0),MATCH(F3,B1:D1,0))",
+      "explain": "**190.** Mumbai is the 3rd city, Feb is the 2nd month, and the 3rd row and 2nd column of the figures hold 190. Check by eye: it's where the Mumbai row meets the Feb column.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check every bracket and comma.",
+        "missingFunction": "Use **INDEX** with a **MATCH** for the row and one for the column.",
+        "wrongValue": "Mumbai in Feb is **190**. Use the city to find the row and the month to find the column."
+      },
+      "clues": ["INDEX over `B2:D5`; one MATCH on the cities, one on the months."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "The off-by-one mistake",
+      "prompt": "Zoya's Science mark is **88**. A colleague writes `=INDEX(A2:D6,MATCH(F2,A2:A6,0),MATCH(F3,B1:D1,0))`. INDEX covers `A2:D6` (names included), but the heading MATCH covers only `B1:D1`.\n\nWhat does it show?",
+      "grid": [
+        ["Student", "Maths", "Science", "English", null, null],
+        ["Meera", 78, 66, 82, "Student", "Zoya"],
+        ["Karan", 64, 71, 59, "Subject", "Science"],
+        ["Zoya", 91, 88, 95, "Marks", null],
+        ["Rohan", 55, 60, 48, null, null],
+        ["Tara", 82, 79, 90, null, null]
+      ],
+      "options": ["`88`: still correct", "`91`: Zoya's Maths mark, one column off", "`#N/A`"],
+      "answer": 1,
+      "explain": "Science is the **2nd** heading in `B1:D1`, but the 2nd column of `A2:D6` is **Maths**. No error appears, just a wrong mark. Keep INDEX's range and both MATCH ranges starting in the same row and column.",
+      "wrongFeedback": [
+        "The column number comes from `B1:D1`, but INDEX counts from column A. They disagree.",
+        null,
+        "Nothing is missing, so there's no error. That's what makes it dangerous."
+      ],
+      "clues": ["Where does counting start for INDEX? And for the heading MATCH?"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A cinema charges by seat and show time. How much is a **Premium** seat for the **Evening** show? The seat is in ==F2== and the show is in ==F3==.\n\nPut it in ==F4==.",
+      "grid": [
+        ["Seat", "Morning", "Afternoon", "Evening", null, null],
+        ["Standard", 120, 150, 180, "Seat", "Premium"],
+        ["Premium", 200, 240, 300, "Show", "Evening"],
+        ["Recliner", 350, 400, 500, "Price", null]
+      ],
+      "targetCell": "F4",
+      "activeCell": "A1",
+      "yellowCells": ["F4"],
+      "expectedValue": 300,
+      "mustUse": ["INDEX"],
+      "mustReference": ["F2", "F3"],
+      "solution": "=INDEX(B2:D4,MATCH(F2,A2:A4,0),MATCH(F3,B1:D1,0))",
+      "explain": "**300.** Row: Premium is 2nd. Column: Evening is 3rd. A two-way lookup is just a row MATCH and a column MATCH inside INDEX.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check every bracket and comma.",
+        "missingFunction": "Find the row and the column by matching, then fetch the price where they cross.",
+        "wrongValue": "Premium in the Evening is **300**. Seat names are down the side; show times are across the top."
+      },
+      "clues": ["One lookup for the row, one for the column."]
+    }
+  ]
+}

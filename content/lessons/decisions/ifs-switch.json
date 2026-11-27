@@ -1,0 +1,278 @@
+{
+  "id": "ifs-switch",
+  "module": "decisions",
+  "title": "IFS & SWITCH",
+  "goal": "Turn marks into grade bands with IFS (in the right order, with TRUE as the catch-all), and turn codes into names with SWITCH, and know which of the two a job needs.",
+  "difficulty": 2,
+  "requiredCorrect": 9,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "More than two answers",
+      "text": "IF gives you **two** answers. Grades have four: A, B, C or D. You could stack IF inside IF inside IF, but that gets hard to read very fast.\n\n**IFS** takes pairs: a test, then its answer; another test, then its answer. It works down the list and stops at the **first test that is true**.\n\n`=IFS(B2>=90,\"A\",B2>=75,\"B\",B2>=60,\"C\",TRUE,\"D\")`\n\nClick the button: Hari's mark rises and his grade in ==C3== moves up a band.",
+      "grid": [
+        ["Student", "Marks", "Grade"],
+        ["Gita", 91, "=IFS(B2>=90,\"A\",B2>=75,\"B\",B2>=60,\"C\",TRUE,\"D\")"],
+        ["Hari", 62, "=IFS(B3>=90,\"A\",B3>=75,\"B\",B3>=60,\"C\",TRUE,\"D\")"],
+        ["Ira", 48, "=IFS(B4>=90,\"A\",B4>=75,\"B\",B4>=60,\"C\",TRUE,\"D\")"]
+      ],
+      "activeCell": "C3",
+      "yellowCells": ["C3"],
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "B3",
+          "fromValue": 62,
+          "toValue": 78,
+          "resultCell": "C3",
+          "buttonLabel": "Hari studies harder: 62 → 78",
+          "resetLabel": "Put Hari back to 62"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "What gets tested",
+      "prompt": "Every pair in an IFS tests **the same marks cell** against a different limit.\n\nClick ==B4==, Chitra's marks, then press [[Enter]]. She's the one we'll grade first.",
+      "grid": [
+        ["Student", "Marks", "Grade"],
+        ["Asha", 95, null],
+        ["Ben", 62, null],
+        ["Chitra", 75, null],
+        ["Dev", 59, null],
+        ["Esha", 90, null]
+      ],
+      "yellowCells": ["B4"],
+      "target": "B4",
+      "wrongFeedback": "Chitra is on row 4 and her marks are in column B: `B4`.",
+      "clues": ["Row 4, column B."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Grade bands with IFS",
+      "prompt": "Click ==C4== and type the whole thing, then press [[Enter]]:\n\n`=IFS(B4>=90,\"A\",B4>=75,\"B\",B4>=60,\"C\",TRUE,\"D\")`\n\nThe last pair, `TRUE`, is the **catch-all**: it's always true, so it means “otherwise”.",
+      "grid": [
+        ["Student", "Marks", "Grade"],
+        ["Asha", 95, null],
+        ["Ben", 62, null],
+        ["Chitra", 75, null],
+        ["Dev", 59, null],
+        ["Esha", 90, null]
+      ],
+      "targetCell": "C4",
+      "activeCell": "A4",
+      "highlightCells": ["B4"],
+      "yellowCells": ["C4"],
+      "expectedValue": "B",
+      "mustUse": ["IFS"],
+      "solution": "=IFS(B4>=90,\"A\",B4>=75,\"B\",B4>=60,\"C\",TRUE,\"D\")",
+      "explain": "Chitra has exactly 75. The first test (90 or more) is false, the second (75 or more) is true, so IFS stops there and shows **B**. Without the final `TRUE` pair, a mark like Dev's 59 would show `#N/A`, because no test would match.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `IFS` this time, one formula with all the bands in it.",
+        "parseError": "Check the brackets and quote marks. Each pair is a test, a comma, then its answer.",
+        "wrongValue": "Chitra's 75 passes “75 or more”, so she's a **B**. Check each test uses `>=` and the tests run from the highest band down."
+      },
+      "clues": ["Pairs run from the top band down: 90 → A, 75 → B, 60 → C, TRUE → D."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Bands with numbers",
+      "prompt": "Answers can be numbers too (no quotes). A courier charges by weight:\n\n• **under 1 kg**: 40\n• **1 kg up to (not including) 5 kg**: 70\n• **5 kg or more**: 120\n\nIn ==C4==, work out the fee for parcel 3, which weighs exactly 5 kg. This time the bands run from **lightest** up.",
+      "grid": [
+        ["Parcel", "Weight (kg)", "Fee"],
+        [1, 0.5, null],
+        [2, 3, null],
+        [3, 5, null],
+        [4, 8, null]
+      ],
+      "targetCell": "C4",
+      "activeCell": "A4",
+      "highlightCells": ["B4"],
+      "yellowCells": ["C4"],
+      "expectedValue": 120,
+      "mustUse": ["IFS"],
+      "solution": "=IFS(B4<1,40,B4<5,70,TRUE,120)",
+      "explain": "Exactly 5 kg is **not** below 5, so the first two tests are false and `TRUE` catches it: **120**. When you go lightest to heaviest, the tests use `<`; when you go highest to lowest (like grades), they use `>=`.",
+      "mobileButtons": ["=", "(", ")", ",", "<", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `IFS` with a test and a fee for each band.",
+        "parseError": "Check the brackets and commas. Fees are plain numbers, so no quotes.",
+        "wrongValue": "Parcel 3 weighs exactly 5 kg, which is the **5 kg or more** band. Use `<5` (not `<=5`) for the middle band so that 5 falls through."
+      },
+      "clues": ["`=IFS(B4<1,40,B4<5,70,` and then the catch-all."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "Zoya scored **95**. Someone wrote the bands in the **wrong order**: lowest limit first.\n\nIFS stops at the first true test. What grade will `C2` show?",
+      "grid": [
+        ["Student", "Marks", "Grade"],
+        ["Zoya", 95, "=IFS(B2>=60,\"C\",B2>=75,\"B\",B2>=90,\"A\",TRUE,\"D\")"]
+      ],
+      "activeCell": "C2",
+      "yellowCells": ["C2"],
+      "showFormulaBar": true,
+      "options": ["`A`", "`B`", "`C`"],
+      "answer": 2,
+      "explain": "The very first test is `B2>=60`, and 95 passes it, so IFS stops right there with **C**. It never reaches the A test. A high mark must meet the **strictest** test first.",
+      "wrongFeedback": [
+        "95 does deserve an A, but IFS never gets that far. Read the tests in the order they're written.",
+        "Same problem: the `>=75` test is never reached. What's the first test, and does 95 pass it?",
+        null
+      ],
+      "clues": ["Read left to right. Which test does 95 pass first?"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Fix the order",
+      "prompt": "Here's that same mistake in a real sheet. Wen scored **82** and deserves a **B**, but `C2` says **C**.\n\nRetype the formula in ==C2== with the tests in the right order.",
+      "grid": [
+        ["Student", "Marks", "Grade"],
+        ["Wen", 82, "=IFS(B2>=60,\"C\",B2>=75,\"B\",B2>=90,\"A\",TRUE,\"D\")"],
+        ["Xia", 68, null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "highlightCells": ["B2"],
+      "yellowCells": ["C2"],
+      "expectedValue": "B",
+      "mustUse": ["IFS"],
+      "solution": "=IFS(B2>=90,\"A\",B2>=75,\"B\",B2>=60,\"C\",TRUE,\"D\")",
+      "explain": "With the strictest test first, 82 fails `>=90` but passes `>=75`, so it's a **B**. Whenever IFS gives “too low” answers, check the order.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Keep using `IFS`.",
+        "parseError": "Check the brackets and quote marks.",
+        "wrongValue": "Wen still isn't a B. Put the **highest** limit (90 → A) first, then 75 → B, then 60 → C."
+      },
+      "clues": ["Start with `B2>=90`: it's the hardest test to pass."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "SWITCH: code to name",
+      "prompt": "IFS is for **ranges**. When you have **exact codes** to turn into names, **SWITCH** is neater: the value to look at, then pairs of “code, answer”, then a final answer for anything else.\n\nIn ==C3==, type `=SWITCH(B3,\"M\",\"Mumbai\",\"D\",\"Delhi\",\"P\",\"Pune\",\"Other\")`.",
+      "grid": [
+        ["Order", "Code", "Ships from"],
+        [1, "M", null],
+        [2, "D", null],
+        [3, "P", null],
+        [4, "K", null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A3",
+      "highlightCells": ["B3"],
+      "yellowCells": ["C3"],
+      "expectedValue": "Delhi",
+      "mustUse": ["SWITCH"],
+      "solution": "=SWITCH(B3,\"M\",\"Mumbai\",\"D\",\"Delhi\",\"P\",\"Pune\",\"Other\")",
+      "explain": "Order 2 has code `D`, which SWITCH matches exactly to its second pair and answers **Delhi**. A code like `K` would fall through to the last, lonely value, “Other”.",
+      "mobileButtons": ["=", "(", ")", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `SWITCH` for exact codes.",
+        "parseError": "Check the brackets and put quote marks around every code and every city.",
+        "wrongValue": "Order 2's code is `D`. Check you typed `B3` first, and each code is followed by its city."
+      },
+      "clues": ["`SWITCH(what to look at, code1, answer1, code2, answer2, …, otherwise)`"]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "SWITCH with a default",
+      "prompt": "Letter grades turn into points: **A = 4, B = 3, C = 2**. Any other grade gets **0**.\n\nIn ==C5==, work out the points for Di's grade. Numbers need no quotes, and the “anything else” answer goes last.",
+      "grid": [
+        ["Student", "Grade", "Points"],
+        ["Ana", "A", null],
+        ["Bo", "C", null],
+        ["Cy", "B", null],
+        ["Di", "F", null]
+      ],
+      "targetCell": "C5",
+      "activeCell": "A5",
+      "highlightCells": ["B5"],
+      "yellowCells": ["C5"],
+      "expectedValue": 0,
+      "mustUse": ["SWITCH"],
+      "solution": "=SWITCH(B5,\"A\",4,\"B\",3,\"C\",2,0)",
+      "explain": "Di's `F` isn't A, B or C, so SWITCH uses its last value, **0**. That extra value at the end is optional, but without it an unknown grade would give `#N/A`.",
+      "mobileButtons": ["=", "(", ")", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `SWITCH` with the grade as its first value.",
+        "parseError": "Grade letters need quote marks; the points don't.",
+        "wrongValue": "Di's F matches none of A, B or C. Add a final lonely `0` at the end so everything else scores 0."
+      },
+      "clues": ["`=SWITCH(B5,\"A\",4,\"B\",3,\"C\",2,` then the answer for everything else."]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Spot the problem",
+      "prompt": "This SWITCH was meant to turn marks into grades, but top-scorer Zoya gets a **D**.\n\nWhat's the real problem?",
+      "grid": [
+        ["Student", "Marks", "Grade"],
+        ["Zoya", 95, "=SWITCH(B2,90,\"A\",75,\"B\",60,\"C\",\"D\")"]
+      ],
+      "activeCell": "C2",
+      "yellowCells": ["C2"],
+      "showFormulaBar": true,
+      "options": [
+        "SWITCH matches exact values only, and 95 isn't 90, 75 or 60",
+        "The `D` default should be first",
+        "Marks must be typed as text"
+      ],
+      "answer": 0,
+      "explain": "SWITCH asks “is it **equal** to this?”, never “is it above this?”. Only a mark of exactly 90, 75 or 60 matches, so everyone else falls into the `D`. Bands (ranges) need **IFS**; exact codes need **SWITCH**.",
+      "wrongFeedback": [
+        null,
+        "The final single value is always the “anything else” answer. It belongs last.",
+        "The marks are fine as numbers. The trouble is how SWITCH compares them."
+      ],
+      "clues": ["Is 95 **equal** to 90?"]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A help desk sets priority by **how long a ticket has waited**:\n\n• **under 4 hours**: Normal\n• **4 hours up to (not including) 24**: Urgent\n• **24 hours or more**: Critical\n\nPut a formula in `C3` that gives ticket T2's priority.",
+      "grid": [
+        ["Ticket", "Hours waiting", "Priority"],
+        ["T1", 2, null],
+        ["T2", 24, null],
+        ["T3", 10, null],
+        ["T4", 30, null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A1",
+      "expectedValue": "Critical",
+      "mustReference": ["B3"],
+      "solution": "=IFS(B3<4,\"Normal\",B3<24,\"Urgent\",TRUE,\"Critical\")",
+      "explain": "**Critical.** T2 has waited exactly 24 hours, which is not below 24, so it falls through the first two tests to the catch-all. These are **ranges**, so IFS (not SWITCH) was the right tool.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "<", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingReference": "Make the formula look at T2's hours in `B3`.",
+        "parseError": "Check the brackets, commas and quote marks.",
+        "wrongValue": "T2 has waited exactly 24 hours, so it's already in the **24 or more** band. Does 24 pass a “below 24” test?"
+      },
+      "clues": [
+        "Tests from the shortest wait to the longest, ending with `TRUE`.",
+        "`B3<4` then `B3<24` then `TRUE`."
+      ]
+    }
+  ]
+}

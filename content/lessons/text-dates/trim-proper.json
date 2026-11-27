@@ -1,0 +1,323 @@
+{
+  "id": "trim-proper",
+  "module": "text-dates",
+  "title": "TRIM, PROPER & SUBSTITUTE",
+  "goal": "Clean messy text: remove hidden spaces with TRIM, fix capitals with PROPER, UPPER and LOWER, and swap or remove characters with SUBSTITUTE.",
+  "difficulty": 1,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "The invisible problem",
+      "text": "Look at ==A2== and ==D2==. Both say **Asha**. But the lookup in ==E2== (you'll meet lookups in Topic 33) can't find her and shows `#N/A`.\n\nThe cause is invisible: someone typed a **space after Asha**. To Excel, `Asha` and `Asha ` are different words.\n\nThis lesson is your cleaning kit: **TRIM** removes stray spaces, **PROPER**, **UPPER** and **LOWER** fix capital letters, and **SUBSTITUTE** swaps one character for another.",
+      "grid": [
+        ["Student", "Marks", null, "Look up", "Result"],
+        ["Asha ", 78, null, "Asha", "=XLOOKUP(D2,A2:A5,B2:B5)"],
+        ["Ben", 64, null, null, null],
+        ["Chitra", 91, null, null, null],
+        ["Dev", 55, null, null, null]
+      ],
+      "activeCell": "E2",
+      "yellowCells": ["A2"],
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "mcq",
+      "topic": "Predict: count the letters",
+      "prompt": "`Asha` has 4 letters, but the cell holds `Asha ` with a space at the end. This cell is `Meera ` (5 letters and a trailing space).\n\nWhat will `=LEN(A2)` show for it?",
+      "grid": [["Name"], ["Meera "]],
+      "yellowCells": ["A2"],
+      "options": ["`5`: just the letters", "`6`: the space counts too", "`#VALUE!`"],
+      "answer": 1,
+      "explain": "**6.** LEN counts every character, and a space is a character. Next, check it yourself.",
+      "wrongFeedback": [
+        "That's how many letters you can see. LEN counts spaces too.",
+        null,
+        "LEN never errors on text. It just counts."
+      ],
+      "clues": ["Remember Topic 27: spaces count as characters."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Spot the space with LEN",
+      "prompt": "In ==B2==, use LEN to count the characters in `Meera `. If it doesn't say 5, there's a hidden space.",
+      "grid": [
+        ["Name", "Characters"],
+        ["Meera ", null],
+        ["Kabir", null],
+        ["Ira ", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": 6,
+      "mustUse": ["LEN"],
+      "solution": "=LEN(A2)",
+      "explain": "**6**, not 5. LEN is your detective: if the count is higher than the letters you see, there are hidden spaces. The same check on `Kabir` gives 5.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=LEN(A2)`.",
+        "parseError": "Check the brackets: `=LEN(A2)`.",
+        "wrongValue": "Count `A2` with LEN: `=LEN(A2)`.",
+        "missingFunction": "Use `LEN` to count the characters."
+      },
+      "clues": ["`=LEN(A2)`.", "The answer should be bigger than the five letters you can see."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "TRIM: remove stray spaces",
+      "prompt": "**TRIM** removes spaces from the start and end of text.\n\nIn ==B2==, type `=TRIM(A2)` to clean up the first name.",
+      "grid": [
+        ["Name", "Clean"],
+        ["Dev Patel ", null],
+        ["Ishaan", null],
+        ["Neha ", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "Dev Patel",
+      "mustUse": ["TRIM"],
+      "solution": "=TRIM(A2)",
+      "explain": "**Dev Patel**, without the trailing space. The space between Dev and Patel stayed, because it belongs there. TRIM only removes the extra ones.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=TRIM(A2)`.",
+        "parseError": "Check the brackets: `=TRIM(A2)`.",
+        "wrongValue": "Use `=TRIM(A2)` on the first name.",
+        "missingFunction": "Use `TRIM`."
+      },
+      "clues": ["`=TRIM(A2)`, just the cell."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "TRIM fixes the middle too",
+      "prompt": "Messy exports often have spaces **before**, **between** and **after** words. TRIM also squeezes doubled spaces in the middle down to one.\n\nIn ==B2==, clean up `  Ravi   Kumar ` with TRIM.",
+      "grid": [
+        ["Name", "Clean"],
+        ["  Ravi   Kumar ", null],
+        ["Sana  Ali", null],
+        ["Tara Dutt  ", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "Ravi Kumar",
+      "mustUse": ["TRIM"],
+      "solution": "=TRIM(A2)",
+      "explain": "**Ravi Kumar.** Two spaces at the start, three in the middle and one at the end all collapsed into a single space between the words.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets: `=TRIM(A2)`.",
+        "wrongValue": "One `TRIM` handles all of it: `=TRIM(A2)`.",
+        "missingFunction": "Use `TRIM`."
+      },
+      "clues": ["One function does it all."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "PROPER: fix capitals",
+      "prompt": "Names typed in CAPS, or in all lowercase, look sloppy. **PROPER** capitalises the first letter of each word and lowercases the rest.\n\nIn ==B2==, fix `RAVI KUMAR`.",
+      "grid": [
+        ["Name", "Fixed"],
+        ["RAVI KUMAR", null],
+        ["meera joshi", null],
+        ["pRIYA sHAH", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "Ravi Kumar",
+      "mustUse": ["PROPER"],
+      "solution": "=PROPER(A2)",
+      "explain": "**Ravi Kumar.** PROPER capitalised R and K and lowercased the rest. Watch out for names like “McDonald”: PROPER makes it “Mcdonald”, so check those by hand.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=PROPER(A2)`.",
+        "parseError": "Check the brackets: `=PROPER(A2)`.",
+        "wrongValue": "Use `=PROPER(A2)`.",
+        "missingFunction": "Use `PROPER`."
+      },
+      "clues": ["`=PROPER(A2)`."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Two cleaners at once",
+      "prompt": "Real data is messy in more than one way. You can put one function **inside** another. The inner one runs first.\n\nIn ==B2==, fix `  aNJALI   rao ` (extra spaces **and** odd capitals).",
+      "grid": [
+        ["Name", "Clean"],
+        ["  aNJALI   rao ", null],
+        ["  VIKRAM sethi", null],
+        ["isha  nair ", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "Anjali Rao",
+      "mustUse": ["TRIM", "PROPER"],
+      "solution": "=PROPER(TRIM(A2))",
+      "explain": "**Anjali Rao.** TRIM cleaned the spaces first, then PROPER fixed the capitals. The order doesn't change the result here: both orders work.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Close both brackets: `=PROPER(TRIM(A2))`.",
+        "wrongValue": "You need both: spaces gone **and** capitals fixed. Try `=PROPER(TRIM(A2))`.",
+        "missingFunction": "Use both `TRIM` and `PROPER`."
+      },
+      "clues": ["Put one inside the other: `=PROPER(TRIM(A2))`."]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "UPPER and LOWER",
+      "prompt": "Codes should usually be in **capitals**. **UPPER** makes every letter a capital; **LOWER** makes every letter small (handy for email addresses).\n\nIn ==B2==, make the product code all capitals.",
+      "grid": [
+        ["Code", "Clean"],
+        ["pun-0412", null],
+        ["Del-0087", null],
+        ["mUm-1530", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "PUN-0412",
+      "mustUse": ["UPPER"],
+      "solution": "=UPPER(A2)",
+      "explain": "**PUN-0412.** Digits and dashes don't change, only letters do. `LOWER` is the mirror image, and you'll use it in the challenge.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=UPPER(A2)`.",
+        "parseError": "Check the brackets: `=UPPER(A2)`.",
+        "wrongValue": "Use `=UPPER(A2)`. PROPER would leave “Pun-0412”.",
+        "missingFunction": "Use `UPPER` to make every letter a capital."
+      },
+      "clues": ["`=UPPER(A2)`."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "SUBSTITUTE: swap characters",
+      "prompt": "Phone numbers arrive as `98765-43210`. To use them, you want the dashes gone.\n\n**SUBSTITUTE** has three parts: the text, the **old** piece, the **new** piece. A new piece of `\"\"` (two quotes, nothing between) means “nothing”.\n\nIn ==B2==, type `=SUBSTITUTE(A2,\"-\",\"\")`.",
+      "grid": [
+        ["Phone", "Clean"],
+        ["98765-43210", null],
+        ["91234-56780", null],
+        ["99887-76655", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "9876543210",
+      "mustUse": ["SUBSTITUTE"],
+      "solution": "=SUBSTITUTE(A2,\"-\",\"\")",
+      "explain": "**9876543210.** Every dash was swapped for nothing. SUBSTITUTE works on every match in the cell, and it's case-sensitive for letters.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Three parts, separated by commas, each in quotes: `=SUBSTITUTE(A2,\"-\",\"\")`.",
+        "wrongValue": "Swap the dash for nothing: `=SUBSTITUTE(A2,\"-\",\"\")`.",
+        "missingFunction": "Use `SUBSTITUTE`."
+      },
+      "clues": [
+        "`=SUBSTITUTE(text, old, new)`.",
+        "For `new`, type two quote marks with nothing between them."
+      ]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "SUBSTITUTE twice",
+      "prompt": "This list has **two** kinds of clutter: a space after `+91` and a dash. One SUBSTITUTE removes one thing, so put one inside the other.\n\nIn ==B2==, turn `+91 98765-43210` into `+919876543210`.",
+      "grid": [
+        ["Phone", "Clean"],
+        ["+91 98765-43210", null],
+        ["+91 91234-56780", null],
+        ["+91 99887-76655", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "+919876543210",
+      "mustUse": ["SUBSTITUTE"],
+      "solution": "=SUBSTITUTE(SUBSTITUTE(A2,\" \",\"\"),\"-\",\"\")",
+      "explain": "**+919876543210.** The inner SUBSTITUTE removed the space, then the outer one removed the dash. Add another layer for every extra character you want gone.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Close both brackets and keep every piece in quotes.",
+        "wrongValue": "Both the space and the dash must go: wrap one SUBSTITUTE in another.",
+        "missingFunction": "Use `SUBSTITUTE`, twice."
+      },
+      "clues": ["`=SUBSTITUTE(SUBSTITUTE(A2,\" \",\"\"),\"-\",\"\")`: the inner one runs first."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Before you delete column A",
+      "prompt": "You cleaned the names with `=TRIM(A2)` in column B and it looks perfect. To tidy up, you delete column A, the messy original.\n\nWhat happens to column B?",
+      "grid": [
+        ["Name", "Clean"],
+        ["Dev Patel ", "=TRIM(A2)"],
+        ["Ishaan", "=TRIM(A3)"]
+      ],
+      "activeCell": "B2",
+      "showFormulaBar": true,
+      "yellowCells": ["B2"],
+      "options": [
+        "Column B keeps the clean names",
+        "Column B turns into `#REF!` errors",
+        "Excel asks which names to keep"
+      ],
+      "answer": 1,
+      "explain": "A formula only **points at** column A. Delete A and the pointers break. First **copy column B and paste it as values** ([[Ctrl]] + [[Alt]] + [[V]], then [[V]]), then it's safe to delete column A.",
+      "wrongFeedback": [
+        "The names in B were only ever a formula looking at A.",
+        null,
+        "Excel doesn't ask. The formulas break straight away."
+      ],
+      "clues": ["Where do the clean names actually live?"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nLogin emails were typed with spaces around them and random capitals, like `  Kavya.S@Shop.IN `. In ==B2==, give the clean version: no stray spaces, all lowercase.",
+      "grid": [
+        ["Typed email", "Login"],
+        ["  Kavya.S@Shop.IN ", null],
+        ["ROHAN_M@Mailbox.com", null],
+        [" Sana@Cafe.CO", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A1",
+      "expectedValue": "kavya.s@shop.in",
+      "solution": "=LOWER(TRIM(A2))",
+      "explain": "**kavya.s@shop.in.** TRIM cleared the spaces and LOWER fixed every letter. Matching logins is much easier once they're all clean and lowercase.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check your brackets are all closed.",
+        "wrongValue": "Two jobs: remove the stray spaces **and** make every letter lowercase."
+      },
+      "clues": ["Two cleaners, one inside the other.", "Which function makes everything lowercase?"]
+    }
+  ]
+}

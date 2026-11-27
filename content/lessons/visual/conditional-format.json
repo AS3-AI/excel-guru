@@ -1,0 +1,324 @@
+{
+  "id": "conditional-format",
+  "module": "visual",
+  "title": "Conditional Formatting",
+  "goal": "Colour cells automatically with a rule: above or below a value, the top few, duplicates, scales, bars and icons, and know what each rule will colour.",
+  "difficulty": 1,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Let colour do the looking",
+      "text": "A shop owner checks stock every morning. Which items are almost out? In a list of 300 rows you would never spot them.\n\n**Conditional formatting** colours cells by their value, automatically. Here every stock below 10 is coloured: ==B3== and ==B5==.\n\nChange a number and the colour follows. You never repaint anything.\n\nIn this lesson you'll learn the rules Excel offers: above or below a number, the top few, duplicates, and the colourful scales, bars and icons.",
+      "grid": [
+        ["Item", "Stock"],
+        ["Rice", 25],
+        ["Dal", 8],
+        ["Sugar", 40],
+        ["Oil", 6],
+        ["Salt", 15],
+        ["Tea", 12]
+      ],
+      "yellowCells": ["B3", "B5"],
+      "activeCell": "A1"
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Select first",
+      "prompt": "A rule only looks at the cells you select **first**.\n\nClick ==B2==, drag down to ==B7== (the sales, not the header), then press [[Enter]].",
+      "grid": [
+        ["Rep", "Sales", "Cells coloured"],
+        ["Asha", 4200, null],
+        ["Ben", 6100, null],
+        ["Chitra", 5000, null],
+        ["Dev", 7800, null],
+        ["Esha", 2900, null],
+        ["Farhan", 5400, null]
+      ],
+      "target": "B2:B7",
+      "wrongFeedback": "Start at `B2` and drag down to `B7`. Leave the header out: a rule on the word “Sales” would test text, not numbers.",
+      "clues": ["Drag from the first number to the last number in the Sales column."],
+      "yellowCells": ["B2:B7"]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Open the rules menu",
+      "prompt": "With the sales still selected, open the rules menu. Tap [[Alt]], [[H]], [[L]] one after another (Home tab → Conditional Formatting).\n\nExcel shows: **Highlight Cells Rules**, **Top/Bottom Rules**, **Data Bars**, **Color Scales**, **Icon Sets**, and **Clear Rules** at the bottom. On a Mac, click Home → Conditional Formatting instead.",
+      "keys": {
+        "win": ["Alt", "H", "L"],
+        "mac": null
+      },
+      "grid": [
+        ["Rep", "Sales", "Cells coloured"],
+        ["Asha", 4200, null],
+        ["Ben", 6100, null],
+        ["Chitra", 5000, null],
+        ["Dev", 7800, null],
+        ["Esha", 2900, null],
+        ["Farhan", 5400, null]
+      ],
+      "postcondition": {
+        "selection": "B2:B7"
+      },
+      "clues": ["Press and release Alt, then H, then L. Don't hold them."],
+      "activeCell": "B2:B7"
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Greater than a value",
+      "prompt": "Choose **Highlight Cells Rules → Greater Than**, type 5000 and pick a colour.\n\nOur sheet can't paint, so work out what Excel would colour: in ==C2==, count the sales **greater than 5000**.",
+      "grid": [
+        ["Rep", "Sales", "Cells coloured"],
+        ["Asha", 4200, null],
+        ["Ben", 6100, null],
+        ["Chitra", 5000, null],
+        ["Dev", 7800, null],
+        ["Esha", 2900, null],
+        ["Farhan", 5400, null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 3,
+      "solution": "=COUNTIF(B2:B7,\">5000\")",
+      "explain": "**3**: Ben, Dev and Farhan. Chitra's sales are exactly 5000, and “greater than” means strictly more, so her cell stays plain. To include 5000 you'd use New Rule → “greater than or equal to”.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`. Use a function that counts cells meeting a condition.",
+        "parseError": "Something is off in the brackets or quotes. The condition goes in quotes: `\">5000\"`.",
+        "wrongValue": "Count only the sales **above** 5000. Chitra's 5000 is not above 5000.",
+        "missingFunction": "Use a counting function with a condition, like `COUNTIF`."
+      },
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "clues": [
+        "Count the cells in `B2:B7` that match the condition `\">5000\"`.",
+        "`=COUNTIF(B2:B7,\">5000\")`"
+      ],
+      "highlightCells": ["B2:B7"],
+      "activeCell": "C2",
+      "mustUse": ["COUNTIF"],
+      "yellowCells": ["C2"]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Top 10 Items",
+      "prompt": "Every Monday your boss wants the **three best sellers** coloured, whatever the numbers are that week.\n\nWhich rule fits?",
+      "options": ["Greater Than, with 300", "Top 10 Items, changed to 3", "Duplicate Values"],
+      "answer": 1,
+      "explain": "**Top/Bottom Rules → Top 10 Items** re-ranks itself every time the numbers change. “10” is only the default: change it to 3 (or switch to a percent). There's a **Bottom 10** twin for the weakest.",
+      "wrongFeedback": [
+        "A fixed number breaks next week: sales may all be under 300, or all over it. The boss asked for the best **three**, not “above a number”.",
+        null,
+        "Duplicate Values colours repeats, not the biggest numbers."
+      ],
+      "clues": ["Which rule adjusts itself to whatever the week's numbers are?"],
+      "grid": [
+        ["Product", "Units", "Top 3 cut-off"],
+        ["Chai", 120, null],
+        ["Coffee", 340, null],
+        ["Lassi", 95, null],
+        ["Juice", 210, null],
+        ["Soda", 180, null],
+        ["Tea", 260, null]
+      ],
+      "highlightCells": ["B2:B7"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "How Top 3 decides",
+      "prompt": "With **Top 3**, Excel colours every cell at or above the 3rd biggest number.\n\nFind that cut-off: in ==C2==, get the **3rd largest** of the units.",
+      "grid": [
+        ["Product", "Units", "Top 3 cut-off"],
+        ["Chai", 120, null],
+        ["Coffee", 340, null],
+        ["Lassi", 95, null],
+        ["Juice", 210, null],
+        ["Soda", 180, null],
+        ["Tea", 260, null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 210,
+      "solution": "=LARGE(B2:B7,3)",
+      "explain": "**210**: Coffee (340), Tea (260) and Juice (210) are the top three, so those three get coloured. For Bottom 3 you'd count from the small end with `SMALL`.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets and the comma: the function needs the range, then the position.",
+        "wrongValue": "Line the units up from biggest to smallest in your head: 340, 260, … The cut-off is the **third** one.",
+        "missingFunction": "Use `LARGE`. It takes the range and a position: 1st, 2nd, 3rd…"
+      },
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "clues": ["`LARGE(range, 3)` returns the 3rd biggest number."],
+      "highlightCells": ["B2:B7"],
+      "activeCell": "C2",
+      "mustUse": ["LARGE"],
+      "yellowCells": ["C2"]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Duplicates are counts",
+      "prompt": "Invoice numbers must be unique, so the same one twice is a mistake someone should see.\n\n**Duplicate Values** colours any cell whose value appears **more than once**. It decides by counting. In ==C2==, count how many times the invoice number in `A2` appears in `A2:A8`.",
+      "grid": [
+        ["Invoice", "Client", "Times used"],
+        ["INV-101", "Meera", null],
+        ["INV-102", "Joseph", null],
+        ["INV-103", "Kavya", null],
+        ["INV-102", "Omar", null],
+        ["INV-104", "Liam", null],
+        ["INV-101", "Priya", null],
+        ["INV-105", "Nisha", null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 2,
+      "solution": "=COUNTIF(A2:A8,A2)",
+      "explain": "**2**: INV-101 is in `A2` and again in `A7`. Duplicate Values colours **both** copies, so the sheet's owner can decide which one is wrong.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets and the comma.",
+        "wrongValue": "Count across the whole list `A2:A8`, and count the value that's in `A2`.",
+        "missingFunction": "Use `COUNTIF`: range first, then the cell to look for.",
+        "missingReference": "Point at the cell `A2` instead of typing the invoice number."
+      },
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "clues": ["Range first, then what to look for: the value in `A2`."],
+      "highlightCells": ["A2:A8"],
+      "activeCell": "C2",
+      "mustUse": ["COUNTIF"],
+      "mustReference": ["A2"],
+      "yellowCells": ["C2"]
+    },
+    {
+      "id": "s8",
+      "type": "select",
+      "topic": "Which cells stay plain",
+      "prompt": "With Duplicate Values switched on, INV-101 and INV-102 are each coloured **twice**.\n\nClick the first invoice number the rule would **not** colour, then press [[Enter]].",
+      "grid": [
+        ["Invoice", "Client", "Times used"],
+        ["INV-101", "Meera", null],
+        ["INV-102", "Joseph", null],
+        ["INV-103", "Kavya", null],
+        ["INV-102", "Omar", null],
+        ["INV-104", "Liam", null],
+        ["INV-101", "Priya", null],
+        ["INV-105", "Nisha", null]
+      ],
+      "target": "A4",
+      "wrongFeedback": "Look for an invoice number that appears only once. `INV-101` and `INV-102` both appear twice, so they're coloured.",
+      "clues": ["Which invoice number shows up only once, reading from the top?"],
+      "highlightCells": ["A2:A8"]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Scales, bars and icons",
+      "prompt": "The owner wants a **green, amber or red light** beside each shop's result, so she can read the sheet in two seconds.\n\nWhich Conditional Formatting tool gives her that?",
+      "options": ["Color Scales", "Data Bars", "Icon Sets"],
+      "answer": 2,
+      "explain": "**Icon Sets** sort values into groups and give each group a symbol: traffic lights, arrows, ticks. **Color Scales** blend colours from low to high like a heat map; **Data Bars** draw a bar inside each cell, longest for the biggest, great for comparing many numbers.",
+      "wrongFeedback": [
+        "A colour scale shades cells smoothly from low to high. It gives a gradient, not a clear red, amber or green light.",
+        "Data bars show size as a bar length. They don't give a traffic-light verdict.",
+        null
+      ],
+      "clues": ["Which tool puts a small symbol next to each number?"],
+      "grid": [
+        ["Shop", "% of target"],
+        ["Pune", 112],
+        ["Delhi", 95],
+        ["Mumbai", 78],
+        ["Goa", 100]
+      ]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "Chitra's sales are corrected from **5000** to **5200**. The rule is still Greater Than 5000.\n\nBefore you change anything: what happens to her cell?",
+      "options": [
+        "Nothing: you must apply the rule again",
+        "It becomes coloured by itself",
+        "It turns coloured, but the other cells stay as they were"
+      ],
+      "answer": 1,
+      "explain": "A conditional format is checked **every time a value changes**. 5200 is over 5000, so her cell lights up and the count in `C2` goes from 3 to 4. Next, watch the count prove it.",
+      "wrongFeedback": [
+        "That's the whole point of conditional formatting: you apply the rule once, and it keeps checking.",
+        null,
+        "The other cells keep their colour because they're still over 5000. Only Chitra's cell changes."
+      ],
+      "clues": ["Is 5200 greater than 5000?"],
+      "grid": [
+        ["Rep", "Sales", "Cells coloured"],
+        ["Asha", 4200, "=COUNTIF(B2:B7,\">5000\")"],
+        ["Ben", 6100, null],
+        ["Chitra", 5000, null],
+        ["Dev", 7800, null],
+        ["Esha", 2900, null],
+        ["Farhan", 5400, null]
+      ],
+      "activeCell": "B4",
+      "yellowCells": ["B4"],
+      "highlightCells": ["C2"]
+    },
+    {
+      "id": "s11",
+      "type": "entry",
+      "topic": "The colour follows the number",
+      "prompt": "Now prove it. Click ==B4==, type **5200**, press [[Enter]] and watch the count in `C2` (it counts what the rule would colour).",
+      "grid": [
+        ["Rep", "Sales", "Cells coloured"],
+        ["Asha", 4200, "=COUNTIF(B2:B7,\">5000\")"],
+        ["Ben", 6100, null],
+        ["Chitra", 5000, null],
+        ["Dev", 7800, null],
+        ["Esha", 2900, null],
+        ["Farhan", 5400, null]
+      ],
+      "expect": {
+        "B4": 5200,
+        "C2": 4
+      },
+      "explain": "You didn't touch the rule, but the count rose to **4**: Chitra's cell would now be coloured. Colour rules re-check themselves with every edit.",
+      "clues": ["Change only `B4`."],
+      "activeCell": "A4",
+      "yellowCells": ["B4"],
+      "highlightCells": ["C2"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "The teacher will colour every mark **below 40**, the pass mark.\n\nHow many of these cells will get coloured? Put the answer in ==C2==.",
+      "grid": [
+        ["Student", "Marks", "Cells coloured"],
+        ["Ravi", 72, null],
+        ["Sana", 40, null],
+        ["Tom", 35, null],
+        ["Uma", 18, null],
+        ["Vik", 56, null],
+        ["Yash", 39, null],
+        ["Zoya", 22, null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 4,
+      "solution": "=COUNTIF(B2:B8,\"<40\")",
+      "explain": "**4**: Tom (35), Uma (18), Yash (39) and Zoya (22). Sana's 40 is exactly on the line, and “below 40” doesn't include it.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "The condition goes in quotes, like `\"<40\"`.",
+        "wrongValue": "Below 40 means less than 40. Is Sana's 40 below 40?",
+        "missingFunction": "Count the cells that meet a condition."
+      },
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<"],
+      "clues": ["Count the marks in `B2:B8` that are less than 40."],
+      "activeCell": "A1",
+      "mustUse": ["COUNTIF"]
+    }
+  ]
+}

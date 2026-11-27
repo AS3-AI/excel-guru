@@ -1,0 +1,325 @@
+{
+  "id": "sequence-stack",
+  "module": "modern",
+  "title": "SEQUENCE, VSTACK, TAKE & DROP",
+  "goal": "Show the top or bottom few rows of any list with TAKE and SORT, skip rows with DROP, and read SEQUENCE and VSTACK formulas that build lists and combine tables.",
+  "difficulty": 3,
+  "requiredCorrect": 9,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Top 3 in one formula",
+      "text": "A league table has six teams and the boss wants the **top 3**. The old way is sort the list, copy three rows, paste them somewhere, and repeat next week.\n\nThe new way: **SORT** puts the teams in order and **TAKE** keeps only the first few rows. The top 3 in ==D2== is one formula, and it updates itself.\n\n`=TAKE(array, rows)` keeps that many rows from the top. A negative number counts from the bottom. A third argument picks columns.\n\nClick **Bears score 80** and watch who comes top.",
+      "grid": [
+        ["Team", "Points", null, "Team", "Points"],
+        ["Lions", 40, null, "=TAKE(SORT(A2:B7,2,-1),3)", null],
+        ["Tigers", 55, null, null, null],
+        ["Bears", 35, null, null, null],
+        ["Wolves", 62, null, null, null],
+        ["Foxes", 48, null, null, null],
+        ["Hawks", 29, null, null, null]
+      ],
+      "activeCell": "D2",
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "B4",
+          "fromValue": 35,
+          "toValue": 80,
+          "resultCell": "D2",
+          "buttonLabel": "Bears score 80",
+          "resetLabel": "Put Bears back to 35"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "TAKE: the first rows",
+      "prompt": "Start with TAKE on its own. These runners are already listed in finishing order.\n\nClick ==D2== and type `=TAKE(A2:B7,3)` to show the **first 3 rows**, the podium.",
+      "grid": [
+        ["Runner", "Minutes", null, "Runner", "Minutes"],
+        ["Rohan", 21, null, null, null],
+        ["Sneha", 23, null, null, null],
+        ["Tarun", 24, null, null, null],
+        ["Uzma", 26, null, null, null],
+        ["Vivek", 29, null, null, null],
+        ["Waqar", 31, null, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "D1",
+      "highlightCells": ["A2:B4"],
+      "yellowCells": ["D2"],
+      "expectedValue": "Rohan",
+      "mustUse": ["TAKE"],
+      "solution": "=TAKE(A2:B7,3)",
+      "explain": "Rohan, Sneha and Tarun: the first three rows of both columns. TAKE doesn't sort anything. It simply keeps what is at the top.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check the brackets and comma: `=TAKE(A2:B7,3)`.",
+        "missingFunction": "Use **TAKE**.",
+        "wrongValue": "Take only **3** rows from the table `A2:B7`: `=TAKE(A2:B7,3)`."
+      },
+      "clues": ["`=TAKE(` the table, a comma, then how many rows."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "A negative number: from the bottom",
+      "prompt": "These weekly sales are oldest first, so the **latest** weeks are at the bottom. A **negative** number takes rows from the end.\n\nClick ==D2== and type `=TAKE(A2:B7,-3)` for the last 3 weeks.",
+      "grid": [
+        ["Week", "Sales", null, "Week", "Sales"],
+        ["W1", 120, null, null, null],
+        ["W2", 150, null, null, null],
+        ["W3", 110, null, null, null],
+        ["W4", 180, null, null, null],
+        ["W5", 160, null, null, null],
+        ["W6", 200, null, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "D1",
+      "highlightCells": ["A5:B7"],
+      "yellowCells": ["D2"],
+      "expectedValue": "W4",
+      "mustUse": ["TAKE"],
+      "solution": "=TAKE(A2:B7,-3)",
+      "explain": "W4, W5, W6: the **last** three rows, in their original order. A plain `3` would have given W1 to W3.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check the brackets, comma and minus sign: `=TAKE(A2:B7,-3)`.",
+        "missingFunction": "Use **TAKE**.",
+        "wrongValue": "That took the first rows. Use a **minus** sign, `-3`, to count from the bottom."
+      },
+      "clues": ["Minus means “from the bottom”."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "DROP: skip rows",
+      "prompt": "**DROP** is the opposite: it removes rows and returns the rest. The first two applicants were already interviewed.\n\nClick ==D2== and type `=DROP(A2:B7,2)` to list everyone else.",
+      "grid": [
+        ["Applicant", "Score", null, "Applicant", "Score"],
+        ["Yash", 78, null, null, null],
+        ["Zara", 91, null, null, null],
+        ["Abir", 66, null, null, null],
+        ["Bela", 84, null, null, null],
+        ["Cyrus", 72, null, null, null],
+        ["Disha", 59, null, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "D1",
+      "highlightCells": ["A4:B7"],
+      "yellowCells": ["D2"],
+      "expectedValue": "Abir",
+      "mustUse": ["DROP"],
+      "solution": "=DROP(A2:B7,2)",
+      "explain": "Yash and Zara were dropped, and the list now starts at **Abir**, four rows long. A negative number would drop from the bottom instead.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check the brackets and comma: `=DROP(A2:B7,2)`.",
+        "missingFunction": "Use **DROP** to skip the first rows.",
+        "wrongValue": "Drop the first **2** rows and keep everything after them."
+      },
+      "clues": ["Same shape as TAKE: the table, then how many rows to remove."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Top N: SORT + TAKE",
+      "prompt": "Now combine them. **Sort first**, then **take** the top rows.\n\nClick ==D2== and type `=TAKE(SORT(A2:B8,2,-1),3)`: the three best-selling items.",
+      "grid": [
+        ["Item", "Units", null, "Item", "Units"],
+        ["Notebook", 120, null, null, null],
+        ["Pen", 340, null, null, null],
+        ["Eraser", 90, null, null, null],
+        ["Ruler", 210, null, null, null],
+        ["Marker", 280, null, null, null],
+        ["Pencil", 150, null, null, null],
+        ["Sharpener", 60, null, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "D1",
+      "highlightCells": ["A2:B8"],
+      "yellowCells": ["D2"],
+      "expectedValue": "Pen",
+      "mustUse": ["TAKE", "SORT"],
+      "solution": "=TAKE(SORT(A2:B8,2,-1),3)",
+      "explain": "Pen 340, Marker 280, Ruler 210. SORT put the biggest first, and TAKE kept three rows. Without the SORT you'd just get Notebook, Pen and Eraser.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Count the brackets: SORT sits inside TAKE.",
+        "missingFunction": "Use both: **SORT** inside **TAKE**.",
+        "wrongValue": "Sort by the Units column (`2`) with `-1` for biggest first, then take 3 rows."
+      },
+      "clues": ["Build the SORT first, then wrap `TAKE(` … `,3)` around it."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Fix the order",
+      "prompt": "An AI helper suggested `=SORT(TAKE(A2:B7,3),2,-1)` for “the top 3 marks”. It runs, but it ranks only the **first three students in the list**.\n\nIn ==D2==, type the corrected formula so it shows the real top three marks, highest first.",
+      "grid": [
+        ["Student", "Marks", null, "Student", "Marks"],
+        ["Anil", 64, null, null, null],
+        ["Bhavna", 72, null, null, null],
+        ["Chetan", 55, null, null, null],
+        ["Deepa", 91, null, null, null],
+        ["Esha", 88, null, null, null],
+        ["Farid", 79, null, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "D1",
+      "highlightCells": ["A2:B7"],
+      "yellowCells": ["D2"],
+      "expectedValue": "Deepa",
+      "mustUse": ["TAKE", "SORT"],
+      "solution": "=TAKE(SORT(A2:B7,2,-1),3)",
+      "explain": "Deepa 91, Esha 88, Farid 79. The bug was the order: TAKE ran first and only kept Anil, Bhavna and Chetan, so Deepa never got a chance. **Sort first, then take.**",
+      "mobileButtons": ["=", "(", ")", ":", ",", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Count the brackets: one function sits inside the other.",
+        "missingFunction": "Use both **SORT** and **TAKE**, in the right order.",
+        "wrongValue": "That still shows the wrong students. TAKE must work on the **already sorted** list, so put SORT inside TAKE."
+      },
+      "clues": ["Whatever runs first happens to the raw list, so which should be first?"]
+    },
+    {
+      "id": "s7",
+      "type": "info",
+      "topic": "SEQUENCE",
+      "text": "**SEQUENCE** builds a list of numbers for you, with no typing and no dragging.\n\n`=SEQUENCE(rows, columns, start, step)`. Only the first is needed.\n\n• `=SEQUENCE(5)` gives 1, 2, 3, 4, 5 down a column.\n• `=SEQUENCE(2,3,10,10)` gives 2 rows by 3 columns, starting at 10 and counting up by 10.\n\nThis practice sheet can't run SEQUENCE, so here is what Excel shows.",
+      "grid": [
+        ["SEQUENCE(5)", null, "SEQUENCE(2,3,10,10)", null, null],
+        [1, null, 10, 20, 30],
+        [2, null, 40, 50, 60],
+        [3, null, null, null, null],
+        [4, null, null, null, null],
+        [5, null, null, null, null]
+      ],
+      "activeCell": "A2",
+      "yellowCells": ["A2:A6", "C2:E3"]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Reading SEQUENCE",
+      "prompt": "What will `=SEQUENCE(4,1,100,50)` show?\n\nRemember the order: rows, columns, start, step.",
+      "options": [
+        "100, 150, 200, 250 down one column",
+        "1, 51, 101, 151 down one column",
+        "100, 100, 100, 100 down one column"
+      ],
+      "answer": 0,
+      "explain": "4 rows, 1 column, **starting at 100**, adding **50** each time. A handy real use: `=SEQUENCE(ROWS(A2:A9))` numbers every row of a list, and renumbers itself when the list grows.",
+      "wrongFeedback": [
+        null,
+        "That starts at 1. The third argument, 100, is the starting number.",
+        "The fourth argument, 50, is the step: each number goes up by 50 rather than staying the same."
+      ],
+      "clues": ["Start at the third number, then keep adding the fourth."]
+    },
+    {
+      "id": "s9",
+      "type": "info",
+      "topic": "VSTACK and HSTACK",
+      "text": "Two regions keep their own lists. **VSTACK** puts one table on top of another, as one list:\n\n`=VSTACK(A2:B3,D2:E3)` in ==A5== gives the four rows below.\n\n**HSTACK** is the same idea but side by side, placing the second table to the right of the first. Both read like “stack these, in this order”.\n\nThe practice sheet can't run them, so this is what Excel shows.",
+      "grid": [
+        ["North rep", "Sales", null, "South rep", "Sales"],
+        ["Asha", 40, null, "Chitra", 35],
+        ["Ben", 55, null, "Dev", 62],
+        [null, null, null, null, null],
+        ["Asha", 40, null, null, null],
+        ["Ben", 55, null, null, null],
+        ["Chitra", 35, null, null, null],
+        ["Dev", 62, null, null, null]
+      ],
+      "activeCell": "A5",
+      "yellowCells": ["A5:B8"],
+      "highlightCells": ["A2:B3", "D2:E3"]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Stacking tables of different widths",
+      "prompt": "North has **2** columns (Rep, Sales). South has **3** (Rep, Sales, Notes).\n\n`=VSTACK(North, South)` is entered. What fills the empty Notes slots under the North rows?",
+      "options": ["`#N/A`", "`0`", "Nothing: they stay blank"],
+      "answer": 0,
+      "explain": "VSTACK pads missing pieces with `#N/A` so you notice the mismatch. Either stack tables with the same columns, or wrap it in `IFERROR(...,\"\")` to hide the errors.",
+      "wrongFeedback": [
+        null,
+        "Excel doesn't guess a zero for you. It shows an error instead.",
+        "Excel fills the gap with an error, so you can see the tables didn't line up."
+      ],
+      "clues": ["Would Excel quietly invent a value, or flag it?"]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Report with a header",
+      "prompt": "You want a report: the **header row** `A1:B1` on top, then the top 3 items by Units. Which formula builds it?",
+      "grid": [
+        ["Item", "Units"],
+        ["Notebook", 120],
+        ["Pen", 340],
+        ["Eraser", 90],
+        ["Ruler", 210],
+        ["Marker", 280],
+        ["Pencil", 150],
+        ["Sharpener", 60]
+      ],
+      "highlightCells": ["A1:B1"],
+      "options": [
+        "`=VSTACK(A1:B1,TAKE(SORT(A2:B8,2,-1),3))`",
+        "`=TAKE(VSTACK(A1:B1,SORT(A2:B8,2,-1)),3)`",
+        "`=SORT(VSTACK(A1:B1,TAKE(A2:B8,3)),2,-1)`"
+      ],
+      "answer": 0,
+      "explain": "First get the top 3, then stack the header above them. Option 2 counts the header as one of the 3, so you'd see only two items. Option 3 takes the first three rows before sorting, and sorts the header like data.",
+      "wrongFeedback": [
+        null,
+        "TAKE would count the header as one of the three rows, leaving you with only 2 items.",
+        "This takes the first 3 rows **before** ranking, and sorts the header in with the data."
+      ],
+      "clues": ["Which part has to be finished before the header goes on top?"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nA shop owner wants to re-order stock. Which **two items** have the **least** stock, lowest first? Show item and units, starting in `D2`.",
+      "grid": [
+        ["Item", "Units", null, "Item", "Units"],
+        ["Rice", 40, null, null, null],
+        ["Dal", 25, null, null, null],
+        ["Oil", 60, null, null, null],
+        ["Salt", 12, null, null, null],
+        ["Tea", 35, null, null, null],
+        ["Sugar", 18, null, null, null],
+        ["Flour", 50, null, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A1",
+      "expectedValue": "Salt",
+      "mustUse": ["TAKE"],
+      "solution": "=TAKE(SORT(A2:B8,2),2)",
+      "explain": "Salt (12) and Sugar (18). Sorting smallest-first and taking 2 rows gives the bottom of the ranking, with the neediest item on top.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Count the brackets: SORT sits inside TAKE.",
+        "missingFunction": "Use **TAKE** to keep just the first couple of rows.",
+        "wrongValue": "You want the **lowest** two, lowest first. Sort smallest first, then take 2 rows."
+      },
+      "clues": ["Smallest first is the default order of SORT.", "Sort, then TAKE 2."]
+    }
+  ]
+}

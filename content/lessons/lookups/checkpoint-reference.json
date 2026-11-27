@@ -1,0 +1,404 @@
+{
+  "id": "checkpoint-reference",
+  "module": "lookups",
+  "title": "Checkpoint: check a reference list",
+  "goal": "Match a bank list to a master list, bring payments across, flag short, missing and unknown entries, and total what is still owed.",
+  "difficulty": 3,
+  "requiredCorrect": 12,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "The scenario",
+      "text": "Class 7 is going on a trip. The **master list** (columns A to C) says who owes what. The **bank list** (columns E and F) shows the payments that arrived, in any order, and it may hold a roll number that isn't on the master list.\n\nYou're the treasurer. Using lookups and the tools from the last topics, pull each payment across, flag what's short, missing or unknown, and total up. No hints this time: you choose the formula.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, null, 103, 750, null],
+        [102, "Bhavna", 500, null, 101, 500, null],
+        [103, "Chirag", 750, null, 106, 400, null],
+        [104, "Divya", 500, null, 109, 500, null],
+        [105, "Eshan", 750, null, 105, 700, null],
+        [106, "Fatima", 500, null, 102, 500, null],
+        [107, "Gopal", 750, null, null, null, null]
+      ],
+      "activeCell": "D2",
+      "yellowCells": ["A1:C8", "E1:F7"]
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Bring a payment across",
+      "prompt": "Eshan's payment is in the bank list somewhere. In ==D6==, pull in the amount he paid.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, null, 103, 750, null],
+        [102, "Bhavna", 500, null, 101, 500, null],
+        [103, "Chirag", 750, null, 106, 400, null],
+        [104, "Divya", 500, null, 109, 500, null],
+        [105, "Eshan", 750, null, 105, 700, null],
+        [106, "Fatima", 500, null, 102, 500, null],
+        [107, "Gopal", 750, null, null, null, null]
+      ],
+      "targetCell": "D6",
+      "activeCell": "A6",
+      "yellowCells": ["D6"],
+      "expectedValue": 700,
+      "mustReference": ["A6"],
+      "solution": "=XLOOKUP(A6,E2:E7,F2:F7)",
+      "explain": "**700.** You searched the bank rolls for Eshan's roll (105) and brought back the **Bank paid** amount, not his Due (750). He's short by 50, which you'll flag soon.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<", "&", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas.",
+        "missingReference": "Start from Eshan's roll number in `A6`.",
+        "wrongValue": "Look up Eshan's roll (`A6`) in the **Bank roll** column and bring back **Bank paid**. Not the Due column."
+      },
+      "clues": ["Search `E2:E7`, bring back `F2:F7`."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Nobody paid yet",
+      "prompt": "Divya hasn't paid, so her roll isn't in the bank list at all. In ==D5==, show **0** instead of an error.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, null, 103, 750, null],
+        [102, "Bhavna", 500, null, 101, 500, null],
+        [103, "Chirag", 750, null, 106, 400, null],
+        [104, "Divya", 500, null, 109, 500, null],
+        [105, "Eshan", 750, null, 105, 700, null],
+        [106, "Fatima", 500, null, 102, 500, null],
+        [107, "Gopal", 750, null, null, null, null]
+      ],
+      "targetCell": "D5",
+      "activeCell": "A5",
+      "yellowCells": ["D5"],
+      "expectedValue": 0,
+      "mustReference": ["A5"],
+      "solution": "=XLOOKUP(A5,E2:E7,F2:F7,0)",
+      "explain": "**0.** Divya's roll (104) isn't in the bank list. Giving the lookup a fallback of `0` keeps later totals working. Text like “Not found” would break a SUM or a subtraction.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<", "&", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas.",
+        "missingReference": "Start from Divya's roll number in `A5`.",
+        "wrongValue": "The cell should show **0**, not an error. Give your lookup a fallback value for when nothing matches. `IFERROR` or `IFNA` also work."
+      },
+      "clues": ["The not-found part of XLOOKUP, or wrap the lookup in IFNA."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Is this roll a student?",
+      "prompt": "Roll 109 in the bank list (==E5==) looks suspicious. In ==G5==, show the **student's name** for that roll, or the word **Unknown** if it isn't on the master list.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, null, 103, 750, null],
+        [102, "Bhavna", 500, null, 101, 500, null],
+        [103, "Chirag", 750, null, 106, 400, null],
+        [104, "Divya", 500, null, 109, 500, null],
+        [105, "Eshan", 750, null, 105, 700, null],
+        [106, "Fatima", 500, null, 102, 500, null],
+        [107, "Gopal", 750, null, null, null, null]
+      ],
+      "targetCell": "G5",
+      "activeCell": "E5",
+      "yellowCells": ["G5"],
+      "expectedValue": "Unknown",
+      "mustReference": ["E5"],
+      "solution": "=XLOOKUP(E5,A2:A8,B2:B8,\"Unknown\")",
+      "explain": "**Unknown.** 109 isn't on the master list, so the fallback kicks in. For a valid roll like 105 you'd see **Eshan**. `=IFNA(XLOOKUP(E5,A2:A8,B2:B8),\"Unknown\")` works the same.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<", "&", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets, commas and quotes.",
+        "missingReference": "Look up the bank roll in `E5`.",
+        "wrongValue": "The cell should say **Unknown**. Search the master rolls `A2:A8`, bring back the names, and give a fallback in quotes."
+      },
+      "clues": ["Search the **master** rolls this time, for the roll in `E5`."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Flag a short payment",
+      "prompt": "Row 4 of the bank list is roll 106, who paid 400. In ==G4==, show **Short** if that payment is less than what the student owes (their Due), otherwise **OK**.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, null, 103, 750, null],
+        [102, "Bhavna", 500, null, 101, 500, null],
+        [103, "Chirag", 750, null, 106, 400, null],
+        [104, "Divya", 500, null, 109, 500, null],
+        [105, "Eshan", 750, null, 105, 700, null],
+        [106, "Fatima", 500, null, 102, 500, null],
+        [107, "Gopal", 750, null, null, null, null]
+      ],
+      "targetCell": "G4",
+      "activeCell": "E4",
+      "yellowCells": ["G4"],
+      "expectedValue": "Short",
+      "mustReference": ["E4"],
+      "solution": "=IF(F4<XLOOKUP(E4,A2:A8,C2:C8),\"Short\",\"OK\")",
+      "explain": "**Short.** Roll 106 is Fatima, who owes 500 but paid 400. You looked up her Due, then compared it with `F4`.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<", "&", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets, commas and quotes.",
+        "missingReference": "Start from the bank row: `E4` is the roll, `F4` the amount.",
+        "wrongValue": "The answer is **Short**. Look up the Due for the roll in `E4`, then compare `F4` with it using `IF`."
+      },
+      "clues": ["Look up the Due with the bank roll `E4`, compare with `F4`."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Exactly right is OK",
+      "prompt": "Now row 2: roll 103 paid 750. Flag it in ==G2== the same way: **Short**, or **OK** if it's enough.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, null, 103, 750, null],
+        [102, "Bhavna", 500, null, 101, 500, null],
+        [103, "Chirag", 750, null, 106, 400, null],
+        [104, "Divya", 500, null, 109, 500, null],
+        [105, "Eshan", 750, null, 105, 700, null],
+        [106, "Fatima", 500, null, 102, 500, null],
+        [107, "Gopal", 750, null, null, null, null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "E2",
+      "yellowCells": ["G2"],
+      "expectedValue": "OK",
+      "mustReference": ["E2"],
+      "solution": "=IF(F2<XLOOKUP(E2,A2:A8,C2:C8),\"Short\",\"OK\")",
+      "explain": "**OK.** Roll 103 is Chirag, who owes exactly 750 and paid exactly 750. Paying the exact amount isn't short, so use `<`, not `<=`.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<", "&", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets, commas and quotes.",
+        "missingReference": "Start from the bank row: `E2` is the roll, `F2` the amount.",
+        "wrongValue": "Chirag owes 750 and paid 750. That's **OK**, not Short. Short means paid **less than** due."
+      },
+      "clues": ["Equal amounts aren't short."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Total received",
+      "prompt": "The **Paid** column is now complete. In ==F8==, work out the total that has actually arrived **from enrolled students**.\n\nCareful: the bank list also holds money from roll 109.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, 500, 103, 750, null],
+        [102, "Bhavna", 500, 500, 101, 500, null],
+        [103, "Chirag", 750, 750, 106, 400, null],
+        [104, "Divya", 500, 0, 109, 500, null],
+        [105, "Eshan", 750, 700, 105, 700, null],
+        [106, "Fatima", 500, 400, 102, 500, null],
+        [107, "Gopal", 750, 0, null, null, null]
+      ],
+      "targetCell": "F8",
+      "activeCell": "D2",
+      "yellowCells": ["F8"],
+      "expectedValue": 2850,
+      "mustReference": ["D2:D8"],
+      "solution": "=SUM(D2:D8)",
+      "explain": "**2850.** The Paid column only holds money matched to real students. Summing the bank column instead (`F2:F7`) would give 3350, wrongly counting the 500 from roll 109.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<", "&", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets.",
+        "missingReference": "Use the matched **Paid** column, `D2` to `D8`.",
+        "wrongValue": "Add the Paid column `D2:D8` (students only). The bank column includes 500 from an unknown roll."
+      },
+      "clues": ["Which column holds only matched payments?"]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Still to collect",
+      "prompt": "How much is **still owed** altogether? Use ==F8==.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, 500, 103, 750, null],
+        [102, "Bhavna", 500, 500, 101, 500, null],
+        [103, "Chirag", 750, 750, 106, 400, null],
+        [104, "Divya", 500, 0, 109, 500, null],
+        [105, "Eshan", 750, 700, 105, 700, null],
+        [106, "Fatima", 500, 400, 102, 500, null],
+        [107, "Gopal", 750, 0, null, null, null]
+      ],
+      "targetCell": "F8",
+      "activeCell": "C2",
+      "yellowCells": ["F8"],
+      "expectedValue": 1400,
+      "mustReference": ["C2:C8", "D2:D8"],
+      "solution": "=SUM(C2:C8)-SUM(D2:D8)",
+      "explain": "**1400**: Divya 500, Gopal 750, Fatima 100 and Eshan 50. Total due is 4250, minus the 2850 received.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<", "&", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets.",
+        "missingReference": "Compare what's due (`C2:C8`) with what's paid (`D2:D8`).",
+        "wrongValue": "Total due is 4250 and total paid is 2850. The difference is **1400**."
+      },
+      "clues": ["Total of Due minus total of Paid."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "How many haven't paid anything?",
+      "prompt": "In ==G8==, count the students whose **Paid** amount is zero.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, 500, 103, 750, null],
+        [102, "Bhavna", 500, 500, 101, 500, null],
+        [103, "Chirag", 750, 750, 106, 400, null],
+        [104, "Divya", 500, 0, 109, 500, null],
+        [105, "Eshan", 750, 700, 105, 700, null],
+        [106, "Fatima", 500, 400, 102, 500, null],
+        [107, "Gopal", 750, 0, null, null, null]
+      ],
+      "targetCell": "G8",
+      "activeCell": "D2",
+      "yellowCells": ["G8"],
+      "expectedValue": 2,
+      "mustUse": ["COUNTIF"],
+      "mustReference": ["D2:D8"],
+      "solution": "=COUNTIF(D2:D8,0)",
+      "explain": "**2**: Divya and Gopal. Eshan and Fatima paid something, even if it's short, so they aren't counted.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<", "&", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets, comma and 0.",
+        "missingFunction": "Count cells that equal a value: **COUNTIF**.",
+        "wrongValue": "Count the zeros in the Paid column. Divya and Gopal: **2**."
+      },
+      "clues": ["COUNTIF with the Paid column and the value 0."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Who is first on the list?",
+      "prompt": "Which student is the **first** one with nothing paid? Show the name in ==G2==, without scanning the list yourself.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, 500, 103, 750, null],
+        [102, "Bhavna", 500, 500, 101, 500, null],
+        [103, "Chirag", 750, 750, 106, 400, null],
+        [104, "Divya", 500, 0, 109, 500, null],
+        [105, "Eshan", 750, 700, 105, 700, null],
+        [106, "Fatima", 500, 400, 102, 500, null],
+        [107, "Gopal", 750, 0, null, null, null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "D2",
+      "yellowCells": ["G2"],
+      "expectedValue": "Divya",
+      "mustReference": ["D2:D8"],
+      "solution": "=XLOOKUP(0,D2:D8,B2:B8)",
+      "explain": "**Divya.** Looking up `0` in the Paid column finds the first row with nothing paid and brings back that row's name. Gopal also has 0, but a lookup stops at the first match.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<", "&", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas.",
+        "missingReference": "Search the Paid column `D2:D8`.",
+        "wrongValue": "The first unpaid student is **Divya**. Look for 0 in the Paid column, and bring back the name."
+      },
+      "clues": ["The lookup value doesn't have to be a cell. It can be `0`."]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Write the report line",
+      "prompt": "The treasurer wants a sentence for row 7 of the bank list. In ==G7==, build **Bhavna paid 500**: the student's name for the roll in `E7`, then the word “paid”, then the amount in `F7`.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, 500, 103, 750, null],
+        [102, "Bhavna", 500, 500, 101, 500, null],
+        [103, "Chirag", 750, 750, 106, 400, null],
+        [104, "Divya", 500, 0, 109, 500, null],
+        [105, "Eshan", 750, 700, 105, 700, null],
+        [106, "Fatima", 500, 400, 102, 500, null],
+        [107, "Gopal", 750, 0, null, null, null]
+      ],
+      "targetCell": "G7",
+      "activeCell": "E7",
+      "yellowCells": ["G7"],
+      "expectedValue": "Bhavna paid 500",
+      "mustReference": ["E7", "F7"],
+      "solution": "=XLOOKUP(E7,A2:A8,B2:B8)&\" paid \"&F7",
+      "explain": "**Bhavna paid 500.** Roll 102 is Bhavna. The `&` joined the lookup, the text and the number, with spaces inside the quotes.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<", "&", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the quotes and `&` signs.",
+        "missingReference": "Start from the bank row: `E7` is the roll, `F7` the amount.",
+        "wrongValue": "It should read exactly **Bhavna paid 500**. Remember the spaces around “paid” inside the quotes."
+      },
+      "clues": ["Join three things with `&`: the name, ` paid `, and `F7`."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Not paid, by counting",
+      "prompt": "In ==G8==, show **Not paid** if Gopal's roll (`A8`) doesn't appear **anywhere** in the bank list `E2:E7`, otherwise **Paid**. Use a count, not a lookup.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, null, 103, 750, null],
+        [102, "Bhavna", 500, null, 101, 500, null],
+        [103, "Chirag", 750, null, 106, 400, null],
+        [104, "Divya", 500, null, 109, 500, null],
+        [105, "Eshan", 750, null, 105, 700, null],
+        [106, "Fatima", 500, null, 102, 500, null],
+        [107, "Gopal", 750, null, null, null, null]
+      ],
+      "targetCell": "G8",
+      "activeCell": "A8",
+      "yellowCells": ["G8"],
+      "expectedValue": "Not paid",
+      "mustUse": ["COUNTIF"],
+      "mustReference": ["A8"],
+      "solution": "=IF(COUNTIF(E2:E7,A8)=0,\"Not paid\",\"Paid\")",
+      "explain": "**Not paid.** Roll 107 appears 0 times in the bank list. COUNTIF is a quick yes/no test for “is it in the list?”.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<", "&", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets, commas and quotes.",
+        "missingReference": "Count how often `A8` appears in the bank rolls.",
+        "wrongValue": "Gopal's roll 107 isn't in the bank list, so it should say **Not paid**."
+      },
+      "clues": ["COUNTIF of `A8` in `E2:E7`. Zero means it's missing."]
+    },
+    {
+      "id": "s13",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "The **Check** column now shows each bank row's student, or Unknown. How many bank payments belong to **nobody on the master list**?\n\nPut the answer in ==G8==.",
+      "grid": [
+        ["Roll", "Student", "Due", "Paid", "Bank roll", "Bank paid", "Check"],
+        [101, "Aarav", 500, null, 103, 750, "Chirag"],
+        [102, "Bhavna", 500, null, 101, 500, "Aarav"],
+        [103, "Chirag", 750, null, 106, 400, "Fatima"],
+        [104, "Divya", 500, null, 109, 500, "Unknown"],
+        [105, "Eshan", 750, null, 105, 700, "Eshan"],
+        [106, "Fatima", 500, null, 102, 500, "Bhavna"],
+        [107, "Gopal", 750, null, null, null, null]
+      ],
+      "targetCell": "G8",
+      "activeCell": "G2",
+      "yellowCells": ["G8"],
+      "expectedValue": 1,
+      "mustUse": ["COUNTIF"],
+      "solution": "=COUNTIF(G2:G7,\"Unknown\")",
+      "explain": "**1**: roll 109. The 500 it sent is waiting for someone to sort out. You've now matched, flagged, counted and totalled a whole reference list.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "<", "&", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets, comma and quotes.",
+        "missingFunction": "Count how many cells say a certain word: **COUNTIF**.",
+        "wrongValue": "Only one row says **Unknown**. Count that word in `G2:G7`, not all the names."
+      },
+      "clues": ["Count the cells in the Check column that say Unknown."]
+    }
+  ]
+}

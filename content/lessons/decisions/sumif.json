@@ -1,0 +1,342 @@
+{
+  "id": "sumif",
+  "module": "decisions",
+  "title": "SUMIF, SUMIFS & AVERAGEIFS",
+  "goal": "Total or average only the rows that match one or more conditions, build a category summary with the condition in a cell, fill it down safely with $, and avoid the argument-order trap between SUMIF and SUMIFS.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Total by category",
+      "text": "A list of sales doesn't answer **“How much did Pune sell?”**. SUM would add every region together.\n\n**SUMIF** adds only the rows that match: `=SUMIF(A2:A7,\"Pune\",B2:B7)`. Read it as “look in column A for Pune, and add the matching numbers from column B”.\n\nClick the button: Asha's sale goes up and Pune's total in ==D2== follows.",
+      "grid": [
+        ["Region", "Sales", null, "Pune total"],
+        ["Pune", 120, null, "=SUMIF(A2:A7,\"Pune\",B2:B7)"],
+        ["Delhi", 90, null, null],
+        ["Pune", 80, null, null],
+        ["Mumbai", 150, null, null],
+        ["Delhi", 60, null, null],
+        ["Pune", 100, null, null]
+      ],
+      "activeCell": "D2",
+      "yellowCells": ["D2"],
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "B2",
+          "fromValue": 120,
+          "toValue": 220,
+          "resultCell": "D2",
+          "buttonLabel": "First Pune sale: 120 → 220",
+          "resetLabel": "Put it back to 120"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Your first SUMIF",
+      "prompt": "A household tracks its spending. How much went on **Food**?\n\nIn ==D2==, type `=SUMIF(A2:A7,\"Food\",B2:B7)`. The three parts are: **where to look**, **what to match**, **what to add up**.",
+      "grid": [
+        ["Category", "Amount", null, "Food total"],
+        ["Food", 450, null, null],
+        ["Travel", 200, null, null],
+        ["Food", 300, null, null],
+        ["Rent", 1200, null, null],
+        ["Travel", 150, null, null],
+        ["Food", 250, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "highlightCells": ["A2:B7"],
+      "yellowCells": ["D2"],
+      "expectedValue": 1000,
+      "mustUse": ["SUMIF"],
+      "solution": "=SUMIF(A2:A7,\"Food\",B2:B7)",
+      "explain": "**1000**: 450 + 300 + 250. Excel skipped Travel and Rent because they aren't “Food”. A plain SUM of the column would have said 2550.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `SUMIF(` so only the Food rows are added.",
+        "parseError": "Check the brackets, and put quote marks around the word: `\"Food\"`.",
+        "wrongValue": "The order is: category column `A2:A7`, then `\"Food\"`, then the amounts `B2:B7`."
+      },
+      "clues": ["Where to look → what to match → what to add."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Add only the big ones",
+      "prompt": "Conditions can compare numbers too. When the numbers you test are **the same numbers you add**, the last part can be left out: `=SUMIF(B2:B7,\">=500\")`.\n\nIn ==D2==, add up only the orders of **500 or more**.",
+      "grid": [
+        ["Order", "Amount", null, "Big orders"],
+        [1, 650, null, null],
+        [2, 400, null, null],
+        [3, 500, null, null],
+        [4, 900, null, null],
+        [5, 300, null, null],
+        [6, 550, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["D2"],
+      "expectedValue": 2600,
+      "mustUse": ["SUMIF"],
+      "solution": "=SUMIF(B2:B7,\">=500\")",
+      "explain": "**2600**: 650 + 500 + 900 + 550. Order 3 is exactly 500, and `>=` includes it. With `\">500\"` you'd get 2100.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `SUMIF` with the condition in quotes.",
+        "parseError": "Check the brackets. The condition is one piece in quotes: `\">=500\"`.",
+        "wrongValue": "Add orders of **500 or more**, and order 3 is exactly 500. Use `\">=500\"` on the Amount column."
+      },
+      "clues": ["Look in `B2:B7` for `\">=500\"`. No third part needed."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Condition in a cell, locked with $",
+      "prompt": "Time to build a **summary**: one row per category, with the category name in a cell.\n\nIn ==E2==, type `=SUMIF($A$2:$A$8,D2,$B$2:$B$8)`. The `$` signs **lock** the data range, so it won't slide when you copy the formula down. `D2` has no `$`, so it will move to `D3`, `D4`…",
+      "grid": [
+        ["Item", "Amount", null, "Category", "Total"],
+        ["Tea", 120, null, "Tea", null],
+        ["Coffee", 200, null, "Coffee", null],
+        ["Snacks", 80, null, "Snacks", null],
+        ["Tea", 150, null, null, null],
+        ["Coffee", 180, null, null, null],
+        ["Snacks", 90, null, null, null],
+        ["Tea", 130, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "A2",
+      "highlightCells": ["A2:B8", "D2"],
+      "yellowCells": ["E2"],
+      "expectedValue": 400,
+      "mustUse": ["SUMIF"],
+      "mustReference": ["D2"],
+      "solution": "=SUMIF($A$2:$A$8,D2,$B$2:$B$8)",
+      "explain": "**400** for Tea: 120 + 150 + 130. Because the word comes from `D2` and not from typed quotes, the same formula will work for Coffee and Snacks once you copy it down.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "$"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `SUMIF` for a one-condition total.",
+        "missingReference": "Point the condition at the category cell `D2`, with no quote marks.",
+        "parseError": "Check the brackets and commas. Cell addresses like `D2` need no quote marks.",
+        "wrongValue": "Look in the **Item** column `A2:A8`, match `D2`, and add the **Amount** column `B2:B8`."
+      },
+      "clues": [
+        "`=SUMIF(`, then Item column, then `D2`, then Amount column. Press [[F4]] after a range to add the `$` signs."
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Fill the formula down",
+      "prompt": "Now copy that one formula to the other two categories. Select `E2:E4` (the formula cell and the empty cells below it), then press [[Ctrl]] + [[D]], which **fills down**.\n\nOn a Mac: [[Cmd]] + [[D]].",
+      "keys": { "win": "Ctrl+D", "mac": "Cmd+D" },
+      "grid": [
+        ["Item", "Amount", null, "Category", "Total"],
+        ["Tea", 120, null, "Tea", "=SUMIF($A$2:$A$8,D2,$B$2:$B$8)"],
+        ["Coffee", 200, null, "Coffee", null],
+        ["Snacks", 80, null, "Snacks", null],
+        ["Tea", 150, null, null, null],
+        ["Coffee", 180, null, null, null],
+        ["Snacks", 90, null, null, null],
+        ["Tea", 130, null, null, null]
+      ],
+      "activeCell": "E2:E4",
+      "postcondition": {
+        "grid": [
+          ["Item", "Amount", null, "Category", "Total"],
+          ["Tea", 120, null, "Tea", 400],
+          ["Coffee", 200, null, "Coffee", 380],
+          ["Snacks", 80, null, "Snacks", 170],
+          ["Tea", 150, null, null, null],
+          ["Coffee", 180, null, null, null],
+          ["Snacks", 90, null, null, null],
+          ["Tea", 130, null, null, null]
+        ],
+        "selection": "E2:E4"
+      },
+      "clues": ["Hold Ctrl, tap D. The formula copies into every selected cell below."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "A colleague wrote the formula **without** `$` signs and filled it down. The formula in `E2` is:\n\n`=SUMIF(A2:A8,D2,B2:B8)`\n\nWhat will the formula in `E3` become?",
+      "options": [
+        "`=SUMIF(A3:A9,D3,B3:B9)`",
+        "`=SUMIF(A2:A8,D3,B2:B8)`",
+        "`=SUMIF(A2:A8,D2,B2:B8)`"
+      ],
+      "answer": 0,
+      "explain": "Without `$`, **every** address shifts one row when you fill down, so the data ranges slide to `A3:A9`. The first row of data drops out of the check and an empty row sneaks in. That's why the ranges get `$` and `D2` doesn't.",
+      "wrongFeedback": [
+        null,
+        "That's the answer you **want**, but only the `$`-locked ranges stay put. Without `$`, the ranges move too.",
+        "Nothing is locked here, so nothing stays the same. Every address moves one row down."
+      ],
+      "clues": ["What happens to `A2:A8` when a formula moves down one row, if it has no `$`?"]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "SUMIFS: two conditions",
+      "prompt": "**SUMIFS** (with an S) adds rows that meet **all** the conditions. Careful: its order is different! **The numbers to add come first**, then pairs of “range, condition”.\n\nIn ==E2==, type `=SUMIFS(B2:B8,A2:A8,\"Pune\",C2:C8,\"Online\")` to total **Pune's Online** sales.",
+      "grid": [
+        ["Region", "Amount", "Channel", null, "Pune online"],
+        ["Pune", 600, "Online", null, null],
+        ["Pune", 400, "Store", null, null],
+        ["Delhi", 700, "Online", null, null],
+        ["Pune", 500, "Online", null, null],
+        ["Delhi", 300, "Store", null, null],
+        ["Pune", 900, "Store", null, null],
+        ["Delhi", 800, "Online", null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "A2",
+      "highlightCells": ["A2:C8"],
+      "yellowCells": ["E2"],
+      "expectedValue": 1100,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(B2:B8,A2:A8,\"Pune\",C2:C8,\"Online\")",
+      "explain": "**1100**: Pune's online orders of 600 and 500. Pune alone is 2400 and online alone is 2600, so you need both pairs.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `SUMIFS` (with an S) for two conditions.",
+        "parseError": "Check the brackets and quote marks around `\"Pune\"` and `\"Online\"`.",
+        "wrongValue": "Start with the **Amount** column to add (`B2:B8`), then the Region pair, then the Channel pair."
+      },
+      "clues": ["`SUMIFS(` what to add, then range + condition, range + condition."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "The order trap",
+      "prompt": "Siya needs the total **Units** for team **North** in quarter **Q2**.\n\nShe knows the one-condition version puts the numbers **last**. Which SUMIFS is correct?",
+      "grid": [
+        ["Team", "Quarter", "Units"],
+        ["North", "Q1", 40],
+        ["North", "Q2", 55],
+        ["South", "Q2", 30],
+        ["North", "Q2", 25]
+      ],
+      "options": [
+        "`=SUMIFS(A2:A5,\"North\",B2:B5,\"Q2\",C2:C5)`",
+        "`=SUMIFS(C2:C5,A2:A5,\"North\",B2:B5,\"Q2\")`",
+        "`=SUMIFS(C2:C5,\"North\",\"Q2\")`"
+      ],
+      "answer": 1,
+      "explain": "In **SUMIF** the numbers to add come last; in **SUMIFS** they come **first**. Here that gives 55 + 25 = **80**. Mixing the two orders is the number-one SUMIFS mistake, and it gives an error or a wrong total.",
+      "wrongFeedback": [
+        "That's the SUMIF order, with the numbers at the end. SUMIFS wants the numbers to add **first**.",
+        null,
+        "Each condition needs **both** a range to look in and the condition. A bare `\"North\"` doesn't say which column."
+      ],
+      "clues": ["In SUMIFS, which comes first: the numbers to add, or the first condition?"]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "AVERAGEIFS: conditional average",
+      "prompt": "**AVERAGEIFS** averages only the matching rows, and it follows the **same order as SUMIFS**: the numbers to average first, then pairs of “range, condition”.\n\nIn ==D2==, find the average score of **Class B**.",
+      "grid": [
+        ["Class", "Score", null, "Class B avg"],
+        ["A", 70, null, null],
+        ["B", 60, null, null],
+        ["A", 80, null, null],
+        ["B", 90, null, null],
+        ["C", 50, null, null],
+        ["B", 75, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "highlightCells": ["A2:B7"],
+      "yellowCells": ["D2"],
+      "expectedValue": 75,
+      "mustUse": ["AVERAGEIFS"],
+      "solution": "=AVERAGEIFS(B2:B7,A2:A7,\"B\")",
+      "explain": "**75**: Class B scored 60, 90 and 75, which total 225 across 3 students. The average of everyone, including A and C, would be about 70.8.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `AVERAGEIFS` for an average with a condition.",
+        "parseError": "Check the brackets and put quote marks around `\"B\"`.",
+        "wrongValue": "Put the **Score** column first (that's what you're averaging), then the Class column and `\"B\"`."
+      },
+      "clues": ["`=AVERAGEIFS(` scores, then Class column, then `\"B\"`."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "AVERAGEIFS with two conditions",
+      "prompt": "The pairs just keep going. A café wants the average cups sold of **Latte** on **Weekend** days.\n\nIn ==E2==, work it out. Remember: the numbers to average go **first**.",
+      "grid": [
+        ["Day type", "Drink", "Cups", null, "Weekend latte avg"],
+        ["Weekday", "Latte", 20, null, null],
+        ["Weekend", "Latte", 50, null, null],
+        ["Weekday", "Tea", 30, null, null],
+        ["Weekend", "Latte", 40, null, null],
+        ["Weekend", "Tea", 10, null, null],
+        ["Weekday", "Latte", 40, null, null],
+        ["Weekend", "Tea", 30, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "A2",
+      "highlightCells": ["A2:C8"],
+      "yellowCells": ["E2"],
+      "expectedValue": 45,
+      "mustUse": ["AVERAGEIFS"],
+      "solution": "=AVERAGEIFS(C2:C8,A2:A8,\"Weekend\",B2:B8,\"Latte\")",
+      "explain": "**45**: the two Weekend Latte days sold 50 and 40. All weekend days average 32.5 and all Latte days 37.5, so both conditions really matter.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `AVERAGEIFS` with two pairs of conditions.",
+        "parseError": "Check the brackets and quote marks around both words.",
+        "wrongValue": "Average the **Cups** column, with one pair for Day type = Weekend and one for Drink = Latte."
+      },
+      "clues": ["`=AVERAGEIFS(C2:C8,` then the Day type pair, then the Drink pair."]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A sales manager asks: **“How much did our Delhi reps sell in orders of 500 or more?”**\n\nPut the answer in `E2`.",
+      "grid": [
+        ["Rep", "City", "Sales", null, "Answer"],
+        ["Asha", "Pune", 600, null, null],
+        ["Ben", "Delhi", 700, null, null],
+        ["Chitra", "Delhi", 400, null, null],
+        ["Dev", "Mumbai", 500, null, null],
+        ["Esha", "Delhi", 500, null, null],
+        ["Farhan", "Pune", 900, null, null],
+        ["Gita", "Delhi", 300, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "A1",
+      "expectedValue": 1200,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(C2:C8,B2:B8,\"Delhi\",C2:C8,\">=500\")",
+      "explain": "**1200**: Ben's 700 and Esha's exactly 500. Delhi alone totals 1900 and “500 or more” alone totals 3200, so only the rows that pass both count. The Sales column serves twice: once to add, once as a condition.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "This needs a total with **two** conditions.",
+        "parseError": "Check the brackets and quote marks.",
+        "wrongValue": "Add the Sales column, where City is Delhi **and** Sales is `\">=500\"`. Esha's exact 500 counts."
+      },
+      "clues": ["The Sales column `C2:C8` goes first, and can appear again as a condition."]
+    }
+  ]
+}

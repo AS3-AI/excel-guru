@@ -1,0 +1,286 @@
+{
+  "id": "average-min-max",
+  "module": "formulas",
+  "title": "AVERAGE, MIN & MAX",
+  "goal": "Find the average, smallest and largest of a list, know that AVERAGE skips blanks and text but counts zeros, and use MEDIAN when one huge value skews the average.",
+  "difficulty": 1,
+  "requiredCorrect": 9,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Typical, lowest, highest",
+      "text": "Three questions come up in every sheet: What's **typical**? What's the **lowest**? What's the **highest**?\n\n• **AVERAGE** adds the numbers and divides by how many there are.\n• **MIN** finds the smallest.\n• **MAX** finds the largest.\n\nThese four marks average 75: 300 ÷ 4.",
+      "grid": [
+        ["Student", "Marks"],
+        ["Asha", 70],
+        ["Ben", 85],
+        ["Chen", 90],
+        ["Dia", 55],
+        ["Average", "=AVERAGE(B2:B5)"]
+      ],
+      "activeCell": "B6",
+      "yellowCells": ["B6"],
+      "highlightCells": ["B2:B5"],
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "AVERAGE",
+      "prompt": "The café sold these cups Monday to Friday. In ==B7==, type `=AVERAGE(B2:B6)` to find the daily average.",
+      "grid": [
+        ["Day", "Cups"],
+        ["Mon", 42],
+        ["Tue", 38],
+        ["Wed", 51],
+        ["Thu", 47],
+        ["Fri", 62],
+        ["Average", null]
+      ],
+      "targetCell": "B7",
+      "activeCell": "A7",
+      "highlightCells": ["B2:B6"],
+      "yellowCells": ["B7"],
+      "expectedValue": 48,
+      "mustUse": ["AVERAGE"],
+      "solution": "=AVERAGE(B2:B6)",
+      "explain": "**48**: the five days add up to 240, and 240 ÷ 5 = 48 cups a day.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Use **AVERAGE**.",
+        "wrongValue": "Average all five days, `B2` to `B6`."
+      },
+      "clues": ["Select the five cup counts, not the label or the header."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "MIN",
+      "prompt": "Delivery times in minutes. Which order was the **fastest**?\n\nIn ==B8==, use **MIN** to find the smallest time.",
+      "grid": [
+        ["Order", "Minutes"],
+        ["#1", 32],
+        ["#2", 25],
+        ["#3", 41],
+        ["#4", 28],
+        ["#5", 19],
+        ["#6", 37],
+        ["Fastest", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["B8"],
+      "expectedValue": 19,
+      "mustUse": ["MIN"],
+      "solution": "=MIN(B2:B7)",
+      "explain": "**19**: order #5 was the quickest. MIN looks at every number in the range and gives you the smallest, however far down it hides.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Use **MIN**.",
+        "wrongValue": "Give MIN all six times: `B2` to `B7`."
+      },
+      "clues": ["It works just like SUM: `=MIN(` then the range."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "MAX",
+      "prompt": "Game points this week. In ==B6==, find the **highest** score with **MAX**.",
+      "grid": [
+        ["Player", "Points"],
+        ["Riya", 120],
+        ["Sam", 95],
+        ["Tara", 140],
+        ["Uma", 110],
+        ["Top score", null]
+      ],
+      "targetCell": "B6",
+      "activeCell": "A6",
+      "yellowCells": ["B6"],
+      "expectedValue": 140,
+      "mustUse": ["MAX"],
+      "solution": "=MAX(B2:B5)",
+      "explain": "**140**: Tara's score. MAX is the mirror of MIN, so you can pair them to see the whole range.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Use **MAX**.",
+        "wrongValue": "Give MAX all four scores, `B2` to `B5`."
+      },
+      "clues": ["Same shape as MIN, with the other name."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Predict: blank vs zero",
+      "prompt": "Chen was absent, so his cell is **blank**, and the average of the other three is 80.\n\nWhat happens if someone types **0** in his cell?",
+      "grid": [
+        ["Student", "Marks"],
+        ["Asha", 60],
+        ["Ben", 80],
+        ["Chen", null],
+        ["Dia", 100],
+        ["Average", "=AVERAGE(B2:B5)"]
+      ],
+      "activeCell": "B4",
+      "yellowCells": ["B4"],
+      "highlightCells": ["B6"],
+      "options": ["It stays `80`", "It drops to `60`", "It becomes `240`"],
+      "answer": 1,
+      "explain": "AVERAGE **skips blanks** but **counts zeros** as real scores. Now it's 240 ÷ 4 = **60**, because Chen counts as a student who scored nothing.",
+      "wrongFeedback": [
+        "That's the blank version. A typed 0 is a real number, so it joins the average.",
+        null,
+        "240 is the total. AVERAGE divides it by how many cells hold a number."
+      ],
+      "clues": ["How many cells will AVERAGE count now: three or four?"]
+    },
+    {
+      "id": "s6",
+      "type": "entry",
+      "topic": "Prove it: type the 0",
+      "prompt": "Now see it happen. Click ==B4==, type **0**, press [[Enter]], and watch the average in `B6`.",
+      "grid": [
+        ["Student", "Marks"],
+        ["Asha", 60],
+        ["Ben", 80],
+        ["Chen", null],
+        ["Dia", 100],
+        ["Average", "=AVERAGE(B2:B5)"]
+      ],
+      "activeCell": "A4",
+      "yellowCells": ["B4"],
+      "highlightCells": ["B6"],
+      "expect": {
+        "B4": 0,
+        "B6": 60
+      },
+      "explain": "The average fell from 80 to 60 without you touching `B6`. Leave a cell **blank** when there's no number; type 0 only when the number really is zero.",
+      "clues": ["Only change `B4`. The average updates by itself."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Text is ignored too",
+      "prompt": "Marks for a quiz. Farid's cell says “absent” and Ivy's is blank.\n\nIn ==B7==, find the average mark of the students who have one.",
+      "grid": [
+        ["Student", "Marks"],
+        ["Eva", 70],
+        ["Farid", "absent"],
+        ["Gita", 90],
+        ["Hari", 80],
+        ["Ivy", null],
+        ["Average", null]
+      ],
+      "targetCell": "B7",
+      "activeCell": "A1",
+      "yellowCells": ["B7"],
+      "expectedValue": 80,
+      "mustUse": ["AVERAGE"],
+      "solution": "=AVERAGE(B2:B6)",
+      "explain": "**80**: 70 + 90 + 80 = 240 across three marks. AVERAGE skips the word “absent” and the blank, so only real numbers count.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Use **AVERAGE**; it skips text and blanks for you.",
+        "wrongValue": "Average the whole mark column, `B2` to `B6`. Only three cells hold numbers."
+      },
+      "clues": ["No need to remove “absent”. AVERAGE already ignores it."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "When average misleads",
+      "prompt": "Five people work at a small firm. The owner earns 200000; the staff earn 20000 to 25000.\n\nThe average salary shows **58200**. Is that a fair “typical salary”?",
+      "grid": [
+        ["Person", "Salary"],
+        ["Staff 1", 20000],
+        ["Staff 2", 22000],
+        ["Staff 3", 24000],
+        ["Staff 4", 25000],
+        ["Owner", 200000],
+        ["Average", "=AVERAGE(B2:B6)"]
+      ],
+      "activeCell": "B7",
+      "yellowCells": ["B7"],
+      "options": [
+        "Yes, average is always the fairest",
+        "No, one huge salary pulls it up",
+        "No, AVERAGE added it wrong"
+      ],
+      "answer": 1,
+      "explain": "AVERAGE is **dragged up** by the owner's 200000, so nobody actually earns near 58200. For skewed data, the **median** (the middle value) is a fairer “typical”.",
+      "wrongFeedback": [
+        "Not when one value is far bigger than the rest. It gets pulled towards it.",
+        null,
+        "The maths is right: 291000 ÷ 5 = 58200. The problem is what it tells you."
+      ],
+      "clues": ["Does anyone earn near 58200?"]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "MEDIAN: the middle",
+      "prompt": "**MEDIAN** sorts the numbers in its head and gives you the one in the middle, so a single giant value can't drag it.\n\nIn ==B8==, find the median salary.",
+      "grid": [
+        ["Person", "Salary"],
+        ["Staff 1", 20000],
+        ["Staff 2", 22000],
+        ["Staff 3", 24000],
+        ["Staff 4", 25000],
+        ["Owner", 200000],
+        ["Average", "=AVERAGE(B2:B6)"],
+        ["Median", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "highlightCells": ["B2:B6"],
+      "yellowCells": ["B8"],
+      "expectedValue": 24000,
+      "mustUse": ["MEDIAN"],
+      "solution": "=MEDIAN(B2:B6)",
+      "explain": "**24000**: the middle of the five salaries. Compare it with 58200: the median describes the staff, the average is skewed by the owner.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Use **MEDIAN**.",
+        "wrongValue": "Give MEDIAN all five salaries, `B2` to `B6`."
+      },
+      "clues": ["Same shape as AVERAGE: `=MEDIAN(` then the range."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Five riders finished the same route. How many minutes separate the **fastest** rider from the **slowest**? Put the answer in ==B7==.",
+      "grid": [
+        ["Rider", "Minutes"],
+        ["Ravi", 34],
+        ["Sana", 27],
+        ["Tom", 45],
+        ["Uma", 31],
+        ["Vik", 38],
+        ["Gap", null]
+      ],
+      "targetCell": "B7",
+      "activeCell": "A1",
+      "expectedValue": 18,
+      "mustUse": ["MAX", "MIN"],
+      "solution": "=MAX(B2:B6)-MIN(B2:B6)",
+      "explain": "**18**: Tom took 45, Sana took 27. Biggest minus smallest tells you how spread out the times are.",
+      "mobileButtons": ["=", "(", ")", ":", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "You need both ends: the biggest and the smallest.",
+        "wrongValue": "Slowest minus fastest: the biggest time minus the smallest."
+      },
+      "clues": ["Find the biggest, find the smallest, subtract."]
+    }
+  ]
+}

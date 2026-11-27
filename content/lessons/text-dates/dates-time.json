@@ -1,0 +1,307 @@
+{
+  "id": "dates-time",
+  "module": "text-dates",
+  "title": "Dates & Time: the real kind",
+  "goal": "Tell a real date from text that only looks like one, stamp today's date and the time with a shortcut, build or repair a date with DATE, and pull the year, month and day out of it.",
+  "difficulty": 1,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "A date is a number",
+      "text": "Here's the secret behind every date in Excel: it's a **number**. Excel counts the days since 1 January 1900, so 28 Nov 2026 is the number **46354**. The cell is just dressed up to look like a date.\n\nThat's why you can add 30 days to a date, or subtract two dates. It's also why a date typed the wrong way becomes **text**, and then nothing works.\n\nIn this lesson you'll tell real dates from fakes, stamp today's date, and build and take apart dates.",
+      "grid": [
+        ["Date", "Behind the scenes", "+ 30 days"],
+        ["=DATE(2026,11,28)", "=A2*1", "=A2+30"],
+        ["=DATE(2026,12,25)", "=A3*1", "=A3+30"]
+      ],
+      "activeCell": "B2",
+      "yellowCells": ["B2"],
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Real date or text?",
+      "prompt": "Real dates are numbers, so they sit on the **right** of the cell. Text sits on the **left**.\n\nThese order dates came from different systems. Only one is a real date. Click it, then press [[Enter]].",
+      "grid": [
+        ["Order date", "Item"],
+        ["16.08.2026", "Tea"],
+        ["=DATE(2026,8,17)", "Coffee"],
+        ["20260818", "Sugar"]
+      ],
+      "yellowCells": ["A3"],
+      "target": "A3",
+      "wrongFeedback": "The real date sits on the **right** of its cell. The other two sit on the left, so Excel sees them as text. Click `A3`.",
+      "clues": ["Which date is lined up on the right-hand side of its cell?"]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Ctrl + ;  today's date",
+      "prompt": "Need today's date in a cell? Don't type it. You're on ==B2==, the date for invoice INV-101. Press [[Ctrl]] + [[;]] (semicolon).\n\nExcel types today's date as a **real date**. On a Mac it's also [[Ctrl]] + [[;]].",
+      "keys": {
+        "win": "Ctrl+;",
+        "mac": "Ctrl+;"
+      },
+      "grid": [
+        ["Invoice", "Date", "Time"],
+        ["INV-101", null, null],
+        ["INV-102", null, null]
+      ],
+      "activeCell": "B2",
+      "postcondition": {
+        "grid": [
+          ["Invoice", "Date", "Time"],
+          ["INV-101", "28-Nov-26", null],
+          ["INV-102", null, null]
+        ],
+        "selection": "B2"
+      },
+      "clues": ["Hold Ctrl and tap the semicolon key (next to L)."]
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Ctrl + Shift + ;  the time",
+      "prompt": "Now the time. Move to ==C2== (done for you) and press [[Ctrl]] + [[Shift]] + [[;]].\n\nThe time is typed in as a real time too. Mac keys vary by version, so on a Mac you can skip this one.",
+      "keys": {
+        "win": "Ctrl+Shift+;",
+        "mac": null
+      },
+      "grid": [
+        ["Invoice", "Date", "Time"],
+        ["INV-101", "28-Nov-26", null],
+        ["INV-102", null, null]
+      ],
+      "activeCell": "C2",
+      "postcondition": {
+        "grid": [
+          ["Invoice", "Date", "Time"],
+          ["INV-101", "28-Nov-26", "10:45 AM"],
+          ["INV-102", null, null]
+        ],
+        "selection": "C2"
+      },
+      "clues": ["Same key as before, plus Shift."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Typed or live?",
+      "prompt": "`B2` was filled with [[Ctrl]] + [[;]]. `B3` holds the formula `=TODAY()`, which always shows the current date.\n\nYou open the file **next week**. What do the two cells show?",
+      "grid": [
+        ["Cell", "What it holds"],
+        ["B2", "A date typed with Ctrl + ;"],
+        ["B3", "The formula TODAY()"]
+      ],
+      "yellowCells": ["B2:B3"],
+      "options": [
+        "Both show next week's date",
+        "`B2` shows today's old date; `B3` shows next week's",
+        "Both still show the old date"
+      ],
+      "answer": 1,
+      "explain": "**Ctrl + ;** types a fixed date that never changes, perfect for an invoice or a log. `=TODAY()` recalculates every time the file opens, so use it for “how many days until…”, never for a date that must stay put.",
+      "wrongFeedback": [
+        "A date you typed stays as it is. Only a formula recalculates.",
+        null,
+        "`=TODAY()` is a formula, so it updates each time the file opens."
+      ],
+      "clues": ["Which cell is a formula, and what do formulas do when the workbook reopens?"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "DATE: build a date",
+      "prompt": "**DATE** builds a real date from three numbers: **year, month, day**, in that order.\n\nIn ==D2==, type `=DATE(A2,B2,C2)` to build the match date. Excel shows it as a date. Underneath, it's a number.",
+      "grid": [
+        ["Year", "Month", "Day", "Match date"],
+        [2027, 3, 14, null],
+        [2027, 4, 2, null],
+        [2026, 12, 25, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "C2",
+      "highlightCells": ["A2:C2"],
+      "yellowCells": ["D2"],
+      "expectedValue": 46460,
+      "mustUse": ["DATE"],
+      "solution": "=DATE(A2,B2,C2)",
+      "explain": "**14 March 2027.** Three loose numbers became one real date that you can add to, subtract and sort. The order is always year, month, day, whatever order people write dates in.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=DATE(A2,B2,C2)`.",
+        "parseError": "Three parts split by commas: `=DATE(A2,B2,C2)`.",
+        "wrongValue": "Order matters: year first, then month, then day: `=DATE(A2,B2,C2)`.",
+        "missingFunction": "Use `DATE`."
+      },
+      "clues": ["`=DATE(year, month, day)`, using the cells in that order."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Fix a text date",
+      "prompt": "The accounts system exports dates as **eight digits**: `20270304` means 4 March 2027. Excel can't read that as a date, so it's left-aligned text.\n\nRebuild it in ==B2== with **DATE**, cutting out the pieces with LEFT, MID and RIGHT from Topic 27: year first.",
+      "grid": [
+        ["Export", "Real date"],
+        ["20270304", null],
+        ["20261128", null],
+        ["20270115", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": 46450,
+      "mustUse": ["DATE"],
+      "solution": "=DATE(LEFT(A2,4),MID(A2,5,2),RIGHT(A2,2))",
+      "explain": "**4 March 2027.** LEFT took the year (2027), MID the month (03) and RIGHT the day (04). Excel turns that text into numbers for DATE, so you don't even need VALUE. Copy it down for the whole export.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check your brackets: `=DATE(LEFT(A2,4),MID(A2,5,2),RIGHT(A2,2))`.",
+        "wrongValue": "Year = first 4 characters, month = 2 characters from position 5, day = last 2 characters.",
+        "missingFunction": "Use `DATE` to build the date."
+      },
+      "clues": [
+        "Year is `LEFT(A2,4)`. Month starts at character 5.",
+        "Put the three cutters inside `DATE( , , )`."
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Dates add like numbers",
+      "prompt": "Because a date is a number, adding 14 means “14 days later”.\n\nIn ==B2==, work out the due date: invoice date plus 14 days.",
+      "grid": [
+        ["Invoice date", "Due date"],
+        ["=DATE(2026,11,28)", null],
+        ["=DATE(2026,12,20)", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": 46368,
+      "solution": "=A2+14",
+      "explain": "**12 December 2026.** 28 Nov plus 14 days runs over the month end, and Excel handled the calendar for you. No counting days per month.",
+      "mobileButtons": ["=", "+"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=A2+14`.",
+        "parseError": "Try `=A2+14`.",
+        "wrongValue": "Take the invoice date and add 14: `=A2+14`."
+      },
+      "clues": ["`=A2+14`."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "YEAR",
+      "prompt": "**YEAR**, **MONTH** and **DAY** each pull one piece out of a real date.\n\nIn ==B2==, type `=YEAR(A2)` to get the birth year.",
+      "grid": [
+        ["Birthday", "Year"],
+        ["=DATE(1998,3,5)", null],
+        ["=DATE(2001,12,19)", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": 1998,
+      "mustUse": ["YEAR"],
+      "solution": "=YEAR(A2)",
+      "explain": "**1998.** YEAR returns just the year as a number. It reads the date number underneath, so it works however the date is shown on screen.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=YEAR(A2)`.",
+        "parseError": "Try `=YEAR(A2)`.",
+        "wrongValue": "Use `=YEAR(A2)`.",
+        "missingFunction": "Use `YEAR`."
+      },
+      "clues": ["`=YEAR(A2)`."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "DAY and MONTH together",
+      "prompt": "Birthday cards need only the day and month, not the year. Put them together with `&`.\n\nIn ==B2==, show the birthday as day/month, like `9/11`.",
+      "grid": [
+        ["Birthday", "Card date"],
+        ["=DATE(1995,11,9)", null],
+        ["=DATE(2000,2,21)", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "9/11",
+      "mustUse": ["DAY", "MONTH"],
+      "solution": "=DAY(A2)&\"/\"&MONTH(A2)",
+      "explain": "**9/11.** DAY gave 9, MONTH gave 11, and `&\"/\"&` glued them with a slash between. Swap the order and you'd print 11/9 (a different day entirely).",
+      "mobileButtons": ["=", "(", ")", ",", "&", "\"", "/"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the quotes around the slash.",
+        "wrongValue": "Day first, then a slash, then month: `=DAY(A2)&\"/\"&MONTH(A2)`."
+      },
+      "clues": ["Three pieces glued with `&`: day, a `\"/\"`, month."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Why DATE() beats typing",
+      "prompt": "A colleague in the US types `3/4/2027` in a cell. You're in India. Why is `=DATE(2027,4,3)` safer than typing it?",
+      "grid": [
+        ["Typed", "Could mean"],
+        ["3/4/2027", "3 April or 4 March?"],
+        ["DATE(2027,4,3)", "Always 3 April"]
+      ],
+      "yellowCells": ["A2"],
+      "options": [
+        "Typed dates are slower to read",
+        "`3/4/2027` could mean 3 April or 4 March, depending on computer settings",
+        "DATE is the only way to enter a date"
+      ],
+      "answer": 1,
+      "explain": "How Excel reads `3/4/2027` depends on the computer's **regional settings**: day/month or month/day. `DATE(year, month, day)` has one meaning everywhere. (Typed dates are fine in your own sheet. It's when files travel that it bites.)",
+      "wrongFeedback": [
+        "It's not about speed. The risk is that two people read the same text differently.",
+        null,
+        "You can type dates, and Ctrl + ; works too. DATE is just the unambiguous way."
+      ],
+      "clues": ["Is `3/4` 3 April or 4 March? Who decides?"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nSalary is paid on the **5th** of every month. Row 2 holds a year (`A2`) and a month number (`B2`). In ==C2==, show the pay date as a real date.",
+      "grid": [
+        ["Year", "Month", "Pay date"],
+        [2026, 12, null],
+        [2027, 1, null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A1",
+      "expectedValue": 46361,
+      "solution": "=DATE(A2,B2,5)",
+      "explain": "**5 December 2026.** The day never changes, so it's typed straight into DATE, while year and month come from the cells. Copy it down and every month gets its pay date.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check your brackets and commas.",
+        "wrongValue": "You need a real date: year and month from the cells, and the day is always 5."
+      },
+      "clues": [
+        "Year, month, day: two come from cells, one you type.",
+        "Which function builds a date from parts?"
+      ]
+    }
+  ]
+}

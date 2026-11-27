@@ -1,0 +1,319 @@
+{
+  "id": "and-or-not",
+  "module": "decisions",
+  "title": "AND, OR & NOT",
+  "goal": "Make an IF check two conditions at once: both must be true (AND), at least one must be true (OR), or the opposite must be true (NOT), and tell which one a real rule needs.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "One question isn't always enough",
+      "text": "A scholarship needs **marks of at least 60 and attendance of at least 75**. One IF can only ask one question, so how do you ask two?\n\nYou put **AND** inside the IF: `=IF(AND(B2>=60,C2>=75),\"Yes\",\"No\")`. AND says “yes” only when **every** test inside it is true.\n\nFarah has good marks but poor attendance. Click the button and watch ==D3==.",
+      "grid": [
+        ["Student", "Marks", "Attendance", "Eligible"],
+        ["Asha", 72, 90, "=IF(AND(B2>=60,C2>=75),\"Yes\",\"No\")"],
+        ["Farah", 70, 55, "=IF(AND(B3>=60,C3>=75),\"Yes\",\"No\")"],
+        ["Chitra", 50, 95, "=IF(AND(B4>=60,C4>=75),\"Yes\",\"No\")"]
+      ],
+      "activeCell": "D3",
+      "yellowCells": ["D3"],
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "C3",
+          "fromValue": 55,
+          "toValue": 85,
+          "resultCell": "D3",
+          "buttonLabel": "Farah's attendance: 55 → 85",
+          "resetLabel": "Put it back to 55"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Both cells matter",
+      "prompt": "For Ben, two cells decide the answer: his marks **and** his attendance.\n\nSelect both: press on ==B3==, drag across to ==C3==, then press [[Enter]].",
+      "grid": [
+        ["Student", "Marks", "Attendance", "Eligible"],
+        ["Asha", 72, 90, null],
+        ["Ben", 80, 60, null],
+        ["Chitra", 55, 95, null],
+        ["Dev", 60, 75, null],
+        ["Esha", 90, 70, null]
+      ],
+      "yellowCells": ["B3:C3"],
+      "target": "B3:C3",
+      "wrongFeedback": "Ben is on row 3. Start on his marks (`B3`) and drag one cell right to his attendance (`C3`).",
+      "clues": ["The Name Box should read `1R x 2C` when you have it right."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "AND: both must be true",
+      "prompt": "Click ==D3== and type `=IF(AND(B3>=60,C3>=75),\"Yes\",\"No\")`, then press [[Enter]].\n\nThe two tests sit inside **AND**, separated by a comma. The IF still has its usual three parts.",
+      "grid": [
+        ["Student", "Marks", "Attendance", "Eligible"],
+        ["Asha", 72, 90, null],
+        ["Ben", 80, 60, null],
+        ["Chitra", 55, 95, null],
+        ["Dev", 60, 75, null],
+        ["Esha", 90, 70, null]
+      ],
+      "targetCell": "D3",
+      "activeCell": "A3",
+      "highlightCells": ["B3:C3"],
+      "yellowCells": ["D3"],
+      "expectedValue": "No",
+      "mustUse": ["IF", "AND"],
+      "solution": "=IF(AND(B3>=60,C3>=75),\"Yes\",\"No\")",
+      "explain": "Ben's marks pass (80) but his attendance doesn't (60 is below 75). AND needs **both**, so one failed test is enough to give **No**.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use both `IF` and `AND`: the AND goes inside the IF's first slot.",
+        "parseError": "Check the brackets: `AND(` closes after both tests, then the IF carries on with its two answers.",
+        "wrongValue": "Ben's attendance is only 60, below the 75 needed. Check both tests are inside `AND(...)` and `Yes` comes first."
+      },
+      "clues": ["`AND(test1,test2)` goes where the single test used to be."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "AND with a word",
+      "prompt": "Tests inside AND can mix numbers and words.\n\nA shop gives **free delivery** when the order is **500 or more** and the area is **Local**. In ==D3==, show **Free** or **Charge** for order 102.",
+      "grid": [
+        ["Order", "Amount", "Area", "Delivery"],
+        [101, 650, "Local", null],
+        [102, 500, "Local", null],
+        [103, 800, "Far", null],
+        [104, 450, "Local", null]
+      ],
+      "targetCell": "D3",
+      "activeCell": "A3",
+      "highlightCells": ["B3:C3"],
+      "yellowCells": ["D3"],
+      "expectedValue": "Free",
+      "mustUse": ["IF", "AND"],
+      "solution": "=IF(AND(B3>=500,C3=\"Local\"),\"Free\",\"Charge\")",
+      "explain": "Order 102 is **exactly** 500, and “500 or more” includes it, and the area is Local. Both tests pass, so **Free**. With `>` instead of `>=` it would wrongly say Charge.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `IF` with an `AND` inside it.",
+        "parseError": "Check the brackets, and put quotes around each word: `\"Local\"`, `\"Free\"`, `\"Charge\"`.",
+        "wrongValue": "Order 102 is exactly 500 and Local, so both tests pass. Use `>=` for “500 or more”."
+      },
+      "clues": ["The tests are `B3>=500` and `C3=\"Local\"`."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "OR: either is enough",
+      "prompt": "**OR** is the opposite mood: it says yes when **at least one** test is true.\n\nA cinema gives a discount to anyone aged **60 or more**, or with a **student card**. Click ==D3== and type `=IF(OR(B3>=60,C3=\"Yes\"),\"Discount\",\"Full price\")`.",
+      "grid": [
+        ["Visitor", "Age", "Student card", "Ticket"],
+        ["Rohan", 34, "No", null],
+        ["Sneha", 67, "No", null],
+        ["Tanvi", 19, "Yes", null],
+        ["Uma", 40, "No", null]
+      ],
+      "targetCell": "D3",
+      "activeCell": "A3",
+      "highlightCells": ["B3:C3"],
+      "yellowCells": ["D3"],
+      "expectedValue": "Discount",
+      "mustUse": ["IF", "OR"],
+      "solution": "=IF(OR(B3>=60,C3=\"Yes\"),\"Discount\",\"Full price\")",
+      "explain": "Sneha has no student card, but at 67 she passes the age test, and one is enough for OR: **Discount**. AND would have said Full price here.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `IF` with an `OR` inside it.",
+        "parseError": "Check the brackets and the quote marks around words.",
+        "wrongValue": "Sneha is 67, so the age test is true, and with OR one true test is enough. Did you use `OR(` and not `AND(`?"
+      },
+      "clues": ["`OR(B3>=60,C3=\"Yes\")` is true if either test is true."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "OR on your own",
+      "prompt": "A shop reviews a product when its **rating is below 3** or it has **2 or more complaints**.\n\nIn ==D3==, show **Review** or **OK** for the Toaster.",
+      "grid": [
+        ["Product", "Rating", "Complaints", "Action"],
+        ["Kettle", 4, 0, null],
+        ["Toaster", 3, 2, null],
+        ["Blender", 2, 0, null],
+        ["Mixer", 5, 1, null]
+      ],
+      "targetCell": "D3",
+      "activeCell": "A3",
+      "highlightCells": ["B3:C3"],
+      "yellowCells": ["D3"],
+      "expectedValue": "Review",
+      "mustUse": ["IF", "OR"],
+      "solution": "=IF(OR(B3<3,C3>=2),\"Review\",\"OK\")",
+      "explain": "The Toaster's rating of 3 is **not** below 3, but its 2 complaints meet “2 or more”. One true test is enough, so **Review**.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "<", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `IF` with an `OR` inside it.",
+        "parseError": "Check the brackets and the quote marks.",
+        "wrongValue": "Test each one for the Toaster: is 3 below 3? And are 2 complaints “2 or more”? Remember `<` for below and `>=` for “or more”."
+      },
+      "clues": ["The tests are `B3<3` and `C3>=2`."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "NOT: flip it",
+      "prompt": "**NOT** flips a test: it turns yes into no, and no into yes. It's handy for saying “everything except…”.\n\nChase every invoice that is **not Paid**. In ==C3==, show **Chase** or **Fine** for invoice 202. Use `NOT(B3=\"Paid\")` as your test.",
+      "grid": [
+        ["Invoice", "Status", "Follow-up"],
+        [201, "Paid", null],
+        [202, "Overdue", null],
+        [203, "Paid", null],
+        [204, "Sent", null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A3",
+      "highlightCells": ["B3"],
+      "yellowCells": ["C3"],
+      "expectedValue": "Chase",
+      "mustUse": ["IF", "NOT"],
+      "solution": "=IF(NOT(B3=\"Paid\"),\"Chase\",\"Fine\")",
+      "explain": "`B3=\"Paid\"` is false for an Overdue invoice, and NOT flips that to true, so the answer is **Chase**. You'll meet NOT most often wrapped around an AND or OR.",
+      "mobileButtons": ["=", "(", ")", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `IF` and put `NOT(...)` around the test.",
+        "parseError": "Check the brackets: `NOT(B3=\"Paid\")` is the test, inside the IF.",
+        "wrongValue": "Invoice 202 is Overdue, so it must be chased. Chase goes in the **yes** slot, because `NOT(B3=\"Paid\")` is true for it."
+      },
+      "clues": ["`=IF(NOT(B3=\"Paid\"),` then the yes-answer, then the no-answer."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "Back to the scholarship. Ben has **80 marks** but **60 attendance**, so `D3` says **No** under AND.\n\nThe college relaxes the rule: **either** 60+ marks **or** 75+ attendance. Before you change anything, what will `D3` show with OR?",
+      "grid": [
+        ["Student", "Marks", "Attendance", "Eligible"],
+        ["Asha", 72, 90, null],
+        ["Ben", 80, 60, "=IF(AND(B3>=60,C3>=75),\"Yes\",\"No\")"],
+        ["Chitra", 55, 95, null],
+        ["Dev", 60, 75, null],
+        ["Esha", 90, 70, null]
+      ],
+      "activeCell": "D3",
+      "yellowCells": ["D3"],
+      "highlightCells": ["B3:C3"],
+      "showFormulaBar": true,
+      "options": [
+        "`No`: his attendance still fails",
+        "`Yes`: his marks pass",
+        "An error, as you can't swap AND for OR"
+      ],
+      "answer": 1,
+      "explain": "OR only needs **one** true test, and Ben's 80 marks are above 60. So the same data gives **Yes** under OR and **No** under AND. Swapping the word changes the rule.",
+      "wrongFeedback": [
+        "That would be right for AND. With OR, one passing test is enough, and Ben's marks pass.",
+        null,
+        "Both are ordinary functions that take the same tests. You can swap one for the other freely."
+      ],
+      "clues": ["Which of Ben's two tests is true?"]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Prove it: AND becomes OR",
+      "prompt": "Time to check. `D3` has the AND formula. Replace it with the OR version, so the **same Ben** is eligible if marks are 60+ **or** attendance is 75+.",
+      "grid": [
+        ["Student", "Marks", "Attendance", "Eligible"],
+        ["Asha", 72, 90, null],
+        ["Ben", 80, 60, "=IF(AND(B3>=60,C3>=75),\"Yes\",\"No\")"],
+        ["Chitra", 55, 95, null],
+        ["Dev", 60, 75, null],
+        ["Esha", 90, 70, null]
+      ],
+      "targetCell": "D3",
+      "activeCell": "A3",
+      "highlightCells": ["B3:C3"],
+      "yellowCells": ["D3"],
+      "expectedValue": "Yes",
+      "mustUse": ["IF", "OR"],
+      "solution": "=IF(OR(B3>=60,C3>=75),\"Yes\",\"No\")",
+      "explain": "Same data, same tests, one word changed, and the answer flipped from No to **Yes**. Always ask yourself “must both be true, or is one enough?” before choosing AND or OR.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Swap `AND` for `OR` and keep the rest.",
+        "parseError": "Check the brackets: the two tests sit inside `OR(...)`.",
+        "wrongValue": "Ben's marks are 80, which is at least 60. With `OR` that alone gives **Yes**. Is `AND` still in your formula?"
+      },
+      "clues": ["Only one word changes: `AND` → `OR`."]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Spot the problem",
+      "prompt": "Merit is for marks **from 60 to 90**. Someone used this formula, and now both **95** and **40** show Merit.\n\nWhy?",
+      "grid": [
+        ["Student", "Marks", "Band"],
+        ["Zara", 95, "=IF(OR(B2>=60,B2<=90),\"Merit\",\"No\")"],
+        ["Yash", 40, "=IF(OR(B3>=60,B3<=90),\"Merit\",\"No\")"]
+      ],
+      "activeCell": "C2",
+      "yellowCells": ["C2"],
+      "showFormulaBar": true,
+      "options": [
+        "Every mark passes at least one test, so OR is always true",
+        "`<=90` should be `>=90`",
+        "IF can't use two tests"
+      ],
+      "answer": 0,
+      "explain": "95 is at least 60, so the first test passes. 40 is at most 90, so the second test passes. “Between” needs **both** limits to hold, so it's an **AND**, not an OR.",
+      "wrongFeedback": [
+        null,
+        "The `<=90` is the right way to say “at most 90”. The problem is how the two tests are joined.",
+        "IF can use as many tests as you like inside an AND or an OR."
+      ],
+      "clues": ["Does 95 pass the first test? Does 40 pass the second?"]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A running club puts anyone who finishes in **30 to 45 minutes** (both ends included) in the **Club** group. Everyone else goes in the **Open** group.\n\nPut a formula in `C3` that shows Hari's group.",
+      "grid": [
+        ["Runner", "Minutes", "Group"],
+        ["Gita", 38, null],
+        ["Hari", 52, null],
+        ["Imran", 30, null],
+        ["Jaya", 25, null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A1",
+      "expectedValue": "Open",
+      "mustUse": ["IF", "AND"],
+      "mustReference": ["B3"],
+      "solution": "=IF(AND(B3>=30,B3<=45),\"Club\",\"Open\")",
+      "explain": "**Open.** Hari's 52 passes the “at least 30” test but fails “at most 45”. “Between two limits” needs both to hold, so you use AND.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "<", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "This rule needs two tests that must **both** hold.",
+        "missingReference": "Make the formula look at Hari's time in `B3`.",
+        "parseError": "Check the brackets and the quote marks.",
+        "wrongValue": "Hari took 52 minutes: too slow for the 30-to-45 group. If you got **Club**, check you joined the tests with AND, not OR."
+      },
+      "clues": ["Two tests on the same cell: at least 30, and at most 45.", "`AND(B3>=30,B3<=45)`"]
+    }
+  ]
+}

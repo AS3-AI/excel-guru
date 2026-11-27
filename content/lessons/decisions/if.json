@@ -1,0 +1,306 @@
+{
+  "id": "if",
+  "module": "decisions",
+  "title": "IF: make a decision",
+  "goal": "Write an IF formula that tests a number or a word and shows one answer for yes and another for no, and get the boundary case (exactly 40, exactly 30) right.",
+  "difficulty": 1,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Let Excel decide",
+      "text": "A teacher has 30 students and a pass mark of **40**. Reading every mark and typing “Pass” or “Fail” by hand takes ages, and it goes wrong the moment a mark changes.\n\nThe **IF** function asks Excel a yes/no question and shows one answer for **yes** and another for **no**. The **Result** column below is all IF.\n\nClick the button and watch ==C3== change by itself.",
+      "grid": [
+        ["Student", "Marks", "Result"],
+        ["Asha", 72, "=IF(B2>=40,\"Pass\",\"Fail\")"],
+        ["Ben", 35, "=IF(B3>=40,\"Pass\",\"Fail\")"],
+        ["Chitra", 58, "=IF(B4>=40,\"Pass\",\"Fail\")"]
+      ],
+      "activeCell": "C3",
+      "yellowCells": ["C3"],
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "B3",
+          "fromValue": 35,
+          "toValue": 55,
+          "resultCell": "C3",
+          "buttonLabel": "Ben retakes: 35 → 55",
+          "resetLabel": "Put Ben back to 35"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "What gets tested",
+      "prompt": "Every IF starts with a **question about one cell**. Here the question is “is this student's mark at least 40?”\n\nClick ==B2==, Asha's marks, then press [[Enter]].",
+      "grid": [
+        ["Student", "Marks", "Result"],
+        ["Asha", 72, null],
+        ["Ben", 35, null],
+        ["Chitra", 40, null],
+        ["Dev", 58, null],
+        ["Esha", 39, null]
+      ],
+      "yellowCells": ["B2"],
+      "target": "B2",
+      "wrongFeedback": "The question is about the **marks**, so click the number in column B on Asha's row: `B2`.",
+      "clues": ["Asha is in row 2. Marks are in column B."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Your first IF",
+      "prompt": "An IF has three parts, split by commas: `=IF(question, answer if yes, answer if no)`.\n\nClick ==C2== and type `=IF(B2>=40,\"Pass\",\"Fail\")`, then press [[Enter]]. The symbol `>=` means “is at least”.",
+      "grid": [
+        ["Student", "Marks", "Result"],
+        ["Asha", 72, null],
+        ["Ben", 35, null],
+        ["Chitra", 40, null],
+        ["Dev", 58, null],
+        ["Esha", 39, null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "highlightCells": ["B2"],
+      "yellowCells": ["C2"],
+      "expectedValue": "Pass",
+      "mustUse": ["IF"],
+      "solution": "=IF(B2>=40,\"Pass\",\"Fail\")",
+      "explain": "Asha's 72 is at least 40, so the question is **yes** and Excel shows the first answer, **Pass**. Change the mark to 35 and the very same formula would show Fail.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`, or Excel treats it as plain text.",
+        "missingFunction": "Use `=IF(` so Excel knows to make a decision.",
+        "parseError": "Check the brackets and the quote marks: `=IF(B2>=40,\"Pass\",\"Fail\")`.",
+        "wrongValue": "Asha scored 72, which is above the pass mark. Check you typed `B2>=40` and that Pass comes **first**."
+      },
+      "clues": ["Question first, then the “yes” answer, then the “no” answer."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "More than, not at least",
+      "prompt": "A delivery is **Late** only if it takes **more than** 30 minutes. Exactly 30 is still on time.\n\nIn ==C3==, show **Late** or **On time** for order 102. Use `>` this time: it means “is more than” and does **not** include 30 itself.",
+      "grid": [
+        ["Order", "Minutes", "Status"],
+        [101, 25, null],
+        [102, 30, null],
+        [103, 45, null],
+        [104, 18, null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A3",
+      "highlightCells": ["B3"],
+      "yellowCells": ["C3"],
+      "expectedValue": "On time",
+      "mustUse": ["IF"],
+      "solution": "=IF(B3>30,\"Late\",\"On time\")",
+      "explain": "Order 102 took **exactly** 30, and 30 is not more than 30, so the answer is **On time**. `>=` would have wrongly called it Late: `>` and `>=` only differ on the boundary value.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `IF` to choose between Late and On time.",
+        "parseError": "Check the brackets and quote marks around **Late** and **On time**.",
+        "wrongValue": "Order 102 took exactly 30 minutes. Is 30 **more than** 30? Use `>` and not `>=`, and put Late first."
+      },
+      "clues": [
+        "The question is `B3>30`.",
+        "Yes means Late, so `\"Late\"` goes in the second slot, `\"On time\"` in the third."
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Testing a word",
+      "prompt": "IF can test **words** too. Put the word you're checking in “quotes”, with `=` to mean “is exactly”.\n\nIn ==C3==, type `=IF(B3=\"Paid\",\"Ship\",\"Wait\")`, then press [[Enter]]. Invoice 1002 is still pending.",
+      "grid": [
+        ["Invoice", "Status", "Action"],
+        [1001, "Paid", null],
+        [1002, "Pending", null],
+        [1003, "Paid", null],
+        [1004, "Pending", null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A3",
+      "highlightCells": ["B3"],
+      "yellowCells": ["C3"],
+      "expectedValue": "Wait",
+      "mustUse": ["IF"],
+      "solution": "=IF(B3=\"Paid\",\"Ship\",\"Wait\")",
+      "explain": "`Pending` is not `Paid`, so the question is **no** and the third part, **Wait**, comes out. Words you compare with, or want to show, always sit inside quotes.",
+      "mobileButtons": ["=", "(", ")", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `=IF(` to make the decision.",
+        "parseError": "Every word needs a pair of quote marks: `\"Paid\"`, `\"Ship\"`, `\"Wait\"`.",
+        "wrongValue": "Invoice 1002 is **Pending**, not Paid. Check the test is `B3=\"Paid\"` and that Ship comes before Wait."
+      },
+      "clues": ["Test `B3=\"Paid\"`. Yes gives `\"Ship\"`, no gives `\"Wait\"`."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Not equal to",
+      "prompt": "`<>` means **“is not equal to”**. A warehouse sends every parcel **unless** it is Cancelled.\n\nIn ==C3==, show **Send** or **Stop** for parcel P-12.",
+      "grid": [
+        ["Parcel", "Status", "Next step"],
+        ["P-11", "Packed", null],
+        ["P-12", "Cancelled", null],
+        ["P-13", "Packed", null],
+        ["P-14", "Returned", null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A3",
+      "highlightCells": ["B3"],
+      "yellowCells": ["C3"],
+      "expectedValue": "Stop",
+      "mustUse": ["IF"],
+      "solution": "=IF(B3<>\"Cancelled\",\"Send\",\"Stop\")",
+      "explain": "P-12 **is** Cancelled, so “is it not Cancelled?” is a no, and the formula shows **Stop**. Most people find `<>` the easiest way to say “everything except this one”.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "<", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `IF` to choose between Send and Stop.",
+        "parseError": "Check the brackets, and put quote marks around each word.",
+        "wrongValue": "P-12 is Cancelled, so it must say **Stop**. If you test `<>\"Cancelled\"`, Send goes in the yes slot; if you test `=\"Cancelled\"`, Stop does."
+      },
+      "clues": ["Try the test `B3<>\"Cancelled\"`. If it's true, the parcel goes."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Numbers as answers",
+      "prompt": "An answer doesn't have to be a word. It can be a **number** or even a **calculation**, and those need **no quotes**.\n\nBills of **1000 or more** get a 10% discount; smaller bills get 0. In ==C3==, work out Leela's discount.",
+      "grid": [
+        ["Customer", "Bill", "Discount"],
+        ["Kiran", 1200, null],
+        ["Leela", 1000, null],
+        ["Mohan", 850, null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A3",
+      "highlightCells": ["B3"],
+      "yellowCells": ["C3"],
+      "expectedValue": 100,
+      "mustUse": ["IF"],
+      "solution": "=IF(B3>=1000,B3*10%,0)",
+      "explain": "Leela's bill is **exactly** 1000, and “1000 or more” includes it, so she gets 10% of 1000 = **100**. The yes-answer was a calculation, `B3*10%`, and the no-answer was just `0`.",
+      "mobileButtons": ["=", "(", ")", ",", ">", "*", "%"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `IF` to decide whether the discount applies.",
+        "parseError": "Check your brackets. Numbers like `0` need no quote marks.",
+        "wrongValue": "Leela's bill is exactly 1000, and “1000 **or more**” includes it. Use `>=`. The discount is 10% of the bill: `B3*10%`."
+      },
+      "clues": ["Question: `B3>=1000`. Yes: `B3*10%`. No: `0`."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "A runner qualifies with **at least 10** laps. Sam has run 8, so `C3` says Try again.\n\nSam runs 2 more laps. Before we change anything: what will `C3` show?",
+      "grid": [
+        ["Runner", "Laps", "Result"],
+        ["Ria", 12, "=IF(B2>=10,\"Qualified\",\"Try again\")"],
+        ["Sam", 8, "=IF(B3>=10,\"Qualified\",\"Try again\")"],
+        ["Tara", 15, "=IF(B4>=10,\"Qualified\",\"Try again\")"]
+      ],
+      "activeCell": "B3",
+      "yellowCells": ["B3"],
+      "highlightCells": ["C3"],
+      "showFormulaBar": false,
+      "options": ["`Try again`: 10 isn't above 10", "`Qualified`", "`10`"],
+      "answer": 1,
+      "explain": "8 + 2 = 10, and the rule is **at least** 10, so 10 passes. Now see Excel agree.",
+      "wrongFeedback": [
+        "The rule uses `>=`, which **includes** 10. “At least 10” means 10 or more.",
+        null,
+        "`C3` shows one of the two answers inside the IF, never the number being tested."
+      ],
+      "clues": ["Does “at least 10” include 10 itself?"]
+    },
+    {
+      "id": "s9",
+      "type": "entry",
+      "topic": "The answer flips by itself",
+      "prompt": "Now prove it. Click ==B3==, type **10**, press [[Enter]] and keep your eyes on `C3`.",
+      "grid": [
+        ["Runner", "Laps", "Result"],
+        ["Ria", 12, "=IF(B2>=10,\"Qualified\",\"Try again\")"],
+        ["Sam", 8, "=IF(B3>=10,\"Qualified\",\"Try again\")"],
+        ["Tara", 15, "=IF(B4>=10,\"Qualified\",\"Try again\")"]
+      ],
+      "activeCell": "A3",
+      "yellowCells": ["B3"],
+      "highlightCells": ["C3"],
+      "expect": { "B3": 10, "C3": "Qualified" },
+      "explain": "You only changed the lap count, but `C3` flipped to **Qualified**. An IF re-asks its question every time a number it uses changes, so you never need to re-type results.",
+      "wrongFeedback": {
+        "textNotNumber": "Type just the digits **10**, nothing else.",
+        "wrongValue": "`B3` should be **10**. Click it and type again."
+      },
+      "clues": ["Change only `B3`. Leave `C3` alone."]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Spot the problem",
+      "prompt": "A colleague typed the formula below, and Excel shows `#NAME?` instead of a result. The brackets and commas are fine.\n\nWhat's wrong?",
+      "grid": [
+        ["Student", "Marks", "Result"],
+        ["Ben", 35, "=IF(B2>=40,Pass,Fail)"]
+      ],
+      "activeCell": "C2",
+      "yellowCells": ["C2"],
+      "showFormulaBar": true,
+      "options": [
+        "IF can't answer with words",
+        "`Pass` and `Fail` need quotes",
+        "`>=` should be written `=>`"
+      ],
+      "answer": 1,
+      "explain": "Without quotes Excel thinks `Pass` is the name of something, can't find it, and shows `#NAME?`. Fix: `=IF(B2>=40,\"Pass\",\"Fail\")`. Numbers need no quotes; words always do.",
+      "wrongFeedback": [
+        "IF can show words, as long as they're inside “quotes”.",
+        null,
+        "`>=` is correct: the `>` comes first, then the `=`. The problem is elsewhere."
+      ],
+      "clues": ["Compare it with the formula you typed in the first step."]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A zoo lets children **under 5** in free. Everyone else pays.\n\nMeera is exactly 5. Put a formula in `C3` that shows the word **Free** or **Paid** for her ticket.",
+      "grid": [
+        ["Visitor", "Age", "Ticket"],
+        ["Aarav", 3, null],
+        ["Meera", 5, null],
+        ["Noah", 9, null],
+        ["Zoya", 4, null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A1",
+      "expectedValue": "Paid",
+      "mustUse": ["IF"],
+      "mustReference": ["B3"],
+      "solution": "=IF(B3<5,\"Free\",\"Paid\")",
+      "explain": "**Paid.** “Under 5” means 4 and below, so `<5` is a no for Meera (exactly 5). `<=5` would have let her in free by mistake.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "<"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "You need a formula that **decides**.",
+        "missingReference": "Make the formula look at Meera's age in `B3`, not a typed number.",
+        "parseError": "Check the brackets and put quotes around each word.",
+        "wrongValue": "Meera is exactly 5, and 5 is **not** under 5. Use `<`, not `<=`."
+      },
+      "clues": ["`<` means “is less than”.", "Question: `B3<5`. Yes: `\"Free\"`. No: `\"Paid\"`."]
+    }
+  ]
+}

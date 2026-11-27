@@ -1,0 +1,561 @@
+{
+  "id": "project-report",
+  "module": "projects",
+  "title": "Project: messy export → report (with AI)",
+  "goal": "Turn a messy sales export into a clean, checked city report: fix spaces, capitals and text-numbers, catch a duplicate order, summarise with UNIQUE, SUMIFS and COUNTIFS, and test an AI-suggested formula before you trust it.",
+  "difficulty": 2,
+  "requiredCorrect": 13,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "The messy export",
+      "text": "Meena runs a home bakery in Pune and Mumbai. Her billing app just exported this week's orders, and it's a mess:\n\n• Names have extra spaces and odd capitals.\n• Amounts like ==D2== sit on the **left**. They're text, so SUM would skip them.\n• Order **5002** shows up twice.\n\nIn this project you'll clean the export, check it, summarise it by city and polish the result, using what you've learned. There are no step-by-step instructions: you choose the tool. Clues are there if you get stuck.",
+      "grid": [
+        ["Order", "Customer", "City", "Amount"],
+        [5001, "  rohan   MEHTA ", " PUNE", "450 "],
+        [5002, "SARA khan", " pune", "1200"],
+        [5003, " Anil  Kumar", "Mumbai ", "300"],
+        [5002, "SARA khan", " pune", "1200"],
+        [5004, "meena IYER ", "mumbai", "850"],
+        [5005, "Dev  PATEL", "Pune", "500 "],
+        [5006, "kiran rao", "MUMBAI ", "350"]
+      ],
+      "yellowCells": ["D2:D8"],
+      "activeCell": "A1"
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Clean the names",
+      "prompt": "Start with the names. In ==E2==, clean the customer in `B2`: no stray spaces, and a capital letter at the start of each name.",
+      "grid": [
+        [
+          "Order",
+          "Customer",
+          "City",
+          "Amount",
+          "Customer (clean)",
+          "City (clean)",
+          "Amount (clean)"
+        ],
+        [5001, "  rohan   MEHTA ", " PUNE", "450 ", null, null, null],
+        [5002, "SARA khan", " pune", "1200", null, null, null],
+        [5003, " Anil  Kumar", "Mumbai ", "300", null, null, null],
+        [5002, "SARA khan", " pune", "1200", null, null, null],
+        [5004, "meena IYER ", "mumbai", "850", null, null, null],
+        [5005, "Dev  PATEL", "Pune", "500 ", null, null, null],
+        [5006, "kiran rao", "MUMBAI ", "350", null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "A2",
+      "highlightCells": ["B2"],
+      "yellowCells": ["E2"],
+      "expectedValue": "Rohan Mehta",
+      "mustUse": ["TRIM", "PROPER"],
+      "solution": "=PROPER(TRIM(B2))",
+      "explain": "`TRIM` removed the leading space and squashed the double gap; `PROPER` then turned `rohan MEHTA` into **Rohan Mehta**. You need both: either one alone leaves part of the mess.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "Two jobs, so two functions: one removes the extra spaces, one fixes the capitals. Put one inside the other.",
+        "wrongValue": "Look closely at the result: it should be exactly **Rohan Mehta**. `TRIM` alone leaves `MEHTA` shouting; `PROPER` alone keeps the spaces."
+      },
+      "clues": ["`TRIM` fixes spaces, `PROPER` fixes capitals.", "Nest them: `=PROPER(TRIM(B2))`."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Clean the city",
+      "prompt": "The city has the same trouble, plus a space at the front. In ==F2==, clean `C2`.",
+      "grid": [
+        [
+          "Order",
+          "Customer",
+          "City",
+          "Amount",
+          "Customer (clean)",
+          "City (clean)",
+          "Amount (clean)"
+        ],
+        [5001, "  rohan   MEHTA ", " PUNE", "450 ", "=PROPER(TRIM(B2))", null, null],
+        [5002, "SARA khan", " pune", "1200", null, null, null],
+        [5003, " Anil  Kumar", "Mumbai ", "300", null, null, null],
+        [5002, "SARA khan", " pune", "1200", null, null, null],
+        [5004, "meena IYER ", "mumbai", "850", null, null, null],
+        [5005, "Dev  PATEL", "Pune", "500 ", null, null, null],
+        [5006, "kiran rao", "MUMBAI ", "350", null, null, null]
+      ],
+      "targetCell": "F2",
+      "activeCell": "A2",
+      "highlightCells": ["C2"],
+      "yellowCells": ["F2"],
+      "expectedValue": "Pune",
+      "mustUse": ["TRIM", "PROPER"],
+      "solution": "=PROPER(TRIM(C2))",
+      "explain": "` PUNE` became **Pune**. This matters later: SUMIFS treats `Pune` and `Pune ` (with a space) as two different cities and would split one total in half.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "Use the same pair as for the name: one for spaces, one for capitals.",
+        "wrongValue": "The result should be **Pune**: capital P, no space in front. Is your formula fixing both the space and the capitals?"
+      },
+      "clues": [
+        "You've already built this formula for `B2`.",
+        "Same two functions, pointed at `C2`."
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Text to number",
+      "prompt": "Now the amount. In ==G2==, turn the text in `D2` into a real number that SUM can add.",
+      "grid": [
+        [
+          "Order",
+          "Customer",
+          "City",
+          "Amount",
+          "Customer (clean)",
+          "City (clean)",
+          "Amount (clean)"
+        ],
+        [5001, "  rohan   MEHTA ", " PUNE", "450 ", "=PROPER(TRIM(B2))", "=PROPER(TRIM(C2))", null],
+        [5002, "SARA khan", " pune", "1200", null, null, null],
+        [5003, " Anil  Kumar", "Mumbai ", "300", null, null, null],
+        [5002, "SARA khan", " pune", "1200", null, null, null],
+        [5004, "meena IYER ", "mumbai", "850", null, null, null],
+        [5005, "Dev  PATEL", "Pune", "500 ", null, null, null],
+        [5006, "kiran rao", "MUMBAI ", "350", null, null, null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A2",
+      "highlightCells": ["D2"],
+      "yellowCells": ["G2"],
+      "expectedValue": 450,
+      "mustUse": ["VALUE"],
+      "solution": "=VALUE(TRIM(D2))",
+      "explain": "`450 ` was text with a space at the end; now **450** sits on the right as a real number. `VALUE` converts text that looks like a number, and `TRIM` clears any stray space first.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "Use **VALUE**: it converts text that looks like a number into a real one.",
+        "wrongValue": "`G2` should show the plain number **450**."
+      },
+      "clues": [
+        "There's a function whose name is the thing you want: the VALUE of the text.",
+        "Wrap `TRIM` inside it in case of spaces."
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Copy them down",
+      "prompt": "`E2:G2` hold your three formulas, and `E2:G8` is selected. Copy the formulas down to every order with the keyboard.",
+      "keys": {
+        "win": "Ctrl+D",
+        "mac": "Cmd+D"
+      },
+      "grid": [
+        [
+          "Order",
+          "Customer",
+          "City",
+          "Amount",
+          "Customer (clean)",
+          "City (clean)",
+          "Amount (clean)"
+        ],
+        [
+          5001,
+          "  rohan   MEHTA ",
+          " PUNE",
+          "450 ",
+          "=PROPER(TRIM(B2))",
+          "=PROPER(TRIM(C2))",
+          "=VALUE(TRIM(D2))"
+        ],
+        [5002, "SARA khan", " pune", "1200", null, null, null],
+        [5003, " Anil  Kumar", "Mumbai ", "300", null, null, null],
+        [5002, "SARA khan", " pune", "1200", null, null, null],
+        [5004, "meena IYER ", "mumbai", "850", null, null, null],
+        [5005, "Dev  PATEL", "Pune", "500 ", null, null, null],
+        [5006, "kiran rao", "MUMBAI ", "350", null, null, null]
+      ],
+      "activeCell": "E2:G8",
+      "postcondition": {
+        "grid": [
+          [
+            "Order",
+            "Customer",
+            "City",
+            "Amount",
+            "Customer (clean)",
+            "City (clean)",
+            "Amount (clean)"
+          ],
+          [
+            5001,
+            "  rohan   MEHTA ",
+            " PUNE",
+            "450 ",
+            "=PROPER(TRIM(B2))",
+            "=PROPER(TRIM(C2))",
+            "=VALUE(TRIM(D2))"
+          ],
+          [
+            5002,
+            "SARA khan",
+            " pune",
+            "1200",
+            "=PROPER(TRIM(B3))",
+            "=PROPER(TRIM(C3))",
+            "=VALUE(TRIM(D3))"
+          ],
+          [
+            5003,
+            " Anil  Kumar",
+            "Mumbai ",
+            "300",
+            "=PROPER(TRIM(B4))",
+            "=PROPER(TRIM(C4))",
+            "=VALUE(TRIM(D4))"
+          ],
+          [
+            5002,
+            "SARA khan",
+            " pune",
+            "1200",
+            "=PROPER(TRIM(B5))",
+            "=PROPER(TRIM(C5))",
+            "=VALUE(TRIM(D5))"
+          ],
+          [
+            5004,
+            "meena IYER ",
+            "mumbai",
+            "850",
+            "=PROPER(TRIM(B6))",
+            "=PROPER(TRIM(C6))",
+            "=VALUE(TRIM(D6))"
+          ],
+          [
+            5005,
+            "Dev  PATEL",
+            "Pune",
+            "500 ",
+            "=PROPER(TRIM(B7))",
+            "=PROPER(TRIM(C7))",
+            "=VALUE(TRIM(D7))"
+          ],
+          [
+            5006,
+            "kiran rao",
+            "MUMBAI ",
+            "350",
+            "=PROPER(TRIM(B8))",
+            "=PROPER(TRIM(C8))",
+            "=VALUE(TRIM(D8))"
+          ]
+        ],
+        "selection": "E2:G8"
+      },
+      "clues": ["D is for down."]
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Flash Fill first names",
+      "prompt": "The clean columns are done, so we pasted them as plain **values** over the raw ones (Paste Special → Values keeps the answers and drops the formulas). Meena wants first names for thank-you notes. We typed `Rohan` in `E2`.\n\nYou're on `E3`. Fill in the rest from that one example.\n\nOn a Mac, Flash Fill is under **Data → Flash Fill**.",
+      "keys": {
+        "win": "Ctrl+E",
+        "mac": null
+      },
+      "grid": [
+        ["Order", "Customer", "City", "Amount", "First name"],
+        [5001, "Rohan Mehta", "Pune", 450, "Rohan"],
+        [5002, "Sara Khan", "Pune", 1200, null],
+        [5003, "Anil Kumar", "Mumbai", 300, null],
+        [5002, "Sara Khan", "Pune", 1200, null],
+        [5004, "Meena Iyer", "Mumbai", 850, null],
+        [5005, "Dev Patel", "Pune", 500, null],
+        [5006, "Kiran Rao", "Mumbai", 350, null]
+      ],
+      "activeCell": "E3",
+      "postcondition": {
+        "grid": [
+          ["Order", "Customer", "City", "Amount", "First name"],
+          [5001, "Rohan Mehta", "Pune", 450, "Rohan"],
+          [5002, "Sara Khan", "Pune", 1200, "Sara"],
+          [5003, "Anil Kumar", "Mumbai", 300, "Anil"],
+          [5002, "Sara Khan", "Pune", 1200, "Sara"],
+          [5004, "Meena Iyer", "Mumbai", 850, "Meena"],
+          [5005, "Dev Patel", "Pune", 500, "Dev"],
+          [5006, "Kiran Rao", "Mumbai", 350, "Kiran"]
+        ],
+        "selection": "E2:E8"
+      },
+      "clues": ["E is for Excel guessing the pattern.", "Hold Ctrl and tap E."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Spot the repeat",
+      "prompt": "Order 5002 looks familiar. In ==F5==, count how many times the order number in `A5` appears in the whole Order column.",
+      "grid": [
+        ["Order", "Customer", "City", "Amount", "First name", "Times listed"],
+        [5001, "Rohan Mehta", "Pune", 450, "Rohan", null],
+        [5002, "Sara Khan", "Pune", 1200, "Sara", null],
+        [5003, "Anil Kumar", "Mumbai", 300, "Anil", null],
+        [5002, "Sara Khan", "Pune", 1200, "Sara", null],
+        [5004, "Meena Iyer", "Mumbai", 850, "Meena", null],
+        [5005, "Dev Patel", "Pune", 500, "Dev", null],
+        [5006, "Kiran Rao", "Mumbai", 350, "Kiran", null]
+      ],
+      "targetCell": "F5",
+      "activeCell": "E5",
+      "highlightCells": ["A2:A8"],
+      "yellowCells": ["F5"],
+      "expectedValue": 2,
+      "mustUse": ["COUNTIF"],
+      "solution": "=COUNTIF(A2:A8,A5)",
+      "explain": "**2**: order 5002 is in the list twice, so one of them is a repeat. Any count above 1 is a duplicate. Counting first lets you look before you delete (Data → Remove Duplicates).",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "Count how often a value appears in a list: that's a COUNT with a condition.",
+        "wrongValue": "Count `A5` across the **whole** column `A2:A8`, not just one row."
+      },
+      "clues": ["Count the cells in `A2:A8` that equal `A5`."]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "One row per city",
+      "prompt": "We deleted the second 5002 row and dropped the order numbers, so six orders are left. Meena wants one summary row per city. In ==E2==, list each city once with a single formula.",
+      "grid": [
+        ["Customer", "City", "Amount", null, "City", "Total", "Orders 500+"],
+        ["Rohan Mehta", "Pune", 450, null, null, null, null],
+        ["Sara Khan", "Pune", 1200, null, null, null, null],
+        ["Anil Kumar", "Mumbai", 300, null, null, null, null],
+        ["Meena Iyer", "Mumbai", 850, null, null, null, null],
+        ["Dev Patel", "Pune", 500, null, null, null, null],
+        ["Kiran Rao", "Mumbai", 350, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["E2"],
+      "expectedValue": "Pune",
+      "mustUse": ["UNIQUE"],
+      "solution": "=UNIQUE(B2:B7)",
+      "explain": "`Pune` is in `E2` and `Mumbai` spilled into `E3`. If a third city ever appears in the data, this list grows by itself.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "You want each city once: Excel has a function named for exactly that.",
+        "wrongValue": "The list should be Pune and Mumbai, each once. Point the formula at the City column, `B2:B7`."
+      },
+      "clues": ["The function name means “only one of each”.", "Give it the City column `B2:B7`."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "City totals",
+      "prompt": "How much did **Pune** bring in? In ==F2==, total the amounts for the city named in `E2`.",
+      "grid": [
+        ["Customer", "City", "Amount", null, "City", "Total", "Orders 500+"],
+        ["Rohan Mehta", "Pune", 450, null, "Pune", null, null],
+        ["Sara Khan", "Pune", 1200, null, "Mumbai", null, null],
+        ["Anil Kumar", "Mumbai", 300, null, null, null, null],
+        ["Meena Iyer", "Mumbai", 850, null, null, null, null],
+        ["Dev Patel", "Pune", 500, null, null, null, null],
+        ["Kiran Rao", "Mumbai", 350, null, null, null, null]
+      ],
+      "targetCell": "F2",
+      "activeCell": "D2",
+      "highlightCells": ["B2:C7"],
+      "yellowCells": ["F2"],
+      "expectedValue": 2150,
+      "mustReference": ["C2:C7", "B2:B7"],
+      "solution": "=SUMIFS(C2:C7,B2:B7,E2)",
+      "explain": "**2150**: Rohan 450 + Sara 1200 + Dev 500. Pointing at `E2` instead of typing “Pune” means the same formula can be copied down to Mumbai once its ranges are locked with `$`.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingReference": "Add up the Amount column `C2:C7`, and look for the city in `B2:B7`.",
+        "wrongValue": "Only Pune's three orders should be added, not every order."
+      },
+      "clues": ["Sum range first, then the City column, then the city to match."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Big orders",
+      "prompt": "Meena gives a free gift for orders of **500 or more**. In ==G2==, count how many Pune orders earned one.",
+      "grid": [
+        ["Customer", "City", "Amount", null, "City", "Total", "Orders 500+"],
+        ["Rohan Mehta", "Pune", 450, null, "Pune", 2150, null],
+        ["Sara Khan", "Pune", 1200, null, "Mumbai", 1500, null],
+        ["Anil Kumar", "Mumbai", 300, null, null, null, null],
+        ["Meena Iyer", "Mumbai", 850, null, null, null, null],
+        ["Dev Patel", "Pune", 500, null, null, null, null],
+        ["Kiran Rao", "Mumbai", 350, null, null, null, null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "D2",
+      "highlightCells": ["B2:C7"],
+      "yellowCells": ["G2"],
+      "expectedValue": 2,
+      "mustUse": ["COUNTIFS"],
+      "solution": "=COUNTIFS(B2:B7,E2,C2:C7,\">=500\")",
+      "explain": "**2**: Sara's 1200 and Dev's 500. Dev's order is exactly 500, so `\">=500\"` counts it; `\">500\"` would miss him. Counting every 500+ order in the list would also give 3, because Mumbai has Meena's 850.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "Two conditions at once: the city **and** the amount. That needs a COUNT with an S on the end.",
+        "wrongValue": "Pune only, and 500 counts as “500 or more”: use `\">=500\"` with quotes."
+      },
+      "clues": [
+        "One pair of ranges for the city, another pair for the amount.",
+        "The amount test is `\">=500\"`."
+      ]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Check the AI's formula",
+      "prompt": "Meena asked an AI chatbot for **Mumbai's total**. It replied with the formula already in `F3` and sounded very sure, but the cell shows **0**. Fix the formula in ==F3==.",
+      "grid": [
+        ["Customer", "City", "Amount", null, "City", "Total", "Orders 500+"],
+        ["Rohan Mehta", "Pune", 450, null, "Pune", 2150, 2],
+        ["Sara Khan", "Pune", 1200, null, "Mumbai", "=SUMIFS(B2:B7,C2:C7,E3)", null],
+        ["Anil Kumar", "Mumbai", 300, null, null, null, null],
+        ["Meena Iyer", "Mumbai", 850, null, null, null, null],
+        ["Dev Patel", "Pune", 500, null, null, null, null],
+        ["Kiran Rao", "Mumbai", 350, null, null, null, null]
+      ],
+      "targetCell": "F3",
+      "activeCell": "D3",
+      "highlightCells": ["F3"],
+      "yellowCells": ["F3"],
+      "expectedValue": 1500,
+      "mustReference": ["C2:C7", "B2:B7"],
+      "solution": "=SUMIFS(C2:C7,B2:B7,E3)",
+      "explain": "**1500**: Anil 300 + Meena 850 + Kiran 350. The AI swapped the arguments: SUMIFS wants the **sum range first**, then each criteria range. It tried to add the city names, got 0 and still looked confident. Always check an AI formula against a number you can work out by hand.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingReference": "Check which range is being added and which is being searched.",
+        "wrongValue": "Mumbai's three orders should total 1500. In SUMIFS the first range is the one that gets **added**."
+      },
+      "clues": ["Which column holds the numbers to add?", "Swap the first two ranges."]
+    },
+    {
+      "id": "s12",
+      "type": "mcq",
+      "topic": "Another AI suggestion",
+      "prompt": "The AI also suggested `=COUNTIF(C2:C7,\">500\")` to count orders of **500 or more**. It returns 2, but you can see **three** such orders: 1200, 850 and 500.\n\nWhat's wrong with the suggestion?",
+      "grid": [
+        ["Customer", "City", "Amount"],
+        ["Rohan Mehta", "Pune", 450],
+        ["Sara Khan", "Pune", 1200],
+        ["Anil Kumar", "Mumbai", 300],
+        ["Meena Iyer", "Mumbai", 850],
+        ["Dev Patel", "Pune", 500],
+        ["Kiran Rao", "Mumbai", 350]
+      ],
+      "yellowCells": ["C6"],
+      "options": [
+        "`>` skips an order of exactly 500",
+        "COUNTIF can't count numbers",
+        "The range must include the header"
+      ],
+      "answer": 0,
+      "explain": "Dev's order is exactly 500, and `>` means strictly more than. Boundary values are where AI formulas most often go quietly wrong, so always test one that sits right on the edge.",
+      "wrongFeedback": [
+        null,
+        "COUNTIF counts numbers happily. The difference is in the condition.",
+        "Headers don't matter here. Look at the condition instead."
+      ],
+      "clues": ["Which sign includes the number itself?"]
+    },
+    {
+      "id": "s13",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Style the headers",
+      "prompt": "Time to polish. The summary headings in `E1:G1` are selected. Make them stand out.",
+      "keys": {
+        "win": "Ctrl+B",
+        "mac": "Cmd+B"
+      },
+      "grid": [
+        ["Customer", "City", "Amount", null, "City", "Total", "Orders 500+"],
+        ["Rohan Mehta", "Pune", 450, null, "Pune", 2150, 2],
+        ["Sara Khan", "Pune", 1200, null, "Mumbai", 1500, 1],
+        ["Anil Kumar", "Mumbai", 300, null, null, null, null],
+        ["Meena Iyer", "Mumbai", 850, null, null, null, null],
+        ["Dev Patel", "Pune", 500, null, null, null, null],
+        ["Kiran Rao", "Mumbai", 350, null, null, null, null]
+      ],
+      "activeCell": "E1:G1",
+      "postcondition": {
+        "selection": "E1:G1",
+        "format": {
+          "E1:G1": ["bold"]
+        }
+      },
+      "clues": ["B is for bold."]
+    },
+    {
+      "id": "s14",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Challenge: readable totals",
+      "prompt": "The totals in `F2:F3` are selected. This report will go to Meena's accountant: make the big numbers easy to read.",
+      "keys": {
+        "win": "Ctrl+Shift+1",
+        "mac": "Ctrl+Shift+1"
+      },
+      "grid": [
+        ["Customer", "City", "Amount", null, "City", "Total", "Orders 500+"],
+        ["Rohan Mehta", "Pune", 450, null, "Pune", 2150, 2],
+        ["Sara Khan", "Pune", 1200, null, "Mumbai", 1500, 1],
+        ["Anil Kumar", "Mumbai", 300, null, null, null, null],
+        ["Meena Iyer", "Mumbai", 850, null, null, null, null],
+        ["Dev Patel", "Pune", 500, null, null, null, null],
+        ["Kiran Rao", "Mumbai", 350, null, null, null, null]
+      ],
+      "activeCell": "F2:F3",
+      "postcondition": {
+        "grid": [
+          ["Customer", "City", "Amount", null, "City", "Total", "Orders 500+"],
+          ["Rohan Mehta", "Pune", 450, null, "Pune", "2,150.00", 2],
+          ["Sara Khan", "Pune", 1200, null, "Mumbai", "1,500.00", 1],
+          ["Anil Kumar", "Mumbai", 300, null, null, null, null],
+          ["Meena Iyer", "Mumbai", 850, null, null, null, null],
+          ["Dev Patel", "Pune", 500, null, null, null, null],
+          ["Kiran Rao", "Mumbai", 350, null, null, null, null]
+        ],
+        "selection": "F2:F3",
+        "format": {
+          "E1:G1": ["bold"]
+        }
+      },
+      "clues": ["The key that adds thousands separators is Ctrl + Shift + 1."]
+    }
+  ]
+}

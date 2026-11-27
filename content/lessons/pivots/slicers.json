@@ -1,0 +1,380 @@
+{
+  "id": "slicers",
+  "module": "pivots",
+  "title": "Slicers, Timelines & PivotCharts",
+  "goal": "Add clickable slicer filters and date timelines, connect one slicer to two pivots, and predict what a pivot and its PivotChart will show for any combination of filters.",
+  "difficulty": 2,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Why slicers",
+      "text": "A normal pivot filter hides inside a small drop-down. A **slicer** is a panel of big **buttons**: click “Pune” and the pivot shows Pune only. Anyone can use it, even on a phone or in a meeting.\n\nAdd one by clicking inside the pivot and choosing **Insert → Slicer** (or **PivotTable Analyze → Insert Slicer**), then ticking a field such as City. Imagine **5,000** rows behind this.\n\nPress the button below to click **Pune** in the slicer, and watch the pivot.",
+      "grid": [
+        ["Date", "City", "Product", "Sales", null, "City slicer", "All"],
+        ["=DATE(2026,1,8)", "Pune", "Tea", 300, null, "Row Labels", "Sum of Sales"],
+        [
+          "=DATE(2026,1,20)",
+          "Delhi",
+          "Coffee",
+          500,
+          null,
+          "Coffee",
+          "=IF($G$1=\"All\",SUMIFS($D$2:$D$8,$C$2:$C$8,F3),SUMIFS($D$2:$D$8,$C$2:$C$8,F3,$B$2:$B$8,$G$1))"
+        ],
+        [
+          "=DATE(2026,2,3)",
+          "Pune",
+          "Coffee",
+          400,
+          null,
+          "Tea",
+          "=IF($G$1=\"All\",SUMIFS($D$2:$D$8,$C$2:$C$8,F4),SUMIFS($D$2:$D$8,$C$2:$C$8,F4,$B$2:$B$8,$G$1))"
+        ],
+        ["=DATE(2026,2,14)", "Delhi", "Tea", 200, null, "Grand Total", "=SUM(G3:G4)"],
+        ["=DATE(2026,2,25)", "Pune", "Tea", 600, null, null, null],
+        ["=DATE(2026,3,6)", "Delhi", "Coffee", 700, null, null, null],
+        ["=DATE(2026,3,18)", "Pune", "Coffee", 250, null, null, null]
+      ],
+      "highlightCells": ["F3:G5"],
+      "activeCell": "G1",
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "G1",
+          "fromValue": "All",
+          "toValue": "Pune",
+          "resultCell": "G5",
+          "buttonLabel": "Click “Pune” in the slicer",
+          "resetLabel": "Clear the filter"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Click a slicer button",
+      "prompt": "Here a slicer is the column of buttons on the left under **City**, and the pivot is on the right.\n\nYour manager wants **Delhi** only. Click the Delhi button, then press [[Enter]].",
+      "grid": [
+        ["City", null, "Row Labels", "Sum of Sales"],
+        ["Pune", null, "Coffee", 1850],
+        ["Delhi", null, "Tea", 1100],
+        [null, null, "Grand Total", 2950]
+      ],
+      "yellowCells": ["A3"],
+      "target": "A3",
+      "wrongFeedback": "That isn't the Delhi button. Slicer buttons are the city names in column A. Click **Delhi** itself.",
+      "clues": ["Slicer buttons are the names under the City heading."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Predict one city",
+      "prompt": "Back to the pivot with **Product** in Rows. The slicer now has **Pune** clicked, so the pivot counts Pune orders only.\n\nWhat will it show for **Tea**? Work it out in ==G4== with a **SUMIFS**: Product matches `F4` and City matches the slicer in `G1`.",
+      "grid": [
+        ["Date", "City", "Product", "Sales", null, "City slicer", "Pune"],
+        ["=DATE(2026,1,8)", "Pune", "Tea", 300, null, "Row Labels", "Sum of Sales"],
+        ["=DATE(2026,1,20)", "Delhi", "Coffee", 500, null, "Coffee", 650],
+        ["=DATE(2026,2,3)", "Pune", "Coffee", 400, null, "Tea", null],
+        ["=DATE(2026,2,14)", "Delhi", "Tea", 200, null, "Grand Total", null],
+        ["=DATE(2026,2,25)", "Pune", "Tea", 600, null, null, null],
+        ["=DATE(2026,3,6)", "Delhi", "Coffee", 700, null, null, null],
+        ["=DATE(2026,3,18)", "Pune", "Coffee", 250, null, null, null]
+      ],
+      "targetCell": "G4",
+      "highlightCells": ["G1", "F4"],
+      "yellowCells": ["G4"],
+      "activeCell": "G1",
+      "expectedValue": 900,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(D2:D8,C2:C8,F4,B2:B8,G1)",
+      "explain": "**900.** Pune's two Tea orders, 300 + 600. Tea alone would be 1100, and Pune alone 1550. A slicer is just one more condition on the pivot.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Use `SUMIFS` with two conditions.",
+        "wrongValue": "Both must match: Product `C2:C8` equals `F4` **and** City `B2:B8` equals `G1`."
+      },
+      "clues": ["Two pairs after the Sales range: product, then city."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Grand total with a slicer",
+      "prompt": "Now the slicer says **Delhi**. The Grand Total row follows the slicer too.\n\nWhat will the **Grand Total** show in ==G5==? Use **SUMIFS** on the list, not by adding the rows above.",
+      "grid": [
+        ["Date", "City", "Product", "Sales", null, "City slicer", "Delhi"],
+        ["=DATE(2026,1,8)", "Pune", "Tea", 300, null, "Row Labels", "Sum of Sales"],
+        ["=DATE(2026,1,20)", "Delhi", "Coffee", 500, null, "Coffee", 1200],
+        ["=DATE(2026,2,3)", "Pune", "Coffee", 400, null, "Tea", 200],
+        ["=DATE(2026,2,14)", "Delhi", "Tea", 200, null, "Grand Total", null],
+        ["=DATE(2026,2,25)", "Pune", "Tea", 600, null, null, null],
+        ["=DATE(2026,3,6)", "Delhi", "Coffee", 700, null, null, null],
+        ["=DATE(2026,3,18)", "Pune", "Coffee", 250, null, null, null]
+      ],
+      "targetCell": "G5",
+      "highlightCells": ["G1"],
+      "yellowCells": ["G5"],
+      "activeCell": "G1",
+      "expectedValue": 1400,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(D2:D8,B2:B8,G1)",
+      "explain": "**1400:** all of Delhi's three orders (500 + 200 + 700). The Grand Total adds every row that survives the filter, so it moves with the slicer.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Use `SUMIFS` with one condition: the city.",
+        "wrongValue": "Add Sales `D2:D8` where City `B2:B8` equals `G1`. There's no product condition here."
+      },
+      "clues": ["Only one condition: City equals `G1`."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Predict: pick two",
+      "prompt": "In the slicer you click **Pune**, then hold [[Ctrl]] and click **Delhi** too. (Mac: hold [[Cmd]].)\n\nWhat does the Grand Total show?",
+      "grid": [
+        ["Date", "City", "Product", "Sales", null, "City slicer", "Pune + Delhi"],
+        ["=DATE(2026,1,8)", "Pune", "Tea", 300, null, "Row Labels", "Sum of Sales"],
+        ["=DATE(2026,1,20)", "Delhi", "Coffee", 500, null, "Coffee", 1850],
+        ["=DATE(2026,2,3)", "Pune", "Coffee", 400, null, "Tea", 1100],
+        ["=DATE(2026,2,14)", "Delhi", "Tea", 200, null, "Grand Total", null],
+        ["=DATE(2026,2,25)", "Pune", "Tea", 600, null, null, null],
+        ["=DATE(2026,3,6)", "Delhi", "Coffee", 700, null, null, null],
+        ["=DATE(2026,3,18)", "Pune", "Coffee", 250, null, null, null]
+      ],
+      "yellowCells": ["G1"],
+      "options": ["1550: only Pune", "1400: only Delhi", "2950: both cities are included"],
+      "answer": 2,
+      "explain": "[[Ctrl]]-click **adds** buttons to the selection, so both cities count: 1550 + 1400 = 2950, the same as no filter at all. The small funnel-with-a-cross icon on the slicer **clears** it.",
+      "wrongFeedback": [
+        "A plain click picks one button, but [[Ctrl]]-click keeps the old one and adds the new.",
+        "Delhi alone is 1400, but you haven't removed Pune.",
+        null
+      ],
+      "clues": ["Does Ctrl-click replace the selection or add to it?"]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Two pivots, one slicer",
+      "prompt": "Your sheet has two pivots: sales by Product, and sales by Month. You click **Pune** in the City slicer and only the Product pivot changes.\n\nHow do you make the Month pivot follow it?",
+      "grid": [
+        ["Product pivot", "Sales"],
+        ["Coffee", 650],
+        ["Tea", 900],
+        ["Month pivot", "Sales"],
+        ["Jan", 300],
+        ["Feb", 1000],
+        ["Mar", 250]
+      ],
+      "yellowCells": ["A1", "A4"],
+      "options": [
+        "Press Alt + F5 to refresh",
+        "Right-click the slicer, Report Connections, tick both",
+        "Delete the slicer and rebuild the pivots"
+      ],
+      "answer": 1,
+      "explain": "A slicer is wired to **one pivot** when you make it. **Report Connections** lets one slicer drive many pivots built on the same data, so one click updates the whole dashboard.",
+      "wrongFeedback": [
+        "Refresh reloads the data, but doesn't create a link between the slicer and the second pivot.",
+        null,
+        "That would break the first link too. The fix is just a tick-box in Report Connections."
+      ],
+      "clues": ["The slicer has a right-click menu. Which entry mentions several pivots?"]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "Timelines",
+      "prompt": "A **Timeline** is a slicer for dates: a strip of months you drag across. (**Insert → Timeline**.)\n\nExcel won't let you add one to this pivot. What's the likely reason?",
+      "grid": [
+        ["Date", "City", "Sales"],
+        ["8 Jan", "Pune", 300],
+        ["20 Jan", "Delhi", 500],
+        ["3 Feb", "Pune", 400]
+      ],
+      "highlightCells": ["A2:A4"],
+      "options": [
+        "The dates are typed text, not real dates",
+        "A pivot can only have one slicer",
+        "Timelines only work on charts"
+      ],
+      "answer": 0,
+      "explain": "A Timeline needs a **real date** field. Text dates sit on the left of the cell, like “8 Jan” here, and Excel can't put them in order. Convert them to true dates first.",
+      "wrongFeedback": [
+        null,
+        "You can add as many slicers as you like to one pivot.",
+        "Timelines work on pivots as well as PivotCharts."
+      ],
+      "clues": ["Look at where the dates sit in the cells: left or right?"]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Timeline range",
+      "prompt": "With a Timeline you drag across the months you want. Here it covers **Feb to Mar**: from 1 February up to the end of March, every city.\n\nWhat will the **Grand Total** show in ==G5==? Use a **SUMIFS** on the dates.",
+      "grid": [
+        ["Date", "City", "Product", "Sales", null, "Timeline", "Feb to Mar"],
+        ["=DATE(2026,1,8)", "Pune", "Tea", 300, null, "Row Labels", "Sum of Sales"],
+        ["=DATE(2026,1,20)", "Delhi", "Coffee", 500, null, "Coffee", null],
+        ["=DATE(2026,2,3)", "Pune", "Coffee", 400, null, "Tea", null],
+        ["=DATE(2026,2,14)", "Delhi", "Tea", 200, null, "Grand Total", null],
+        ["=DATE(2026,2,25)", "Pune", "Tea", 600, null, null, null],
+        ["=DATE(2026,3,6)", "Delhi", "Coffee", 700, null, null, null],
+        ["=DATE(2026,3,18)", "Pune", "Coffee", 250, null, null, null]
+      ],
+      "targetCell": "G5",
+      "highlightCells": ["A4:A8"],
+      "yellowCells": ["G5"],
+      "activeCell": "G1",
+      "expectedValue": 2150,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(D2:D8,A2:A8,\">=\"&DATE(2026,2,1),A2:A8,\"<\"&DATE(2026,4,1))",
+      "explain": "**2150.** The five orders from 3 Feb to 18 Mar: 400 + 200 + 600 + 700 + 250. The two January orders are outside the strip.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">", "<", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Use `SUMIFS` with a start and an end date.",
+        "wrongValue": "From `>=` 1 Feb to `<` 1 Apr. January's 300 and 500 must stay out."
+      },
+      "clues": ["Two date conditions on `A2:A8`: start of Feb, and the start of April."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Slicer + Timeline",
+      "prompt": "Slicers and Timelines **stack**. The City slicer says **Pune** and the Timeline still says Feb to Mar.\n\nWhat will the **Grand Total** show in ==G6==?",
+      "grid": [
+        ["Date", "City", "Product", "Sales", null, "City slicer", "Pune"],
+        ["=DATE(2026,1,8)", "Pune", "Tea", 300, null, "Timeline", "Feb to Mar"],
+        ["=DATE(2026,1,20)", "Delhi", "Coffee", 500, null, "Row Labels", "Sum of Sales"],
+        ["=DATE(2026,2,3)", "Pune", "Coffee", 400, null, "Coffee", null],
+        ["=DATE(2026,2,14)", "Delhi", "Tea", 200, null, "Tea", null],
+        ["=DATE(2026,2,25)", "Pune", "Tea", 600, null, "Grand Total", null],
+        ["=DATE(2026,3,6)", "Delhi", "Coffee", 700, null, null, null],
+        ["=DATE(2026,3,18)", "Pune", "Coffee", 250, null, null, null]
+      ],
+      "targetCell": "G6",
+      "highlightCells": ["G1", "A4:A8"],
+      "yellowCells": ["G6"],
+      "activeCell": "G1",
+      "expectedValue": 1250,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(D2:D8,B2:B8,G1,A2:A8,\">=\"&DATE(2026,2,1),A2:A8,\"<\"&DATE(2026,4,1))",
+      "explain": "**1250**, Pune's three orders in that window: 400 + 600 + 250. Pune alone is 1550, and Feb to Mar for every city 2150; both filters have to apply.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">", "<", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Three conditions: city and two dates.",
+        "wrongValue": "Pune **and** from `>=` 1 Feb **and** `<` 1 Apr."
+      },
+      "clues": ["Start with the city condition, then add the two date conditions."]
+    },
+    {
+      "id": "s10",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "PivotChart",
+      "prompt": "A **PivotChart** is a chart tied to the pivot. Click a cell inside the pivot and press [[Alt]] + [[F1]]. Excel draws a column chart for it: one column for Coffee, one for Tea.\n\nThe sheet here can't draw the chart, but in Excel it appears on the sheet. On a Mac, use **PivotTable Analyze → PivotChart**.",
+      "keys": {
+        "win": "Alt+F1",
+        "mac": null
+      },
+      "grid": [
+        ["Date", "City", "Product", "Sales", null, "City slicer", "Pune"],
+        ["=DATE(2026,1,8)", "Pune", "Tea", 300, null, "Row Labels", "Sum of Sales"],
+        ["=DATE(2026,1,20)", "Delhi", "Coffee", 500, null, "Coffee", 650],
+        ["=DATE(2026,2,3)", "Pune", "Coffee", 400, null, "Tea", 900],
+        ["=DATE(2026,2,14)", "Delhi", "Tea", 200, null, "Grand Total", 1550],
+        ["=DATE(2026,2,25)", "Pune", "Tea", 600, null, null, null],
+        ["=DATE(2026,3,6)", "Delhi", "Coffee", 700, null, null, null],
+        ["=DATE(2026,3,18)", "Pune", "Coffee", 250, null, null, null]
+      ],
+      "activeCell": "F3",
+      "postcondition": {
+        "grid": [
+          ["Date", "City", "Product", "Sales", null, "City slicer", "Pune"],
+          ["=DATE(2026,1,8)", "Pune", "Tea", 300, null, "Row Labels", "Sum of Sales"],
+          ["=DATE(2026,1,20)", "Delhi", "Coffee", 500, null, "Coffee", 650],
+          ["=DATE(2026,2,3)", "Pune", "Coffee", 400, null, "Tea", 900],
+          ["=DATE(2026,2,14)", "Delhi", "Tea", 200, null, "Grand Total", 1550],
+          ["=DATE(2026,2,25)", "Pune", "Tea", 600, null, null, null],
+          ["=DATE(2026,3,6)", "Delhi", "Coffee", 700, null, null, null],
+          ["=DATE(2026,3,18)", "Pune", "Coffee", 250, null, null, null]
+        ],
+        "selection": "F3"
+      },
+      "clues": ["Hold Alt and tap F1."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Chart follows the pivot",
+      "prompt": "The PivotChart shows Pune's Coffee and Tea columns. You click **Delhi** in the slicer.\n\nWhat happens to the chart?",
+      "grid": [
+        ["Date", "City", "Product", "Sales", null, "City slicer", "Delhi"],
+        ["=DATE(2026,1,8)", "Pune", "Tea", 300, null, "Row Labels", "Sum of Sales"],
+        ["=DATE(2026,1,20)", "Delhi", "Coffee", 500, null, "Coffee", 1200],
+        ["=DATE(2026,2,3)", "Pune", "Coffee", 400, null, "Tea", 200],
+        ["=DATE(2026,2,14)", "Delhi", "Tea", 200, null, "Grand Total", 1400],
+        ["=DATE(2026,2,25)", "Pune", "Tea", 600, null, null, null],
+        ["=DATE(2026,3,6)", "Delhi", "Coffee", 700, null, null, null],
+        ["=DATE(2026,3,18)", "Pune", "Coffee", 250, null, null, null]
+      ],
+      "yellowCells": ["G1"],
+      "options": [
+        "Nothing until you rebuild the chart",
+        "It redraws with Delhi's numbers",
+        "It keeps Pune, since slicers only filter cells"
+      ],
+      "answer": 1,
+      "explain": "A PivotChart **is** the pivot, drawn. Whatever filters the pivot (slicers, timelines, the Filters box) filters the chart too, and a refresh updates both.",
+      "wrongFeedback": [
+        "You never rebuild it. The chart and the pivot are one object.",
+        null,
+        "Slicers filter the pivot's data, and the chart reads that same data."
+      ],
+      "clues": ["The chart and the pivot share one set of numbers."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nA bakery's **PivotChart** has one column per **Item**. It's connected to a **Shop** slicer set to **Goa** and a **Timeline** covering **May and June**. How tall is the **Cake** column? Put the answer in ==F2==.",
+      "grid": [
+        ["Date", "Shop", "Item", "Sales", null, "Cake height"],
+        ["=DATE(2026,4,4)", "Goa", "Cake", 120, null, null],
+        ["=DATE(2026,4,19)", "Kochi", "Cake", 300, null, null],
+        ["=DATE(2026,5,1)", "Goa", "Cake", 250, null, null],
+        ["=DATE(2026,5,21)", "Kochi", "Bread", 90, null, null],
+        ["=DATE(2026,5,30)", "Goa", "Bread", 110, null, null],
+        ["=DATE(2026,6,7)", "Kochi", "Cake", 400, null, null],
+        ["=DATE(2026,6,25)", "Goa", "Cake", 180, null, null]
+      ],
+      "targetCell": "F2",
+      "expectedValue": 430,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(D2:D8,B2:B8,\"Goa\",C2:C8,\"Cake\",A2:A8,\">=\"&DATE(2026,5,1),A2:A8,\"<\"&DATE(2026,7,1))",
+      "explain": "**430.** Goa's Cake orders in May and June: 250 + 180. The Goa Cake order on 4 Apr is outside the timeline, so all Goa Cake would be 550, and Cake from every shop in May and June 830.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">", "<", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Four conditions: shop, item and two dates.",
+        "wrongValue": "Goa **and** Cake **and** from `>=` 1 May to `<` 1 Jul. The answer is 250 + 180."
+      },
+      "clues": [
+        "Four conditions: Shop, Item, start date, end date.",
+        "The Timeline covers 1 May to 30 Jun, so stop before 1 Jul."
+      ]
+    }
+  ]
+}

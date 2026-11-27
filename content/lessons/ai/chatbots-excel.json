@@ -1,0 +1,290 @@
+{
+  "id": "chatbots-excel",
+  "module": "ai",
+  "title": "ChatGPT, Claude & Gemini with Excel",
+  "goal": "Prepare a safe copy of a sheet for a chatbot, then turn its answers back into formulas you own, adapted to your own columns.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "An answer in chat is not in your sheet",
+      "text": "ChatGPT, Claude and Gemini can all take a spreadsheet and answer questions about it. The routine is the same for each:\n\n• **Prepare** a safe copy\n• **Upload** it and ask\n• **Check** the answer\n• **Bring it back** as a formula you own\n\nTools and plans differ in what they can do with a file. Some run calculations on it; others only read it as text and may miss rows in a long file. So check, always.\n\nHere's why step 4 matters. Press the button: the number pasted from chat stays put, while the formula follows your data.",
+      "grid": [
+        ["Region", "Amount", null, "Pasted from chat", "My formula"],
+        ["Pune", 4200, null, 9700, "=SUMIF(A2:A4,\"Pune\",B2:B4)"],
+        ["Goa", 3000, null, null, null],
+        ["Pune", 5500, null, null, null]
+      ],
+      "activeCell": "E2",
+      "yellowCells": ["D2", "E2"],
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "B2",
+          "fromValue": 4200,
+          "toValue": 5200,
+          "resultCell": "E2",
+          "buttonLabel": "Change Pune's first order: 4200 → 5200",
+          "resetLabel": "Put it back to 4200"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Share only what's needed",
+      "prompt": "You want a chatbot to total sales by region. It needs only **Region** and **Amount**.\n\nSelect those two columns, headers included: drag from ==B1== to ==C5==, then press [[Enter]].",
+      "grid": [
+        ["Order", "Region", "Amount", "Customer", "Phone"],
+        ["B101", "Pune", 3500, "Meera Nair", 9820011122],
+        ["B102", "Goa", 2600, "Joseph D'Souza", 9811122233],
+        ["B103", "Pune", 4900, "Li Wei", 9900033344],
+        ["B104", "Delhi", 1700, "Farida Khan", 9876544455]
+      ],
+      "target": "B1:C5",
+      "wrongFeedback": "Select just the Region and Amount columns, from `B1` (the header) down to `C5`. Leave out the names and phone numbers.",
+      "clues": ["Start on B1, the word Region, and drag to the last amount in column C."],
+      "yellowCells": ["B1:C5"]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Paste values into a fresh file",
+      "prompt": "You've copied `B1:C5` and opened a **new, empty workbook**. Paste **values only**: that leaves behind formulas, hidden sheets, comments and links from the original.\n\nPress [[Ctrl]] + [[Alt]] + [[V]], then [[V]] for **Values**, then [[Enter]].",
+      "keys": {
+        "win": ["Ctrl+Alt+V", "V", "Enter"],
+        "mac": null
+      },
+      "grid": [
+        [null, null],
+        [null, null],
+        [null, null],
+        [null, null],
+        [null, null]
+      ],
+      "postcondition": {
+        "grid": [
+          ["Region", "Amount"],
+          ["Pune", 3500],
+          ["Goa", 2600],
+          ["Pune", 4900],
+          ["Delhi", 1700]
+        ],
+        "selection": "A1:B5"
+      },
+      "clues": [
+        "Ctrl + Alt + V together, then V alone, then Enter. On a Mac, use the Paste Special menu and choose Values."
+      ],
+      "activeCell": "A1"
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "What to upload",
+      "prompt": "Before uploading, which is the **safest** way to prepare the file for a chatbot?",
+      "options": [
+        "Upload the original: the chatbot will ignore the private columns",
+        "Upload a copy with only the columns it needs, IDs instead of names, and no hidden sheets",
+        "Hide the private columns, then upload the original"
+      ],
+      "answer": 1,
+      "explain": "A small, clean copy means nothing private can leak. Also check your workplace policy and the tool's data settings first: some plans may use what you upload to improve their models, others don't.",
+      "wrongFeedback": [
+        "The chatbot can read every column in the file, whether or not you mention it.",
+        null,
+        "Hidden columns are still inside the file. Delete them from a copy instead."
+      ],
+      "clues": ["Which option removes the private data instead of just covering it?"]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Predict what E2 does",
+      "prompt": "A chatbot replies: “Pune's total is **8,400**.” You copy that number into `E2`. A week later you add another Pune order to your sheet.\n\nWhat does `E2` show?",
+      "grid": [
+        ["Region", "Amount", null, "Pune total"],
+        ["Pune", 3500, null, 8400],
+        ["Goa", 2600, null, null],
+        ["Pune", 4900, null, null],
+        ["Delhi", 1700, null, null]
+      ],
+      "options": ["Still `8,400`: it's just a typed number", "It updates by itself", "`#REF!`"],
+      "answer": 0,
+      "explain": "A number pasted from a chat is just typed text, with no link to your cells. That's why you ask the chatbot for the **formula** too, and paste that instead.",
+      "wrongFeedback": [
+        null,
+        "Only a formula updates. A pasted number has nothing connected to your data.",
+        "Nothing is broken; the number simply never moves. That's the problem."
+      ],
+      "clues": ["Did you paste a formula or a number?"],
+      "yellowCells": ["D2"],
+      "showFormulaBar": true,
+      "activeCell": "D2"
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Own the answer",
+      "prompt": "The chatbot said Pune's total is **8,400**. Now make it yours: in ==D2== write a formula that works out Pune's total from your data.",
+      "grid": [
+        ["Region", "Amount", null, "Pune total"],
+        ["Pune", 3500, null, null],
+        ["Goa", 2600, null, null],
+        ["Pune", 4900, null, null],
+        ["Delhi", 1700, null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 8400,
+      "solution": "=SUMIF(A2:A5,\"Pune\",B2:B5)",
+      "explain": "**8400**, matching the chatbot, and it now moves with your data. Reproducing a chatbot's answer with your own formula is also the best check that it was right.",
+      "wrongFeedback": {
+        "missingFunction": "Add up the amounts for one region: `SUMIF`.",
+        "wrongValue": "Add only Pune's rows (3500 and 4900) to get 8400."
+      },
+      "clues": ["`=SUMIF(regions, \"Pune\", amounts)`"],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "mustUse": ["SUMIF"],
+      "highlightCells": ["A2:B5"],
+      "yellowCells": ["D2"],
+      "activeCell": "D1"
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Adapt it to your columns",
+      "prompt": "A chatbot guessed your layout and gave `=SUMIFS(C:C,B:B,\"Pune\",A:A,\"Q2\")`. But in **your** sheet the amounts are in column B and the regions in column C.\n\nRewrite it in ==E2== to match your columns.",
+      "grid": [
+        ["Quarter", "Amount", "Region", null, "Pune Q2"],
+        ["Q1", 400, "Pune", null, null],
+        ["Q2", 500, "Pune", null, null],
+        ["Q2", 300, "Goa", null, null],
+        ["Q2", 700, "Pune", null, null],
+        ["Q1", 250, "Goa", null, null],
+        ["Q2", 100, "Delhi", null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": 1200,
+      "solution": "=SUMIFS(B2:B7,C2:C7,\"Pune\",A2:A7,\"Q2\")",
+      "explain": "**1200** (500 + 700). A chatbot can't see your sheet's real layout, so its formula often points at the wrong columns. Read each range and ask: is this where my amounts, regions and quarters really are?",
+      "wrongFeedback": {
+        "missingFunction": "You need two conditions on one total: `SUMIFS`, with the amount range first.",
+        "wrongValue": "Amounts are in `B`, regions in `C`, quarters in `A`. Only Pune **and** Q2 rows count: 500 + 700."
+      },
+      "clues": ["`SUMIFS(amounts, regions, \"Pune\", quarters, \"Q2\")`"],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "mustUse": ["SUMIFS"],
+      "highlightCells": ["A2:C7"],
+      "yellowCells": ["E2"],
+      "activeCell": "E1"
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Rewrite what you can't read",
+      "prompt": "A chatbot gave `=LET(t,SUM(B2:B7),n,COUNT(B2:B7),t/n)` for the average order. You'd rather have a version you can read at a glance.\n\nWrite the plain version in ==D2==, with no `LET`.",
+      "grid": [
+        ["Order", "Amount", null, "Average"],
+        ["C1", 40, null, null],
+        ["C2", 60, null, null],
+        ["C3", 50, null, null],
+        ["C4", 30, null, null],
+        ["C5", 70, null, null],
+        ["C6", 50, null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 50,
+      "solution": "=AVERAGE(B2:B7)",
+      "explain": "**50.** `LET` only gives names to the pieces (`t` the total, `n` the count), and `t/n` is an average. If you can't rewrite a chatbot's formula in your own words, you don't own it yet. Either ask it to explain, or ask for a simpler version.",
+      "wrongFeedback": {
+        "wrongValue": "The average of the six amounts is 50. Total ÷ count, or `AVERAGE`.",
+        "missingReference": "Use the six amounts, `B2:B7`."
+      },
+      "clues": ["`=AVERAGE(B2:B7)` does the same job."],
+      "mobileButtons": ["=", "(", ")", ":", "/"],
+      "mustReference": ["B2:B7"],
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["D2"],
+      "activeCell": "D1"
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "A function your Excel doesn't have",
+      "prompt": "The chatbot gave you a formula starting `=GROUPBY(`, and your Excel shows `#NAME?`. What's the **best next move**?",
+      "options": [
+        "Tell it which Excel you have and ask for a `SUMIFS` version",
+        "Retype the formula in capital letters",
+        "Paste the same formula again"
+      ],
+      "answer": 0,
+      "explain": "Newer functions such as `GROUPBY` or `LET` aren't in every Excel, and older versions lack even `XLOOKUP`. Tell the chatbot your version (“Excel 2019”) and ask for an alternative made from functions you have, like `SUMIFS`.",
+      "wrongFeedback": [
+        null,
+        "Capitals make no difference: Excel doesn't care. It simply doesn't know the function.",
+        "The same formula gives the same `#NAME?`. Something has to change: the function."
+      ],
+      "clues": ["`#NAME?` means Excel doesn't recognise a name. What can you ask for instead?"]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "List it with a formula",
+      "prompt": "In chat, the AI listed your regions as Pune, Goa, Delhi. Own that list: starting in ==D2== write a formula that lists each region in `A2:A7` **once**.",
+      "grid": [
+        ["Region", "Amount", null, "Regions"],
+        ["Pune", 3500, null, null],
+        ["Goa", 2600, null, null],
+        ["Pune", 4900, null, null],
+        ["Delhi", 1700, null, null],
+        ["Goa", 800, null, null],
+        ["Pune", 1200, null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "Pune",
+      "solution": "=UNIQUE(A2:A7)",
+      "explain": "**Pune, Goa, Delhi** spill down from `D2`. Add a new region to the data and the list grows, which a list typed from the chat never will.",
+      "wrongFeedback": {
+        "wrongValue": "You want each region once, in order of first appearance, filling downwards from `D2`."
+      },
+      "clues": ["One function removes the repeats from a range."],
+      "mobileButtons": ["=", "(", ")", ":"],
+      "mustUse": ["UNIQUE"],
+      "highlightCells": ["A2:A7"],
+      "yellowCells": ["D2"],
+      "activeCell": "D1"
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A chatbot says: “The average of the orders **over 1,000** is **1,750**.” Own it. In ==D2== write a formula that produces that number from your data, not a typed number.",
+      "grid": [
+        ["Order", "Amount", null, "Average"],
+        ["E1", 800],
+        ["E2", 1000],
+        ["E3", 1500],
+        ["E4", 2000],
+        ["E5", 1750],
+        ["E6", 600]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 1750,
+      "solution": "=AVERAGEIF(B2:B7,\">1000\")",
+      "explain": "**1750** (1500, 2000 and 1750). The order of exactly 1000 isn't “over”, so it stays out: with `>=` you'd get 1562.5. Matching the chatbot's number with your own formula is proof that it was right.",
+      "wrongFeedback": {
+        "wrongValue": "Average only the orders **over** 1,000 (not equal to 1,000): 1500, 2000 and 1750.",
+        "missingReference": "Use the amounts column, `B2:B7`."
+      },
+      "clues": ["Average only the amounts greater than 1000."],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "mustReference": ["B2:B7"],
+      "activeCell": "A1"
+    }
+  ]
+}

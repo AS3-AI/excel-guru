@@ -1,0 +1,271 @@
+{
+  "id": "ai-prompts",
+  "module": "ai",
+  "title": "Write a Good Excel Prompt",
+  "goal": "Write prompts that describe your columns, ask for one step at a time and ask for an explanation, then check the reply on your own sheet.",
+  "difficulty": 1,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Vague in, vague out",
+      "text": "An AI tool can't see your sheet the way you do. It only knows what you tell it, so a vague request gets a vague (or wrong) answer.\n\n• Vague: “Fix my sheet.”\n• Clear: “Column C is Qty and column D is Price. In E2, give me one formula for the line total that I can fill down.”\n\nA good prompt does three things:\n• **Describes your columns**\n• **Asks for one step at a time**\n• **Asks for an explanation**, not just the answer\n\nYou'll practise each one, and check every reply on the sheet.",
+      "grid": [
+        ["Order", "Status", "Qty", "Price", "Total"],
+        ["A101", "Paid", 10, 50, null],
+        ["A102", "Cancelled", 3, 120, null],
+        ["A103", "Paid", 4, 250, null],
+        ["A104", "Paid", 12, 40, null]
+      ],
+      "activeCell": "E2",
+      "highlightCells": ["C1:D5"],
+      "yellowCells": ["E2"]
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Describe your columns",
+      "prompt": "A prompt names columns by what they **hold** and by letter: “column D is the price per item”.\n\nIn this sheet, which column holds the price per item? Click its letter, then press [[Enter]].",
+      "grid": [
+        ["Order", "Status", "Qty", "Price", "Total"],
+        ["A101", "Paid", 10, 50, null],
+        ["A102", "Cancelled", 3, 120, null],
+        ["A103", "Paid", 4, 250, null],
+        ["A104", "Paid", 12, 40, null]
+      ],
+      "target": "D:D",
+      "wrongFeedback": "That's not the price. Read the headers in row 1: **Price** sits in column D.",
+      "clues": ["Order, Status, Qty, Price, Total: count along to Price."]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "Pick the better prompt",
+      "prompt": "You want the line total for every order in the sheet above. Which prompt will get the **best** answer?",
+      "grid": [
+        ["Order", "Status", "Qty", "Price", "Total"],
+        ["A101", "Paid", 10, 50, null],
+        ["A102", "Cancelled", 3, 120, null],
+        ["A103", "Paid", 4, 250, null],
+        ["A104", "Paid", 12, 40, null]
+      ],
+      "options": [
+        "“Fix my sheet, it's wrong.”",
+        "“Write a formula for sales.”",
+        "“Column C is Qty, column D is Price. In E2 I want Qty × Price. Give me one formula I can fill down.”"
+      ],
+      "answer": 2,
+      "explain": "The good prompt names the columns, the target cell and the one job. The AI doesn't have to guess, so you don't have to untangle a wrong guess.",
+      "wrongFeedback": [
+        "“Wrong” how? Which cell? The AI has nothing to work with.",
+        "“Sales” could mean a total, a count or a chart. It has to guess your columns too.",
+        null
+      ],
+      "clues": ["Which one says where the data is and what you want back?"],
+      "highlightCells": ["C1:D1"]
+    },
+    {
+      "id": "s4",
+      "type": "entry",
+      "topic": "Say which column is which",
+      "prompt": "Finish this prompt: “Column __ is City, column __ is Qty, column __ is Price.”\n\nIn ==B6:B8== type the **column letter** for each line, pressing [[Enter]] after each.",
+      "grid": [
+        ["Order", "City", "Qty", "Price"],
+        ["B201", "Pune", 5, 80],
+        ["B202", "Goa", 2, 150],
+        ["B203", "Pune", 8, 60],
+        [null, null, null, null],
+        ["City in:", null, null, null],
+        ["Qty in:", null, null, null],
+        ["Price in:", null, null, null]
+      ],
+      "expect": {
+        "B6": "B",
+        "B7": "C",
+        "B8": "D"
+      },
+      "explain": "B, C and D. With letters **and** what each column holds, the AI can't mix up money and counts. Add units too, like “Price is in ₹” or “Qty is in boxes”.",
+      "wrongFeedback": {
+        "empty": "Fill all three cells: one letter each for City, Qty and Price.",
+        "wrongValue": "Match each line to its header in row 1: City, Qty, Price. One letter per cell."
+      },
+      "clues": ["Look along row 1: A is Order, then count across."],
+      "activeCell": "B6",
+      "yellowCells": ["B6:B8"],
+      "highlightCells": ["A1:D1"]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Say how dates are written",
+      "prompt": "Column A holds dates like `03/04/26`. Your team writes **day first**, but your prompt doesn't say so. You ask for “total sales in April”.\n\nWhat's the risk?",
+      "grid": [
+        ["Date", "Sales"],
+        ["03/04/26", 1200],
+        ["15/04/26", 900],
+        ["20/03/26", 700]
+      ],
+      "options": [
+        "None: dates always mean one thing",
+        "The AI may read it as 4 March and pick the wrong rows",
+        "The AI will refuse to answer"
+      ],
+      "answer": 1,
+      "explain": "`03/04/26` is 3 April in day-first countries and 4 March in month-first ones, and the AI quietly picks one. Say “dates are dd/mm/yy” in the prompt. Same for units and for numbers stored as text.",
+      "wrongFeedback": [
+        "The same text means two different dates, so the AI has to guess.",
+        null,
+        "It won't refuse. It will guess, which is worse because the answer looks fine."
+      ],
+      "clues": ["Is `03/04/26` 3 April or 4 March?"],
+      "yellowCells": ["A2"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "From prompt to formula",
+      "prompt": "Here's a good prompt: “Column C is Qty, column D is Price. In E2 give the line total, with a **10% discount if Qty is 10 or more**.”\n\nWrite the formula the AI should return in ==E2==.",
+      "grid": [
+        ["Order", "Status", "Qty", "Price", "Total"],
+        ["A101", "Paid", 10, 50, null],
+        ["A102", "Cancelled", 3, 120, null],
+        ["A103", "Paid", 4, 250, null],
+        ["A104", "Paid", 12, 40, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": 450,
+      "solution": "=IF(C2>=10,C2*D2*0.9,C2*D2)",
+      "explain": "**450.** 10 × 50 = 500, minus 10%. Because the prompt gave the columns and an exact rule, you can check the reply on one row by hand. Row 2 has Qty exactly 10, so it tests the “or more” boundary too.",
+      "wrongFeedback": {
+        "missingFunction": "The rule is a decision: if Qty is 10 or more, discount; otherwise don't. That's `IF`.",
+        "wrongValue": "Row 2 has Qty exactly **10**, and “10 or more” includes it. The total should be 450."
+      },
+      "clues": ["`=IF(test, if yes, if no)`. The test is `C2>=10`."],
+      "mobileButtons": ["=", "(", ")", ",", ">", "<", "*", "."],
+      "mustUse": ["IF"],
+      "highlightCells": ["C2:D2"],
+      "yellowCells": ["E2"],
+      "activeCell": "E1"
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "One step at a time",
+      "prompt": "You need to tidy city names, remove duplicate customers, total sales by city and draw a chart. What's the **best first message** to an AI?",
+      "options": [
+        "“Do all four and send me the finished file.”",
+        "“First only: how do I remove extra spaces from the city names in column B?”",
+        "“Help me with my data.”"
+      ],
+      "answer": 1,
+      "explain": "A small step can be checked in seconds, and each reply becomes the starting point for the next. If step 3 goes wrong, you know exactly where.",
+      "wrongFeedback": [
+        "One giant request hides where a mistake crept in, and you can't check four jobs at once.",
+        null,
+        "Too vague: the AI must guess your columns and your goal."
+      ],
+      "clues": ["Which message gives you something you can check right away?"]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Step 1 of a chain",
+      "prompt": "Step 1: “In F2, remove the extra spaces from the city in B2.” The AI replies with one small formula. Write it in ==F2==.",
+      "grid": [
+        ["Order", "City", "Qty", "Price", null, "Clean city"],
+        ["C301", "  PUNE ", 5, 80, null, null],
+        ["C302", "goa", 2, 150, null, null],
+        ["C303", " Delhi", 8, 60, null, null]
+      ],
+      "targetCell": "F2",
+      "expectedValue": "PUNE",
+      "solution": "=TRIM(B2)",
+      "explain": "`PUNE`: the spaces are gone, but the capitals are untouched. `TRIM` does only one job, which is exactly why this request was easy to check.",
+      "wrongFeedback": {
+        "missingFunction": "Extra spaces are the job of `TRIM`.",
+        "wrongValue": "The result should be `PUNE`: spaces removed, capitals left alone."
+      },
+      "clues": ["`=TRIM(B2)`"],
+      "mobileButtons": ["=", "(", ")"],
+      "mustUse": ["TRIM"],
+      "highlightCells": ["B2"],
+      "yellowCells": ["F2"],
+      "activeCell": "F1"
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Step 2: a follow-up",
+      "prompt": "Step 2, a follow-up prompt: “Now make it **Pune**: first letter capital, the rest small.”\n\nChange ==F2== so it does both jobs.",
+      "grid": [
+        ["Order", "City", "Qty", "Price", null, "Clean city"],
+        ["C301", "  PUNE ", 5, 80, null, null],
+        ["C302", "goa", 2, 150, null, null],
+        ["C303", " Delhi", 8, 60, null, null]
+      ],
+      "targetCell": "F2",
+      "expectedValue": "Pune",
+      "solution": "=PROPER(TRIM(B2))",
+      "explain": "`Pune`. Each follow-up wraps one more function around the last, so you can test every layer. Ask for a bigger formula in one go, and you can't see which part broke.",
+      "wrongFeedback": {
+        "missingFunction": "Keep the `TRIM` and wrap `PROPER` around it: both functions must be there.",
+        "wrongValue": "Aim for `Pune`: no spaces and only the first letter a capital. Put `TRIM` inside `PROPER`."
+      },
+      "clues": ["`=PROPER(TRIM(B2))`: the inner function runs first."],
+      "mobileButtons": ["=", "(", ")"],
+      "mustUse": ["PROPER", "TRIM"],
+      "highlightCells": ["B2"],
+      "yellowCells": ["F2"],
+      "activeCell": "F1"
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Read the explanation",
+      "prompt": "You ask an AI to explain `=IF(C2>=10,C2*D2*0.9,C2*D2)`. It replies:\n\n1. “`C2>=10` checks whether Qty is **more than** 10.”\n2. “`C2*D2*0.9` takes 10% off the total.”\n3. “Otherwise it returns the plain `C2*D2`.”\n\nWhich line is **wrong**?",
+      "grid": [
+        ["Order", "Status", "Qty", "Price", "Total"],
+        ["A101", "Paid", 10, 50, "=IF(C2>=10,C2*D2*0.9,C2*D2)"]
+      ],
+      "options": ["Line 1", "Line 2", "Line 3"],
+      "answer": 0,
+      "explain": "`>=` means “10 or more”, so Qty of exactly 10 gets the discount too. Ask for “explain each part in one line”, then read it against the formula: AI explanations can be wrong as well.",
+      "wrongFeedback": [
+        null,
+        "Line 2 is right: ×0.9 keeps 90%, which takes off 10%.",
+        "Line 3 is right: when the test fails, `IF` returns the last part."
+      ],
+      "clues": ["Which symbol in the formula does line 1 describe?"],
+      "activeCell": "E2",
+      "showFormulaBar": true,
+      "yellowCells": ["E2"]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A colleague wrote this prompt: “Column B is Status, column C is Qty, column D is Price. In E2 give the line total, but **0 if the order is Cancelled**.”\n\nType the formula the AI should return in ==E2==.",
+      "grid": [
+        ["Order", "Status", "Qty", "Price", "Total"],
+        ["D501", "Cancelled", 3, 120, null],
+        ["D502", "Paid", 5, 90, null],
+        ["D503", "Paid", 2, 300, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": 0,
+      "solution": "=IF(B2=\"Cancelled\",0,C2*D2)",
+      "explain": "**0.** Row 2 is cancelled, so it shouldn't count, even though 3 × 120 = 360. A prompt that names the status column and the exact word gives you a formula you can check at a glance.",
+      "wrongFeedback": {
+        "missingFunction": "This is a decision based on the status text: use `IF`.",
+        "wrongValue": "Row 2 is Cancelled, so its total must be 0, not 360. Test `B2` for the word “Cancelled”."
+      },
+      "clues": ["Test the text with `B2=\"Cancelled\"`."],
+      "mobileButtons": ["=", "(", ")", ",", "\"", "*"],
+      "mustUse": ["IF"],
+      "activeCell": "A1"
+    }
+  ]
+}
