@@ -604,9 +604,11 @@ export function Player({
   const canGoBack = state.history.length > 0;
   useEffect(() => {
     // Left arrow = previous outside the grid, where arrows move cells; Enter = Continue.
-    // Never while typing in a field, on shortcut steps, in the sidebar, or with modifiers.
+    // Never while typing in a field, in the sidebar, or with modifiers.
     const onKey = (e: KeyboardEvent) => {
-      if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey || step.type === "shortcut") return;
+      if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return;
+      // On shortcut steps keys are the answer; only Enter after a correct answer means Continue.
+      if (step.type === "shortcut" && (e.key !== "Enter" || feedback !== "correct")) return;
       const t = e.target as HTMLElement | null;
       if (
         t?.closest(

@@ -1,0 +1,192 @@
+{
+  "id": "cell-format",
+  "module": "essentials",
+  "title": "Cell Formatting & Format Painter",
+  "goal": "Turn a raw list into a clean, readable report: bold headers, borders and centring from the keyboard, repeating a format with F4, copying a look with Format Painter, and fixing #### and merged-cell headaches.",
+  "difficulty": 1,
+  "requiredCorrect": 8,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Make it easy to read",
+      "text": "Your numbers are right, but would your manager read this at a glance?\n\nA few touches do most of the work: a **bold header**, a **border** around the data and **centred** labels. Like number formats, none of this changes a single value.\n\nYou'll do all of it from the keyboard.",
+      "grid": [
+        ["Region", "Q1", "Q2", "Q3"],
+        ["North", 420, 510, 480],
+        ["South", 380, 360, 450],
+        ["East", 290, 340, 400],
+        ["West", 510, 530, 560],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", "=SUM(D2:D5)"]
+      ],
+      "activeCell": "A1"
+    },
+    {
+      "id": "s2",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Bold: Ctrl + B",
+      "prompt": "The header row `A1:D1` is selected.\n\nPress [[Ctrl]] + [[B]] to make it **bold**. Press it again any time to switch bold off.",
+      "keys": { "win": "Ctrl+B", "mac": "Cmd+B" },
+      "grid": [
+        ["Region", "Q1", "Q2", "Q3"],
+        ["North", 420, 510, 480],
+        ["South", 380, 360, 450],
+        ["East", 290, 340, 400],
+        ["West", 510, 530, 560],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", "=SUM(D2:D5)"]
+      ],
+      "activeCell": "A1:D1",
+      "postcondition": {
+        "selection": "A1:D1",
+        "format": { "A1:D1": ["bold"] }
+      },
+      "clues": ["B for bold. Hold Ctrl, tap B."]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Repeat it: F4",
+      "prompt": "The Total row should be bold too. You've selected `A6:D6`.\n\nInstead of reaching for [[Ctrl]] + [[B]] again, press [[F4]]: it **repeats your last action**, whatever it was.\n\nOn a laptop you may need [[Fn]] + [[F4]].",
+      "keys": { "win": "F4", "mac": "Cmd+Y" },
+      "grid": [
+        ["Region", "Q1", "Q2", "Q3"],
+        ["North", 420, 510, 480],
+        ["South", 380, 360, 450],
+        ["East", 290, 340, 400],
+        ["West", 510, 530, 560],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", "=SUM(D2:D5)"]
+      ],
+      "activeCell": "A6:D6",
+      "postcondition": {
+        "selection": "A6:D6",
+        "format": { "A1:D1": ["bold"], "A6:D6": ["bold"] }
+      },
+      "clues": ["The F keys run along the very top of the keyboard."]
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Border: Ctrl + Shift + 7",
+      "prompt": "Now frame the data. `A1:D6` are selected.\n\nPress [[Ctrl]] + [[Shift]] + [[7]] (the **&** key) to draw a border around the outside.",
+      "keys": { "win": "Ctrl+Shift+7", "mac": "Alt+Cmd+0" },
+      "grid": [
+        ["Region", "Q1", "Q2", "Q3"],
+        ["North", 420, 510, 480],
+        ["South", 380, 360, 450],
+        ["East", 290, 340, 400],
+        ["West", 510, 530, 560],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", "=SUM(D2:D5)"]
+      ],
+      "activeCell": "A1:D6",
+      "postcondition": {
+        "selection": "A1:D6",
+        "format": { "A1:D1": ["bold", "border"], "A6:D6": ["bold", "border"], "A2:D5": ["border"] }
+      },
+      "clues": ["Ctrl + Shift, then 7. On a Mac: Cmd + Option + 0."]
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Centre: Alt, H, A, C",
+      "prompt": "Centre the quarter names over their numbers. `B1:D1` are selected.\n\nThere's no one-key shortcut for this in Windows Excel, so use the ribbon keys, tapped one after another: [[Alt]], [[H]] (Home), [[A]] (Align), [[C]] (Centre).\n\nOn a Mac it's [[Cmd]] + [[E]].",
+      "keys": { "win": ["Alt", "H", "A", "C"], "mac": ["Cmd+E"] },
+      "grid": [
+        ["Region", "Q1", "Q2", "Q3"],
+        ["North", 420, 510, 480],
+        ["South", 380, 360, 450],
+        ["East", 290, 340, 400],
+        ["West", 510, 530, 560],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", "=SUM(D2:D5)"]
+      ],
+      "activeCell": "B1:D1",
+      "postcondition": {
+        "selection": "B1:D1",
+        "format": { "A1": ["bold"], "B1:D1": ["bold", "center"], "A6:D6": ["bold"] }
+      },
+      "clues": ["Tap Alt and let go, then H, then A, then C."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Format Painter",
+      "prompt": "You've styled one header perfectly and want the same look on three other sheets' headers. **Format Painter** (the paintbrush on the Home tab) copies a look, not the contents.\n\nHow do you paint **several** places in one go?",
+      "options": [
+        "Single-click the brush each time",
+        "Double-click the brush, paint every place, then press Esc",
+        "Copy and paste the header text"
+      ],
+      "answer": 1,
+      "explain": "One click paints **once**. A **double-click** keeps the brush loaded until you press [[Esc]], so you can paint as many places as you like.",
+      "wrongFeedback": [
+        "That works, but you'd go back to the brush every time. There's a way to keep it loaded.",
+        null,
+        "Pasting copies the text too. Format Painter copies only the look."
+      ],
+      "clues": ["Think: what does a double-click usually do that a single click doesn't?"]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "The #### scare",
+      "prompt": "You make the totals bold and suddenly a cell shows **#######**. Did you break something?",
+      "options": [
+        "Yes, the formula has an error",
+        "No, the column is just too narrow; double-click its right edge to widen it",
+        "The number was deleted"
+      ],
+      "answer": 1,
+      "explain": "**####** only means “I don't fit”. Bold text and currency signs make numbers wider. Double-click the line to the right of the column letter and Excel sizes the column to fit.",
+      "wrongFeedback": [
+        "Real errors start with `#` and have a name, like `#VALUE!`. A row of hashes is different.",
+        null,
+        "The value is still there; click the cell and check the formula bar."
+      ],
+      "clues": ["What got wider when you made it bold?"]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Merging: a pro tip",
+      "prompt": "You want a title centred across `A1:D1`. **Merge & Center** does it, but merged cells cause trouble later: you can't sort, filter or select columns cleanly.\n\nWhat do experienced users do instead?",
+      "options": [
+        "Merge anyway, and unmerge before sorting",
+        "Format Cells → Alignment → Center Across Selection",
+        "Type the title in `B1` and add spaces in front"
+      ],
+      "answer": 1,
+      "explain": "**Center Across Selection** looks exactly like a merge, but every cell stays separate, so sorting and selecting keep working. Find it in Format Cells ([[Ctrl]] + [[1]]) on the Alignment tab.",
+      "wrongFeedback": [
+        "It works, but it's easy to forget, and then the sort fails.",
+        null,
+        "Spaces break as soon as the column width changes."
+      ],
+      "clues": ["Look for an option that only **looks** like merging."]
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Challenge",
+      "prompt": "The column headers in `A1:C1` blend in with the data. They're selected.\n\nMake them stand out.",
+      "keys": { "win": "Ctrl+B", "mac": "Cmd+B" },
+      "grid": [
+        ["Task", "Owner", "Due"],
+        ["Book venue", "Riya", "12 Dec"],
+        ["Send invites", "Sam", "15 Dec"],
+        ["Order food", "Tara", "18 Dec"]
+      ],
+      "activeCell": "A1:C1",
+      "postcondition": {
+        "selection": "A1:C1",
+        "format": { "A1:C1": ["bold"] }
+      },
+      "clues": ["The first shortcut in this topic."]
+    }
+  ]
+}

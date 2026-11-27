@@ -1,0 +1,282 @@
+{
+  "id": "sum-total",
+  "module": "start-here",
+  "title": "SUM: total a list",
+  "goal": "Write SUM yourself for a column, a row, a block and two separate ranges, and spot the one thing that makes SUM quietly skip a number.",
+  "difficulty": 1,
+  "requiredCorrect": 9,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "One formula, any length",
+      "text": "In Topic 1, [[Alt]] + [[=]] wrote a **SUM** for you. Now you'll write it yourself, because then you can total **anything**, not just the cells right above.\n\n`=SUM(B2:B7)` reads as “add B2 **to** B7”. The colon means “to”: the first cell, the last cell and everything in between.\n\nPress **Play** to watch one being built.",
+      "grid": [
+        ["Day", "Cups sold"],
+        ["Mon", 42],
+        ["Tue", 38],
+        ["Wed", 51],
+        ["Thu", 47],
+        ["Fri", 63],
+        ["Sat", 80],
+        ["Total", "=SUM(B2:B7)"]
+      ],
+      "activeCell": "B8",
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "formula-build",
+        "targetCell": "B8",
+        "frames": [
+          { "label": "Click the cell for the answer", "draft": "", "focusCell": "B8" },
+          { "label": "Type =SUM(", "draft": "=SUM(", "focusCell": "B8" },
+          {
+            "label": "Drag from B2 down to B7",
+            "draft": "=SUM(B2:B7",
+            "focusCell": "B8",
+            "highlightCells": ["B2:B7"]
+          },
+          { "label": "Close the bracket", "draft": "=SUM(B2:B7)", "focusCell": "B8" },
+          {
+            "label": "Press Enter",
+            "key": "Enter",
+            "draft": "=SUM(B2:B7)",
+            "resultCell": "B8"
+          }
+        ]
+      }
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Select a range",
+      "prompt": "A block of cells is called a **range**.\n\nSelect the six days of sales: press on ==B2== and drag down to ==B7==, then press [[Enter]].",
+      "grid": [
+        ["Day", "Cups sold"],
+        ["Mon", 42],
+        ["Tue", 38],
+        ["Wed", 51],
+        ["Thu", 47],
+        ["Fri", 63],
+        ["Sat", 80],
+        ["Total", null]
+      ],
+      "yellowCells": ["B2:B7"],
+      "target": "B2:B7",
+      "wrongFeedback": "Start on **B2** (Mon's 42), hold the mouse down and let go on **B7** (Sat's 80). Leave out the header and the Total row.",
+      "clues": ["The Name Box shows `6R x 1C` while you drag the right range: 6 rows, 1 column."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Write SUM",
+      "prompt": "Now total them.\n\nClick ==B8==, type `=SUM(`, then drag over `B2` to `B7` (or type `B2:B7`). Type `)` and press [[Enter]].",
+      "grid": [
+        ["Day", "Cups sold"],
+        ["Mon", 42],
+        ["Tue", 38],
+        ["Wed", 51],
+        ["Thu", 47],
+        ["Fri", 63],
+        ["Sat", 80],
+        ["Total", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["B8"],
+      "expectedValue": 321,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(B2:B7)",
+      "explain": "**321 cups.** Dragging while you type a formula drops the range in for you, so you never have to spell out addresses.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "missingFunction": "Start with `=SUM(` so Excel knows to add a range.",
+        "wrongValue": "The range should be Mon to Sat only: `=SUM(B2:B7)`."
+      },
+      "clues": ["`=SUM(B2:B7)`: first cell, colon, last cell."]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Colon or comma?",
+      "prompt": "You'll see both of these in real sheets. What does `=SUM(B2:B7)` add?",
+      "options": [
+        "Only `B2` and `B7`",
+        "`B2`, `B7` and every cell in between",
+        "`B2` multiplied by `B7`"
+      ],
+      "answer": 1,
+      "explain": "The **colon** means “to”. A **comma** means “and”: `=SUM(B2,B7)` adds just those two cells. One small mark, a very different answer.",
+      "wrongFeedback": [
+        "That's what a comma does: `=SUM(B2,B7)`. The colon fills in everything between.",
+        null,
+        "SUM only ever adds. The colon describes **which** cells to add."
+      ],
+      "clues": ["Read the colon as the word “to”."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Across a row",
+      "prompt": "SUM works sideways too. This sheet runs Monday to Friday **across**.\n\nIn ==G2==, total the Tea sold this week.",
+      "grid": [
+        ["Item", "Mon", "Tue", "Wed", "Thu", "Fri", "Week"],
+        ["Tea", 12, 15, 9, 14, 20, null],
+        ["Coffee", 18, 22, 17, 25, 30, null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A2",
+      "highlightCells": ["B2:F2"],
+      "yellowCells": ["G2"],
+      "expectedValue": 70,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(B2:F2)",
+      "explain": "**70 cups of tea.** A row range works exactly like a column one: first cell `B2`, last cell `F2`.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "missingFunction": "Use `=SUM(` with the Tea row inside the brackets.",
+        "wrongValue": "Only the Tea row, Mon to Fri: `B2` to `F2`."
+      },
+      "clues": ["The range starts at `B2` and ends at `F2`."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "A whole block",
+      "prompt": "A range can be a rectangle: name its **top-left** and **bottom-right** cells.\n\nIn ==B5==, add up all sales, online and in store, for the three months.",
+      "grid": [
+        ["Month", "Online", "Store"],
+        ["Jan", 120, 80],
+        ["Feb", 150, 95],
+        ["Mar", 130, 110],
+        ["All sales", null, null]
+      ],
+      "targetCell": "B5",
+      "activeCell": "A5",
+      "highlightCells": ["B2:C4"],
+      "yellowCells": ["B5"],
+      "expectedValue": 685,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(B2:C4)",
+      "explain": "**685.** `B2:C4` covers both columns and all three months: six cells in one range.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "missingFunction": "Use `=SUM(` with one rectangular range inside.",
+        "wrongValue": "Drag from `B2` (top-left) to `C4` (bottom-right) so both columns are in."
+      },
+      "clues": ["Top-left is `B2`, bottom-right is `C4`."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Two separate ranges",
+      "prompt": "Sometimes the numbers you want aren't side by side. Separate ranges go in one SUM, split by a **comma**.\n\nIn ==B6==, total the **actual** sales for both quarters (columns C and E), leaving out the targets.",
+      "grid": [
+        ["Team", "Q1 target", "Q1 actual", "Q2 target", "Q2 actual"],
+        ["North", 100, 90, 110, 120],
+        ["South", 80, 85, 90, 80],
+        ["East", 60, 70, 70, 75],
+        [null, null, null, null, null],
+        ["Actual total", null, null, null, null]
+      ],
+      "targetCell": "B6",
+      "activeCell": "A6",
+      "highlightCells": ["C2:C4", "E2:E4"],
+      "yellowCells": ["B6"],
+      "expectedValue": 520,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(C2:C4,E2:E4)",
+      "explain": "**520.** The comma let one SUM jump over the target column. Selecting `B2:E4` would have added the targets too and given 1,030.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "missingFunction": "Use one `=SUM(` with both ranges inside, split by a comma.",
+        "wrongValue": "Only the two actual columns: `=SUM(C2:C4,E2:E4)`."
+      },
+      "clues": [
+        "Type `=SUM(C2:C4,` then the second range.",
+        "Mouse tip: after the first range and comma, just drag the second range."
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Spot the problem",
+      "prompt": "These costs add up to **650**, but the Total says **570**. The formula looks fine.\n\nWhat's going wrong?",
+      "grid": [
+        ["Item", "Cost"],
+        ["Paint", 450],
+        ["Brushes", 120],
+        ["Tape", "80 rs"],
+        ["Total", "=SUM(B2:B4)"]
+      ],
+      "activeCell": "B5",
+      "yellowCells": ["B4"],
+      "showFormulaBar": true,
+      "options": [
+        "SUM can only add two cells",
+        "`80 rs` is text, so SUM skips it",
+        "The range should start at `B1`"
+      ],
+      "answer": 1,
+      "explain": "Spot it the way you learned in Topic 1: `80 rs` sits on the **left**, so it's text. SUM silently skips text. It doesn't warn you, so a total can be wrong without anything looking broken.",
+      "wrongFeedback": [
+        "SUM can add thousands of cells. Look closely at how each cost is typed.",
+        null,
+        "`B1` is the header, which is text too. Adding it wouldn't help."
+      ],
+      "clues": ["Which number sits on the left side of its cell?"]
+    },
+    {
+      "id": "s9",
+      "type": "entry",
+      "topic": "Fix it",
+      "prompt": "Fix the data, not the formula.\n\nClick ==B4==, type just **80**, press [[Enter]], and watch the Total.",
+      "grid": [
+        ["Item", "Cost"],
+        ["Paint", 450],
+        ["Brushes", 120],
+        ["Tape", "80 rs"],
+        ["Total", "=SUM(B2:B4)"]
+      ],
+      "activeCell": "A4",
+      "yellowCells": ["B4"],
+      "highlightCells": ["B5"],
+      "expect": { "B4": 80, "B5": 650 },
+      "explain": "**650.** Once 80 was a real number, the total fixed itself. Units like “rs” belong in the header, as in “Cost (rs)”, never inside the cell.",
+      "wrongFeedback": {
+        "textNotNumber": "Still text. Type only the digits **80**: no “rs”, no spaces.",
+        "wrongValue": "`B4` should be **80**."
+      },
+      "clues": ["Only the digits 8 and 0."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Two classes collected money for a school trip all week.\n\nHow much did **both classes** collect altogether? Put the answer in `B7`.",
+      "grid": [
+        ["Day", "Class 7A", "Class 7B"],
+        ["Mon", 300, 250],
+        ["Tue", 450, 500],
+        ["Wed", 200, 350],
+        ["Thu", 500, 400],
+        ["Fri", 150, 300],
+        ["Both classes", null, null]
+      ],
+      "targetCell": "B7",
+      "activeCell": "A1",
+      "expectedValue": 3400,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(B2:C6)",
+      "explain": "**3,400.** One rectangle, `B2:C6`, covered both classes and all five days.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "missingFunction": "Let SUM do the adding.",
+        "wrongValue": "That's one class only. Make the range cover both columns, Mon to Fri."
+      },
+      "clues": ["Top-left of the money is `B2`; bottom-right is `C6`."]
+    }
+  ]
+}

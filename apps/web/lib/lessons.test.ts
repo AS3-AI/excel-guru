@@ -3,6 +3,7 @@ import {
   CYCLE_FROM,
   getLesson,
   getOrder,
+  getSyllabus,
   nextInOrder,
   nextLessonId,
   nextStepIndex,
@@ -96,5 +97,15 @@ describe("intro is completable", () => {
       i = next[i]!;
     }
     expect(correct).toBe(lesson.requiredCorrect);
+  });
+});
+
+describe("getSyllabus", () => {
+  it("lists every lesson in order.json exactly once, in the same order, and only lessons that exist", () => {
+    const ids = getSyllabus()
+      .flatMap((level) => level.topics)
+      .flatMap((topic) => (topic.lesson ? [topic.lesson] : []));
+    expect(ids).toEqual(getOrder());
+    for (const id of ids) expect(getLesson(id)).not.toBeNull();
   });
 });

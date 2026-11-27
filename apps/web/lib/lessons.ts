@@ -63,3 +63,15 @@ export function getLesson(id: string): Lesson | null {
 export function nextLessonId(id: string): string | null {
   return nextInOrder(getOrder(), id);
 }
+
+export type SyllabusTopic = { n: number; title: string; lesson: string | null; covers: string[] };
+export type SyllabusLevel = { title: string; topics: SyllabusTopic[] };
+
+/** The full course index (content/syllabus.json); topics with `lesson: null` aren't written yet. */
+export function getSyllabus(): SyllabusLevel[] {
+  return (
+    JSON.parse(readFileSync(join(contentDir(), "syllabus.json"), "utf8")) as {
+      levels: SyllabusLevel[];
+    }
+  ).levels;
+}

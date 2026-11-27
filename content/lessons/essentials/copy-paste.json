@@ -1,0 +1,218 @@
+{
+  "id": "copy-paste",
+  "module": "essentials",
+  "title": "Copy, Paste & Paste Special",
+  "goal": "Copy and paste from the keyboard, undo a mistake instantly, predict what happens when you copy a formula somewhere new, and use Paste Special to paste plain values or flip rows into columns.",
+  "difficulty": 1,
+  "requiredCorrect": 8,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Three keys you'll use daily",
+      "text": "[[Ctrl]] + [[C]] **copies**, [[Ctrl]] + [[V]] **pastes**, and [[Ctrl]] + [[Z]] **undoes** your last step, as many times as you need.\n\nCopying a number is simple. Copying a **formula** is where people get surprised, and where **Paste Special** saves the day.\n\nOn a Mac, use [[Cmd]] in place of [[Ctrl]].",
+      "grid": [
+        ["Item", "Price", "Qty", "Cost"],
+        ["Pens", 10, 12, "=B2*C2"],
+        ["Files", 30, 6, "=B3*C3"],
+        ["Tape", 15, 5, "=B4*C4"]
+      ],
+      "activeCell": "D2",
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Copy and paste",
+      "prompt": "`B2` has the August rent. September's is the same.\n\nCopy `B2`, move one cell right, and paste: [[Ctrl]] + [[C]], then [[→]], then [[Ctrl]] + [[V]].",
+      "keys": {
+        "win": ["Ctrl+C", "ArrowRight", "Ctrl+V"],
+        "mac": ["Cmd+C", "ArrowRight", "Cmd+V"]
+      },
+      "grid": [
+        ["Expense", "Aug", "Sep"],
+        ["Rent", 15000, null],
+        ["Power", 1800, null]
+      ],
+      "activeCell": "B2",
+      "postcondition": {
+        "grid": [
+          ["Expense", "Aug", "Sep"],
+          ["Rent", 15000, 15000],
+          ["Power", 1800, null]
+        ],
+        "selection": "C2"
+      },
+      "clues": ["Three presses in a row: copy, right arrow, paste."]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Oops: Ctrl + Z",
+      "prompt": "You just pasted over the whole Power row by mistake. Don't panic.\n\nPress [[Ctrl]] + [[Z]] to undo it.",
+      "keys": { "win": "Ctrl+Z", "mac": "Cmd+Z" },
+      "grid": [
+        ["Expense", "Aug", "Sep"],
+        ["Rent", 15000, 15000],
+        ["Rent", 15000, 15000]
+      ],
+      "activeCell": "A3",
+      "postcondition": {
+        "grid": [
+          ["Expense", "Aug", "Sep"],
+          ["Rent", 15000, 15000],
+          ["Power", 1800, null]
+        ],
+        "selection": "A3"
+      },
+      "clues": ["Z for “zap that”. Hold Ctrl, tap Z."]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Copying a formula",
+      "prompt": "`D2:D4` hold formulas like `=B2*C2`. You copy them and paste into `F2:F4`, two columns to the right.\n\nWhat shows up in `F2`?",
+      "grid": [
+        ["Item", "Price", "Qty", "Cost", null, "Report"],
+        ["Pens", 10, 12, "=B2*C2", null, null],
+        ["Files", 30, 6, "=B3*C3", null, null],
+        ["Tape", 15, 5, "=B4*C4", null, null]
+      ],
+      "activeCell": "D2",
+      "highlightCells": ["D2:D4"],
+      "yellowCells": ["F2:F4"],
+      "options": [
+        "`120`, the same cost",
+        "`0`, because the formula now points at empty cells",
+        "An error"
+      ],
+      "answer": 1,
+      "explain": "The formula slid two columns right, just as in AutoFill: `=B2*C2` became `=D2*E2`, and `E2` is empty, so 120 × nothing = **0**. Great when you want it, a nasty surprise when you just wanted the numbers.",
+      "wrongFeedback": [
+        "That's what you'd **want**. But formulas slide when you paste them somewhere new.",
+        null,
+        "No error: the formula still works, it just multiplies the wrong cells."
+      ],
+      "clues": [
+        "In Topic 3, copied formulas moved with their cell. Which cells would this one point at?"
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Paste values",
+      "prompt": "Paste the **answers**, not the formulas. You've copied `D2:D4` and you're on `F2`.\n\nOpen Paste Special with [[Ctrl]] + [[Alt]] + [[V]], press [[V]] for **Values**, then [[Enter]].\n\nNewer Excel also pastes values with [[Ctrl]] + [[Shift]] + [[V]].",
+      "keys": { "win": ["Ctrl+Alt+V", "V", "Enter"], "mac": null },
+      "grid": [
+        ["Item", "Price", "Qty", "Cost", null, "Report"],
+        ["Pens", 10, 12, "=B2*C2", null, null],
+        ["Files", 30, 6, "=B3*C3", null, null],
+        ["Tape", 15, 5, "=B4*C4", null, null]
+      ],
+      "activeCell": "F2",
+      "postcondition": {
+        "grid": [
+          ["Item", "Price", "Qty", "Cost", null, "Report"],
+          ["Pens", 10, 12, "=B2*C2", null, 120],
+          ["Files", 30, 6, "=B3*C3", null, 180],
+          ["Tape", 15, 5, "=B4*C4", null, 75]
+        ],
+        "selection": "F2:F4"
+      },
+      "clues": ["Ctrl + Alt + V together, then V alone, then Enter."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "What did you paste?",
+      "prompt": "Click `F2` and look at the formula bar. What does it show?",
+      "grid": [
+        ["Item", "Price", "Qty", "Cost", null, "Report"],
+        ["Pens", 10, 12, "=B2*C2", null, 120],
+        ["Files", 30, 6, "=B3*C3", null, 180],
+        ["Tape", 15, 5, "=B4*C4", null, 75]
+      ],
+      "activeCell": "F2",
+      "yellowCells": ["F2"],
+      "options": ["`=B2*C2`", "`120`", "`=D2`"],
+      "answer": 1,
+      "explain": "Just **120**, a plain number with no recipe. It won't change if the prices change, which is exactly what you want when you send a report or freeze this month's figures.",
+      "wrongFeedback": [
+        "That's the original recipe. You pasted only its result.",
+        null,
+        "Paste Values doesn't link back to the original cell."
+      ],
+      "clues": ["You chose **Values** in Paste Special."]
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Flip it: Transpose",
+      "prompt": "The months run **down** but your report needs them **across**. You've copied `A1:B4` and you're on `D1`.\n\nPaste Special again, [[Ctrl]] + [[Alt]] + [[V]], but this time press [[E]] for **Transpose**, then [[Enter]].",
+      "keys": { "win": ["Ctrl+Alt+V", "E", "Enter"], "mac": null },
+      "grid": [
+        ["Month", "Sales", null, null, null, null, null],
+        ["Jan", 120, null, null, null, null, null],
+        ["Feb", 150, null, null, null, null, null],
+        ["Mar", 130, null, null, null, null, null]
+      ],
+      "activeCell": "D1",
+      "postcondition": {
+        "grid": [
+          ["Month", "Sales", null, "Month", "Jan", "Feb", "Mar"],
+          ["Jan", 120, null, "Sales", 120, 150, 130],
+          ["Feb", 150, null, null, null, null, null],
+          ["Mar", 130, null, null, null, null, null]
+        ],
+        "selection": "D1:G2"
+      },
+      "clues": ["Ctrl + Alt + V, then E, then Enter."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Cut is different",
+      "prompt": "`B2` holds 500, and elsewhere `=B2*2` shows 1000. You **cut** `B2` ([[Ctrl]] + [[X]]) and paste it into `E2`.\n\nWhat does that other formula become?",
+      "options": ["`=B2*2`, which now shows 0", "`=E2*2`, which still shows 1000", "`#REF!`"],
+      "answer": 1,
+      "explain": "**Cut** means **move**: formulas that pointed at the old cell follow it to the new one. Copying leaves the original in place, so nothing needs to follow.",
+      "wrongFeedback": [
+        "That's what you might fear, but Excel tracks moved cells for you.",
+        null,
+        "`#REF!` means a cell was **deleted**. Moving it is fine."
+      ],
+      "clues": ["Cut and paste is a move, not a copy."]
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Challenge",
+      "prompt": "You need to email these totals, but the formulas would break in someone else's file. You've copied `D2:D4` and you're on `F2`.\n\nPaste them as plain numbers.",
+      "keys": { "win": ["Ctrl+Alt+V", "V", "Enter"], "mac": null },
+      "grid": [
+        ["Day", "Morning", "Evening", "Total", null, "To email"],
+        ["Mon", 40, 55, "=B2+C2", null, null],
+        ["Tue", 35, 70, "=B3+C3", null, null],
+        ["Wed", 50, 30, "=B4+C4", null, null]
+      ],
+      "activeCell": "F2",
+      "postcondition": {
+        "grid": [
+          ["Day", "Morning", "Evening", "Total", null, "To email"],
+          ["Mon", 40, 55, "=B2+C2", null, 95],
+          ["Tue", 35, 70, "=B3+C3", null, 105],
+          ["Wed", 50, 30, "=B4+C4", null, 80]
+        ],
+        "selection": "F2:F4"
+      },
+      "clues": ["Paste Special, then the letter for Values."]
+    }
+  ]
+}

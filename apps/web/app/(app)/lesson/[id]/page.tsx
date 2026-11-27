@@ -2,7 +2,7 @@ import { plPageClasses, plTopClasses } from "./player-styles";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { getLesson, getOrder, nextLessonId, stepSequence } from "@/lib/lessons";
+import { getLesson, getSyllabus, nextLessonId, stepSequence } from "@/lib/lessons";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decideAndRecordLessonOpen, decideLessonAccess, loadLessonAccess } from "@/lib/access";
@@ -90,24 +90,26 @@ export default async function LessonPage({ params }: Props) {
     access.completedLessonIds.length === 1 &&
     !access.completedLessonIds.includes(id);
   const completionById = new Map(completedRows.map((row) => [row.lesson_id, row]));
-  const lessons: LessonNavItem[] = getOrder().flatMap((lessonId) => {
-    const item = getLesson(lessonId);
-    const completion = completionById.get(lessonId);
-    return item
-      ? [
-          {
-            id: item.id,
-            title: item.title,
-            ...(completion
-              ? {
-                  lastCompletedAt: completion.completed_at,
-                  firstTryAccuracy: completion.first_try_accuracy ?? 0,
-                }
-              : {}),
-          },
-        ]
-      : [];
-  });
+  // The whole course index; topics without a written lesson show as "Coming soon".
+  const lessons: LessonNavItem[] = getSyllabus().flatMap((level) =>
+    level.topics.map((topic, i) => {
+      const item = topic.lesson ? getLesson(topic.lesson) : null;
+      const base = { n: topic.n, ...(i === 0 ? { level: level.title } : {}) };
+      if (!item) return { ...base, id: `soon-${topic.n}`, title: topic.title, comingSoon: true };
+      const completion = completionById.get(item.id);
+      return {
+        ...base,
+        id: item.id,
+        title: item.title,
+        ...(completion
+          ? {
+              lastCompletedAt: completion.completed_at,
+              firstTryAccuracy: completion.first_try_accuracy ?? 0,
+            }
+          : {}),
+      };
+    }),
+  );
 
   return (
     <div className={`pl-page ${plPageClasses}`}>

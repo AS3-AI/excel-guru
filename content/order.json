@@ -1,1 +1,12 @@
-["intro"]
+[
+  "intro",
+  "sum-total",
+  "autofill",
+  "select-fast",
+  "flash-fill",
+  "tables",
+  "sort-filter",
+  "number-format",
+  "copy-paste",
+  "cell-format"
+]

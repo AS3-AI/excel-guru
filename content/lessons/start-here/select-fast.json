@@ -1,0 +1,233 @@
+{
+  "id": "select-fast",
+  "module": "start-here",
+  "title": "Select & Move Fast: then total it",
+  "goal": "Jump to the end of any list with Ctrl + arrows, select a whole column of data in one press, grab rows, columns and tables without dragging, and get back to the top instantly.",
+  "difficulty": 1,
+  "requiredCorrect": 9,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Stop scrolling",
+      "text": "Real sheets aren't 8 rows. A month of orders can be **5,000 rows**, and dragging the mouse down that far takes forever and usually overshoots.\n\nOne key changes everything: hold [[Ctrl]] with an arrow key and Excel **jumps to the edge of your data** in one go.\n\nThe sheets here are small, but each press would land in exactly the same place on a huge one.",
+      "grid": [
+        ["Order", "Customer", "Amount", "City"],
+        [1001, "Asha", 450, "Pune"],
+        [1002, "Ben", 1200, "Delhi"],
+        [1003, "Chitra", 300, "Pune"],
+        [1004, "Dev", 850, "Mumbai"],
+        [1005, "Esha", 600, "Delhi"],
+        [1006, "Farhan", 950, "Pune"],
+        [1007, "Gita", 400, "Mumbai"]
+      ],
+      "activeCell": "C2"
+    },
+    {
+      "id": "s2",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Jump down: Ctrl + ↓",
+      "prompt": "You're on the first amount, in `C2`. Imagine 5,000 orders below.\n\nPress [[Ctrl]] + [[↓]] to jump straight to the last one.",
+      "keys": { "win": "Ctrl+ArrowDown", "mac": "Cmd+ArrowDown" },
+      "grid": [
+        ["Order", "Customer", "Amount", "City"],
+        [1001, "Asha", 450, "Pune"],
+        [1002, "Ben", 1200, "Delhi"],
+        [1003, "Chitra", 300, "Pune"],
+        [1004, "Dev", 850, "Mumbai"],
+        [1005, "Esha", 600, "Delhi"],
+        [1006, "Farhan", 950, "Pune"],
+        [1007, "Gita", 400, "Mumbai"]
+      ],
+      "activeCell": "C2",
+      "postcondition": { "selection": "C8" },
+      "clues": ["Hold Ctrl and tap the down arrow once."]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Jump across: Ctrl + →",
+      "prompt": "Wide sheets have the same problem sideways. You're on Dev's order number in `A5`.\n\nPress [[Ctrl]] + [[→]] to jump to the last column of his row.",
+      "keys": { "win": "Ctrl+ArrowRight", "mac": "Cmd+ArrowRight" },
+      "grid": [
+        ["Order", "Customer", "Amount", "City"],
+        [1001, "Asha", 450, "Pune"],
+        [1002, "Ben", 1200, "Delhi"],
+        [1003, "Chitra", 300, "Pune"],
+        [1004, "Dev", 850, "Mumbai"],
+        [1005, "Esha", 600, "Delhi"],
+        [1006, "Farhan", 950, "Pune"],
+        [1007, "Gita", 400, "Mumbai"]
+      ],
+      "activeCell": "A5",
+      "postcondition": { "selection": "D5" },
+      "clues": ["Same as before, with the right arrow."]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Watch for gaps",
+      "prompt": "Someone left `C5` empty. You're in `C2` and press [[Ctrl]] + [[↓]].\n\nWhere do you land?",
+      "grid": [
+        ["Order", "Customer", "Amount", "City"],
+        [1001, "Asha", 450, "Pune"],
+        [1002, "Ben", 1200, "Delhi"],
+        [1003, "Chitra", 300, "Pune"],
+        [1004, "Dev", null, "Mumbai"],
+        [1005, "Esha", 600, "Delhi"],
+        [1006, "Farhan", 950, "Pune"],
+        [1007, "Gita", 400, "Mumbai"]
+      ],
+      "activeCell": "C2",
+      "yellowCells": ["C5"],
+      "options": [
+        "`C4`, the last cell before the gap",
+        "`C8`, the bottom of the list",
+        "`C5`, the empty cell"
+      ],
+      "answer": 0,
+      "explain": "[[Ctrl]] + arrow stops at the **edge of each block** of filled cells, so a blank stops it early. Press it again to jump over the gap. This is also a fast way to find missing data.",
+      "wrongFeedback": [
+        null,
+        "It would, without the gap. An empty cell counts as the edge of the data.",
+        "Ctrl + arrow lands on filled cells at the edge of a block, not on the blank itself."
+      ],
+      "clues": ["Ctrl + arrow means “go to the edge of the data I'm in”."]
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Select to the end: Ctrl + Shift + ↓",
+      "prompt": "Add [[Shift]] and Excel **selects** everything it passes instead of just moving.\n\nFrom `C2`, press [[Ctrl]] + [[Shift]] + [[↓]] to select every amount.",
+      "keys": { "win": "Ctrl+Shift+ArrowDown", "mac": "Shift+Cmd+ArrowDown" },
+      "grid": [
+        ["Order", "Customer", "Amount", "City"],
+        [1001, "Asha", 450, "Pune"],
+        [1002, "Ben", 1200, "Delhi"],
+        [1003, "Chitra", 300, "Pune"],
+        [1004, "Dev", 850, "Mumbai"],
+        [1005, "Esha", 600, "Delhi"],
+        [1006, "Farhan", 950, "Pune"],
+        [1007, "Gita", 400, "Mumbai"]
+      ],
+      "activeCell": "C2",
+      "postcondition": { "selection": "C2:C8" },
+      "clues": ["Hold Ctrl and Shift together, then tap the down arrow."]
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "The whole table: Ctrl + A",
+      "prompt": "Need everything, say to copy the whole list into an email?\n\nClick anywhere inside the data (you're on `B4`) and press [[Ctrl]] + [[A]].",
+      "keys": { "win": "Ctrl+A", "mac": "Cmd+A" },
+      "grid": [
+        ["Order", "Customer", "Amount", "City"],
+        [1001, "Asha", 450, "Pune"],
+        [1002, "Ben", 1200, "Delhi"],
+        [1003, "Chitra", 300, "Pune"],
+        [1004, "Dev", 850, "Mumbai"],
+        [1005, "Esha", 600, "Delhi"],
+        [1006, "Farhan", 950, "Pune"],
+        [1007, "Gita", 400, "Mumbai"]
+      ],
+      "activeCell": "B4",
+      "postcondition": { "selection": "A1:D8" },
+      "clues": ["A is for all."]
+    },
+    {
+      "id": "s7",
+      "type": "select",
+      "topic": "A whole row: Shift + Space",
+      "prompt": "Rows and columns have shortcuts too, and these work right here in the sheet.\n\nClick any cell in Dev's row (row 5), press [[Shift]] + [[Space]] to select the whole row, then press [[Enter]].",
+      "grid": [
+        ["Order", "Customer", "Amount", "City"],
+        [1001, "Asha", 450, "Pune"],
+        [1002, "Ben", 1200, "Delhi"],
+        [1003, "Chitra", 300, "Pune"],
+        [1004, "Dev", 850, "Mumbai"],
+        [1005, "Esha", 600, "Delhi"],
+        [1006, "Farhan", 950, "Pune"],
+        [1007, "Gita", 400, "Mumbai"]
+      ],
+      "yellowCells": ["5:5"],
+      "target": "5:5",
+      "wrongFeedback": "Click a cell in **row 5** first (Dev), then hold Shift and tap Space.",
+      "clues": ["Space is the long bar on your keyboard. Clicking the row number 5 works too."]
+    },
+    {
+      "id": "s8",
+      "type": "select",
+      "topic": "A whole column: Ctrl + Space",
+      "prompt": "Now the column. Click any cell under **City**, press [[Ctrl]] + [[Space]], then [[Enter]].\n\nOn a Mac, [[Ctrl]] + [[Space]] may switch your keyboard language. Click the letter **D** instead.",
+      "grid": [
+        ["Order", "Customer", "Amount", "City"],
+        [1001, "Asha", 450, "Pune"],
+        [1002, "Ben", 1200, "Delhi"],
+        [1003, "Chitra", 300, "Pune"],
+        [1004, "Dev", 850, "Mumbai"],
+        [1005, "Esha", 600, "Delhi"],
+        [1006, "Farhan", 950, "Pune"],
+        [1007, "Gita", 400, "Mumbai"]
+      ],
+      "yellowCells": ["D:D"],
+      "target": "D:D",
+      "wrongFeedback": "Click a City cell (column **D**) first, then hold Ctrl and tap Space.",
+      "clues": ["Shift + Space is the row; Ctrl + Space is the column."]
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Home base: Ctrl + Home",
+      "prompt": "Lost somewhere deep in a big sheet? You're down at `D8`.\n\nPress [[Ctrl]] + [[Home]] to fly back to `A1`.\n\nNo Home key on your laptop? Try [[Ctrl]] + [[Fn]] + [[←]].",
+      "keys": { "win": "Ctrl+Home", "mac": "Ctrl+Home" },
+      "grid": [
+        ["Order", "Customer", "Amount", "City"],
+        [1001, "Asha", 450, "Pune"],
+        [1002, "Ben", 1200, "Delhi"],
+        [1003, "Chitra", 300, "Pune"],
+        [1004, "Dev", 850, "Mumbai"],
+        [1005, "Esha", 600, "Delhi"],
+        [1006, "Farhan", 950, "Pune"],
+        [1007, "Gita", 400, "Mumbai"]
+      ],
+      "activeCell": "D8",
+      "postcondition": { "selection": "A1" },
+      "clues": ["Home is usually near the top-right of the keyboard, by Page Up."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Challenge: then total it",
+      "prompt": "Put it together. A week of deliveries is below.\n\nWhat's the **total distance** driven? Put it in `B8`. Any method you've learned works.",
+      "grid": [
+        ["Driver", "Km"],
+        ["Kiran", 42],
+        ["Leo", 57],
+        ["Meena", 35],
+        ["Nikhil", 64],
+        ["Omar", 48],
+        ["Pooja", 51],
+        ["Total", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A1",
+      "expectedValue": 297,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(B2:B7)",
+      "explain": "**297 km.** On a real sheet: [[Ctrl]] + [[↓]] to reach the bottom, one more [[↓]] to the empty cell, then [[Alt]] + [[=]] and [[Enter]]. Four keys, any length of list.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "missingFunction": "Let SUM add them: [[Alt]] + [[=]] in `B8` writes it for you.",
+        "wrongValue": "Add the six distances, `B2` to `B7`."
+      },
+      "clues": ["Click `B8`, then [[Alt]] + [[=]] and [[Enter]]."]
+    }
+  ]
+}

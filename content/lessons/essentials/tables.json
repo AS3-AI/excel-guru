@@ -1,0 +1,236 @@
+{
+  "id": "tables",
+  "module": "essentials",
+  "title": "Tables: make your data smart",
+  "goal": "Get a list ready, turn it into an Excel Table in one key, and use what Tables give you for free: formulas that fill themselves, ranges that grow with new rows, and names you can read.",
+  "difficulty": 1,
+  "requiredCorrect": 9,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "A list vs a Table",
+      "text": "So far your data has been a plain block of cells. An Excel **Table** is the same data, upgraded:\n\n• striped rows and a filter button on every header\n• formulas that copy themselves down the whole column\n• totals and charts that **grow** when you add a row\n\nIt takes one key, and nearly every sheet you build from now on should start with it.",
+      "grid": [
+        ["Order", "Item", "Qty", "Price"],
+        [1001, "Tea", 3, 40],
+        [1002, "Coffee", 2, 60],
+        [1003, "Sandwich", 1, 120],
+        [1004, "Juice", 4, 50],
+        [1005, "Muffin", 2, 70]
+      ],
+      "activeCell": "B3"
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Clean data first",
+      "prompt": "A Table needs one **header row** and **no completely blank rows**. A blank row makes Excel think the list ends there.\n\nClick the row number of the row that would break this table, then press [[Enter]].",
+      "grid": [
+        ["Order", "Item", "Qty", "Price"],
+        [1001, "Tea", 3, 40],
+        [1002, "Coffee", 2, 60],
+        [null, null, null, null],
+        [1003, "Sandwich", 1, 120],
+        [1004, "Juice", 4, 50]
+      ],
+      "target": "4:4",
+      "wrongFeedback": "Look for a row with nothing in it at all, then click its **number** on the left edge.",
+      "clues": ["One row has no order, no item, nothing."]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "What to select",
+      "prompt": "The blank row is gone. Before you create the Table, what do you need to select?",
+      "grid": [
+        ["Order", "Item", "Qty", "Price"],
+        [1001, "Tea", 3, 40],
+        [1002, "Coffee", 2, 60],
+        [1003, "Sandwich", 1, 120],
+        [1004, "Juice", 4, 50],
+        [1005, "Muffin", 2, 70]
+      ],
+      "options": [
+        "The whole list, carefully, header to last row",
+        "Any one cell inside the data",
+        "Only the header row"
+      ],
+      "answer": 1,
+      "explain": "Click **anywhere inside** the list. Excel finds the edges by itself, the same way [[Ctrl]] + [[A]] did in Topic 4.",
+      "wrongFeedback": [
+        "That works, but it's extra effort. Excel can find the edges for you.",
+        null,
+        "Excel needs to know you're in the data. One cell anywhere inside is enough."
+      ],
+      "clues": ["Think about what Ctrl + A did in the last topic."]
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Create the Table",
+      "prompt": "You're on `B3`, inside the list.\n\nIn Excel the usual key is [[Ctrl]] + [[T]], but your browser keeps that one for new tabs. [[Ctrl]] + [[L]] does exactly the same in Excel, so press [[Ctrl]] + [[L]].\n\nOn a Mac, use [[Ctrl]] + [[T]] in Excel itself.",
+      "keys": { "win": "Ctrl+L", "mac": null },
+      "grid": [
+        ["Order", "Item", "Qty", "Price"],
+        [1001, "Tea", 3, 40],
+        [1002, "Coffee", 2, 60],
+        [1003, "Sandwich", 1, 120],
+        [1004, "Juice", 4, 50],
+        [1005, "Muffin", 2, 70]
+      ],
+      "activeCell": "B3",
+      "postcondition": {
+        "selection": "A1:D6",
+        "format": { "A1:D1": ["bold", "border"] }
+      },
+      "clues": ["Hold Ctrl and tap L."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "My table has headers",
+      "prompt": "Excel opens a small box before it creates the Table, “Where is the data?” `$A$1:$D$6`, with a tick next to **My table has headers**.\n\nWhat does that tick mean?",
+      "options": [
+        "Row 1 holds the column names, not data",
+        "Excel will invent new header names",
+        "The first column holds the labels"
+      ],
+      "answer": 0,
+      "explain": "Leave it ticked whenever row 1 has names like **Order** and **Item**. Untick it only if your list has no header row; Excel then adds “Column1, Column2…”.",
+      "wrongFeedback": [
+        null,
+        "Excel only invents names when the tick is **off**.",
+        "Headers are the top row, not the left column."
+      ],
+      "clues": ["Where are the column names in this list?"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Add a calculated column",
+      "prompt": "Add a **Total** column to the Table. In ==E2==, multiply quantity by price: type `=C2*D2` and press [[Enter]].",
+      "grid": [
+        ["Order", "Item", "Qty", "Price", "Total"],
+        [1001, "Tea", 3, 40, null],
+        [1002, "Coffee", 2, 60, null],
+        [1003, "Sandwich", 1, 120, null],
+        [1004, "Juice", 4, 50, null],
+        [1005, "Muffin", 2, 70, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "A2",
+      "highlightCells": ["C2:D2"],
+      "yellowCells": ["E2"],
+      "expectedValue": 120,
+      "mustReference": ["C2", "D2"],
+      "disallowFunctions": true,
+      "solution": "=C2*D2",
+      "explain": "**120**: 3 teas at 40 each.",
+      "mobileButtons": ["=", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingReference": "Multiply `C2` (Qty) by `D2` (Price).",
+        "wrongValue": "Type `=C2*D2`."
+      },
+      "clues": ["Qty is in column C, Price in column D."]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "It fills itself",
+      "prompt": "In a real Table, the moment you press [[Enter]] in `E2`, something happens to `E3:E6`.\n\nWhat?",
+      "grid": [
+        ["Order", "Item", "Qty", "Price", "Total"],
+        [1001, "Tea", 3, 40, "=C2*D2"],
+        [1002, "Coffee", 2, 60, null],
+        [1003, "Sandwich", 1, 120, null],
+        [1004, "Juice", 4, 50, null],
+        [1005, "Muffin", 2, 70, null]
+      ],
+      "activeCell": "E2",
+      "yellowCells": ["E3:E6"],
+      "options": [
+        "Nothing; you still need Ctrl + D",
+        "The formula fills the whole column by itself",
+        "They copy the number 120"
+      ],
+      "answer": 1,
+      "explain": "That's a **calculated column**. Tables fill a new formula down automatically, for every row, including rows you add later.",
+      "wrongFeedback": [
+        "In a plain range, yes. A Table saves you even that step.",
+        null,
+        "It copies the **formula**, so each row gets its own total."
+      ],
+      "clues": ["Tables are meant to save you work."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "It grows",
+      "prompt": "The Table ends at row 6. A new order arrives and you type it into row 7, right under the last row.\n\nWhat happens?",
+      "options": [
+        "Row 7 joins the Table by itself",
+        "Nothing; you have to create the Table again",
+        "Excel won't let you type below a Table"
+      ],
+      "answer": 0,
+      "explain": "Type directly under a Table and it **stretches** to include the new row, with stripes, the Total formula and all. Every formula that uses the Table counts the new order too. No range to fix, ever.",
+      "wrongFeedback": [
+        null,
+        "That's the old plain-range problem Tables solve.",
+        "You can. That's exactly how you add rows."
+      ],
+      "clues": ["Remember the third bullet on the first screen."]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Names you can read",
+      "prompt": "Tables get names, like **Orders**, and so do their columns. That lets formulas read almost like English.\n\nWhat does `=SUM(Orders[Total])` add up?",
+      "options": [
+        "Only the first cell in Total",
+        "The whole Total column of the Orders Table, however long it grows",
+        "Every number on the sheet"
+      ],
+      "answer": 1,
+      "explain": "`Orders[Total]` means “the Total column of Orders”. A year from now, it's far easier to understand than `=SUM(E2:E6)`, and it can never miss a new row.",
+      "wrongFeedback": [
+        "It names the whole column, not a single cell.",
+        null,
+        "Only one column of one Table, the one named in the brackets."
+      ],
+      "clues": ["Read it out loud: SUM of Orders, column Total."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "The café wants the day's takings. Put the total of the **Total** column in `E7`.",
+      "grid": [
+        ["Order", "Item", "Qty", "Price", "Total"],
+        [1001, "Tea", 3, 40, "=C2*D2"],
+        [1002, "Coffee", 2, 60, "=C3*D3"],
+        [1003, "Sandwich", 1, 120, "=C4*D4"],
+        [1004, "Juice", 4, 50, "=C5*D5"],
+        [1005, "Muffin", 2, 70, "=C6*D6"],
+        ["Day total", null, null, null, null]
+      ],
+      "targetCell": "E7",
+      "activeCell": "A1",
+      "expectedValue": 700,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(E2:E6)",
+      "explain": "**700.** In real Excel, ticking **Total Row** on the Table Design tab adds this row for you, and it keeps working as orders are added.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "missingFunction": "Use SUM; [[Alt]] + [[=]] in `E7` works.",
+        "wrongValue": "Add only the Total column, `E2` to `E6`."
+      },
+      "clues": ["Click `E7`, then [[Alt]] + [[=]]."]
+    }
+  ]
+}

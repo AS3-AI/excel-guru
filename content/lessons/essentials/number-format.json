@@ -1,0 +1,223 @@
+{
+  "id": "number-format",
+  "module": "essentials",
+  "title": "Number Formatting: %, ₹ and dates that look right",
+  "goal": "Show numbers as percentages, money with separators and real dates using one-key formats, and understand the rule behind every format: it changes how a number looks, never what it is.",
+  "difficulty": 1,
+  "requiredCorrect": 9,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Looks vs value",
+      "text": "`0.25`, `25%` and `0.250` are the **same number** in three different outfits.\n\nA **number format** is the outfit. It changes what you **see** in the cell, but the value Excel calculates with stays the same. The formula bar always shows what's really there.\n\nKeep that one rule in mind and formatting can never trick you.",
+      "grid": [
+        ["Product", "Growth", "Price"],
+        ["Tea", 0.12, 1250],
+        ["Coffee", 0.3, 980.5],
+        ["Snacks", 0.05, 15000]
+      ],
+      "activeCell": "B2",
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Percent: Ctrl + Shift + 5",
+      "prompt": "Growth figures like `0.12` are hard to read. `B2:B4` are selected.\n\nPress [[Ctrl]] + [[Shift]] + [[5]] (think **%**, which sits on the 5 key).",
+      "keys": { "win": "Ctrl+Shift+5", "mac": "Ctrl+Shift+5" },
+      "grid": [
+        ["Product", "Growth"],
+        ["Tea", 0.12],
+        ["Coffee", 0.3],
+        ["Snacks", 0.05]
+      ],
+      "activeCell": "B2:B4",
+      "postcondition": {
+        "grid": [
+          ["Product", "Growth"],
+          ["Tea", "12%"],
+          ["Coffee", "30%"],
+          ["Snacks", "5%"]
+        ],
+        "selection": "B2:B4"
+      },
+      "clues": ["Hold Ctrl and Shift, tap 5 on the top row of keys."]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "What's really stored?",
+      "prompt": "`B2` now shows **12%**. If you type `=B2*1000` in another cell, what do you get?",
+      "options": ["`12000`", "`120`", "`12%`"],
+      "answer": 1,
+      "explain": "The cell still holds **0.12**; the % is only the outfit. 0.12 × 1000 = 120. This is why you type `0.12` or `12%` into Excel, never plain `12` for twelve percent.",
+      "wrongFeedback": [
+        "That would be true if `B2` held 12. What did the % format actually do?",
+        null,
+        "A format never changes the value, and multiplying gives a plain number."
+      ],
+      "clues": ["What did `B2` hold before you pressed the shortcut?"]
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Separators: Ctrl + Shift + 1",
+      "prompt": "Quick: is `1250000` twelve lakh fifty thousand or one crore twenty-five lakh? Separators make big numbers readable.\n\nWith `B2:B4` selected, press [[Ctrl]] + [[Shift]] + [[1]].",
+      "keys": { "win": "Ctrl+Shift+1", "mac": "Ctrl+Shift+1" },
+      "grid": [
+        ["Branch", "Revenue"],
+        ["Pune", 1250000],
+        ["Delhi", 980500],
+        ["Kochi", 45000]
+      ],
+      "activeCell": "B2:B4",
+      "postcondition": {
+        "grid": [
+          ["Branch", "Revenue"],
+          ["Pune", "12,50,000.00"],
+          ["Delhi", "9,80,500.00"],
+          ["Kochi", "45,000.00"]
+        ],
+        "selection": "B2:B4"
+      },
+      "clues": ["Ctrl + Shift, then 1 (the ! key)."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Lakhs or millions?",
+      "prompt": "On your computer the commas came out as **12,50,000**. Your colleague in London formats the same file and sees **1,250,000.00**.\n\nWhy?",
+      "options": [
+        "One of you typed the number wrong",
+        "Excel uses each computer's region setting for separators",
+        "The file is corrupted"
+      ],
+      "answer": 1,
+      "explain": "The number is identical. **Lakh/crore** or **thousand/million** grouping comes from your computer's region setting, and so does the currency symbol in the next step.",
+      "wrongFeedback": [
+        "It's the same file and the same value.",
+        null,
+        "Nothing is broken. Same number, different display."
+      ],
+      "clues": ["Formats are about display, and display depends on where you are."]
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Currency: Ctrl + Shift + 4",
+      "prompt": "Prices should look like money. With `B2:B4` selected, press [[Ctrl]] + [[Shift]] + [[4]] (the **$** key).\n\nYou'll get your own currency, ₹ on an Indian setup.",
+      "keys": { "win": "Ctrl+Shift+4", "mac": "Ctrl+Shift+4" },
+      "grid": [
+        ["Item", "Price"],
+        ["Kettle", 1250],
+        ["Toaster", 980.5],
+        ["Mixer", 3499]
+      ],
+      "activeCell": "B2:B4",
+      "postcondition": {
+        "grid": [
+          ["Item", "Price"],
+          ["Kettle", "₹1,250.00"],
+          ["Toaster", "₹980.50"],
+          ["Mixer", "₹3,499.00"]
+        ],
+        "selection": "B2:B4"
+      },
+      "clues": ["Ctrl + Shift, then 4."]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "Every other format",
+      "prompt": "The one-key formats cover the basics. For anything else, like one decimal place in a percentage, open **Format Cells** with [[Ctrl]] + [[1]] in Excel.\n\nYou want `0.125` to show as **12.5%**. What do you do?",
+      "options": [
+        "Format Cells → Percentage → set Decimal places to 1",
+        "Type 12.5% over the top of it",
+        "Change the value to 12.5"
+      ],
+      "answer": 0,
+      "explain": "**Ctrl + 1** opens every format Excel has: decimals, dates, phone-style layouts and more. The value stays `0.125`; only the look changes.",
+      "wrongFeedback": [
+        null,
+        "Retyping works once, but a format does it for the whole column and keeps working.",
+        "Then it's twelve and a half, not twelve and a half percent. The value would be wrong."
+      ],
+      "clues": ["Change the outfit, not the number."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "When a date turns into a number",
+      "prompt": "You type **15-Aug-2026**. Later someone clears the formats and the cell shows **46249**.\n\nWhat happened?",
+      "options": [
+        "The date got corrupted",
+        "Dates are stored as day-counts; the date format was removed",
+        "Excel converted it to a price"
+      ],
+      "answer": 1,
+      "explain": "Excel stores every date as the **number of days since 1 January 1900**, and 15 August 2026 is day 46,249. That's what lets you subtract dates to count days. Put a date format back and it reappears.",
+      "wrongFeedback": [
+        "Nothing is lost; that number **is** the date.",
+        null,
+        "It's still a date underneath, just without its outfit."
+      ],
+      "clues": ["Remember the rule: formats change looks, not values."]
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Dates: Ctrl + Shift + 3",
+      "prompt": "Bring the dates back. `B2:B4` are selected; press [[Ctrl]] + [[Shift]] + [[3]].",
+      "keys": { "win": "Ctrl+Shift+3", "mac": "Ctrl+Shift+3" },
+      "grid": [
+        ["Event", "Date"],
+        ["Launch", 46249],
+        ["Review", 46266],
+        ["Party", 46298]
+      ],
+      "activeCell": "B2:B4",
+      "postcondition": {
+        "grid": [
+          ["Event", "Date"],
+          ["Launch", "15-Aug-26"],
+          ["Review", "1-Sep-26"],
+          ["Party", "2-Oct-26"]
+        ],
+        "selection": "B2:B4"
+      },
+      "clues": ["Ctrl + Shift, then 3."]
+    },
+    {
+      "id": "s10",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Challenge",
+      "prompt": "The discount column reads `0.1`, `0.25`, `0.15`, and customers won't understand that. `C2:C4` are selected.\n\nMake them read as percentages.",
+      "keys": { "win": "Ctrl+Shift+5", "mac": "Ctrl+Shift+5" },
+      "grid": [
+        ["Item", "Price", "Discount"],
+        ["Shoes", 2400, 0.1],
+        ["Jacket", 3800, 0.25],
+        ["Bag", 1500, 0.15]
+      ],
+      "activeCell": "C2:C4",
+      "postcondition": {
+        "grid": [
+          ["Item", "Price", "Discount"],
+          ["Shoes", 2400, "10%"],
+          ["Jacket", 3800, "25%"],
+          ["Bag", 1500, "15%"]
+        ],
+        "selection": "C2:C4"
+      },
+      "clues": ["Which key has the % sign on it?"]
+    }
+  ]
+}

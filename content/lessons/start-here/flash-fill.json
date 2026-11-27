@@ -1,0 +1,267 @@
+{
+  "id": "flash-fill",
+  "module": "start-here",
+  "title": "Flash Fill: clean a contact list in one key",
+  "goal": "Type one example and let Ctrl + E split names, build email addresses and clean up phone numbers for the whole list, and know when to give it a second example.",
+  "difficulty": 1,
+  "requiredCorrect": 9,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Show it once",
+      "text": "Messy lists are the most boring part of office work: names jammed together, phone numbers typed five different ways.\n\n**Flash Fill** fixes them without a single formula. You type **one** example of what you want, press [[Ctrl]] + [[E]], and Excel works out the pattern and does every other row.",
+      "grid": [
+        ["Full name", "First name"],
+        ["Priya Sharma", null],
+        ["Arjun Mehta", null],
+        ["Sara Khan", null],
+        ["Rohan Das", null],
+        ["Meera Iyer", null],
+        ["Vikram Rao", null]
+      ],
+      "activeCell": "B2",
+      "yellowCells": ["B2:B7"]
+    },
+    {
+      "id": "s2",
+      "type": "entry",
+      "topic": "Give one example",
+      "prompt": "Show Excel what you want.\n\nClick ==B2==, type **Priya**, then press [[Enter]].",
+      "grid": [
+        ["Full name", "First name"],
+        ["Priya Sharma", null],
+        ["Arjun Mehta", null],
+        ["Sara Khan", null],
+        ["Rohan Das", null],
+        ["Meera Iyer", null],
+        ["Vikram Rao", null]
+      ],
+      "activeCell": "A1",
+      "yellowCells": ["B2"],
+      "expect": { "B2": "Priya" },
+      "explain": "That's your example. Excel can now compare **Priya Sharma** with **Priya** and see that you kept the first word.",
+      "wrongFeedback": {
+        "wrongValue": "`B2` should say **Priya**, the first word of `A2`."
+      },
+      "clues": ["Just the first name from `A2`."]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Flash Fill: Ctrl + E",
+      "prompt": "You're on `B3`, right under your example.\n\nPress [[Ctrl]] + [[E]] and watch the column.\n\nOn a Mac, Flash Fill is under **Data → Flash Fill**.",
+      "keys": { "win": "Ctrl+E", "mac": null },
+      "grid": [
+        ["Full name", "First name"],
+        ["Priya Sharma", "Priya"],
+        ["Arjun Mehta", null],
+        ["Sara Khan", null],
+        ["Rohan Das", null],
+        ["Meera Iyer", null],
+        ["Vikram Rao", null]
+      ],
+      "activeCell": "B3",
+      "postcondition": {
+        "grid": [
+          ["Full name", "First name"],
+          ["Priya Sharma", "Priya"],
+          ["Arjun Mehta", "Arjun"],
+          ["Sara Khan", "Sara"],
+          ["Rohan Das", "Rohan"],
+          ["Meera Iyer", "Meera"],
+          ["Vikram Rao", "Vikram"]
+        ],
+        "selection": "B2:B7"
+      },
+      "clues": ["E for Excel's example trick. Hold Ctrl, tap E."]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Values, not formulas",
+      "prompt": "Priya changes her name, and you edit `A2` to **Pooja Sharma**.\n\nWhat happens to `B2`?",
+      "grid": [
+        ["Full name", "First name"],
+        ["Pooja Sharma", "Priya"],
+        ["Arjun Mehta", "Arjun"],
+        ["Sara Khan", "Sara"]
+      ],
+      "activeCell": "A2",
+      "yellowCells": ["B2"],
+      "options": ["It changes to Pooja by itself", "It stays Priya", "It shows an error"],
+      "answer": 1,
+      "explain": "Flash Fill types **plain values**, not formulas, so it doesn't update. That makes it perfect for one-off clean-ups. If the names change, run [[Ctrl]] + [[E]] again.",
+      "wrongFeedback": [
+        "That's what a formula would do. Flash Fill typed the text once, like you would.",
+        null,
+        "Nothing breaks. There's simply no link between the two cells."
+      ],
+      "clues": ["Remember Topic 1: what kind of cell updates itself?"]
+    },
+    {
+      "id": "s5",
+      "type": "entry",
+      "topic": "Build an email",
+      "prompt": "Flash Fill can also **combine and reshape**. Your company emails look like **firstname.lastname@shop.in**, all lowercase.\n\nIn ==B2==, type **priya.sharma@shop.in** and press [[Enter]].",
+      "grid": [
+        ["Full name", "Email"],
+        ["Priya Sharma", null],
+        ["Arjun Mehta", null],
+        ["Sara Khan", null],
+        ["Rohan Das", null],
+        ["Meera Iyer", null],
+        ["Vikram Rao", null]
+      ],
+      "activeCell": "A1",
+      "yellowCells": ["B2"],
+      "expect": { "B2": "priya.sharma@shop.in" },
+      "explain": "A harder pattern: lowercase, a dot in place of the space, and a domain on the end. One example is still enough.",
+      "wrongFeedback": {
+        "wrongValue": "Type it exactly: **priya.sharma@shop.in**, with a dot between the names."
+      },
+      "clues": ["first name, dot, last name, then @shop.in."]
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Fill the emails",
+      "prompt": "Now let Excel do the other five. You're on `B3`.",
+      "keys": { "win": "Ctrl+E", "mac": null },
+      "grid": [
+        ["Full name", "Email"],
+        ["Priya Sharma", "priya.sharma@shop.in"],
+        ["Arjun Mehta", null],
+        ["Sara Khan", null],
+        ["Rohan Das", null],
+        ["Meera Iyer", null],
+        ["Vikram Rao", null]
+      ],
+      "activeCell": "B3",
+      "postcondition": {
+        "grid": [
+          ["Full name", "Email"],
+          ["Priya Sharma", "priya.sharma@shop.in"],
+          ["Arjun Mehta", "arjun.mehta@shop.in"],
+          ["Sara Khan", "sara.khan@shop.in"],
+          ["Rohan Das", "rohan.das@shop.in"],
+          ["Meera Iyer", "meera.iyer@shop.in"],
+          ["Vikram Rao", "vikram.rao@shop.in"]
+        ],
+        "selection": "B2:B7"
+      },
+      "clues": ["Same key as before: Ctrl + E."]
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Clean phone numbers",
+      "prompt": "These numbers were copied from a form, full of +91s and spaces. We've typed the first clean one in `B2` for you.\n\nClean the rest.",
+      "keys": { "win": "Ctrl+E", "mac": null },
+      "grid": [
+        ["Phone (messy)", "Phone"],
+        ["+91 98765 43210", "9876543210"],
+        ["+91 91234 56780", null],
+        ["+91 99887 76655", null],
+        ["+91 90000 12345", null],
+        ["+91 93456 78901", null]
+      ],
+      "activeCell": "B3",
+      "postcondition": {
+        "grid": [
+          ["Phone (messy)", "Phone"],
+          ["+91 98765 43210", "9876543210"],
+          ["+91 91234 56780", "9123456780"],
+          ["+91 99887 76655", "9988776655"],
+          ["+91 90000 12345", "9000012345"],
+          ["+91 93456 78901", "9345678901"]
+        ],
+        "selection": "B2:B6"
+      },
+      "clues": ["The example is already there. One shortcut does the rest."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "When it guesses wrong",
+      "prompt": "You wanted **last** names. For **Anil Kumar Verma**, Flash Fill gave **Kumar** instead of **Verma**: your one example didn't show what to do with a middle name.\n\nWhat's the best fix?",
+      "grid": [
+        ["Full name", "Last name"],
+        ["Priya Sharma", "Sharma"],
+        ["Anil Kumar Verma", "Kumar"],
+        ["Sara Khan", "Khan"]
+      ],
+      "activeCell": "B3",
+      "yellowCells": ["B3"],
+      "options": [
+        "Give up and type them all by hand",
+        "Type Verma in `B3` and press Ctrl + E again",
+        "Delete Anil from the list"
+      ],
+      "answer": 1,
+      "explain": "A second example clears up the confusion. Excel now sees “always the **last** word” and re-fills the column. Always glance down the results; Flash Fill is a fast guesser, not a mind reader.",
+      "wrongFeedback": [
+        "No need. One more example usually teaches Excel the pattern.",
+        null,
+        "Never change your data to suit a tool. Teach the tool instead."
+      ],
+      "clues": ["How would you explain it to a person? Show them one more example."]
+    },
+    {
+      "id": "s9",
+      "type": "entry",
+      "topic": "Challenge: name badges",
+      "prompt": "Workshop badges need a short name: the first name, a space, then the first letter of the surname and a dot, like **Priya S.**\n\nType the first badge in ==C2==.",
+      "grid": [
+        ["First", "Last", "Badge"],
+        ["Priya", "Sharma", null],
+        ["Arjun", "Mehta", null],
+        ["Sara", "Khan", null],
+        ["Rohan", "Das", null],
+        ["Meera", "Iyer", null]
+      ],
+      "activeCell": "A1",
+      "yellowCells": ["C2"],
+      "expect": { "C2": "Priya S." },
+      "explain": "Your example pulls from **two columns** at once. Flash Fill can handle that too.",
+      "wrongFeedback": {
+        "wrongValue": "Type **Priya S.**: the first name, a space, the letter S, then a dot."
+      },
+      "clues": ["Priya, space, S, full stop."]
+    },
+    {
+      "id": "s10",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Challenge: fill the badges",
+      "prompt": "Finish the badges for everyone else. You're on `C3`.",
+      "keys": { "win": "Ctrl+E", "mac": null },
+      "grid": [
+        ["First", "Last", "Badge"],
+        ["Priya", "Sharma", "Priya S."],
+        ["Arjun", "Mehta", null],
+        ["Sara", "Khan", null],
+        ["Rohan", "Das", null],
+        ["Meera", "Iyer", null]
+      ],
+      "activeCell": "C3",
+      "postcondition": {
+        "grid": [
+          ["First", "Last", "Badge"],
+          ["Priya", "Sharma", "Priya S."],
+          ["Arjun", "Mehta", "Arjun M."],
+          ["Sara", "Khan", "Sara K."],
+          ["Rohan", "Das", "Rohan D."],
+          ["Meera", "Iyer", "Meera I."]
+        ],
+        "selection": "C2:C6"
+      },
+      "clues": ["The shortcut from this whole topic."]
+    }
+  ]
+}
