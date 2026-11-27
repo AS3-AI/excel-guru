@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import Link from "next/link";
-import { currencyForCountry, formatPrice, PLANS } from "@/lib/plans";
 import { STATIC_METADATA } from "@/lib/seo";
 import { MODULES } from "@/lib/modules";
 import { getOrder } from "@/lib/lessons";
-import { createClient } from "@/lib/supabase/server";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { Icon } from "@/components/icons";
 import { Reveal } from "@/components/Reveal";
 import { Doodle } from "@/components/Doodles";
+import { HeroActions } from "./HeroActions";
 import { HeroSheet } from "./HeroSheet";
+import { LandingPricing } from "./LandingPricing";
 
 const landingClasses = [
   "[&_[data-shown]_.doodle_path]:[animation:draw_1.2s_var(--ease)_backwards]",
@@ -99,19 +98,6 @@ const stRowClasses = [
   "[&.st-total_.st-name_b]:text-primary-strong [&.st-total_.st-name_b]:[font-style:italic]",
   "[&.st-total_.st-n]:[box-shadow:inset_0_0_0_2px_var(--primary)]",
   "[@media(max-width:640px)]:grid-cols-[36px_minmax(0,_1fr)_84px]",
-].join(" ");
-
-const planClasses = [
-  "flex flex-col gap-s2 p-s6 bg-surface [border:var(--line)] rounded-ledger-lg [box-shadow:var(--shadow-2)]",
-  "[transition:transform_var(--d2)_var(--ease),_box-shadow_var(--d2)_var(--ease)]",
-  "[&:hover]:[transform:translate(-3px,_-3px)] [&:hover]:[box-shadow:8px_8px_0_var(--ink)]",
-  "[&_h3]:flex [&_h3]:items-center [&_h3]:gap-s2 [&_h3]:text-ledger-md [&_h3]:m-0",
-  "[&_p]:m-[0_0_var(--s5)] [&_p]:text-text [&_p]:[flex:1]",
-  "[&_.price]:[font:700_2.5rem/1.1_var(--mono)] [&_.price]:tracking-[-0.04em] [&_.price]:text-ink",
-  "[&_.price]:m-[var(--s2)_0_var(--s1)]",
-  "[&_.price_small]:[font:400_var(--fs-sm)_var(--font)] [&_.price_small]:tracking-[0] [&_.price_small]:text-muted",
-  "[&_.price_small]:ml-[6px]",
-  "[&.plan-best]:bg-mint",
 ].join(" ");
 
 const closerClasses = [
@@ -210,33 +196,13 @@ const FAQ = [
   },
 ];
 
-export default async function Home() {
-  const session = await createClient();
-  const {
-    data: { user },
-  } = session ? await session.auth.getUser() : { data: { user: null } };
-  const signedIn = !!user;
-  let continueHref = "/lesson/intro";
-  if (session && user) {
-    const { data: progressRows } = await session
-      .from("lesson_progress")
-      .select("lesson_id")
-      .eq("user_id", user.id);
-    const completed = new Set((progressRows ?? []).map((row) => row.lesson_id));
-    const nextLesson = getOrder().find((id) => !completed.has(id));
-    if (nextLesson) continueHref = `/lesson/${nextLesson}`;
-  }
-
-  const country = (await headers()).get("x-vercel-ip-country");
-  const currency = currencyForCountry(country);
-  const plan = PLANS[currency];
-  const annualSaving = Math.round((1 - plan.annual / (plan.monthly * 12)) * 100);
-
+export default function Home() {
+  const lessonOrder = getOrder();
   const lessonTotal = MODULES.reduce((sum, m) => sum + m.total, 0);
 
   return (
     <>
-      <SiteHeader signedIn={signedIn} />
+      <SiteHeader />
       <main className={`landing ${landingClasses}`} id="main">
         <section
           className={`hero block-mint bg-mint
@@ -249,13 +215,7 @@ export default async function Home() {
             className="wrap hero-grid relative grid gap-s8 items-center grid-cols-[minmax(0,_1fr)]
           [@media(min-width:980px)]:grid-cols-[minmax(0,_11fr)_minmax(0,_10fr)]"
           >
-            <div
-              className="hero-copy [&>*]:[animation:rise_0.7s_var(--ease)_backwards]
-          [&>:nth-child(2)]:[animation-delay:0.06s]
-          [&>:nth-child(3)]:[animation-delay:0.12s]
-          [&>:nth-child(4)]:[animation-delay:0.18s]
-          [&>:nth-child(5)]:[animation-delay:0.24s]"
-            >
+            <div className="hero-copy">
               <h1>
                 Learn Excel by typing{" "}
                 <span className="relative inline-block whitespace-nowrap">
@@ -266,25 +226,7 @@ export default async function Home() {
                   />
                 </span>
               </h1>
-              <div
-                className="hero-actions flex flex-wrap gap-s4 mt-s6
-          [@media(max-width:640px)]:[&_.btn]:w-full"
-              >
-                {signedIn ? (
-                  <Link className="btn btn-lg" href={continueHref}>
-                    Continue Learning <Icon name="arrowRight" size={18} />
-                  </Link>
-                ) : (
-                  <>
-                    <Link className="btn btn-lg" href="/lesson/intro">
-                      Start the free lesson <Icon name="arrowRight" size={18} />
-                    </Link>
-                    <Link className="btn btn-lg btn-quiet" href="#curriculum">
-                      Browse the curriculum
-                    </Link>
-                  </>
-                )}
-              </div>
+              <HeroActions lessonOrder={lessonOrder} />
               <dl
                 className="facts flex gap-s3 m-[var(--s7)_0_0] p-0
           [&>div]:min-w-[96px] [&>div]:p-[var(--s3)_var(--s4)] [&>div]:[border:var(--line)] [&>div]:rounded-ledger
@@ -622,50 +564,7 @@ export default async function Home() {
                 way.
               </p>
             </div>
-            <div
-              className="plans grid gap-s5 grid-cols-[repeat(3,_minmax(0,_1fr))]
-          [&[data-shown]_.plan]:[animation:rise_0.6s_var(--ease)_backwards]
-          [&[data-shown]_.plan:nth-child(2)]:[animation-delay:0.1s]
-          [&[data-shown]_.plan:nth-child(3)]:[animation-delay:0.2s]
-          [@media(max-width:860px)]:grid-cols-[minmax(0,_1fr)]"
-              data-reveal
-            >
-              <div className={`plan ${planClasses}`}>
-                <h3>Try it</h3>
-                <div className="price">Free</div>
-                <p>The intro lesson, then one more with a free account.</p>
-                <Link className="btn btn-quiet btn-block" href="/lesson/intro">
-                  Start free
-                </Link>
-              </div>
-              <div className={`plan ${planClasses}`}>
-                <h3>Monthly</h3>
-                <div className="price num">
-                  {formatPrice(currency, plan.monthly)}
-                  <small>/ month</small>
-                </div>
-                <p>All lessons, projects, daily challenge and certificate.</p>
-                <Link className="btn btn-quiet btn-block" href="/pricing">
-                  Choose monthly
-                </Link>
-              </div>
-              <div
-                className={`plan plan-best ${planClasses}
-          [&_.badge]:bg-highlight [&_.badge]:text-ink`}
-              >
-                <h3>
-                  Annual <span className="badge">Save {annualSaving}%</span>
-                </h3>
-                <div className="price num">
-                  {formatPrice(currency, plan.annual)}
-                  <small>/ year</small>
-                </div>
-                <p>Everything in Monthly, billed once a year.</p>
-                <Link className="btn btn-block" href="/pricing">
-                  Choose annual
-                </Link>
-              </div>
-            </div>
+            <LandingPricing />
           </div>
         </section>
 

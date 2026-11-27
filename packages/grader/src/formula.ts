@@ -35,7 +35,7 @@ export function gradeFormulaStep(step: FormulaStep, input: string): GradeResult 
     throw e;
   }
 
-  const solutionSheet = new Sheet(step.grid);
+  const solutionSheet = new Sheet(step.grid, { today: LESSON_TODAY });
   solutionSheet.set(step.targetCell, step.solution);
 
   const learnerSpill = spillValues(before, sheet, step.targetCell);

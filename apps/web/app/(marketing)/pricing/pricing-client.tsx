@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PLANS, formatPrice, type Currency } from "@/lib/plans";
 
 const planOptionClasses = [
@@ -32,30 +32,75 @@ declare global {
   }
 }
 
+type PricingStatus = {
+  currency?: Currency;
+  paymentsEnabled?: boolean;
+  signedIn?: boolean;
+  premium?: boolean;
+  canCancel?: boolean;
+  endsAt?: string | null;
+  invited?: boolean;
+};
+
 export function PricingClient({
-  currency: initialCurrency,
-  paymentsEnabled,
-  signedIn,
-  premium: initiallyPremium,
-  canCancel: initiallyCanCancel,
-  endsAt: initialEndsAt,
-  invited = false,
+  currency: initialCurrency = "USD",
+  paymentsEnabled: initialPaymentsEnabled,
+  signedIn: initialSignedIn,
+  premium: initiallyPremium = false,
+  canCancel: initiallyCanCancel = false,
+  endsAt: initialEndsAt = null,
+  invited: initiallyInvited = false,
 }: {
-  currency: Currency;
+  currency?: Currency;
   paymentsEnabled: boolean;
-  signedIn: boolean;
-  premium: boolean;
-  canCancel: boolean;
-  endsAt: string | null;
+  signedIn?: boolean;
+  premium?: boolean;
+  canCancel?: boolean;
+  endsAt?: string | null;
   invited?: boolean;
 }) {
   const [currency, setCurrency] = useState<Currency>(initialCurrency);
+  const [paymentsEnabled, setPaymentsEnabled] = useState(initialPaymentsEnabled);
+  const [signedIn, setSignedIn] = useState(initialSignedIn ?? false);
+  const [accountLoaded, setAccountLoaded] = useState(initialSignedIn !== undefined);
   const [plan, setPlan] = useState<Plan>("annual");
   const [premium, setPremium] = useState(initiallyPremium);
   const [canCancel, setCanCancel] = useState(initiallyCanCancel);
   const [endsAt, setEndsAt] = useState(initialEndsAt);
+  const [invited, setInvited] = useState(initiallyInvited);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const currencyTouchedRef = useRef(false);
+  const statusPromiseRef = useRef<Promise<PricingStatus | null> | null>(null);
+
+  useEffect(() => {
+    if (initialSignedIn !== undefined) return;
+    let active = true;
+    const req = fetch("/api/pricing")
+      .then((res) => (res.ok ? (res.json() as Promise<PricingStatus>) : null))
+      .then((data) => {
+        if (!active || !data) return data;
+        if (!currencyTouchedRef.current && (data.currency === "INR" || data.currency === "USD")) {
+          setCurrency(data.currency);
+        }
+        if (typeof data.paymentsEnabled === "boolean") setPaymentsEnabled(data.paymentsEnabled);
+        if (typeof data.signedIn === "boolean") setSignedIn(data.signedIn);
+        if (typeof data.premium === "boolean") setPremium(data.premium);
+        if (typeof data.canCancel === "boolean") setCanCancel(data.canCancel);
+        if (data.endsAt !== undefined) setEndsAt(data.endsAt);
+        if (typeof data.invited === "boolean") setInvited(data.invited);
+        setAccountLoaded(true);
+        return data;
+      })
+      .catch(() => {
+        if (active) setAccountLoaded(true);
+        return null;
+      });
+    statusPromiseRef.current = req;
+    return () => {
+      active = false;
+    };
+  }, [initialSignedIn]);
   useEffect(() => {
     if (!paymentsEnabled || currency !== "INR") return;
     const script = document.createElement("script");
@@ -84,18 +129,35 @@ export function PricingClient({
   }, [message]);
 
   async function upgrade() {
-    if (!signedIn) {
+    let isSignedIn = signedIn;
+    let activeCurrency = currency;
+    if (!accountLoaded && statusPromiseRef.current) {
+      setBusy(true);
+      const data = await statusPromiseRef.current;
+      if (data) {
+        if (typeof data.signedIn === "boolean") isSignedIn = data.signedIn;
+        if (!currencyTouchedRef.current && (data.currency === "INR" || data.currency === "USD")) {
+          activeCurrency = data.currency;
+        }
+        if (data.invited || data.premium) {
+          setBusy(false);
+          return;
+        }
+      }
+      setBusy(false);
+    }
+    if (!isSignedIn) {
       window.location.href = "/signup?next=/pricing";
       return;
     }
-    if (currency !== "INR") return;
+    if (activeCurrency !== "INR") return;
     setBusy(true);
     setMessage("");
     try {
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, currency }),
+        body: JSON.stringify({ plan, currency: activeCurrency }),
       });
       const result = (await response.json()) as {
         payload?: { key_id?: string; subscription_id?: string; prefill?: { email?: string } };
@@ -191,14 +253,20 @@ export function PricingClient({
             <button
               type="button"
               aria-pressed={currency === "INR"}
-              onClick={() => setCurrency("INR")}
+              onClick={() => {
+                currencyTouchedRef.current = true;
+                setCurrency("INR");
+              }}
             >
               INR
             </button>
             <button
               type="button"
               aria-pressed={currency === "USD"}
-              onClick={() => setCurrency("USD")}
+              onClick={() => {
+                currencyTouchedRef.current = true;
+                setCurrency("USD");
+              }}
             >
               USD
             </button>

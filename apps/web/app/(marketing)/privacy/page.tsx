@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
-import { createClient } from "@/lib/supabase/server";
 import { PRIVACY_SECTIONS } from "@/lib/legal";
 import { STATIC_METADATA } from "@/lib/seo";
 
@@ -13,21 +12,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function PrivacyPage() {
-  const session = await createClient();
-  const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
-
+export default function PrivacyPage() {
   return (
     <>
-      <SiteHeader signedIn={!!user} />
+      <SiteHeader />
       <main className="doc" id="main">
-        <p className="eyebrow"><span className="ref">§</span>Legal</p>
+        <p className="eyebrow">
+          <span className="ref">§</span>Legal
+        </p>
         <h1>Privacy Policy</h1>
         <p className="lead">
-        Last updated: November 2026. This policy describes how Excel Guru handles your personal data,
-        including user authentication and learning progress (Supabase), Google sign-in, payment processing (Razorpay),
-        AI explanations (Google Gemini), Vercel hosting logs, and session cookies.
-      </p>
+          Last updated: November 2026. This policy describes how Excel Guru handles your personal
+          data, including user authentication and learning progress (Supabase), Google sign-in,
+          payment processing (Razorpay), AI explanations (Google Gemini), Vercel hosting logs, and
+          session cookies.
+        </p>
         {PRIVACY_SECTIONS.map((section) => (
           <section key={section.id} id={section.id} className="doc-section">
             <h2>{section.title}</h2>

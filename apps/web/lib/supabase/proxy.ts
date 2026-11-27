@@ -1,11 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { authRedirect, needsProfileCheck } from "@/lib/auth";
+import {
+  authRedirect,
+  hasSupabaseAuthCookie,
+  needsProfileCheck,
+  needsProxySession,
+} from "@/lib/auth";
 import { supabasePublicEnv } from "./env";
 
 /**
- * Runs in proxy.ts on every page request: refreshes the Supabase session cookie,
- * then applies the signed-in / onboarding redirects from lib/auth.ts.
+ * Runs in proxy.ts on page requests: preserves OAuth ?code= redirects,
+ * skips Supabase work on public content routes and cookie-less requests,
+ * and refreshes the session + applies redirects where needed.
  */
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
   const { pathname, search } = request.nextUrl;
@@ -14,8 +20,17 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   }
 
   let response = NextResponse.next({ request });
+  if (!needsProxySession(pathname)) return response;
+
   const env = supabasePublicEnv();
   if (!env) return response; // Supabase not configured: everything is public.
+
+  // Without a Supabase auth cookie there is no session to refresh; apply any
+  // unauthenticated redirect directly without hitting Supabase Auth.
+  if (!hasSupabaseAuthCookie(request.cookies.getAll())) {
+    const target = authRedirect({ pathname, search, signedIn: false, hasProfile: false });
+    return target ? NextResponse.redirect(new URL(target, request.url)) : response;
+  }
 
   let cacheHeaders: Record<string, string> = {};
   const supabase = createServerClient(env.url, env.key, {
@@ -26,7 +41,8 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
       setAll(cookiesToSet, headers) {
         for (const { name, value } of cookiesToSet) request.cookies.set(name, value);
         response = NextResponse.next({ request });
-        for (const { name, value, options } of cookiesToSet) response.cookies.set(name, value, options);
+        for (const { name, value, options } of cookiesToSet)
+          response.cookies.set(name, value, options);
         cacheHeaders = { ...cacheHeaders, ...headers };
         for (const [k, v] of Object.entries(cacheHeaders)) response.headers.set(k, v);
       },

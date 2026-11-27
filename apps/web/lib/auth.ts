@@ -169,6 +169,20 @@ export function needsProfileCheck(pathname: string): boolean {
   return isProtected(pathname) || matches(pathname, [...AUTH_PAGES, ONBOARDING]);
 }
 
+/** Whether proxy must check or refresh the Supabase session for this route. */
+export function needsProxySession(pathname: string): boolean {
+  return (
+    isProtected(pathname) || matches(pathname, [...AUTH_PAGES, ONBOARDING, "/lesson", "/modules"])
+  );
+}
+
+/** True when the browser sent a Supabase SSR auth cookie (`sb-...`). */
+export function hasSupabaseAuthCookie(
+  cookies: ReadonlyArray<{ name: string; value: string }>,
+): boolean {
+  return cookies.some((c) => c.name.startsWith("sb-") && c.value.length > 0);
+}
+
 export type RouteState = {
   pathname: string;
   search: string;

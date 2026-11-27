@@ -49,18 +49,14 @@ export default async function LessonPage({ params }: Props) {
     const admin = createAdminClient();
     if (!admin) throw new Error("Lesson access is temporarily unavailable");
     access = await loadLessonAccess(admin, user.id, id);
-    decision = access.decision;
-  }
-  if (user) {
-    const admin = createAdminClient();
     decision = await decideAndRecordLessonOpen({
       admin,
       lessonId: id,
       userId: user.id,
-      completedLessonIds: access!.completedLessonIds,
-      openedLessonIds: access!.openedLessonIds,
-      premium: access!.premium,
-      groupPremium: access!.groupPremium,
+      completedLessonIds: access.completedLessonIds,
+      openedLessonIds: access.openedLessonIds,
+      premium: access.premium,
+      groupPremium: access.groupPremium,
     });
   }
   if (!decision.allowed)
@@ -69,21 +65,10 @@ export default async function LessonPage({ params }: Props) {
         ? `/signup?next=${encodeURIComponent(`/lesson/${id}`)}`
         : "/pricing",
     );
-  let completedRows: {
-    lesson_id: string;
-    completed_at: string;
-    first_try_accuracy: number | null;
-  }[] = [];
-  if (user) {
-    const admin = createAdminClient();
-    if (admin) {
-      const { data } = await admin
-        .from("lesson_progress")
-        .select("lesson_id,completed_at,first_try_accuracy")
-        .eq("user_id", user.id);
-      completedRows = data ?? [];
-    }
-  }
+  const completedRows = (access?.completedRows ?? []).filter(
+    (row): row is { lesson_id: string; completed_at: string; first_try_accuracy: number | null } =>
+      typeof row.completed_at === "string",
+  );
   // Where the paywall would start (2nd lesson done), invited learners see a "no payment needed" note instead.
   const inviteNotice =
     !!access?.invited &&

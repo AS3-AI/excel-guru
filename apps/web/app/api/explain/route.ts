@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   } else if (lessonId !== "intro") return NextResponse.json({ error: "signup" }, { status: 401 });
 
   const inputNorm = normaliseExplainInput(input.slice(0, 200));
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   const salt = process.env.EXPLAIN_IP_SALT || "excel-guru-explain-salt";
   const caller = callerKey(user?.id ?? null, ip, salt);
   if (!caller) return unavailable();

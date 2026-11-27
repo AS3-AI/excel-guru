@@ -366,4 +366,18 @@ describe("gradeFormulaStep: dynamic array spills", () => {
   it("rejects a spill whose later values differ", () => {
     expect(gradeFormulaStep(arrayStep, "=SORT(A1:A4)")).toEqual(fail("wrong_value"));
   });
+
+  it("grades a spilling TODAY() formula against LESSON_TODAY", () => {
+    const todaySpill = step({
+      grid: [
+        [46036, "Past"],
+        [46037, "Today"],
+        [46038, "Future"],
+      ],
+      targetCell: "C1",
+      expectedValue: "Today",
+      solution: "=FILTER(B1:B3,A1:A3>=TODAY())",
+    });
+    expect(gradeFormulaStep(todaySpill, "=FILTER(B1:B3,A1:A3>=TODAY())")).toEqual(pass);
+  });
 });

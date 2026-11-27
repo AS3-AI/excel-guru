@@ -12,7 +12,6 @@ import {
   pointsAllowedForCompletion,
   progressAttemptRows,
   readBodyAfterAuthentication,
-  shouldRetryCompletionWithZeroPoints,
   type ProgressAttempt,
   type StreakRow,
 } from "@/lib/progress";
@@ -89,17 +88,11 @@ export async function POST(request: Request) {
     } catch {
       continue;
     }
-    const [prior, progress, earlierCompletions] = await Promise.all([
+    const [prior, earlierCompletions] = await Promise.all([
       admin
         .from("streaks")
         .select("current,longest,last_active_date")
         .eq("user_id", user.id)
-        .maybeSingle(),
-      admin
-        .from("lesson_progress")
-        .select("times_completed")
-        .eq("user_id", user.id)
-        .eq("lesson_id", lesson.id)
         .maybeSingle(),
       admin
         .from("lesson_completions")
@@ -110,42 +103,11 @@ export async function POST(request: Request) {
         .gte("completed_at", bounds.start)
         .lt("completed_at", bounds.end),
     ]);
-    if (prior.error || progress.error || earlierCompletions.error) continue;
-    let points = pointsAllowedForCompletion(earlierCompletions.data ?? [], now) ? score.points : 0;
-    const completionData = {
-      user_id: user.id,
-      lesson_id: lesson.id,
-      completed_at: end,
-      ist_day: istDay,
-      first_try_accuracy: score.firstTryAccuracy,
-      points,
-      group_id: profileRes.data?.group_id ?? null,
-      cohort: profileRes.data?.cohort ?? null,
-    };
-    let completionWrite = await admin.from("lesson_completions").insert(completionData);
-    if (completionWrite.error && shouldRetryCompletionWithZeroPoints(completionWrite.error)) {
-      points = 0;
-      completionWrite = await admin
-        .from("lesson_completions")
-        .insert({ ...completionData, points: 0 });
-    }
-    if (completionWrite.error) {
-      partialFailure = true;
-      continue;
-    }
-    if (!completedLessonIds.includes(lesson.id) && !openedLessonIds.includes(lesson.id))
-      completedLessonIds.push(lesson.id);
-    const progressWrite = await admin.from("lesson_progress").upsert({
-      user_id: user.id,
-      lesson_id: lesson.id,
-      completed_at: end,
-      first_try_accuracy: score.firstTryAccuracy,
-      times_completed: (progress.data?.times_completed ?? 0) + 1,
-    });
-    if (progressWrite.error) {
-      partialFailure = true;
-      continue;
-    }
+    if (prior.error || earlierCompletions.error) continue;
+    const requestedPoints = pointsAllowedForCompletion(earlierCompletions.data ?? [], now)
+      ? score.points
+      : 0;
+    const nextStreak = getStreak((prior.data as StreakRow | null) ?? null, now);
     const attemptRows = progressAttemptRows(
       user.id,
       lesson.id,
@@ -153,31 +115,25 @@ export async function POST(request: Request) {
       lesson,
       now,
     );
-    if (attemptRows.length && (await admin.from("step_attempts").insert(attemptRows)).error) {
+    const { error: rpcError } = await admin.rpc("save_lesson_progress", {
+      p_user_id: user.id,
+      p_lesson_id: lesson.id,
+      p_completed_at: end,
+      p_ist_day: istDay,
+      p_first_try_accuracy: score.firstTryAccuracy,
+      p_points: requestedPoints,
+      p_group_id: profileRes.data?.group_id ?? null,
+      p_cohort: profileRes.data?.cohort ?? null,
+      p_streak_current: nextStreak.current,
+      p_streak_longest: nextStreak.longest,
+      p_attempts: attemptRows,
+    });
+    if (rpcError) {
       partialFailure = true;
       continue;
     }
-    if (
-      points > 0 &&
-      (
-        await admin
-          .from("points_log")
-          .insert({ user_id: user.id, points, reason: `lesson:${lesson.id}`, created_at: end })
-      ).error
-    ) {
-      partialFailure = true;
-      continue;
-    }
-    if (
-      (
-        await admin
-          .from("streaks")
-          .upsert({ user_id: user.id, ...getStreak((prior.data as StreakRow | null) ?? null, now) })
-      ).error
-    ) {
-      partialFailure = true;
-      continue;
-    }
+    if (!completedLessonIds.includes(lesson.id) && !openedLessonIds.includes(lesson.id))
+      completedLessonIds.push(lesson.id);
     merged++;
   }
   if (partialFailure)

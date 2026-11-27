@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   authRedirect,
   firstNameFromMetadata,
+  hasSupabaseAuthCookie,
   isValidInvite,
   needsProfileCheck,
+  needsProxySession,
   originFrom,
   safeNext,
   usernameError,
@@ -219,6 +221,39 @@ describe("needsProfileCheck", () => {
     expect(needsProfileCheck("/onboarding")).toBe(true);
     expect(needsProfileCheck("/")).toBe(false);
     expect(needsProfileCheck("/lesson/intro")).toBe(false);
+  });
+});
+
+describe("needsProxySession", () => {
+  it("runs session checks on protected, auth, onboarding, lesson, and module routes", () => {
+    expect(needsProxySession("/profile")).toBe(true);
+    expect(needsProxySession("/review")).toBe(true);
+    expect(needsProxySession("/admin/users")).toBe(true);
+    expect(needsProxySession("/login")).toBe(true);
+    expect(needsProxySession("/signup")).toBe(true);
+    expect(needsProxySession("/onboarding")).toBe(true);
+    expect(needsProxySession("/lesson/intro")).toBe(true);
+    expect(needsProxySession("/modules/start-here")).toBe(true);
+  });
+
+  it("skips session checks on public content routes", () => {
+    expect(needsProxySession("/")).toBe(false);
+    expect(needsProxySession("/learn")).toBe(false);
+    expect(needsProxySession("/learn/sum")).toBe(false);
+    expect(needsProxySession("/pricing")).toBe(false);
+    expect(needsProxySession("/help")).toBe(false);
+    expect(needsProxySession("/privacy")).toBe(false);
+    expect(needsProxySession("/terms")).toBe(false);
+    expect(needsProxySession("/verify")).toBe(false);
+  });
+});
+
+describe("hasSupabaseAuthCookie", () => {
+  it("detects non-empty Supabase auth cookies", () => {
+    expect(hasSupabaseAuthCookie([])).toBe(false);
+    expect(hasSupabaseAuthCookie([{ name: "sb-proj-auth-token", value: "" }])).toBe(false);
+    expect(hasSupabaseAuthCookie([{ name: "other", value: "abc" }])).toBe(false);
+    expect(hasSupabaseAuthCookie([{ name: "sb-proj-auth-token", value: "tok" }])).toBe(true);
   });
 });
 
