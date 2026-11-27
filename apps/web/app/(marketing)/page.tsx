@@ -4,6 +4,7 @@ import Link from "next/link";
 import { currencyForCountry, formatPrice, PLANS } from "@/lib/plans";
 import { STATIC_METADATA } from "@/lib/seo";
 import { MODULES } from "@/lib/modules";
+import { getOrder } from "@/lib/lessons";
 import { createClient } from "@/lib/supabase/server";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { Icon } from "@/components/icons";
@@ -20,8 +21,8 @@ const landingClasses = [
   "[&_h1]:m-[0_0_var(--s5)] [&_h1]:[font-variation-settings:'opsz'_96]",
   "[&_h1_mark]:[color:inherit] [&_h1_mark]:[background-color:transparent] [&_h1_mark]:whitespace-nowrap",
   "[&_h1_mark]:[background-image:linear-gradient(var(--highlight),_var(--highlight))]",
-  "[&_h1_mark]:[background-repeat:no-repeat] [&_h1_mark]:[background-size:100%_0.42em]",
-  "[&_h1_mark]:[background-position:0_86%] [&_h1_mark]:p-[0_0.06em] [&_h1_mark]:m-[0_-0.06em]",
+  "[&_h1_mark]:[background-repeat:no-repeat] [&_h1_mark]:[background-size:100%_0.84em]",
+  "[&_h1_mark]:[background-position:0_78%] [&_h1_mark]:rounded-ledger-sm [&_h1_mark]:p-[0_0.14em] [&_h1_mark]:m-[0_-0.04em]",
   "[&_h1_mark]:[animation:marker_0.9s_var(--ease)_0.45s_backwards]",
   "[html[data-motion='on']_&_[data-reveal]:not([data-shown])]:opacity-0",
   "[html[data-motion='on']_&_[data-reveal]:not([data-shown])]:[transform:translateY(24px)]",
@@ -137,7 +138,7 @@ export const metadata: Metadata = {
 const FACTS = [
   { value: "86", label: "lessons" },
   { value: "15", label: "modules" },
-  { value: "0", label: "installs" },
+  { value: "2400+", label: "current users" },
 ];
 
 // Functions taught in the lessons (from lesson titles in content/lessons).
@@ -215,6 +216,16 @@ export default async function Home() {
     data: { user },
   } = session ? await session.auth.getUser() : { data: { user: null } };
   const signedIn = !!user;
+  let continueHref = "/lesson/intro";
+  if (session && user) {
+    const { data: progressRows } = await session
+      .from("lesson_progress")
+      .select("lesson_id")
+      .eq("user_id", user.id);
+    const completed = new Set((progressRows ?? []).map((row) => row.lesson_id));
+    const nextLesson = getOrder().find((id) => !completed.has(id));
+    if (nextLesson) continueHref = `/lesson/${nextLesson}`;
+  }
 
   const country = (await headers()).get("x-vercel-ip-country");
   const currency = currencyForCountry(country);
@@ -245,28 +256,23 @@ export default async function Home() {
           [&>:nth-child(4)]:[animation-delay:0.18s]
           [&>:nth-child(5)]:[animation-delay:0.24s]"
             >
-              <p className="eyebrow">
-                <span className="ref">A1</span>Interactive Excel lessons
-              </p>
               <h1>
-                Learn Excel by typing <mark>real formulas</mark>.
-                <Doodle
-                  name="squiggle"
-                  className="d-squiggle absolute left-0 bottom-[-18px] w-[min(320px,_70%)] h-auto text-primary"
-                />
+                Learn Excel by typing{" "}
+                <span className="relative inline-block whitespace-nowrap">
+                  <mark>real formulas.</mark>
+                  <Doodle
+                    name="squiggle"
+                    className="d-squiggle absolute left-0 bottom-[-14px] w-full h-auto text-primary pointer-events-none"
+                  />
+                </span>
               </h1>
-              <p className="lead max-w-[30rem] mb-s6 text-text">
-                {signedIn
-                  ? "Welcome back! Continue your streak and pick up right where you left off, or review your formulas."
-                  : "A spreadsheet that runs in your browser, with every answer checked the moment you press Enter. Start with the intro lesson. No account needed."}
-              </p>
               <div
-                className="hero-actions flex flex-wrap gap-s4
+                className="hero-actions flex flex-wrap gap-s4 mt-s6
           [@media(max-width:640px)]:[&_.btn]:w-full"
               >
                 {signedIn ? (
-                  <Link className="btn btn-lg" href="/profile">
-                    View Profile <Icon name="arrowRight" size={18} />
+                  <Link className="btn btn-lg" href={continueHref}>
+                    Continue Learning <Icon name="arrowRight" size={18} />
                   </Link>
                 ) : (
                   <>
@@ -362,9 +368,6 @@ export default async function Home() {
         >
           <div className="wrap">
             <div className="band-head relative max-w-[40rem]" data-reveal>
-              <p className="eyebrow">
-                <span className="ref">B1</span>How it works
-              </p>
               <h2 id="how">From lesson to answer in one sitting.</h2>
               <Doodle
                 name="bulb"
@@ -494,9 +497,6 @@ export default async function Home() {
           [@media(min-width:980px)]:top-[100px]"
               data-reveal
             >
-              <p className="eyebrow">
-                <span className="ref">C1</span>Curriculum
-              </p>
               <h2 id="curriculum">Fifteen modules, in the order you&apos;ll need them.</h2>
               <Doodle
                 name="cells"
@@ -610,9 +610,6 @@ export default async function Home() {
         >
           <div className="wrap">
             <div className="band-head relative max-w-[40rem]" data-reveal>
-              <p className="eyebrow">
-                <span className="ref">D1</span>Plans
-              </p>
               <h2 id="pricing">Try it free. Pay when you&apos;re sure.</h2>
               <Doodle
                 name="trophy"
@@ -686,9 +683,6 @@ export default async function Home() {
           [&_.faq-item:last-child]:[border-bottom:0]"
           >
             <div className="band-head relative max-w-[40rem]" data-reveal>
-              <p className="eyebrow">
-                <span className="ref">E1</span>Questions
-              </p>
               <h2 id="faq">Before you start</h2>
               <Doodle
                 name="bubble"
