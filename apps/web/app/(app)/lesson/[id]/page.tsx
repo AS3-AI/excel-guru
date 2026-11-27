@@ -129,7 +129,7 @@ export default async function LessonPage({ params }: Props) {
           <span aria-current="page">{lesson.title}</span>
         </nav>
         <div className="ml-auto flex flex-wrap items-center gap-s3 min-w-0 max-w-full">
-          <TopbarProgress requiredCorrect={lesson.requiredCorrect} />
+          <TopbarProgress totalSteps={lesson.steps.length} />
           <VideoModal videoId={lesson.video} />
           <a
             className="pl-workbook-link inline-flex items-center gap-[6px] text-ledger-sm text-muted no-underline hover:text-ink hover:underline"

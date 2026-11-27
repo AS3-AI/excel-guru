@@ -27,7 +27,7 @@ import {
 import { Sheet } from "@excel-guru/engine";
 import { Grid, formatValue, rawInput } from "@/components/grid/Grid";
 import { RichText } from "@/components/RichText";
-import { createPlayerState, playerReducer } from "@/lib/player-state";
+import { countLessonProgress, createPlayerState, playerReducer } from "@/lib/player-state";
 import { mergeLocalProgress, writeLocalProgress } from "@/lib/local-progress";
 import { getPlatform } from "@/lib/platform";
 import { StepView } from "./steps/StepView";
@@ -119,6 +119,7 @@ export function Player({
   const [showSolution, setShowSolution] = useState(false);
   const [gridResetNonce, setGridResetNonce] = useState(0);
   const [showCorrectExplain, setShowCorrectExplain] = useState(false);
+  const [completedInfoIds, setCompletedInfoIds] = useState<string[]>([]);
   const [celebrate, setCelebrate] = useState(false);
   const [savedStats, setSavedStats] = useState<{ points: number; streak: number } | null>(null);
   const [saveNote, setSaveNote] = useState("");
@@ -198,13 +199,24 @@ export function Player({
     };
   }, [sidebarCollapsed]);
 
+  const lessonProgress = useMemo(
+    () =>
+      countLessonProgress(
+        lesson.steps.length,
+        completedInfoIds.length,
+        state.correct,
+        state.complete,
+      ),
+    [lesson.steps.length, completedInfoIds.length, state.correct, state.complete],
+  );
+
   useEffect(() => {
     window.dispatchEvent(
       new CustomEvent<LessonProgressDetail>(LESSON_PROGRESS_EVENT, {
-        detail: { correct: state.correct, total: lesson.requiredCorrect },
+        detail: { completed: lessonProgress.completed, total: lessonProgress.total },
       }),
     );
-  }, [state.correct, lesson.requiredCorrect]);
+  }, [lessonProgress.completed, lessonProgress.total]);
 
   useEffect(() => {
     if (!state.complete || saveStarted.current) return;
@@ -428,6 +440,9 @@ export function Player({
     setSelectTouched(false);
   };
   const nextStep = () => {
+    if (step.type === "info") {
+      setCompletedInfoIds((prev) => (prev.includes(step.id) ? prev : [...prev, step.id]));
+    }
     if (state.complete) {
       setCelebrate(true);
       setFeedback(null);
@@ -885,17 +900,7 @@ export function Player({
                   highlightCells={step.highlightCells}
                   yellowCells={step.yellowCells}
                   sheetRef={sheetRef}
-                  sheetBarRight={
-                    formulaReady && feedback !== "correct" ? (
-                      <button
-                        type="button"
-                        className="cursor-pointer rounded-[4px] border border-solid border-border bg-surface px-[7px] py-[2px] font-ledger-code text-[11px] font-medium text-muted hover:text-ink"
-                        onClick={resetSheet}
-                      >
-                        Reset sheet
-                      </button>
-                    ) : undefined
-                  }
+                  disableSheetActions={feedback === "correct"}
                   onEditStart={() => {
                     setFormulaReady(true);
                     setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
@@ -904,6 +909,15 @@ export function Player({
                     commitRef.current = true;
                     lastCommitCell.current =
                       addr !== step.targetCell && input.trim() !== "" ? addr : null;
+                    setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
+                  }}
+                  onHistoryChange={(edits) => {
+                    const last = edits[edits.length - 1];
+                    lastCommitCell.current =
+                      last && last.addr !== step.targetCell && last.input.trim() !== ""
+                        ? last.addr
+                        : null;
+                    setFormulaReady(edits.length > 0);
                     setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
                   }}
                 />

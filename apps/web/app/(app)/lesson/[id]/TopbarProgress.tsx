@@ -1,23 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { countLessonProgress } from "@/lib/player-state";
 
 export const LESSON_PROGRESS_EVENT = "excelguru:lesson-progress";
 
 export type LessonProgressDetail = {
-  correct: number;
+  completed: number;
   total: number;
 };
 
-export function TopbarProgress({ requiredCorrect }: { requiredCorrect: number }) {
+export function TopbarProgress({ totalSteps }: { totalSteps: number }) {
   const [progress, setProgress] = useState<LessonProgressDetail>({
-    correct: 0,
-    total: requiredCorrect,
+    completed: 0,
+    total: totalSteps,
   });
 
   useEffect(() => {
-    setProgress({ correct: 0, total: requiredCorrect });
-  }, [requiredCorrect]);
+    setProgress({ completed: 0, total: totalSteps });
+  }, [totalSteps]);
 
   useEffect(() => {
     const onProgress = (event: Event) => {
@@ -28,8 +29,12 @@ export function TopbarProgress({ requiredCorrect }: { requiredCorrect: number })
     return () => window.removeEventListener(LESSON_PROGRESS_EVENT, onProgress);
   }, []);
 
-  const pct =
-    progress.total > 0 ? Math.min(100, Math.round((progress.correct / progress.total) * 100)) : 0;
+  const { completed, total, pct } = countLessonProgress(
+    progress.total,
+    0,
+    progress.completed,
+    false,
+  );
 
   return (
     <div
@@ -47,7 +52,7 @@ export function TopbarProgress({ requiredCorrect }: { requiredCorrect: number })
         />
       </div>
       <span className="num [font:600_var(--fs-xs)_var(--mono)] text-ink whitespace-nowrap">
-        {progress.correct}/{progress.total}
+        {completed}/{total}
       </span>
     </div>
   );

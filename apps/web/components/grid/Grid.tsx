@@ -11,6 +11,7 @@ import {
 } from "@excel-guru/engine";
 import { FormulaBar, RefMirror, RefText, type ColouredRef } from "./FormulaBar";
 import { arrowPoints, canPoint, findRefs, insertRef, refColours, wholeLineRef } from "./refs";
+import { Icon } from "../icons";
 import "./grid.css";
 
 /** A starting cell: a literal, or a string starting with "=" for a formula (as Sheet takes it). */
@@ -39,8 +40,12 @@ export type GridProps = {
   flashKey?: number;
   /** Called after each successful Sheet.set, with the address and the text as typed ("" when cleared). */
   onCommit?: (addr: string, input: string) => void;
+  /** Called after undo, redo, or reset changes the applied edit history. */
+  onHistoryChange?: (edits: readonly SheetEdit[]) => void;
   /** Called when the learner opens an editor (typing, F2, Backspace, double-click, the formula bar or fx). */
   onEditStart?: () => void;
+  /** Disables sheet undo/redo/reset buttons (for example after a step is already graded correct). */
+  disableSheetActions?: boolean;
   /** Receives the live Sheet so the caller can read or grade it. */
   sheetRef?: { current: Sheet | null };
   /** Read-only worksheet that reports cell or range selections instead of editing cells. */
@@ -397,6 +402,61 @@ export function literalCells(grid: GridLiteral[][]): Set<string> {
   return out;
 }
 
+export type SheetEdit = { addr: string; pos: Pos; input: string };
+export type EditHistory = { past: SheetEdit[]; future: SheetEdit[] };
+
+export const EMPTY_HISTORY: EditHistory = { past: [], future: [] };
+
+/** Records a new committed cell edit and clears any redo branch. */
+export function pushEdit(history: EditHistory, edit: SheetEdit): EditHistory {
+  return { past: [...history.past, edit], future: [] };
+}
+
+/** Steps back one committed edit if available. */
+export function undoEdit(history: EditHistory): { history: EditHistory; undone: SheetEdit | null } {
+  if (history.past.length === 0) return { history, undone: null };
+  const undone = history.past[history.past.length - 1]!;
+  return {
+    history: {
+      past: history.past.slice(0, -1),
+      future: [undone, ...history.future],
+    },
+    undone,
+  };
+}
+
+/** Re-applies the next undone edit if available. */
+export function redoEdit(history: EditHistory): { history: EditHistory; redone: SheetEdit | null } {
+  if (history.future.length === 0) return { history, redone: null };
+  const [redone, ...future] = history.future;
+  return {
+    history: {
+      past: [...history.past, redone!],
+      future,
+    },
+    redone: redone!,
+  };
+}
+
+const applySheetInput = (sheet: Sheet, literals: Set<string>, addr: string, input: string) => {
+  sheet.set(addr, input);
+  if (input === "" || input.startsWith("=")) literals.delete(addr);
+  else literals.add(addr);
+};
+
+/** Rebuilds the worksheet from its starting grid plus the active edit log. */
+export function rebuildLoaded(
+  grid: GridLiteral[][],
+  edits: readonly SheetEdit[],
+  today?: string,
+): Loaded {
+  const next = load(grid, today);
+  for (const edit of edits) {
+    applySheetInput(next.sheet, next.literals, edit.addr, edit.input);
+  }
+  return next;
+}
+
 // ---------- component ----------
 
 /**
@@ -440,7 +500,9 @@ export function Grid({
   flashCells,
   flashKey,
   onCommit,
+  onHistoryChange,
   onEditStart,
+  disableSheetActions = false,
   sheetRef,
   selectMode = false,
   onSelectionChange,
@@ -458,6 +520,8 @@ export function Grid({
   sheetBarRight,
 }: GridProps) {
   const [loaded, setLoaded] = useState(() => load(grid, today));
+  const [history, setHistory] = useState<EditHistory>(EMPTY_HISTORY);
+  const historyRef = useRef<EditHistory>(EMPTY_HISTORY);
   const [, rerender] = useReducer((n: number) => n + 1, 0);
   const [active, setActive] = useState<Pos>(() => initialActive(activeCell));
   const [inspected, setInspected] = useState<Pos | null>(null);
@@ -500,6 +564,8 @@ export function Grid({
   // Adjusting state during render is React's documented pattern for resetting on a prop change.
   if (!sameGrid(grid, loaded.grid)) {
     setLoaded(load(grid, today));
+    historyRef.current = EMPTY_HISTORY;
+    setHistory(EMPTY_HISTORY);
     setActive(initialActive(activeCell));
     setSelection(null);
     setInspected(null);
@@ -661,7 +727,7 @@ export function Grid({
   /** Writes `input` to the active cell. Returns the tokenize/parse message on failure (old value kept). */
   const write = (input: string): string | null => {
     try {
-      sheet.set(addr, input);
+      applySheetInput(sheet, literals, addr, input);
     } catch (e) {
       if (e instanceof TokenizeError || e instanceof ParseError) {
         setError(e.message);
@@ -669,12 +735,65 @@ export function Grid({
       }
       throw e;
     }
-    if (input === "" || input.startsWith("=")) literals.delete(addr);
-    else literals.add(addr);
+    const nextHistory = pushEdit(historyRef.current, { addr, pos: active, input });
+    historyRef.current = nextHistory;
+    setHistory(nextHistory);
     setError(null);
     rerender();
     onCommit?.(addr, input);
     return null;
+  };
+
+  const applyHistory = (nextHistory: EditHistory, focusPos?: Pos) => {
+    const nextLoaded = rebuildLoaded(grid, nextHistory.past, today);
+    historyRef.current = nextHistory;
+    setHistory(nextHistory);
+    setLoaded(nextLoaded);
+    if (sheetRef) sheetRef.current = nextLoaded.sheet;
+    if (focusPos) setActive(focusPos);
+    setSelection(null);
+    setError(null);
+    onHistoryChange?.(nextHistory.past);
+    gridEl.current?.focus({ preventScroll: true });
+  };
+
+  const undo = () => {
+    const { history: nextHistory, undone } = undoEdit(historyRef.current);
+    if (!undone) return;
+    applyHistory(nextHistory, undone.pos);
+  };
+
+  const redo = () => {
+    const { history: nextHistory, redone } = redoEdit(historyRef.current);
+    if (!redone) return;
+    applyHistory(nextHistory, redone.pos);
+  };
+
+  const reset = () => {
+    editingRef.current = null;
+    setEditingState(null);
+    applyHistory(EMPTY_HISTORY, initialActive(activeCell));
+  };
+
+  const handleUndoClick = () => {
+    const ed = editingRef.current;
+    if (ed) {
+      const hasDraftChange = editOutcome(ed.draft, contentOf(addr)) === "commit";
+      cancel();
+      if (hasDraftChange) {
+        onHistoryChange?.(historyRef.current.past);
+        return;
+      }
+    }
+    undo();
+  };
+
+  const handleRedoClick = () => {
+    if (editingRef.current) {
+      editingRef.current = null;
+      setEditingState(null);
+    }
+    redo();
   };
 
   /**
@@ -731,6 +850,18 @@ export function Grid({
       }
       return;
     }
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && !e.altKey && key.toLowerCase() === "z") {
+      e.preventDefault();
+      if (e.shiftKey) redo();
+      else undo();
+      return;
+    }
+    if (mod && !e.altKey && key.toLowerCase() === "y" && !e.shiftKey) {
+      e.preventDefault();
+      redo();
+      return;
+    }
     if (key in DELTAS) {
       e.preventDefault();
       if (e.shiftKey) {
@@ -757,7 +888,7 @@ export function Grid({
       setSelection(null);
     } else if (key === "Delete") {
       e.preventDefault();
-      write("");
+      if (contentOf(addr) !== "") write("");
     } else if (key === "Backspace") {
       e.preventDefault();
       startEdit("", "cell", true);
@@ -967,6 +1098,13 @@ export function Grid({
     : selectMode
       ? "Select"
       : "Ready";
+
+  const showSheetActions = !displayOnly && !selectMode;
+  const hasUnsavedDraft =
+    editing !== null && editOutcome(editing.draft, contentOf(addr)) === "commit";
+  const canUndo = history.past.length > 0 || hasUnsavedDraft;
+  const canRedo = history.future.length > 0;
+  const canReset = history.past.length > 0 || hasUnsavedDraft;
 
   const cols = Array.from({ length: size.cols }, (_, c) => c);
   const rows = Array.from({ length: size.rows }, (_, r) => r);
@@ -1338,10 +1476,50 @@ export function Grid({
           ))}
         </div>
       </div>
-      {(sheetBarRight || (editing && modeLabel !== "Ready")) && (
+      {(showSheetActions || sheetBarRight || (editing && modeLabel !== "Ready")) && (
         <div className="eg-sheetbar">
           <span className="eg-sheet-tab">Sheet1</span>
           <span className="eg-sheet-status">
+            {showSheetActions && (
+              <span className="eg-sheet-actions" role="group" aria-label="Sheet actions">
+                <button
+                  type="button"
+                  className="eg-sheet-btn"
+                  aria-label="Undo"
+                  title="Undo (Ctrl+Z)"
+                  disabled={disableSheetActions || !canUndo}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={handleUndoClick}
+                >
+                  <Icon name="undo" size={13} />
+                  Undo
+                </button>
+                <button
+                  type="button"
+                  className="eg-sheet-btn"
+                  aria-label="Redo"
+                  title="Redo (Ctrl+Y)"
+                  disabled={disableSheetActions || !canRedo}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={handleRedoClick}
+                >
+                  <Icon name="redo" size={13} />
+                  Redo
+                </button>
+                <button
+                  type="button"
+                  className="eg-sheet-btn"
+                  aria-label="Reset sheet"
+                  title="Reset sheet"
+                  disabled={disableSheetActions || !canReset}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={reset}
+                >
+                  <Icon name="rotateCcw" size={13} />
+                  Reset
+                </button>
+              </span>
+            )}
             {sheetBarRight}
             {editing && <span>{modeLabel}</span>}
           </span>

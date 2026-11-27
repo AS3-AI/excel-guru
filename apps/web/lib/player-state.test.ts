@@ -1,11 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { createPlayerState, playerReducer } from "./player-state";
+import { countLessonProgress, createPlayerState, playerReducer } from "./player-state";
 
 const start = () => createPlayerState(5, 3);
-const act = (state: ReturnType<typeof start>, action: Parameters<typeof playerReducer>[1]) => playerReducer(state, action);
+const act = (state: ReturnType<typeof start>, action: Parameters<typeof playerReducer>[1]) =>
+  playerReducer(state, action);
 
 describe("player state", () => {
-  it("starts at step zero with empty counters", () => { expect(start()).toMatchObject({ index: 0, visit: 0, correct: 0, wrongCount: 0, attempts: [], firstTry: {} }); });
+  it("starts at step zero with empty counters", () => {
+    expect(start()).toMatchObject({
+      index: 0,
+      visit: 0,
+      correct: 0,
+      wrongCount: 0,
+      attempts: [],
+      firstTry: {},
+    });
+  });
   it("counts each step once and locks first try on its first answer", () => {
     let state = start();
     state = act(state, { type: "answer", stepId: "s1", input: "bad", correct: false });
@@ -56,7 +66,7 @@ describe("player state", () => {
     expect(s.wrongCount).toBe(2);
   });
   it("Show Answer remains unavailable after a correct answer", () => {
-    let s = act(start(), { type: "answer", stepId: "s1", input: "a", correct: true });
+    const s = act(start(), { type: "answer", stepId: "s1", input: "a", correct: true });
     expect(act(s, { type: "show-answer" })).toBe(s);
   });
   it("a wrong answer followed by Skip remains a first try miss", () => {
@@ -87,13 +97,16 @@ describe("player state", () => {
   });
   it("does not add a successful Previous revisit twice", () => {
     let s = act(start(), { type: "answer", stepId: "s1", input: "a", correct: true });
-    s = act(s, { type: "continue" }); s = act(s, { type: "previous" });
+    s = act(s, { type: "continue" });
+    s = act(s, { type: "previous" });
     s = act(s, { type: "answer", stepId: "s1", input: "a", correct: true });
     expect(s.correct).toBe(1);
   });
   it("counts a correct answer again after cycling through the lesson", () => {
     let s = createPlayerState(5, 3);
-    s = act(s, { type: "skip" }); s = act(s, { type: "skip" }); s = act(s, { type: "skip" });
+    s = act(s, { type: "skip" });
+    s = act(s, { type: "skip" });
+    s = act(s, { type: "skip" });
     s = act(s, { type: "answer", stepId: "s4", input: "x", correct: true });
     s = act(s, { type: "continue" });
     s = act(s, { type: "answer", stepId: "s5", input: "x", correct: true });
@@ -103,56 +116,82 @@ describe("player state", () => {
     expect(s.correct).toBe(3);
   });
   it("Previous records a visit and returns through the actual visit history", () => {
-    let s = start(); s = act(s, { type: "skip" }); s = act(s, { type: "skip" });
-    expect(s.index).toBe(2); s = act(s, { type: "previous" });
+    let s = start();
+    s = act(s, { type: "skip" });
+    s = act(s, { type: "skip" });
+    expect(s.index).toBe(2);
+    s = act(s, { type: "previous" });
     expect(s).toMatchObject({ index: 1, visit: 3 });
   });
   it("Previous after cycling returns to the step before the cycle", () => {
     let s = createPlayerState(5, 99);
     for (let i = 0; i < 5; i++) s = act(s, { type: "skip" });
-    expect(s.index).toBe(3); s = act(s, { type: "previous" });
+    expect(s.index).toBe(3);
+    s = act(s, { type: "previous" });
     expect(s.index).toBe(4);
   });
   it("Continue after a wrong attempt resets wrongCount", () => {
     let s = act(start(), { type: "answer", stepId: "s1", input: "x", correct: false });
-    s = act(s, { type: "continue" }); expect(s.wrongCount).toBe(0);
+    s = act(s, { type: "continue" });
+    expect(s.wrongCount).toBe(0);
   });
   it("Skip resets Show Answer as well as wrongCount", () => {
     let s = act(start(), { type: "answer", stepId: "s1", input: "x", correct: false });
-    s = act(s, { type: "show-answer" }); s = act(s, { type: "skip" });
+    s = act(s, { type: "show-answer" });
+    s = act(s, { type: "skip" });
     expect(s).toMatchObject({ showedAnswer: false, wrongCount: 0 });
   });
   it("Previous resets Show Answer", () => {
-    let s = act(start(), { type: "skip" }); s = act(s, { type: "answer", stepId: "s2", input: "x", correct: false });
-    s = act(s, { type: "show-answer" }); s = act(s, { type: "previous" });
+    let s = act(start(), { type: "skip" });
+    s = act(s, { type: "answer", stepId: "s2", input: "x", correct: false });
+    s = act(s, { type: "show-answer" });
+    s = act(s, { type: "previous" });
     expect(s.showedAnswer).toBe(false);
   });
-  it("Continue increments visit exactly once", () => { expect(act(start(), { type: "continue" }).visit).toBe(1); });
-  it("Skip increments visit exactly once", () => { expect(act(start(), { type: "skip" }).visit).toBe(1); });
-  it("Previous increments visit exactly once", () => { let s = act(start(), { type: "skip" }); expect(act(s, { type: "previous" }).visit).toBe(2); });
+  it("Continue increments visit exactly once", () => {
+    expect(act(start(), { type: "continue" }).visit).toBe(1);
+  });
+  it("Skip increments visit exactly once", () => {
+    expect(act(start(), { type: "skip" }).visit).toBe(1);
+  });
+  it("Previous increments visit exactly once", () => {
+    const s = act(start(), { type: "skip" });
+    expect(act(s, { type: "previous" }).visit).toBe(2);
+  });
   it("completion is reached at the required number of distinct correct steps", () => {
-    let s = createPlayerState(5, 2); s = act(s, { type: "answer", stepId: "s1", input: "x", correct: true });
-    s = act(s, { type: "answer", stepId: "s1", input: "x", correct: true }); expect(s.complete).toBe(false);
-    s = act(s, { type: "answer", stepId: "s2", input: "x", correct: true }); expect(s.complete).toBe(true);
+    let s = createPlayerState(5, 2);
+    s = act(s, { type: "answer", stepId: "s1", input: "x", correct: true });
+    s = act(s, { type: "answer", stepId: "s1", input: "x", correct: true });
+    expect(s.complete).toBe(false);
+    s = act(s, { type: "answer", stepId: "s2", input: "x", correct: true });
+    expect(s.complete).toBe(true);
   });
   it("wrong attempts are kept in chronological order", () => {
-    let s = start(); s = act(s, { type: "answer", stepId: "s1", input: "1", correct: false });
+    let s = start();
+    s = act(s, { type: "answer", stepId: "s1", input: "1", correct: false });
     s = act(s, { type: "answer", stepId: "s1", input: "2", correct: true });
     expect(s.attempts.map((a) => a.input)).toEqual(["1", "2"]);
   });
   it("Show Answer records true only on later attempts", () => {
     let s = act(start(), { type: "answer", stepId: "s1", input: "1", correct: false });
-    s = act(s, { type: "show-answer" }); s = act(s, { type: "answer", stepId: "s1", input: "2", correct: false });
+    s = act(s, { type: "show-answer" });
+    s = act(s, { type: "answer", stepId: "s1", input: "2", correct: false });
     expect(s.attempts.map((a) => a.showedAnswer)).toEqual([false, true]);
   });
   it("cycling from a lesson with four or more steps uses index three", () => {
-    let s = createPlayerState(4, 99); for (let i = 0; i < 4; i++) s = act(s, { type: "skip" });
+    let s = createPlayerState(4, 99);
+    for (let i = 0; i < 4; i++) s = act(s, { type: "skip" });
     expect(s.index).toBe(3);
   });
   it("ignores all actions after completion", () => {
     let state = createPlayerState(2, 1);
     state = act(state, { type: "answer", stepId: "s1", input: "ok", correct: true });
-    for (const action of [{ type: "answer", stepId: "s1", input: "again", correct: true }, { type: "continue" }, { type: "skip" }, { type: "previous" }] as const) {
+    for (const action of [
+      { type: "answer", stepId: "s1", input: "again", correct: true },
+      { type: "continue" },
+      { type: "skip" },
+      { type: "previous" },
+    ] as const) {
       expect(act(state, action)).toBe(state);
     }
   });
@@ -191,5 +230,20 @@ describe("player state", () => {
     state = act(state, { type: "continue" });
     state = act(state, { type: "answer", stepId: "s5", input: "x", correct: true });
     expect(state.complete).toBe(true);
+  });
+});
+
+describe("countLessonProgress", () => {
+  it("counts both completed info steps and correct challenge answers out of all steps", () => {
+    expect(countLessonProgress(7, 0, 0, false)).toEqual({ completed: 0, total: 7, pct: 0 });
+    expect(countLessonProgress(7, 1, 0, false)).toEqual({ completed: 1, total: 7, pct: 14 });
+    expect(countLessonProgress(7, 2, 2, false)).toEqual({ completed: 4, total: 7, pct: 57 });
+    expect(countLessonProgress(7, 3, 4, true)).toEqual({ completed: 7, total: 7, pct: 100 });
+  });
+
+  it("caps at total and completes at 100% when the lesson finishes", () => {
+    expect(countLessonProgress(8, 1, 6, true)).toEqual({ completed: 8, total: 8, pct: 100 });
+    expect(countLessonProgress(7, 4, 4, false)).toEqual({ completed: 7, total: 7, pct: 100 });
+    expect(countLessonProgress(0, 0, 0, false)).toEqual({ completed: 0, total: 0, pct: 0 });
   });
 });
