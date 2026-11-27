@@ -18,7 +18,7 @@ async function post(input: string) {
     new Request("http://localhost/api/explain", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-forwarded-for": "203.0.113.4, 10.0.0.1" },
-      body: JSON.stringify({ lessonId: "intro", stepId: "s4", input }),
+      body: JSON.stringify({ lessonId: "intro", stepId: "s9", input }),
     }),
   );
 }
@@ -115,7 +115,7 @@ describe("explain route guards", () => {
   });
 
   it("rejects a correct answer", async () => {
-    const response = await post("=B2+B3");
+    const response = await post("=B2+B3+B4+B5+B6");
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: "not_wrong" });
   });

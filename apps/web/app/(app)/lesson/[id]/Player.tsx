@@ -14,9 +14,10 @@ import {
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { FormulaStep, Lesson, Os } from "@excel-guru/grader";
+import type { EntryResult, EntryStep, FormulaStep, Lesson, Os } from "@excel-guru/grader";
 import {
   gradeAcceptStep,
+  gradeEntryStep,
   gradeFormulaStep,
   gradeMcqStep,
   gradeSelectStep,
@@ -48,6 +49,8 @@ type Props = {
   signedIn?: boolean;
   inviteNotice?: boolean;
 };
+const EXPLAIN_PREF_KEY = "excelguru:show-explanation";
+
 function formulaWrongMessage(reason: string | undefined, step: FormulaStep, input: string): string {
   if (input.trim() === "")
     return `${step.targetCell} is still empty. Type your formula in ${step.targetCell}, then press Enter.`;
@@ -88,6 +91,21 @@ function formulaWrongMessage(reason: string | undefined, step: FormulaStep, inpu
     );
   return `Not quite. Your answer was ${input || "blank"}.`;
 }
+function entryWrongMessage(result: EntryResult, step: EntryStep): string {
+  const cell = result.cell ?? "";
+  const want = cell ? step.expect[cell] : undefined;
+  if (result.reason === "empty")
+    return step.wrongFeedback?.empty ?? `${cell} is still empty. Click it, type, then press Enter.`;
+  if (result.reason === "text_not_number")
+    return (
+      step.wrongFeedback?.textNotNumber ??
+      `Excel sees ${cell} as text, not a number (see how it sits on the left?). Type just the digits: ${String(want)}.`
+    );
+  return (
+    step.wrongFeedback?.wrongValue ??
+    `${cell} should show ${String(want)}. Click it and type again.`
+  );
+}
 export function Player({
   lesson,
   next: _next,
@@ -119,6 +137,63 @@ export function Player({
   const [showSolution, setShowSolution] = useState(false);
   const [gridResetNonce, setGridResetNonce] = useState(0);
   const [showCorrectExplain, setShowCorrectExplain] = useState(false);
+  /** Whether explanations open by themselves on a correct answer: the learner's last toggle, kept on this device. */
+  const explainPref = useRef(true);
+  useEffect(() => {
+    try {
+      explainPref.current = window.localStorage.getItem(EXPLAIN_PREF_KEY) !== "0";
+    } catch {
+      /* storage unavailable: keep the default (open) */
+    }
+  }, []);
+  const toggleCorrectExplain = () => {
+    const next = !showCorrectExplain;
+    explainPref.current = next;
+    setShowCorrectExplain(next);
+    try {
+      window.localStorage.setItem(EXPLAIN_PREF_KEY, next ? "1" : "0");
+    } catch {
+      /* ignore storage errors */
+    }
+  };
+  /**
+   * The explanation opens above the bar without moving it: the stage's spare min-height gives up the room,
+   * and the page scrolls by whatever the stage couldn't give.
+   */
+  const revealExplain = useCallback((node: HTMLElement | null) => {
+    const stage = stageRef.current;
+    const arena = stage?.parentElement;
+    if (!stage || !arena) return;
+    if (!node) {
+      stage.style.removeProperty("--pl-explain-h");
+      arena.style.removeProperty("padding-bottom");
+      return;
+    }
+    const bar = node.nextElementSibling!;
+    node.style.display = "none";
+    const stageBefore = stage.offsetHeight;
+    const barBefore = bar.getBoundingClientRect().top;
+    node.style.display = "";
+    const added =
+      node.offsetHeight + (parseFloat(getComputedStyle(node.parentElement!).rowGap) || 0);
+    stage.style.setProperty("--pl-explain-h", `${added}px`);
+    // Scroll by what the stage couldn't give up, so the sheet slides up instead of being covered.
+    window.scrollBy(0, added - (stageBefore - stage.offsetHeight));
+    // Spare height under the page can leave too little to scroll; pad until the bar is back where it was.
+    let pad = 0;
+    for (let i = 0; i < 3; i++) {
+      const off = Math.round(bar.getBoundingClientRect().top - barBefore);
+      if (!off) break;
+      if (off > 0) {
+        // Padding first fills any blank strip under the page before the page can scroll.
+        const page =
+          arena.closest(".pl-page")?.getBoundingClientRect().bottom ?? window.innerHeight;
+        pad += off + Math.max(0, window.innerHeight - page);
+        arena.style.paddingBottom = `${pad}px`;
+      }
+      window.scrollBy(0, off);
+    }
+  }, []);
   const [completedInfoIds, setCompletedInfoIds] = useState<string[]>([]);
   const [celebrate, setCelebrate] = useState(false);
   const [savedStats, setSavedStats] = useState<{ points: number; streak: number } | null>(null);
@@ -159,6 +234,9 @@ export function Player({
   const sheetRef = useRef<Sheet | null>(null);
   const commitRef = useRef(false);
   const lastCommitCell = useRef<string | null>(null);
+  /** Entry steps: the learner's final text per cell, sent as the attempt input. */
+  const entryEdits = useRef<Record<string, string>>({});
+  const [entryFlash, setEntryFlash] = useState(0);
   const listRef = useRef<HTMLDialogElement>(null);
   const step = lesson.steps[state.index]!;
   const firstTry = useMemo(() => {
@@ -169,7 +247,7 @@ export function Player({
   const focusAnswerControl = () => {
     (
       stageRef.current?.querySelector<HTMLElement>(".shortcut-practice") ??
-      stageRef.current?.querySelector<HTMLElement>('[role="grid"]') ??
+      stageRef.current?.querySelector<HTMLElement>('[role="grid"][tabindex]') ??
       stageRef.current?.querySelector<HTMLElement>("input, button")
     )?.focus({ preventScroll: true });
   };
@@ -265,11 +343,12 @@ export function Player({
   useEffect(() => {
     if (!celebrate && !state.complete) {
       lastCommitCell.current = null;
+      entryEdits.current = {};
       setFormulaReady(false);
       setStepReady(null);
       const initial =
         stageRef.current?.querySelector<HTMLElement>(
-          step.type === "shortcut" ? ".shortcut-practice" : '[role="grid"]',
+          step.type === "shortcut" ? ".shortcut-practice" : '[role="grid"][tabindex]',
         ) ?? stageRef.current?.querySelector<HTMLElement>("input, button");
       if (initial) initial.focus({ preventScroll: true });
       else continueRef.current?.focus({ preventScroll: true });
@@ -366,7 +445,7 @@ export function Player({
     if (!correct) setWrongText(reason ?? "Not quite. Try again.");
     if (correct) {
       setShowSolution(false);
-      setShowCorrectExplain(false);
+      setShowCorrectExplain(explainPref.current);
       const points = showSolution
         ? 0
         : Math.round(10 * lesson.difficulty * (state.firstTry[step.id] === undefined ? 1.5 : 1));
@@ -430,6 +509,18 @@ export function Player({
       result.correct ? undefined : formulaWrongMessage(result.reason, s, input),
     );
     if (!result.correct) stageRef.current?.querySelector<HTMLElement>('[role="grid"]')?.focus();
+  };
+  /** Grades the typed cells. `committed`: only fail if that cell itself is wrong (typing elsewhere, or a cell
+   * still to come, isn't a mistake yet). Without it (the Check button) any miss fails. */
+  const checkEntry = (s: EntryStep, committed?: string) => {
+    if (feedback === "correct" || state.complete) return;
+    const input = JSON.stringify(entryEdits.current);
+    const result = gradeEntryStep(s, entryEdits.current);
+    if (result.correct) {
+      setEntryFlash((n) => n + 1);
+      answer(input, true);
+    } else if (!committed || (result.cell === committed && result.reason !== "empty"))
+      answer(input, false, entryWrongMessage(result, s));
   };
   const resetStepState = () => {
     setFeedback(null);
@@ -601,9 +692,13 @@ export function Player({
     }
   };
 
-  const hasBrief = step.type === "formula" || step.type === "select";
+  const hasBrief = step.type === "formula" || step.type === "entry" || step.type === "select";
+  const explainText =
+    step.type === "formula" || step.type === "mcq" || step.type === "entry"
+      ? step.explain
+      : undefined;
   const canCheck =
-    (step.type === "formula" && formulaReady) ||
+    ((step.type === "formula" || step.type === "entry") && formulaReady) ||
     (step.type === "select" && selectTouched) ||
     (step.type === "mcq" && Boolean(stepReady)) ||
     ((step.type === "picture" || step.type === "project") && Boolean(stepReady?.input.trim()));
@@ -611,20 +706,6 @@ export function Player({
           [&.pl-key-enter]:[--btn-bg:var(--primary)] [&.pl-key-enter]:[--btn-fg:var(--primary-ink)]
           [&.pl-key-enter]:[--btn-edge:var(--primary-strong)] [&.pl-key-enter]:min-w-[9em]
           [&.pl-key-enter:hover]:[--btn-bg:var(--primary-strong)]`;
-  // Same rule as answer(): first try is worth 1.5×, nothing once the answer has been shown.
-  const stakes = answerPointsVisible(signedIn)
-    ? showSolution
-      ? 0
-      : Math.round(10 * lesson.difficulty * (state.firstTry[step.id] === undefined ? 1.5 : 1))
-    : null;
-  const firstTryRun = (() => {
-    let n = 0;
-    for (const ok of Object.values(state.firstTry).reverse()) {
-      if (!ok) break;
-      n++;
-    }
-    return n;
-  })();
   const openList = () => listRef.current?.showModal();
   const closeList = () => listRef.current?.close();
   const sidebar = (
@@ -808,22 +889,10 @@ export function Player({
           id="main"
           data-feedback={feedback ?? undefined}
         >
-          {!hasBrief && step.type !== "info" && stakes !== null && feedback !== "correct" && (
-            <p
-              className="pl-solo-head [grid-column:1_/_-1] flex items-center justify-end gap-s3 m-[0_0_calc(-1_*_var(--s2))]
-          [font:500_var(--fs-xs)/1_var(--mono)] text-muted
-          [animation:pl-enter_var(--d3)_var(--ease)]"
-              key={`head-${state.visit}`}
-            >
-              <span className="pl-chip-pts inline-flex items-center gap-[6px] p-[4px_9px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)] bg-highlight text-ink">
-                {stakes > 0 ? `+${stakes} pts` : "No points"}
-              </span>
-            </p>
-          )}
           <div
             ref={stageRef}
             className="pl-stage [grid-column:1_/_-1] min-w-0 py-s2 px-0
-          min-h-[calc(100dvh-250px)] [@media(max-width:640px)]:min-h-[calc(100dvh-360px)]
+          min-h-[calc(100dvh_-_250px_-_var(--pl-explain-h,0px))] [@media(max-width:640px)]:min-h-[calc(100dvh_-_360px_-_var(--pl-explain-h,0px))]
           [@media(max-width:640px)]:py-s2
           [&_.pl-card]:[box-shadow:none]
           [&_.pl-card:last-child]:mb-0
@@ -838,21 +907,6 @@ export function Player({
                 key={`brief-${state.visit}`}
                 aria-label="Challenge"
               >
-                {(stakes !== null || firstTryRun >= 2) && feedback !== "correct" && (
-                  <div className="flex flex-wrap items-center gap-s2">
-                    {stakes !== null && (
-                      <span className="pl-chip-pts inline-flex items-center gap-[6px] p-[4px_9px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)] bg-highlight text-ink">
-                        {stakes > 0 ? `+${stakes} pts` : "No points"}
-                      </span>
-                    )}
-                    {firstTryRun >= 2 && (
-                      <span className="pl-chip-run inline-flex items-center gap-[6px] p-[4px_9px] rounded-[4px] [font:600_var(--fs-xs)/1.2_var(--mono)] bg-mint text-ink [animation:pl-pop-in_var(--d3)_var(--ease)]">
-                        <Icon name="sparkle" size={13} />
-                        {firstTryRun} in a row
-                      </span>
-                    )}
-                  </div>
-                )}
                 <div className="pl-prompt grid gap-s3 m-0 max-w-[66ch] text-ink">
                   {step.prompt.split(/\n\n+/).map((block, idx) => {
                     const lines = block.split("\n");
@@ -921,6 +975,33 @@ export function Player({
                     setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
                   }}
                 />
+              ) : step.type === "entry" ? (
+                <Grid
+                  key={`${step.id}-${state.visit}`}
+                  grid={step.grid}
+                  today={LESSON_TODAY}
+                  activeCell={step.activeCell}
+                  highlightCells={step.highlightCells}
+                  yellowCells={feedback === "correct" ? undefined : step.yellowCells}
+                  flashCells={Object.keys(step.expect)}
+                  flashKey={entryFlash}
+                  sheetRef={sheetRef}
+                  disableSheetActions={feedback === "correct"}
+                  onEditStart={() => {
+                    setFormulaReady(true);
+                    setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
+                  }}
+                  onCommit={(addr, input) => {
+                    entryEdits.current = { ...entryEdits.current, [addr]: input };
+                    setFormulaReady(true);
+                    checkEntry(step, addr);
+                  }}
+                  onHistoryChange={(edits) => {
+                    entryEdits.current = Object.fromEntries(edits.map((e) => [e.addr, e.input]));
+                    setFormulaReady(edits.length > 0);
+                    setFeedback((f) => (f === "wrong" && !showSolution ? null : f));
+                  }}
+                />
               ) : step.type === "shortcut" ? (
                 <ShortcutPractice
                   key={`${step.id}-${state.visit}`}
@@ -950,78 +1031,108 @@ export function Player({
               )}
             </div>
           </div>
-          <div
-            className={`pl-actions${feedback === "correct" ? " is-correct" : ""} ${plActionsClasses}`}
-          >
-            {feedback === "correct" ? (
-              <>
-                <strong className="pl-correct-label inline-flex items-center gap-[10px] [color:#fff] [font:650_1.15rem_var(--font-display)]">
-                  <span
-                    className="pl-correct-icon grid place-items-center w-[28px] h-[28px] rounded-[50%] bg-primary [color:#fff]
+          {/* Sticky as one block: the explanation sits in flow above the bar, so it never covers the sheet. */}
+          <div className="pl-dock [grid-column:1_/_-1] sticky bottom-0 z-[5] grid gap-s2">
+            {feedback === "correct" && showCorrectExplain && explainText && (
+              <p
+                id="pl-correct-explain"
+                ref={revealExplain}
+                className="pl-explain m-0 p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [border:1px_solid_var(--border)] [overflow-wrap:anywhere]
+            [animation:pl-enter_var(--d2)_var(--ease)]"
+              >
+                <RichText text={explainText} />
+              </p>
+            )}
+            <div
+              className={`pl-actions${feedback === "correct" ? " is-correct" : ""} ${plActionsClasses}`}
+            >
+              {feedback === "correct" ? (
+                <>
+                  <strong className="pl-correct-label inline-flex items-center gap-[10px] [color:#fff] [font:650_1.15rem_var(--font-display)]">
+                    <span
+                      className="pl-correct-icon grid place-items-center w-[28px] h-[28px] rounded-[50%] bg-primary [color:#fff]
           [animation:pl-pop_420ms_var(--ease)] [border:2px_solid_var(--ink)]"
-                    aria-hidden="true"
-                  >
-                    <Icon name="check" size={14} strokeWidth={3} />
-                  </span>
-                  Correct!
-                </strong>
-                {answerPointsVisible(signedIn) && (
-                  <span
-                    className="pl-points-earned p-[3px_9px] rounded-[4px] bg-highlight text-ink! [font:700_var(--fs-sm)_var(--mono)] tabular-nums
+                      aria-hidden="true"
+                    >
+                      <Icon name="check" size={14} strokeWidth={3} />
+                    </span>
+                    Correct!
+                  </strong>
+                  {answerPointsVisible(signedIn) && (
+                    <span
+                      className="pl-points-earned p-[3px_9px] rounded-[4px] bg-highlight text-ink! [font:700_var(--fs-sm)_var(--mono)] tabular-nums
           [animation:pl-float_600ms_var(--ease)]"
-                    aria-live="polite"
-                  >
-                    +{shownPoints} pts
-                  </span>
-                )}
-                {(step.type === "formula" || step.type === "mcq") && step.explain ? (
-                  <button
-                    type="button"
-                    className={`btn pl-key ${plKeyClasses}`}
-                    aria-expanded={showCorrectExplain}
-                    onClick={() => setShowCorrectExplain((open) => !open)}
-                  >
-                    {showCorrectExplain ? "Hide explanation" : "View explanation"}
-                  </button>
-                ) : null}
-                <button
-                  ref={continueRef}
-                  className={primaryKeyClasses}
-                  aria-keyshortcuts="Enter"
-                  onClick={nextStep}
-                >
-                  Continue <span aria-hidden="true">⏎</span>
-                </button>
-              </>
-            ) : (
-              <>
-                <span
-                  className="pl-actions-end ml-auto flex gap-s2
-          [@media(max-width:640px)]:[flex:1]"
-                >
-                  {step.type === "info" ? (
-                    <button
-                      ref={continueRef}
-                      className={primaryKeyClasses}
-                      aria-keyshortcuts="Enter"
-                      onClick={nextStep}
+                      aria-live="polite"
                     >
-                      Continue <span aria-hidden="true">⏎</span>
-                    </button>
-                  ) : step.type !== "shortcut" ? (
+                      +{shownPoints} pts
+                    </span>
+                  )}
+                  {explainText ? (
                     <button
-                      disabled={!canCheck}
-                      className={`${primaryKeyClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
-                      aria-keyshortcuts="Enter"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => (step.type === "formula" ? check(step) : checkStep())}
+                      type="button"
+                      className={`btn pl-key ${plKeyClasses}`}
+                      aria-expanded={showCorrectExplain}
+                      aria-controls="pl-correct-explain"
+                      onClick={toggleCorrectExplain}
                     >
-                      Check <span aria-hidden="true">⏎</span>
+                      {showCorrectExplain ? "Hide explanation" : "View explanation"}
                     </button>
                   ) : null}
-                </span>
-              </>
-            )}
+                  <button
+                    ref={continueRef}
+                    className={primaryKeyClasses}
+                    aria-keyshortcuts="Enter"
+                    onClick={nextStep}
+                  >
+                    Continue <span aria-hidden="true">⏎</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  {canGoBack && (
+                    <button
+                      className={`btn pl-key ${plKeyClasses}`}
+                      aria-label="Previous"
+                      aria-keyshortcuts="ArrowLeft"
+                      onClick={goPrevious}
+                    >
+                      <span aria-hidden="true">←</span> Prev
+                    </button>
+                  )}
+                  <span
+                    className="pl-actions-end ml-auto flex gap-s2
+          [@media(max-width:640px)]:[flex:1]"
+                  >
+                    {step.type === "info" ? (
+                      <button
+                        ref={continueRef}
+                        className={primaryKeyClasses}
+                        aria-keyshortcuts="Enter"
+                        onClick={nextStep}
+                      >
+                        Continue <span aria-hidden="true">⏎</span>
+                      </button>
+                    ) : step.type !== "shortcut" ? (
+                      <button
+                        disabled={!canCheck}
+                        className={`${primaryKeyClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
+                        aria-keyshortcuts="Enter"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() =>
+                          step.type === "formula"
+                            ? check(step)
+                            : step.type === "entry"
+                              ? checkEntry(step)
+                              : checkStep()
+                        }
+                      >
+                        Check <span aria-hidden="true">⏎</span>
+                      </button>
+                    ) : null}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
           <div
             ref={feedbackRef}
@@ -1037,17 +1148,6 @@ export function Player({
                 <RichText text={wrongText} />
               </p>
             )}
-            {feedback === "correct" &&
-              showCorrectExplain &&
-              (step.type === "formula" || step.type === "mcq") &&
-              step.explain && (
-                <p
-                  className="pl-explain m-0 p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [border:1px_solid_var(--border)] [overflow-wrap:anywhere]
-          [animation:pl-enter_var(--d2)_var(--ease)]"
-                >
-                  <RichText text={step.explain} />
-                </p>
-              )}
           </div>
           {feedback === "wrong" && (
             <aside
@@ -1106,6 +1206,10 @@ export function Player({
                   <p className="pl-solution p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-sunk text-text [overflow-wrap:anywhere]">
                     {step.type === "formula" ? (
                       <code className="chip">{step.solution}</code>
+                    ) : step.type === "entry" ? (
+                      Object.entries(step.expect)
+                        .map(([cell, v]) => `${cell}: ${String(v)}`)
+                        .join(" · ")
                     ) : step.type === "select" ? (
                       step.target
                     ) : step.type === "mcq" ? (
@@ -1122,9 +1226,9 @@ export function Player({
                       ""
                     )}
                   </p>
-                  {(step.type === "formula" || step.type === "mcq") && step.explain && (
+                  {explainText && (
                     <p className="pl-solution-explain m-0 p-[var(--s3)_var(--s4)] rounded-ledger bg-surface-warm [border:1px_solid_var(--border)] text-text leading-[1.6] [overflow-wrap:anywhere]">
-                      <RichText text={step.explain} />
+                      <RichText text={explainText} />
                     </p>
                   )}
                 </>

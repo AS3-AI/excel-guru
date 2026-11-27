@@ -1,174 +1,338 @@
 {
   "id": "intro",
   "module": "intro",
-  "title": "Your first Excel result",
-  "goal": "Find B2, enter a formula using cell addresses, and explain why =B2+B3 is better than typing the current numbers into the formula.",
+  "title": "Excel Basics: your first total",
+  "goal": "Find any cell by its address, type text and numbers with Enter and Tab, total a column with Alt + =, and see a formula update by itself.",
   "difficulty": 1,
-  "requiredCorrect": 4,
+  "requiredCorrect": 13,
   "isIntro": true,
   "video": null,
   "steps": [
     {
       "id": "s1",
       "type": "info",
-      "topic": "See a cell",
-      "text": "Every box in a sheet is a **cell**.\n\nIts address is its **column letter** plus **row number** — so ==B2== is column **B**, row **2**.",
+      "topic": "What you'll build",
+      "text": "This is a monthly budget.\n\nClick **Change Rent** below and watch the **Total** in ==B7==.\n\nIn about 8 minutes, you'll build this yourself.",
       "grid": [
-        ["Supply", "In stock", "Pack total"],
-        ["Badges", 5, null],
-        ["Lanyards", 4, null],
-        ["Clips", 2, null]
+        ["Expense", "Amount"],
+        ["Rent", 1200],
+        ["Groceries", 350],
+        ["Transport", 90],
+        ["Internet", 45],
+        ["Phone", 30],
+        ["Total", "=SUM(B2:B6)"]
       ],
-      "activeCell": "B2",
-      "yellowCells": ["B2"],
-      "animation": {
-        "kind": "cell-locate",
-        "col": "B",
-        "row": 2,
-        "cell": "B2"
-      }
-    },
-    {
-      "id": "s2",
-      "type": "select",
-      "topic": "Find a number",
-      "prompt": "Click the badge count in ==B2==, then click **Check**.",
-      "grid": [
-        ["Supply", "In stock", "Pack total"],
-        ["Badges", 5, null],
-        ["Lanyards", 4, null],
-        ["Clips", 2, null]
-      ],
-      "target": "B2",
-      "wrongFeedback": "Look across to column **B** and down to row **2** — where they meet is `B2`.",
-      "clues": [
-        "Column **B** is the second column (`In stock`), and row **2** is the `Badges` row."
-      ]
-    },
-    {
-      "id": "s3",
-      "type": "info",
-      "topic": "How formulas work",
-      "text": "To add **Badges** (5) and **Lanyards** (4) in ==C2==, Excel uses this formula:\n\n`=B2+B3`\n\n• `=` tells Excel to calculate\n• **B2** and **B3** point to those two cells\n• `+` adds them together to show **9**",
-      "grid": [
-        ["Supply", "In stock", "Pack total"],
-        ["Badges", 5, "=B2+B3"],
-        ["Lanyards", 4, null],
-        ["Clips", 2, null]
-      ],
-      "activeCell": "C2",
-      "showFormulaBar": true
-    },
-    {
-      "id": "s4",
-      "type": "formula",
-      "topic": "Make the result",
-      "prompt": "Now try it yourself. Click cell ==C2==, type the formula below, and press [[Enter]]:\n\n`=B2+B3`",
-      "grid": [
-        ["Supply", "In stock", "Pack total"],
-        ["Badges", 5, null],
-        ["Lanyards", 4, null],
-        ["Clips", 2, null]
-      ],
-      "targetCell": "C2",
-      "activeCell": "C2",
-      "highlightCells": ["B2", "B3"],
-      "yellowCells": ["C2"],
-      "expectedValue": 9,
-      "mustUse": [],
-      "mustReference": ["B2", "B3"],
-      "disallowFunctions": true,
-      "solution": "=B2+B3",
-      "explain": "C2 shows 9 right away because it adds the values inside B2 and B3.",
-      "mobileButtons": ["=", "+"],
-      "clues": [
-        "Excel needs `=` at the start to calculate, followed by the two cell addresses joined with `+`.",
-        "Use `B2` and `B3` instead of `5` and `4` so the total updates whenever stock changes."
-      ],
-      "revealAfter": 2,
-      "wrongFeedback": {
-        "notFormula": "Excel needs `=` at the very start to calculate a formula.",
-        "missingReference": "If stock changes later, `=5+4` stays stuck at `9`. Use the cell addresses (`B2` and `B3`) instead.",
-        "disallowedFunction": "Keep it simple — no function needed here, just `+` between `B2` and `B3`.",
-        "wrongValue": "Look at column **B**: Badges (`5`) is in row 2 (`B2`) and Lanyards (`4`) is in row 3 (`B3`)."
-      }
-    },
-    {
-      "id": "s5",
-      "type": "info",
-      "topic": "Why cell addresses matter",
-      "text": "Tip: you don't have to memorise cell names. You can type `=`, click **B2**, type `+`, click **B3**, and press [[Enter]].\n\nClick **Change B2: 5 → 6** below to see why cell addresses beat fixed numbers — ==C2== updates from **9** to **10** automatically.",
-      "grid": [
-        ["Supply", "In stock", "Pack total"],
-        ["Badges", 5, "=B2+B3"],
-        ["Lanyards", 4, null],
-        ["Clips", 2, null]
-      ],
-      "activeCell": "C2",
-      "yellowCells": ["C2"],
+      "activeCell": "B7",
+      "yellowCells": ["B7"],
       "showFormulaBar": true,
       "animation": {
         "kind": "live-update",
         "liveUpdate": {
           "watchCell": "B2",
-          "fromValue": 5,
-          "toValue": 6,
-          "resultCell": "C2",
-          "buttonLabel": "Change B2: 5 → 6",
-          "resetLabel": "Reset B2: 6 → 5"
+          "fromValue": 1200,
+          "toValue": 1500,
+          "resultCell": "B7",
+          "buttonLabel": "Change Rent: 1200 → 1500",
+          "resetLabel": "Put Rent back to 1200"
         }
       }
     },
     {
-      "id": "s6",
-      "type": "mcq",
-      "topic": "Check the idea",
-      "prompt": "Which formula always uses the **current values** in `B2` and `B3`?",
-      "options": ["`=5+4`", "`=B2+B3`", "`=9`"],
-      "answer": 1,
-      "explain": "`=B2+B3` reads whatever numbers are in `B2` and `B3` right now, so the answer stays fresh.",
-      "wrongFeedback": [
-        "`=5+4` hard-codes old numbers — if `B2` changes to `6`, `=5+4` stays stale at `9`.",
-        null,
-        "`=9` is just a fixed number — it never looks at `B2` or `B3`."
+      "id": "s2",
+      "type": "select",
+      "topic": "Columns",
+      "prompt": "A sheet is a grid. **Columns** run up and down and are named with letters.\n\nClick the letter ==C== at the top of the sheet, then press [[Enter]].",
+      "grid": [
+        ["Expense", "Amount", null],
+        [null, null, null],
+        [null, null, null],
+        [null, null, null]
       ],
+      "yellowCells": ["C:C"],
+      "target": "C:C",
+      "wrongFeedback": "That isn't column C yet. Columns have **letters** along the top edge. Click the letter **C** itself.",
+      "clues": ["The letters A, B, C, D… sit in the grey bar above the first row."]
+    },
+    {
+      "id": "s3",
+      "type": "select",
+      "topic": "Rows",
+      "prompt": "**Rows** run across and are numbered.\n\nClick the number ==4== on the left edge of the sheet, then press [[Enter]].",
+      "grid": [
+        ["Expense", "Amount", null],
+        [null, null, null],
+        [null, null, null],
+        [null, null, null]
+      ],
+      "yellowCells": ["4:4"],
+      "target": "4:4",
+      "wrongFeedback": "That isn't row 4 yet. Rows have **numbers** down the left edge. Click the number **4** itself.",
+      "clues": ["The numbers 1, 2, 3, 4… sit in the grey bar on the left."]
+    },
+    {
+      "id": "s4",
+      "type": "select",
+      "topic": "Cell addresses",
+      "prompt": "Where a column meets a row is a **cell**. Its address is the column letter, then the row number, like a street name and a house number.\n\nColumn **B** and row **3** are lit up. Click the cell where they cross, then press [[Enter]].",
+      "grid": [
+        ["Expense", "Amount", null],
+        [null, null, null],
+        [null, null, null],
+        [null, null, null]
+      ],
+      "highlightCells": ["B:B", "3:3"],
+      "target": "B3",
+      "wrongFeedback": "Run down column **B** until you reach row **3**. That cell is `B3`.",
       "clues": [
-        "Imagine changing `B2` from `5` to `6`. Which formula would automatically give `10`?"
+        "Look at the Name Box above the sheet: it shows the address of the cell you clicked."
       ]
     },
     {
-      "id": "s7",
-      "type": "formula",
-      "topic": "Try new data",
-      "prompt": "Morning parcels are **8** and afternoon parcels are **6**.\n\nClick cell ==B4==, enter a formula that adds those two cells together, and press [[Enter]].",
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Quick check",
+      "prompt": "What's the address of the yellow cell?",
       "grid": [
-        ["Shift", "Parcels"],
-        ["Morning", 8],
-        ["Afternoon", 6],
+        ["Expense", "Amount", null, null],
+        [null, null, null, null],
+        [null, null, null, null],
+        [null, null, null, null],
+        [null, null, null, null]
+      ],
+      "yellowCells": ["D5"],
+      "options": ["`B4`", "`D5`", "`5D`"],
+      "answer": 1,
+      "explain": "The letter always comes first, then the number. You'll use addresses like `D5` in every formula you write.",
+      "wrongFeedback": [
+        "Count again: the letter names the column, the number names the row.",
+        null,
+        "Close! The letter always comes first: `D5`."
+      ],
+      "clues": ["Read the letter at the top of its column, then the number at the left of its row."]
+    },
+    {
+      "id": "s6",
+      "type": "entry",
+      "topic": "Type text",
+      "prompt": "To put something in a cell, click it and type. [[Enter]] saves it.\n\nClick ==A2==, type **Rent**, then press [[Enter]].",
+      "grid": [["Expense", "Amount"]],
+      "activeCell": "A1",
+      "yellowCells": ["A2"],
+      "expect": {
+        "A2": "Rent"
+      },
+      "explain": "Saved. The green box jumped down to `A3`: [[Enter]] saves and moves **down**, ready for the next item.",
+      "wrongFeedback": {
+        "wrongValue": "`A2` should say **Rent**. Click it and type again: new typing replaces the old."
+      },
+      "clues": ["Click the cell under **Expense**, type Rent, press Enter."]
+    },
+    {
+      "id": "s7",
+      "type": "entry",
+      "topic": "Type numbers",
+      "prompt": "Numbers go in the same way. Type just the digits: no commas, no ₹ or $.\n\nClick ==B2==, type **1200**, then press [[Enter]]. Then look: which side of the cell does it sit on?",
+      "grid": [
+        ["Expense", "Amount"],
+        ["Rent", null]
+      ],
+      "activeCell": "A3",
+      "yellowCells": ["B2"],
+      "expect": {
+        "B2": 1200
+      },
+      "explain": "**1200** sits on the **right** of its cell; **Rent** sits on the left. Numbers line up right, text lines up left. If a number ever sits on the left, Excel thinks it's text and won't add it up.",
+      "wrongFeedback": {
+        "textNotNumber": "Excel sees that as **text**, not a number. See how it sits on the left? Click `B2` and type just **1200**.",
+        "wrongValue": "`B2` should show **1200**. Click it and type again."
+      },
+      "clues": ["Only the four digits: 1, 2, 0, 0."]
+    },
+    {
+      "id": "s8",
+      "type": "entry",
+      "topic": "Move with Tab",
+      "prompt": "[[Tab]] saves and moves **right**, like filling in a form.\n\nClick ==A3==, type **Groceries**, press [[Tab]], type **350**, then press [[Enter]].\n\nWatch where you land after [[Enter]].",
+      "grid": [
+        ["Expense", "Amount"],
+        ["Rent", 1200]
+      ],
+      "activeCell": "B3",
+      "yellowCells": ["A3:B3"],
+      "keycaps": ["Groceries", "Tab", "350", "Enter"],
+      "expect": {
+        "A3": "Groceries",
+        "B3": 350
+      },
+      "explain": "[[Tab]] moved you right. Then [[Enter]] jumped back to column **A** on the next row, ready for the next item. That's how fast typists fill a list.",
+      "clues": ["Start in `A3`. Press Tab (not Enter) after Groceries, so you land in `B3`."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Your first formula",
+      "prompt": "We added three more expenses. A **formula** is a calculation, and every formula starts with `=`.\n\nClick ==B7==, type `=B2+B3+B4+B5+B6`, then press [[Enter]].",
+      "grid": [
+        ["Expense", "Amount"],
+        ["Rent", 1200],
+        ["Groceries", 350],
+        ["Transport", 90],
+        ["Internet", 45],
+        ["Phone", 30],
         ["Total", null]
       ],
-      "targetCell": "B4",
-      "activeCell": "B4",
-      "highlightCells": ["B2", "B3"],
-      "yellowCells": ["B4"],
-      "expectedValue": 14,
-      "mustUse": [],
-      "mustReference": ["B2", "B3"],
+      "targetCell": "B7",
+      "activeCell": "A7",
+      "highlightCells": ["B2:B6"],
+      "yellowCells": ["B7"],
+      "expectedValue": 1715,
+      "mustReference": ["B2", "B3", "B4", "B5", "B6"],
       "disallowFunctions": true,
-      "solution": "=B2+B3",
-      "explain": "14! Because B4 points to B2 and B3, changing either parcel count updates the total.",
+      "solution": "=B2+B3+B4+B5+B6",
+      "explain": "**1715**: Excel added the five amounts in `B2` to `B6` for you.",
       "mobileButtons": ["=", "+"],
-      "clues": [
-        "Start in **B4** with `=`, then add Morning (**B2**) and Afternoon (**B3**).",
-        "Use the cell addresses `B2` and `B3` instead of `8` and `6`."
-      ],
-      "revealAfter": 2,
       "wrongFeedback": {
-        "notFormula": "Start your formula with `=` so Excel calculates in `B4`.",
-        "missingReference": "If morning or afternoon parcels change, `=8+6` goes stale. Reference the two source cells (`B2` and `B3`) instead.",
-        "disallowedFunction": "Just use `+` between the two source cells — no functions needed yet.",
-        "wrongValue": "Look at column **B**: Morning (`8`) is in row 2 (`B2`) and Afternoon (`6`) is in row 3 (`B3`)."
-      }
+        "notFormula": "Without `=` at the start, Excel just sees text. Type it again starting with `=`.",
+        "disallowedFunction": "Type it the long way this time, with `+` between the cells. The shortcut comes next.",
+        "missingReference": "Add all five amounts: `=B2+B3+B4+B5+B6`.",
+        "wrongValue": "Check every address: `=B2+B3+B4+B5+B6`."
+      },
+      "clues": ["Start with `=`, then each cell from `B2` to `B6` joined with `+`."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "AutoSum: Alt + =",
+      "prompt": "That was a lot of typing for five cells. Imagine 500.\n\nClick ==B7== and press [[Alt]] + [[=]], then [[Enter]]. Excel writes the formula for you.\n\nOn a Mac: [[Option]] + [[=]].",
+      "grid": [
+        ["Expense", "Amount"],
+        ["Rent", 1200],
+        ["Groceries", 350],
+        ["Transport", 90],
+        ["Internet", 45],
+        ["Phone", 30],
+        ["Total", "=B2+B3+B4+B5+B6"]
+      ],
+      "targetCell": "B7",
+      "activeCell": "A7",
+      "yellowCells": ["B7"],
+      "keycaps": ["Alt + =", "Enter"],
+      "expectedValue": 1715,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(B2:B6)",
+      "explain": "Same answer, one shortcut. Excel looked up, found the numbers and wrote `=SUM(B2:B6)`. `B2:B6` means “B2 to B6”.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "missingFunction": "Use the shortcut: hold [[Alt]] and tap [[=]] (on a Mac, [[Option]] + [[=]]), then press [[Enter]].",
+        "wrongValue": "The total should still be 1715. Press [[Alt]] + [[=]] in `B7` and Excel picks the range for you."
+      },
+      "clues": [
+        "Click `B7` first, so Excel knows where the total goes.",
+        "No shortcut on your keyboard? Type `=SUM(B2:B6)` instead."
+      ]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Answer vs recipe",
+      "prompt": "Look at `B7`: the **cell** shows `1715`, but the **formula bar** above the sheet shows `=SUM(B2:B6)`.\n\nSo what is actually stored in `B7`?",
+      "grid": [
+        ["Expense", "Amount"],
+        ["Rent", 1200],
+        ["Groceries", 350],
+        ["Transport", 90],
+        ["Internet", 45],
+        ["Phone", 30],
+        ["Total", "=SUM(B2:B6)"]
+      ],
+      "activeCell": "B7",
+      "yellowCells": ["B7"],
+      "showFormulaBar": true,
+      "options": ["The number `1715`", "The formula `=SUM(B2:B6)`", "Both, as two separate values"],
+      "answer": 1,
+      "explain": "The cell shows the **answer**; the formula bar shows the **recipe**. Excel keeps the recipe and re-cooks the answer whenever an ingredient changes.",
+      "wrongFeedback": [
+        "That's what you see. But the cell holds the recipe, and shows you its result.",
+        null,
+        "There's only one thing stored: the recipe. `1715` is just what it works out to right now."
+      ],
+      "clues": ["Which of the two would still be right if Rent changed?"]
+    },
+    {
+      "id": "s12",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "Rent goes up from **1200** to **1500**.\n\nBefore you change anything: what will the Total in `B7` become?",
+      "grid": [
+        ["Expense", "Amount"],
+        ["Rent", 1200],
+        ["Groceries", 350],
+        ["Transport", 90],
+        ["Internet", 45],
+        ["Phone", 30],
+        ["Total", "=SUM(B2:B6)"]
+      ],
+      "activeCell": "B2",
+      "highlightCells": ["B7"],
+      "yellowCells": ["B2"],
+      "options": ["`1715`: it stays the same", "`2015`", "`1500`"],
+      "answer": 1,
+      "explain": "Rent went up by 300, so the total goes from 1715 to **2015**. Next, see whether Excel agrees.",
+      "wrongFeedback": [
+        "The total is a formula, not a typed number, so it doesn't stay stuck.",
+        null,
+        "1500 is the new rent alone. The total adds every expense: 1715 + 300."
+      ],
+      "clues": ["How much did Rent go up by?"]
+    },
+    {
+      "id": "s13",
+      "type": "entry",
+      "topic": "The total updates itself",
+      "prompt": "Now prove it. Click ==B2==, type **1500**, press [[Enter]], and keep your eyes on `B7`.",
+      "grid": [
+        ["Expense", "Amount"],
+        ["Rent", 1200],
+        ["Groceries", 350],
+        ["Transport", 90],
+        ["Internet", 45],
+        ["Phone", 30],
+        ["Total", "=SUM(B2:B6)"]
+      ],
+      "activeCell": "A2",
+      "yellowCells": ["B2"],
+      "highlightCells": ["B7"],
+      "expect": {
+        "B2": 1500,
+        "B7": 2015
+      },
+      "explain": "You never touched `B7`, but it changed to 2015 by itself. Change one number and every formula that uses it updates. That's why the world runs on spreadsheets.",
+      "clues": ["Change only `B2`. Leave the total alone and watch it."]
+    },
+    {
+      "id": "s14",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory, with no highlights.\n\nWhat does this shopping list cost in total? Put the answer in `B5`.",
+      "grid": [
+        ["Item", "Price"],
+        ["Notebook", 60],
+        ["Pens", 25],
+        ["Bag", 400],
+        ["Total", null]
+      ],
+      "targetCell": "B5",
+      "activeCell": "A1",
+      "expectedValue": 485,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(B2:B4)",
+      "explain": "485. You found the cell, let Excel pick the range and got the total, all without help.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "missingFunction": "Use the AutoSum shortcut you just learned, so Excel writes a `SUM` for you.",
+        "wrongValue": "Add only the three prices, `B2` to `B4`."
+      },
+      "clues": ["Click `B5`, then [[Alt]] + [[=]] and [[Enter]]."]
     }
   ]
 }

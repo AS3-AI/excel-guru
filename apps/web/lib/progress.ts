@@ -1,5 +1,6 @@
 import {
   gradeAcceptStep,
+  gradeEntryInput,
   gradeFormulaStep,
   gradeMcqStep,
   gradeSelectStep,
@@ -64,6 +65,8 @@ function grade(step: Step, input: string, os: "win" | "mac"): boolean {
   switch (step.type) {
     case "formula":
       return gradeFormulaStep(step, input).correct;
+    case "entry":
+      return gradeEntryInput(step, input).correct;
     case "select":
       return gradeSelectStep(step, input);
     case "mcq":

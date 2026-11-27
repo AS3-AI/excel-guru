@@ -1,4 +1,5 @@
 export { gradeFormulaStep, LESSON_TODAY, type GradeResult } from "./formula";
+export { gradeEntryInput, gradeEntryStep, parseEntryInput, type EntryResult } from "./entry";
 export { normaliseKeys, type KeyEventLike } from "./keys";
 export {
   gradeAcceptStep,

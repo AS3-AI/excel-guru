@@ -1,5 +1,6 @@
 import type { Lesson, Step } from "@excel-guru/grader";
 import {
+  gradeEntryInput,
   gradeFormulaStep,
   gradeSelectStep,
   gradeSequenceStep,
@@ -84,6 +85,8 @@ export function isExplainInputWrong(step: Step, input: string, os: "win" | "mac"
   switch (step.type) {
     case "formula":
       return !gradeFormulaStep(step, input).correct;
+    case "entry":
+      return !gradeEntryInput(step, input).correct;
     case "select":
       return !gradeSelectStep(step, input);
     case "shortcut":

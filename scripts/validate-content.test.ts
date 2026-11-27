@@ -717,7 +717,7 @@ describe("validateContent: step types", () => {
     const errors = errorsFor("unknown-type", lessonFile("unknown-type", "count/count-1.json"));
     expect(errors).toEqual([
       expect.stringMatching(
-        /step "s1": unknown type "Formula" \(expected one of: formula, select, shortcut, mcq, picture, project, info\)/,
+        /step "s1": unknown type "Formula" \(expected one of: formula, entry, select, shortcut, mcq, picture, project, info\)/,
       ),
       expect.stringMatching(/step "s2": unknown type "bogus"/),
       expect.stringMatching(/step "s3": shortcut mode "hold" must be "chord" or "sequence"/),
@@ -896,5 +896,114 @@ describe("validateContent: unknown field names", () => {
       expect.stringMatching(/step "i1": unknown field "prompt"$/),
     ]);
     expectEveryErrorNamesItsFile("unknown-fields");
+  });
+});
+
+describe("validateContent: entry steps", () => {
+  const lesson = (step: Record<string, unknown>) => ({
+    id: "entry-1",
+    module: "testmod",
+    title: "Typing",
+    difficulty: 1,
+    requiredCorrect: 1,
+    isIntro: false,
+    video: null,
+    steps: [{ id: "s1", type: "entry", prompt: "Type Rent in A2.", ...step }],
+  });
+  const budget = [
+    ["Expense", "Amount"],
+    ["Rent", 1200],
+    ["Total", "=SUM(B2:B2)"],
+  ];
+
+  it("accepts typed text, numbers, and a formula result that follows the typing", () => {
+    expect(validateLesson(lesson({ grid: [["Expense"]], expect: { A2: "Rent" } }))).toEqual([]);
+    expect(
+      validateLesson(
+        lesson({
+          grid: budget,
+          expect: { B2: 1500, B3: 1500 },
+          explain: "It updated.",
+          wrongFeedback: {
+            empty: "Type it.",
+            textNotNumber: "Just digits.",
+            wrongValue: "Check it.",
+          },
+        }),
+      ),
+    ).toEqual([]);
+  });
+
+  it("rejects a missing or malformed expect", () => {
+    expect(validateLesson(lesson({ grid: [["x"]] })).join("\n")).toContain(
+      "expect must be a non-empty object",
+    );
+    expect(validateLesson(lesson({ grid: [["x"]], expect: { a2: "Rent" } })).join("\n")).toContain(
+      "uppercase cell reference",
+    );
+    expect(validateLesson(lesson({ grid: [["x"]], expect: { A2: "" } })).join("\n")).toContain(
+      "expect.A2 must be a non-empty string",
+    );
+  });
+
+  it("rejects an expect the starting grid already satisfies, or one typing cannot reach", () => {
+    expect(validateLesson(lesson({ grid: budget, expect: { A2: "Rent" } })).join("\n")).toContain(
+      "nothing to type",
+    );
+    expect(validateLesson(lesson({ grid: budget, expect: { B3: 99 } })).join("\n")).toContain(
+      "not graded correct",
+    );
+  });
+
+  it("rejects unknown wrongFeedback keys", () => {
+    expect(
+      validateLesson(
+        lesson({ grid: [["x"]], expect: { A2: "Rent" }, wrongFeedback: { notFormula: "x" } }),
+      ).join("\n"),
+    ).toContain('unknown field "wrongFeedback.notFormula"');
+  });
+});
+
+describe("validateContent: mcq with a sheet", () => {
+  const lesson = (extra: Record<string, unknown>) => ({
+    id: "mcq-grid-1",
+    module: "testmod",
+    title: "Read the sheet",
+    difficulty: 1,
+    requiredCorrect: 1,
+    isIntro: false,
+    video: null,
+    steps: [
+      {
+        id: "s1",
+        type: "mcq",
+        prompt: "What is stored in B2?",
+        options: ["3", "=A1+A2"],
+        answer: 1,
+        ...extra,
+      },
+    ],
+  });
+
+  it("accepts an optional grid and formula bar", () => {
+    expect(
+      validateLesson(
+        lesson({
+          grid: [
+            [1, null],
+            [2, "=A1+A2"],
+          ],
+          activeCell: "B2",
+          yellowCells: ["B2"],
+          showFormulaBar: true,
+        }),
+      ),
+    ).toEqual([]);
+  });
+
+  it("rejects a malformed grid or formula-bar flag", () => {
+    const errors = validateLesson(lesson({ grid: "A1", showFormulaBar: "yes" })).join("\n");
+    expect(errors).toContain("grid must be an array of rows");
+    expect(errors).toContain("showFormulaBar must be a boolean");
   });
 });

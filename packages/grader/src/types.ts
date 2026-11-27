@@ -104,6 +104,28 @@ export type SelectStep = StepBase & {
   wrongFeedback?: string;
 };
 
+export type EntryWrongFeedback = {
+  /** An expected cell is still blank. */
+  empty?: string;
+  /** A number was expected but the cell holds text (e.g. "1,200 rs"). */
+  textNotNumber?: string;
+  wrongValue?: string;
+};
+
+/**
+ * Type values into cells (text, numbers, or anything that changes a formula's result).
+ * Correct once every `expect` cell shows its value; text matches ignoring case and outer spaces.
+ * The attempt input is a JSON object of cell → text as typed.
+ */
+export type EntryStep = StepBase & {
+  type: "entry";
+  prompt: string;
+  grid: Grid;
+  expect: Record<string, string | number | boolean>;
+  explain?: string;
+  wrongFeedback?: EntryWrongFeedback;
+};
+
 export type ShortcutChordStep = StepBase & {
   type: "shortcut";
   mode: "chord";
@@ -136,6 +158,9 @@ export type McqStep = StepBase & {
   explain?: string;
   /** Per-option feedback when a wrong option is chosen. */
   wrongFeedback?: (string | null)[];
+  /** Optional read-only sheet shown above the question (uses activeCell, highlightCells, yellowCells). */
+  grid?: Grid;
+  showFormulaBar?: boolean;
 };
 
 export type PictureStep = StepBase & {
@@ -162,7 +187,14 @@ export type InfoStep = StepBase & {
 };
 
 export type Step =
-  FormulaStep | SelectStep | ShortcutStep | McqStep | PictureStep | ProjectStep | InfoStep;
+  | FormulaStep
+  | EntryStep
+  | SelectStep
+  | ShortcutStep
+  | McqStep
+  | PictureStep
+  | ProjectStep
+  | InfoStep;
 
 export type StepType = Step["type"];
 

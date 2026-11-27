@@ -49,7 +49,6 @@ export const plArenaClasses = [
   "[&.is-solo_.pl-stage_.pl-prompt]:tracking-[-0.01em]",
   "[&[data-feedback='wrong']_.pl-stage]:[animation:pl-shake_380ms_var(--ease)]",
   "[&[data-feedback='wrong']_.pl-actions]:[animation:pl-shake_380ms_var(--ease)]",
-  "[&[data-feedback='wrong']_.pl-actions]:[border-top-color:var(--danger)]",
   "[&.is-solo_.pl-options]:[border:0] [&.is-solo_.pl-options]:p-0 [&.is-solo_.pl-options]:[background:none]",
   "[&.is-solo_.pl-options_legend]:[font:600_clamp(1.2rem,_2vw,_1.5rem)/1.4_var(--font-display)]",
   "[&.is-solo_.pl-options_legend]:tracking-[-0.015em] [&.is-solo_.pl-options_legend]:mb-s4",
@@ -84,8 +83,9 @@ export const plBriefClasses = [
 ].join(" ");
 
 export const plActionsClasses = [
-  "[grid-column:1_/_-1] mt-0 sticky bottom-0 z-[5] flex flex-wrap items-center gap-[var(--s2)_var(--s3)]",
-  "py-s3 px-0 [@media(max-width:640px)]:pb-[max(var(--s3),env(safe-area-inset-bottom))]",
+  "flex flex-wrap items-center gap-[var(--s2)_var(--s3)]",
+  // Same padding and (transparent) border as the correct state, so Check and Continue sit in the same spot.
+  "py-s3 px-s4 [border:2px_solid_transparent] rounded-ledger [@media(max-width:640px)]:pb-[max(var(--s3),env(safe-area-inset-bottom))]",
   "bg-[var(--surface-warm)]",
   "[transition:background-color_var(--d3)_var(--ease),_border-color_var(--d3)_var(--ease)]",
   "[&.is-correct]:text-ink [&.is-correct]:bg-mint [&.is-correct]:[border:var(--line)]",

@@ -5,8 +5,10 @@ import { basename, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { Sheet } from "../packages/engine/src/index";
 import {
+  gradeEntryStep,
   gradeFormulaStep,
   LESSON_TODAY,
+  type EntryStep,
   type FormulaStep,
   type Lesson,
   type Postcondition,
@@ -287,6 +289,7 @@ function isGrid(v: unknown): boolean {
 /** Every step type in the grader's StepType, in schema order; the Record keeps it exhaustive. */
 const STEP_TYPES: Record<StepType, true> = {
   formula: true,
+  entry: true,
   select: true,
   shortcut: true,
   mcq: true,
@@ -362,9 +365,19 @@ const STEP_FIELDS: { [T in StepType]: Fields<Extract<Step, { type: T }>> } = {
     explain: true,
     wrongFeedback: true,
   },
+  entry: { ...BASE, prompt: true, grid: true, expect: true, explain: true, wrongFeedback: true },
   select: { ...BASE, prompt: true, grid: true, target: true, wrongFeedback: true },
   shortcut: { ...BASE, mode: true, prompt: true, keys: true, pics: true, grid: true },
-  mcq: { ...BASE, prompt: true, options: true, answer: true, explain: true, wrongFeedback: true },
+  mcq: {
+    ...BASE,
+    prompt: true,
+    options: true,
+    answer: true,
+    explain: true,
+    wrongFeedback: true,
+    grid: true,
+    showFormulaBar: true,
+  },
   picture: { ...BASE, prompt: true, image: true, accept: true },
   project: { ...BASE, prompt: true, file: true, accept: true },
   info: { ...BASE, text: true, grid: true, showFormulaBar: true, selection: true, animation: true },
@@ -377,6 +390,7 @@ const FORMULA_WRONG_FEEDBACK_FIELDS = {
   disallowedFunction: true,
   missingReference: true,
 } as const;
+const ENTRY_WRONG_FEEDBACK_FIELDS = { empty: true, textNotNumber: true, wrongValue: true } as const;
 const POSTCONDITION_FIELDS: Fields<Postcondition> = { grid: true, selection: true, format: true };
 const KEYS_FIELDS: Fields<ShortcutChordStep["keys"]> & Fields<ShortcutSequenceStep["keys"]> = {
   win: true,
@@ -556,6 +570,29 @@ function checkStepShape(s: Obj, fail: Fail) {
         }
       }
       return;
+    case "entry":
+      prompt();
+      grid();
+      if (!isObj(s.expect) || Object.keys(s.expect).length === 0)
+        fail('expect must be a non-empty object of cell → value, like { "A2": "Rent" }');
+      else
+        for (const [cell, v] of Object.entries(s.expect)) {
+          if (!CELL_RE.test(cell))
+            fail(`expect key ${show(cell)} must be an uppercase cell reference`);
+          if (!["string", "number", "boolean"].includes(typeof v) || v === "")
+            fail(`expect.${cell} must be a non-empty string, a number or a boolean`);
+        }
+      if (s.explain !== undefined) need("explain", typeof s.explain === "string", "a string");
+      if (s.wrongFeedback !== undefined) {
+        if (!isObj(s.wrongFeedback)) fail("wrongFeedback must be an object");
+        else {
+          checkFields(s.wrongFeedback, ENTRY_WRONG_FEEDBACK_FIELDS, "wrongFeedback.", fail);
+          for (const [k, v] of Object.entries(s.wrongFeedback)) {
+            if (typeof v !== "string") fail(`wrongFeedback.${k} must be a string`);
+          }
+        }
+      }
+      return;
     case "select":
       prompt();
       grid();
@@ -603,6 +640,10 @@ function checkStepShape(s: Obj, fail: Fail) {
           fail("wrongFeedback must be an array of strings or null");
         }
       }
+      if (s.grid !== undefined && !isGrid(s.grid))
+        fail("grid must be an array of rows of strings, numbers, booleans or null");
+      if (s.showFormulaBar !== undefined && typeof s.showFormulaBar !== "boolean")
+        fail("showFormulaBar must be a boolean");
       return;
     }
     case "picture":
@@ -726,6 +767,7 @@ function checkInfoAnimation(anim: unknown, fail: Fail) {
 /** Content rules for a step whose shape is valid. */
 function checkStepContent(step: Step, fail: Fail) {
   if (step.type === "formula") checkFormula(step, fail);
+  else if (step.type === "entry") checkEntry(step, fail);
   else if (step.type === "select") checkSelect(step, fail);
   else if (step.type === "shortcut") checkShortcut(step, fail);
 }
@@ -747,6 +789,33 @@ function checkFormula(step: FormulaStep, fail: Fail) {
         ? `; mustUse ${(step.mustUse ?? []).join(", ")}`
         : "";
   fail(`solution "${step.solution}" is not graded correct (${result.reason}${detail})`);
+}
+
+// --- entry -----------------------------------------------------------------
+
+/** Typing exactly the expected values must pass, and the starting grid alone must not. */
+function checkEntry(step: EntryStep, fail: Fail) {
+  // Only literal cells can be typed; a formula cell (e.g. a total) passes through its inputs.
+  const typed = Object.fromEntries(
+    Object.entries(step.expect)
+      .filter(([cell]) => !isFormulaCell(step.grid, cell))
+      .map(([cell, v]) => [cell, typeof v === "boolean" ? (v ? "TRUE" : "FALSE") : String(v)]),
+  );
+  try {
+    if (!gradeEntryStep(step, typed).correct)
+      fail("typing the expect values into their cells is not graded correct");
+    if (gradeEntryStep(step, {}).correct)
+      fail("the starting grid already satisfies expect, so there is nothing to type");
+  } catch (e) {
+    fail(`expect crashed the grader (${(e as Error).message})`);
+  }
+}
+
+function isFormulaCell(grid: EntryStep["grid"], cell: string): boolean {
+  const m = /^([A-Z]{1,3})([1-9]\d*)$/.exec(cell);
+  if (!m) return false;
+  const v = grid[Number(m[2]) - 1]?.[columnIndex(m[1]!)];
+  return typeof v === "string" && v.startsWith("=");
 }
 
 // --- select ----------------------------------------------------------------

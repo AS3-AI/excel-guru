@@ -34,26 +34,49 @@ export function StepView({
     );
   if (step.type === "mcq")
     return (
-      <fieldset className={`pl-options ${plOptionsClasses}`}>
-        <legend className="pl-prompt block m-0 text-ink text-[1.06rem] leading-[1.55]">
-          <RichText text={step.prompt} />
-        </legend>
-        {step.options.map((option, i) => (
-          <label key={option}>
-            <input
-              type="radio"
-              name={`choice-${step.id}`}
-              checked={choice === i}
-              onChange={() => {
-                setChoice(i);
-                onEditStart?.();
-                onReady(String(i));
-              }}
+      <>
+        {step.grid && (
+          <div className="mb-s4">
+            <Grid
+              grid={step.grid}
+              displayOnly
+              showFormulaBar={step.showFormulaBar ?? false}
+              activeCell={step.activeCell}
+              highlightCells={step.highlightCells}
+              yellowCells={step.yellowCells}
             />
-            <RichText text={option} />
-          </label>
-        ))}
-      </fieldset>
+          </div>
+        )}
+        <fieldset className={`pl-options ${plOptionsClasses}`}>
+          <legend className="pl-prompt block m-0 text-ink text-[1.06rem] leading-[1.55]">
+            {step.prompt.split(/\n\n+/).map((para, i) => (
+              <span key={i} className="block [&+&]:mt-s3">
+                <RichText text={para} />
+              </span>
+            ))}
+          </legend>
+          {/* Short options sit side by side; any long one keeps them stacked. */}
+          <div
+            className={`grid gap-s2 ${step.options.every((o) => o.length <= 28) ? "grid-cols-[repeat(auto-fit,minmax(min(180px,100%),1fr))]" : ""}`}
+          >
+            {step.options.map((option, i) => (
+              <label key={option}>
+                <input
+                  type="radio"
+                  name={`choice-${step.id}`}
+                  checked={choice === i}
+                  onChange={() => {
+                    setChoice(i);
+                    onEditStart?.();
+                    onReady(String(i));
+                  }}
+                />
+                <RichText text={option} />
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </>
     );
   if (step.type === "picture" || step.type === "project")
     return (
@@ -110,12 +133,12 @@ export function StepView({
         <p className="pl-soon m-[var(--s3)_0_0] text-muted">Coming soon</p>
       </section>
     );
-  if (step.type === "formula")
+  if (step.type === "formula" || step.type === "entry")
     return (
       <Grid
         key={step.id}
         grid={step.grid}
-        targetCell={step.targetCell}
+        targetCell={step.type === "formula" ? step.targetCell : undefined}
         highlightCells={step.highlightCells}
         yellowCells={step.yellowCells}
         activeCell={step.activeCell}

@@ -212,6 +212,45 @@ export function tabStep(
   return next.col === pos.col ? null : next;
 }
 
+/** Where Enter goes: back to the column a Tab run started in, one row down (as Excel does), else down or up. */
+export function enterStep(
+  pos: Pos,
+  tabStartCol: number | null,
+  shift: boolean,
+  size: { rows: number; cols: number },
+): Pos {
+  const next = move(pos, shift ? "ArrowUp" : "ArrowDown", size);
+  return tabStartCol === null || shift ? next : { row: next.row, col: tabStartCol };
+}
+
+/** AutoSum: Alt+= (Option+= on a Mac types ≠, so match the physical key) or Excel for Mac's Cmd+Shift+T. */
+export function isAutoSumKey(e: {
+  key: string;
+  code: string;
+  altKey: boolean;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  shiftKey: boolean;
+}): boolean {
+  if (e.altKey && !e.ctrlKey && !e.metaKey) return e.code === "Equal" || e.key === "=";
+  return e.metaKey && e.shiftKey && !e.altKey && !e.ctrlKey && e.key.toLowerCase() === "t";
+}
+
+/** Excel's AutoSum draft: the run of numbers directly above the cell, else directly left, else "=SUM()". */
+export function autoSumFormula(sheet: Sheet, pos: Pos): string {
+  const isNum = (row: number, col: number) =>
+    row >= 0 && col >= 0 && typeof sheet.get(addressOf({ row, col })) === "number";
+  let row = pos.row - 1;
+  while (isNum(row, pos.col)) row--;
+  if (row < pos.row - 1)
+    return `=SUM(${rangeRef({ row: row + 1, col: pos.col }, { row: pos.row - 1, col: pos.col })})`;
+  let col = pos.col - 1;
+  while (isNum(pos.row, col)) col--;
+  if (col < pos.col - 1)
+    return `=SUM(${rangeRef({ row: pos.row, col: col + 1 }, { row: pos.row, col: pos.col - 1 })})`;
+  return "=SUM()";
+}
+
 /**
  * What ending an edit does. An unchanged draft just closes: re-setting it would re-parse the
  * cell (text "007" would become 7) and fire onCommit for a mere focus.
@@ -553,6 +592,8 @@ export function Grid({
   const dragging = useRef(false);
   /** A mouse button went down on a cell to drag-select a range outside of edit mode. */
   const draggingRange = useRef<Pos | null>(null);
+  /** Column where the current run of Tabs began; Enter returns there (Excel). Arrows and clicks end the run. */
+  const tabStartCol = useRef<number | null>(null);
   const idBase = useId();
 
   const setEditing = (ed: Editing | null) => {
@@ -800,7 +841,7 @@ export function Grid({
    * Commit the draft, then optionally step to a neighbour (an arrow key name: Enter ↓, Tab →).
    * On a parse error the editor stays open with the message and this returns false.
    */
-  const commit = (step?: string, focusGrid = true): boolean => {
+  const commit = (step?: string | Pos, focusGrid = true): boolean => {
     const ed = editingRef.current;
     if (!ed) return true;
     if (editOutcome(ed.draft, contentOf(addr)) === "close") {
@@ -808,7 +849,8 @@ export function Grid({
       onCommit?.(addr, ed.draft);
     } else if (write(ed.draft) !== null) return false;
     setEditing(null); // before focusing the grid, so the editor's blur finds nothing to commit
-    if (step) setActive((p) => move(p, step, size));
+    if (typeof step === "string") setActive((p) => move(p, step, size));
+    else if (step) setActive(step);
     if (focusGrid) gridEl.current?.focus();
     return true;
   };
@@ -862,8 +904,16 @@ export function Grid({
       redo();
       return;
     }
+    if (isAutoSumKey(e)) {
+      e.preventDefault();
+      tabStartCol.current = null;
+      setSelection(null);
+      startEdit(autoSumFormula(sheet, active), "cell");
+      return;
+    }
     if (key in DELTAS) {
       e.preventDefault();
+      tabStartCol.current = null;
       if (e.shiftKey) {
         const anchor = selection?.anchor ?? active;
         const cursor = move(selection?.cursor ?? active, key, size);
@@ -878,12 +928,14 @@ export function Grid({
       setSelection({ anchor: active, cursor: active, whole });
     } else if (key === "Enter") {
       e.preventDefault();
-      setActive((p) => move(p, e.shiftKey ? "ArrowUp" : "ArrowDown", size));
+      setActive(enterStep(active, tabStartCol.current, e.shiftKey, size));
+      tabStartCol.current = null;
       setSelection(null);
     } else if (key === "Tab") {
       const next = tabStep(active, e.shiftKey, size);
       if (!next) return; // at the edge: let the browser move focus out of the grid
       e.preventDefault();
+      tabStartCol.current ??= active.col;
       setActive(next);
       setSelection(null);
     } else if (key === "Delete") {
@@ -905,7 +957,8 @@ export function Grid({
   const onEditorKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      commit(e.shiftKey ? "ArrowUp" : "ArrowDown");
+      if (commit(enterStep(active, tabStartCol.current, e.shiftKey, size)))
+        tabStartCol.current = null;
     } else if (e.key === "Tab") {
       const ed = editingRef.current;
       if (!ed || editOutcome(ed.draft, contentOf(addr)) === "close") {
@@ -918,13 +971,15 @@ export function Grid({
           const next = tabStep(active, e.shiftKey, size);
           if (next) {
             e.preventDefault();
+            tabStartCol.current ??= active.col;
             setActive(next);
           } // at the edge, the default Tab now leaves the grid
         }
         return;
       }
       e.preventDefault(); // on a parse error the editor keeps focus and shows the message
-      commit(e.shiftKey ? "ArrowLeft" : "ArrowRight");
+      const start = active.col;
+      if (commit(e.shiftKey ? "ArrowLeft" : "ArrowRight")) tabStartCol.current ??= start;
     } else if (e.key === "Escape") {
       e.preventDefault();
       cancel();
@@ -988,6 +1043,7 @@ export function Grid({
         return;
       }
     }
+    tabStartCol.current = null; // a click (not a point-mode click) ends the Tab run
     if (e.shiftKey) {
       const anchor = selection?.anchor ?? active;
       setSelection({ anchor, cursor: pos });
@@ -1266,6 +1322,7 @@ export function Grid({
                     } else {
                       setActive(pos);
                     }
+                    tabStartCol.current = null;
                     setSelection({ anchor, cursor: pos, whole: "column" });
                   }}
                 >
@@ -1319,6 +1376,7 @@ export function Grid({
                   } else {
                     setActive(pos);
                   }
+                  tabStartCol.current = null;
                   setSelection({ anchor, cursor: pos, whole: "row" });
                 }}
               >

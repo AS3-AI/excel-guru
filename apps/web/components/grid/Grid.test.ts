@@ -2,14 +2,17 @@ import { describe, expect, it } from "vitest";
 import { ParseError, Sheet, TokenizeError } from "@excel-guru/engine";
 import {
   addressOf,
+  autoSumFormula,
   colLetter,
   colMinChars,
   editOutcome,
   EMPTY_HISTORY,
+  enterStep,
   formatValue,
   gridColumns,
   gridSize,
   inRects,
+  isAutoSumKey,
   isTypingKey,
   move,
   parseRef,
@@ -350,5 +353,87 @@ describe("sheet edit history (undo, redo, reset)", () => {
     expect(reset.sheet.get("A4")).toBe("007");
     expect(reset.sheet.get("C2")).toBeNull();
     expect(reset.literals.has("A4")).toBe(true);
+  });
+});
+
+describe("enterStep", () => {
+  const size = { rows: 8, cols: 7 };
+  it("moves down when no Tab run is open", () => {
+    expect(enterStep({ row: 2, col: 1 }, null, false, size)).toEqual({ row: 3, col: 1 });
+  });
+  it("returns to the column the Tab run started in, one row down (Excel)", () => {
+    expect(enterStep({ row: 2, col: 3 }, 0, false, size)).toEqual({ row: 3, col: 0 });
+  });
+  it("Shift+Enter moves up and ignores the Tab run", () => {
+    expect(enterStep({ row: 2, col: 3 }, 0, true, size)).toEqual({ row: 1, col: 3 });
+  });
+  it("stays on the last row at the bottom edge", () => {
+    expect(enterStep({ row: 7, col: 2 }, 0, false, size)).toEqual({ row: 7, col: 0 });
+  });
+});
+
+describe("autoSumFormula", () => {
+  const budget = new Sheet([
+    ["Expense", "Amount"],
+    ["Rent", 1200],
+    ["Groceries", 350],
+    ["Transport", 90],
+    ["Total", null, null],
+  ]);
+  it("sums the run of numbers directly above, stopping at the header", () => {
+    expect(autoSumFormula(budget, { row: 4, col: 1 })).toBe("=SUM(B2:B4)");
+  });
+  it("sums numbers to the left when there are none above", () => {
+    const row = new Sheet([[5, 6, 7, null]]);
+    expect(autoSumFormula(row, { row: 0, col: 3 })).toBe("=SUM(A1:C1)");
+  });
+  it("names a single cell without a range", () => {
+    const one = new Sheet([["Head"], [4], [null]]);
+    expect(autoSumFormula(one, { row: 2, col: 0 })).toBe("=SUM(A2)");
+  });
+  it("counts a formula result as a number", () => {
+    const sub = new Sheet([[1], [2], ["=A1+A2"], [null]]);
+    expect(autoSumFormula(sub, { row: 3, col: 0 })).toBe("=SUM(A1:A3)");
+  });
+  it("leaves an empty SUM() when nothing is next to the cell", () => {
+    expect(autoSumFormula(budget, { row: 0, col: 4 })).toBe("=SUM()");
+  });
+  it("ignores the cell itself, so it can replace an existing total", () => {
+    const withTotal = new Sheet([[1], [2], ["=A1+A2"]]);
+    expect(autoSumFormula(withTotal, { row: 2, col: 0 })).toBe("=SUM(A1:A2)");
+  });
+});
+
+describe("isAutoSumKey", () => {
+  const k = (
+    o: Partial<{
+      key: string;
+      code: string;
+      altKey: boolean;
+      ctrlKey: boolean;
+      metaKey: boolean;
+      shiftKey: boolean;
+    }>,
+  ) => ({
+    key: "",
+    code: "",
+    altKey: false,
+    ctrlKey: false,
+    metaKey: false,
+    shiftKey: false,
+    ...o,
+  });
+  it("accepts Alt+= on Windows", () => {
+    expect(isAutoSumKey(k({ key: "=", code: "Equal", altKey: true }))).toBe(true);
+  });
+  it("accepts Option+= on a Mac, which types ≠", () => {
+    expect(isAutoSumKey(k({ key: "≠", code: "Equal", altKey: true }))).toBe(true);
+  });
+  it("accepts Cmd+Shift+T, Excel for Mac's AutoSum", () => {
+    expect(isAutoSumKey(k({ key: "T", code: "KeyT", metaKey: true, shiftKey: true }))).toBe(true);
+  });
+  it("rejects a plain = and Ctrl+Alt+= (AltGr layouts)", () => {
+    expect(isAutoSumKey(k({ key: "=", code: "Equal" }))).toBe(false);
+    expect(isAutoSumKey(k({ key: "=", code: "Equal", altKey: true, ctrlKey: true }))).toBe(false);
   });
 });
