@@ -1,0 +1,344 @@
+{
+  "id": "dynamic-arrays",
+  "module": "modern",
+  "title": "Dynamic Arrays & Spill",
+  "goal": "Write one formula that fills a whole block of results, know why it can show #SPILL!, and total a spill that grows with the # spill reference.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "One formula, many results",
+      "text": "Here is a café order. Each line total is **Qty × Price**.\n\nThe old way: type `=B2*C2` in `D2`, then drag it down four more rows. That is five formulas to write and keep right.\n\nThe new way: **one** formula in ==D2==. Press **Play** and watch the answers **spill** down into `D3:D6` by themselves.\n\nThis works in Microsoft 365 and Excel 2021 or newer.",
+      "grid": [
+        ["Item", "Qty", "Price", "Line total"],
+        ["Chai", 3, 20, "=B2:B6*C2:C6"],
+        ["Samosa", 4, 10, null],
+        ["Sandwich", 2, 50, null],
+        ["Coffee", 5, 30, null],
+        ["Juice", 2, 40, null]
+      ],
+      "activeCell": "D2",
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "formula-build",
+        "targetCell": "D2",
+        "frames": [
+          {
+            "label": "Click D2, the first empty cell",
+            "draft": "",
+            "focusCell": "D2"
+          },
+          {
+            "label": "Type = and drag B2 down to B6",
+            "draft": "=B2:B6",
+            "focusCell": "D2",
+            "highlightCells": ["B2:B6"]
+          },
+          {
+            "label": "Type * and drag C2 down to C6",
+            "draft": "=B2:B6*C2:C6",
+            "focusCell": "D2",
+            "highlightCells": ["C2:C6"]
+          },
+          {
+            "label": "Press Enter",
+            "key": "Enter",
+            "draft": "=B2:B6*C2:C6",
+            "resultCell": "D2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Your first spill",
+      "prompt": "Now you do it. Click ==D2==, type `=B2:B6*C2:C6`, then press [[Enter]].\n\nRead it as “each Qty times its own Price”, row by row.",
+      "grid": [
+        ["Item", "Qty", "Price", "Line total"],
+        ["Chai", 3, 20, null],
+        ["Samosa", 4, 10, null],
+        ["Sandwich", 2, 50, null],
+        ["Coffee", 5, 30, null],
+        ["Juice", 2, 40, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "D1",
+      "highlightCells": ["B2:B6", "C2:C6"],
+      "yellowCells": ["D2"],
+      "expectedValue": 60,
+      "mustReference": ["B2:B6", "C2:C6"],
+      "solution": "=B2:B6*C2:C6",
+      "explain": "Five answers from one formula: 60, 40, 100, 150 and 80. Only `D2` holds the formula. The other four cells just show its results.",
+      "mobileButtons": ["=", ":", "*"],
+      "wrongFeedback": {
+        "notFormula": "Without `=` at the start, Excel just sees text. Type it again starting with `=`.",
+        "parseError": "Something is off in the formula. It should look like `=B2:B6*C2:C6`.",
+        "missingReference": "Use the two whole ranges: `B2:B6` for Qty and `C2:C6` for Price.",
+        "wrongValue": "That gives one answer, or the wrong ones. Multiply the **whole** columns, `B2:B6` times `C2:C6`, and Excel does it row by row."
+      },
+      "clues": [
+        "Start with `=`, then the Qty range, then `*`, then the Price range.",
+        "Each range runs from row 2 to row 6."
+      ]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "Who owns the formula?",
+      "prompt": "The results now fill `D2:D6`. You click ==D4== (the **100**).\n\nWhat does Excel show in the formula bar?",
+      "grid": [
+        ["Item", "Qty", "Price", "Line total"],
+        ["Chai", 3, 20, "=B2:B6*C2:C6"],
+        ["Samosa", 4, 10, null],
+        ["Sandwich", 2, 50, null],
+        ["Coffee", 5, 30, null],
+        ["Juice", 2, 40, null]
+      ],
+      "activeCell": "D4",
+      "yellowCells": ["D4"],
+      "options": [
+        "`=B4*C4`, one formula per cell",
+        "`=B2:B6*C2:C6`, but greyed out",
+        "Just the number `100`"
+      ],
+      "answer": 1,
+      "explain": "Only `D2`, the **anchor**, owns the formula. Every other cell in the spill shows it faded, as a hint: to change it, go back to `D2`.",
+      "wrongFeedback": [
+        "There is no hidden `=B4*C4`. You typed one formula, in `D2`, and it produced all five results.",
+        null,
+        "The cell shows `100`, but the formula bar still points back to the formula that made it."
+      ],
+      "clues": ["How many formulas did you type?"]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Not just numbers",
+      "prompt": "Array math works on text too. Here `&` joins pieces of text.\n\nClick ==C2== and type `=A2:A5&\" \"&B2:B5` to build every full name at once.",
+      "grid": [
+        ["First", "Last", "Full name"],
+        ["Asha", "Rao", null],
+        ["Ben", "Khan", null],
+        ["Chitra", "Nair", null],
+        ["Dev", "Patel", null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "C1",
+      "highlightCells": ["A2:A5", "B2:B5"],
+      "yellowCells": ["C2"],
+      "expectedValue": "Asha Rao",
+      "mustReference": ["A2:A5", "B2:B5"],
+      "solution": "=A2:A5&\" \"&B2:B5",
+      "explain": "Each first name met its own last name: Asha Rao, Ben Khan, Chitra Nair, Dev Patel. The `\" \"` in the middle adds the space.",
+      "mobileButtons": ["=", ":", "&", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check the quotes: the space is typed as `\" \"` (quote, space, quote).",
+        "missingReference": "Join the two whole columns: `A2:A5` and `B2:B5`.",
+        "wrongValue": "Join **whole** columns, not single cells: `=A2:A5&\" \"&B2:B5`. The `\" \"` is the space between the names."
+      },
+      "clues": [
+        "Pattern: first range, `&`, a space in quotes, `&`, last range.",
+        "Rows 2 to 5 in both columns."
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Array math inside a function",
+      "prompt": "Sometimes you want **one** answer, not a list. Wrap the array math in **SUM**.\n\nClick ==B6== and type `=SUM(B2:B5*C2:C5)`: it multiplies every Kg by its price, then adds the results up.",
+      "grid": [
+        ["Fruit", "Kg", "Price per kg"],
+        ["Mango", 4, 80],
+        ["Banana", 6, 40],
+        ["Apple", 3, 120],
+        ["Papaya", 2, 50],
+        ["Total revenue", null, null]
+      ],
+      "targetCell": "B6",
+      "activeCell": "A6",
+      "highlightCells": ["B2:C5"],
+      "yellowCells": ["B6"],
+      "expectedValue": 1020,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(B2:B5*C2:C5)",
+      "explain": "**1020** = 320 + 240 + 360 + 100. No helper column was needed. Beware of `=SUM(B2:B5)*SUM(C2:C5)`: that multiplies the two column totals and gives 4350.",
+      "mobileButtons": ["=", "(", ")", ":", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check the brackets: `=SUM(B2:B5*C2:C5)`.",
+        "missingFunction": "Wrap the multiplication in **SUM** so you get a single total.",
+        "wrongValue": "Multiply row by row **inside** SUM: `=SUM(B2:B5*C2:C5)`. Totalling each column first gives a different, wrong number."
+      },
+      "clues": ["Open `SUM(`, put the two ranges with `*` between them, then close the bracket."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "The café sells more sandwiches: **Qty** in ==B4== changes from 2 to **6**.\n\nWhat will the results in `D2:D6` do?",
+      "grid": [
+        ["Item", "Qty", "Price", "Line total"],
+        ["Chai", 3, 20, "=B2:B6*C2:C6"],
+        ["Samosa", 4, 10, null],
+        ["Sandwich", 2, 50, null],
+        ["Coffee", 5, 30, null],
+        ["Juice", 2, 40, null]
+      ],
+      "activeCell": "B4",
+      "yellowCells": ["B4"],
+      "highlightCells": ["D2:D6"],
+      "options": [
+        "Only `D4` changes, to `300`",
+        "Nothing, until you retype the formula",
+        "All five results change"
+      ],
+      "answer": 0,
+      "explain": "The formula still reads `B2:B6` and `C2:C6`, so it re-works itself. Only the Sandwich row has a new input, so only `D4` becomes 6 × 50 = 300.",
+      "wrongFeedback": [
+        null,
+        "Formulas never need retyping when their inputs change. Excel recalculates by itself.",
+        "Five results are recalculated, but four of them have the same inputs as before, so they stay the same."
+      ],
+      "clues": ["Which row did you change?"]
+    },
+    {
+      "id": "s7",
+      "type": "entry",
+      "topic": "The spill updates itself",
+      "prompt": "Prove it. Click ==B4==, type **6**, press [[Enter]], and watch `D4`.",
+      "grid": [
+        ["Item", "Qty", "Price", "Line total"],
+        ["Chai", 3, 20, "=B2:B6*C2:C6"],
+        ["Samosa", 4, 10, null],
+        ["Sandwich", 2, 50, null],
+        ["Coffee", 5, 30, null],
+        ["Juice", 2, 40, null]
+      ],
+      "activeCell": "A4",
+      "yellowCells": ["B4"],
+      "highlightCells": ["D4"],
+      "expect": {
+        "B4": 6,
+        "D4": 300
+      },
+      "explain": "`D4` jumped to **300** and you never touched `D2`. One formula, always in step with its data.",
+      "wrongFeedback": {
+        "wrongValue": "Change only the Qty of Sandwich: `B4` should be **6**, then `D4` shows 300."
+      },
+      "clues": ["Only the digit 6, in the Qty column."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Predict #SPILL!",
+      "prompt": "`D2` holds `=B2:B6*C2:C6`, so its results want to land in `D2:D6`.\n\nA colleague types the word **Paid** in ==D4==, right in their path. What does Excel do?",
+      "grid": [
+        ["Item", "Qty", "Price", "Line total"],
+        ["Chai", 3, 20, null],
+        ["Samosa", 4, 10, null],
+        ["Sandwich", 2, 50, "Paid"],
+        ["Coffee", 5, 30, null],
+        ["Juice", 2, 40, null]
+      ],
+      "activeCell": "D4",
+      "yellowCells": ["D4"],
+      "options": [
+        "It overwrites “Paid” with `100`",
+        "`D2` shows `#SPILL!` and nothing spills",
+        "It spills `D2` and `D3`, then stops"
+      ],
+      "answer": 1,
+      "explain": "Excel never overwrites your data. If the spill range isn't completely empty, the whole spill stops and the anchor shows `#SPILL!`. It is all or nothing.",
+      "wrongFeedback": [
+        "Excel protects what you typed. It will not overwrite “Paid”.",
+        null,
+        "A spill is all or nothing: one blocked cell means no results at all."
+      ],
+      "clues": ["Would you want Excel to quietly erase something you typed?"]
+    },
+    {
+      "id": "s9",
+      "type": "entry",
+      "topic": "Clear the blocker",
+      "prompt": "Here it is: `D2` shows **#SPILL!** and nothing fills below.\n\nClick the blocking cell ==D4== and press [[Delete]]. The results should rush back.\n\nIn Excel, click the ⚠ next to the error and choose **Select Obstructing Cells** to find the culprit yourself.",
+      "grid": [
+        ["Item", "Qty", "Price", "Line total"],
+        ["Chai", 3, 20, "=B2:B6*C2:C6"],
+        ["Samosa", 4, 10, null],
+        ["Sandwich", 2, 50, "Paid"],
+        ["Coffee", 5, 30, null],
+        ["Juice", 2, 40, null]
+      ],
+      "activeCell": "D2",
+      "yellowCells": ["D4"],
+      "expect": {
+        "D4": 100,
+        "D5": 150
+      },
+      "explain": "Cleared: `D4` now shows **100** and `D5` shows **150**, and the whole list is back. Other causes of `#SPILL!` are merged cells in the way, results that would run off the sheet, and a formula placed inside an Excel Table.",
+      "wrongFeedback": {
+        "wrongValue": "The blocker is still there. Click `D4` and press [[Delete]] to empty it: don't type a number over it."
+      },
+      "clues": [
+        "Only one cell is in the way: the one that says Paid.",
+        "Click it, then press Delete."
+      ]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "The spill reference",
+      "prompt": "More items will be added, so the spill in `D2:D6` may grow. You want a total that always covers **the whole spill**.\n\nWhich formula do you put in `F2`?",
+      "grid": [
+        ["Item", "Qty", "Price", "Line total", null, "Grand total"],
+        ["Chai", 3, 20, 60, null, null],
+        ["Samosa", 4, 10, 40, null, null],
+        ["Sandwich", 2, 50, 100, null, null],
+        ["Coffee", 5, 30, 150, null, null],
+        ["Juice", 2, 40, 80, null, null]
+      ],
+      "yellowCells": ["F2"],
+      "options": ["`=SUM(D2#)`", "`=SUM(D2:D6)`", "`=SUM(D2)`"],
+      "answer": 0,
+      "explain": "`D2#` means “the whole spill that starts at `D2`”. It grows and shrinks with the spill. `D2:D6` stays five rows forever, and `D2` alone is only the first result.",
+      "wrongFeedback": [
+        null,
+        "That works today, but the range is fixed. A sixth item would be left out.",
+        "`D2` alone is just the first result (60), not the whole list."
+      ],
+      "clues": ["Which one follows the spill when it gets longer?"]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nFive staff worked today. What does each person earn for the day (hours × hourly rate)? Use a single formula that starts in `D2`.",
+      "grid": [
+        ["Name", "Hours", "Rate", "Pay"],
+        ["Meera", 8, 25, null],
+        ["Joe", 6, 30, null],
+        ["Kavya", 7, 20, null],
+        ["Omar", 5, 40, null],
+        ["Tina", 9, 10, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A1",
+      "expectedValue": 200,
+      "solution": "=B2:B6*C2:C6",
+      "explain": "One formula gives all five: 200, 180, 140, 200 and 90. Change anyone's hours and their pay follows.",
+      "mobileButtons": ["=", ":", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check the formula: two ranges joined by `*`.",
+        "wrongValue": "Multiply the **whole** Hours column by the **whole** Rate column in one formula: `B2:B6` and `C2:C6`."
+      },
+      "clues": ["Pay = Hours × Rate, for every row at once.", "Use whole ranges, not single cells."]
+    }
+  ]
+}

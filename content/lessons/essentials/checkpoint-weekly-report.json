@@ -1,0 +1,409 @@
+{
+  "id": "checkpoint-weekly-report",
+  "module": "essentials",
+  "title": "Checkpoint: a small weekly report",
+  "goal": "Turn a raw week of orders into a tidy report using formulas, fill, Flash Fill, sorting, number formats, paste values and Freeze Panes, without step-by-step help.",
+  "difficulty": 2,
+  "requiredCorrect": 13,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Monday morning",
+      "text": "It's Monday. The owner of **Chai Corner** hands you last week's orders and says: “Make me a tidy report I can send by lunch.”\n\nThere's nothing new to learn here. You'll use what you've practised in Topics 1 to 13, one job at a time, with less help as you go.\n\nThe **Amount** and **First name** columns are still empty. That's your first job.",
+      "grid": [
+        ["Server", "Item", "Qty", "Price", "Amount", "First name"],
+        ["Kavya Nair", "Samosa", 40, 15, null, null],
+        ["Imran Qureshi", "Chai", 100, 10, null, null],
+        ["Joseph Dsouza", "Sandwich", 25, 60, null, null],
+        ["Tanvi Patil", "Cold coffee", 30, 80, null, null],
+        ["Harsh Vora", "Brownie", 16, 50, null, null],
+        ["Lakshmi Menon", "Lassi", 30, 40, null, null]
+      ],
+      "activeCell": "A1"
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Job 1: the first amount",
+      "prompt": "Each order's **Amount** is its Qty times its Price. Work out the first one in ==E2==.",
+      "grid": [
+        ["Server", "Item", "Qty", "Price", "Amount", "First name"],
+        ["Kavya Nair", "Samosa", 40, 15, null, null],
+        ["Imran Qureshi", "Chai", 100, 10, null, null],
+        ["Joseph Dsouza", "Sandwich", 25, 60, null, null],
+        ["Tanvi Patil", "Cold coffee", 30, 80, null, null],
+        ["Harsh Vora", "Brownie", 16, 50, null, null],
+        ["Lakshmi Menon", "Lassi", 30, 40, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "A1",
+      "expectedValue": 600,
+      "mustReference": ["C2", "D2"],
+      "solution": "=C2*D2",
+      "explain": "Kavya sold 40 samosas at 15 each: **600**. Using the cell addresses, not typed numbers, means the Amount follows if a Qty or Price changes.",
+      "mobileButtons": ["=", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingReference": "Point at the cells instead of typing the numbers: Qty is in `C2` and Price in `D2`.",
+        "wrongValue": "Multiply Qty by Price: `C2` times `D2`."
+      },
+      "clues": ["`=C2*D2`: the star `*` means “times”."]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Job 2: the other five",
+      "prompt": "`E2:E7` is selected, with your formula at the top. Copy it into the other five orders with one shortcut.",
+      "keys": { "win": "Ctrl+D", "mac": "Cmd+D" },
+      "grid": [
+        ["Server", "Item", "Qty", "Price", "Amount", "First name"],
+        ["Kavya Nair", "Samosa", 40, 15, "=C2*D2", null],
+        ["Imran Qureshi", "Chai", 100, 10, null, null],
+        ["Joseph Dsouza", "Sandwich", 25, 60, null, null],
+        ["Tanvi Patil", "Cold coffee", 30, 80, null, null],
+        ["Harsh Vora", "Brownie", 16, 50, null, null],
+        ["Lakshmi Menon", "Lassi", 30, 40, null, null]
+      ],
+      "activeCell": "E2:E7",
+      "postcondition": {
+        "grid": [
+          ["Server", "Item", "Qty", "Price", "Amount", "First name"],
+          ["Kavya Nair", "Samosa", 40, 15, "=C2*D2", null],
+          ["Imran Qureshi", "Chai", 100, 10, "=C3*D3", null],
+          ["Joseph Dsouza", "Sandwich", 25, 60, "=C4*D4", null],
+          ["Tanvi Patil", "Cold coffee", 30, 80, "=C5*D5", null],
+          ["Harsh Vora", "Brownie", 16, 50, "=C6*D6", null],
+          ["Lakshmi Menon", "Lassi", 30, 40, "=C7*D7", null]
+        ],
+        "selection": "E2:E7"
+      },
+      "clues": ["Fill **down**: which letter?"]
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Job 3: first names",
+      "prompt": "The owner wants a **First name** column for the thank-you list. `F2` holds the first example (**Kavya**) and you're on `F3`.\n\nLet Excel finish the other five.\n\nOn a Mac, use **Data → Flash Fill**.",
+      "keys": { "win": "Ctrl+E", "mac": null },
+      "grid": [
+        ["Server", "Item", "Qty", "Price", "Amount", "First name"],
+        ["Kavya Nair", "Samosa", 40, 15, "=C2*D2", "Kavya"],
+        ["Imran Qureshi", "Chai", 100, 10, "=C3*D3", null],
+        ["Joseph Dsouza", "Sandwich", 25, 60, "=C4*D4", null],
+        ["Tanvi Patil", "Cold coffee", 30, 80, "=C5*D5", null],
+        ["Harsh Vora", "Brownie", 16, 50, "=C6*D6", null],
+        ["Lakshmi Menon", "Lassi", 30, 40, "=C7*D7", null]
+      ],
+      "activeCell": "F3",
+      "postcondition": {
+        "grid": [
+          ["Server", "Item", "Qty", "Price", "Amount", "First name"],
+          ["Kavya Nair", "Samosa", 40, 15, "=C2*D2", "Kavya"],
+          ["Imran Qureshi", "Chai", 100, 10, "=C3*D3", "Imran"],
+          ["Joseph Dsouza", "Sandwich", 25, 60, "=C4*D4", "Joseph"],
+          ["Tanvi Patil", "Cold coffee", 30, 80, "=C5*D5", "Tanvi"],
+          ["Harsh Vora", "Brownie", 16, 50, "=C6*D6", "Harsh"],
+          ["Lakshmi Menon", "Lassi", 30, 40, "=C7*D7", "Lakshmi"]
+        ],
+        "selection": "F2:F7"
+      },
+      "clues": ["The shortcut that copies a pattern from your example."]
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Job 4: biggest first",
+      "prompt": "The owner wants the **best sellers at the top**. You're in the Amount column, in `E3`.\n\nSort the list largest to smallest with the ribbon keys. Excel moves whole rows, so every name stays with its own order.",
+      "keys": { "win": ["Alt", "A", "S", "D"], "mac": null },
+      "grid": [
+        ["Server", "Item", "Qty", "Price", "Amount", "First name"],
+        ["Kavya Nair", "Samosa", 40, 15, "=C2*D2", "Kavya"],
+        ["Imran Qureshi", "Chai", 100, 10, "=C3*D3", "Imran"],
+        ["Joseph Dsouza", "Sandwich", 25, 60, "=C4*D4", "Joseph"],
+        ["Tanvi Patil", "Cold coffee", 30, 80, "=C5*D5", "Tanvi"],
+        ["Harsh Vora", "Brownie", 16, 50, "=C6*D6", "Harsh"],
+        ["Lakshmi Menon", "Lassi", 30, 40, "=C7*D7", "Lakshmi"]
+      ],
+      "activeCell": "E3",
+      "postcondition": {
+        "grid": [
+          ["Server", "Item", "Qty", "Price", "Amount", "First name"],
+          ["Tanvi Patil", "Cold coffee", 30, 80, "=C2*D2", "Tanvi"],
+          ["Joseph Dsouza", "Sandwich", 25, 60, "=C3*D3", "Joseph"],
+          ["Lakshmi Menon", "Lassi", 30, 40, "=C4*D4", "Lakshmi"],
+          ["Imran Qureshi", "Chai", 100, 10, "=C5*D5", "Imran"],
+          ["Harsh Vora", "Brownie", 16, 50, "=C6*D6", "Harsh"],
+          ["Kavya Nair", "Samosa", 40, 15, "=C7*D7", "Kavya"]
+        ],
+        "selection": "E2"
+      },
+      "clues": ["Data tab, Sort, then the letter for descending."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Job 5: the week's total",
+      "prompt": "Last week's total takings go in ==E8==.",
+      "grid": [
+        ["Server", "Item", "Qty", "Price", "Amount", "First name"],
+        ["Tanvi Patil", "Cold coffee", 30, 80, "=C2*D2", "Tanvi"],
+        ["Joseph Dsouza", "Sandwich", 25, 60, "=C3*D3", "Joseph"],
+        ["Lakshmi Menon", "Lassi", 30, 40, "=C4*D4", "Lakshmi"],
+        ["Imran Qureshi", "Chai", 100, 10, "=C5*D5", "Imran"],
+        ["Harsh Vora", "Brownie", 16, 50, "=C6*D6", "Harsh"],
+        ["Kavya Nair", "Samosa", 40, 15, "=C7*D7", "Kavya"],
+        ["Total", null, null, null, null, null]
+      ],
+      "targetCell": "E8",
+      "activeCell": "A1",
+      "expectedValue": 7500,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(E2:E7)",
+      "explain": "**7500**. The range runs from the first Amount to the last, `E2` to `E7`, and stops before the Total row itself.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "missingFunction": "Let `SUM` add the whole Amount column for you.",
+        "wrongValue": "Add only the six Amounts, `E2` to `E7`, not the Qty or Price."
+      },
+      "clues": ["[[Alt]] + [[=]] writes it for you."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Job 6: a share",
+      "prompt": "The owner asks: “What fraction of the week's money came from my top seller?”\n\nWork it out in ==C2==. It will show as a decimal for now.",
+      "grid": [
+        ["Item", "Amount", "Share"],
+        ["Cold coffee", 2400, null],
+        ["Sandwich", 1500, null],
+        ["Lassi", 1200, null],
+        ["Chai", 1000, null],
+        ["Brownie", 800, null],
+        ["Samosa", 600, null],
+        ["Total", "=SUM(B2:B7)", null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A1",
+      "expectedValue": 0.32,
+      "mustReference": ["B2", "B8"],
+      "solution": "=B2/B8",
+      "explain": "**0.32**: the Cold coffee's 2400 divided by the 7500 total. A share is always the part divided by the whole.",
+      "mobileButtons": ["=", "/"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingReference": "Divide the top seller's Amount by the Total, using cell addresses.",
+        "wrongValue": "Part divided by whole: the top seller's Amount `B2` over the Total `B8`."
+      },
+      "clues": ["`=B2/B8`: the slash `/` means “divided by”."]
+    },
+    {
+      "id": "s8",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Job 7: make it a percentage",
+      "prompt": "`0.32` isn't how an owner reads a share. `C2` is selected. Show it as a percentage with one shortcut.",
+      "keys": { "win": "Ctrl+Shift+5", "mac": "Ctrl+Shift+5" },
+      "grid": [
+        ["Item", "Amount", "Share"],
+        ["Cold coffee", 2400, "=B2/B8"],
+        ["Sandwich", 1500, null],
+        ["Lassi", 1200, null],
+        ["Chai", 1000, null],
+        ["Brownie", 800, null],
+        ["Samosa", 600, null],
+        ["Total", "=SUM(B2:B7)", null]
+      ],
+      "activeCell": "C2",
+      "postcondition": {
+        "grid": [
+          ["Item", "Amount", "Share"],
+          ["Cold coffee", 2400, "32%"],
+          ["Sandwich", 1500, null],
+          ["Lassi", 1200, null],
+          ["Chai", 1000, null],
+          ["Brownie", 800, null],
+          ["Samosa", 600, null],
+          ["Total", "=SUM(B2:B7)", null]
+        ],
+        "selection": "C2"
+      },
+      "clues": ["The % sign lives on the 5 key."]
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Job 8: money looks like money",
+      "prompt": "The Amounts should read as money. `B2:B8` are selected, Total included. Apply the currency format from the keyboard.",
+      "keys": { "win": "Ctrl+Shift+4", "mac": "Ctrl+Shift+4" },
+      "grid": [
+        ["Item", "Amount", "Share"],
+        ["Cold coffee", 2400, "32%"],
+        ["Sandwich", 1500, null],
+        ["Lassi", 1200, null],
+        ["Chai", 1000, null],
+        ["Brownie", 800, null],
+        ["Samosa", 600, null],
+        ["Total", "=SUM(B2:B7)", null]
+      ],
+      "activeCell": "B2:B8",
+      "postcondition": {
+        "grid": [
+          ["Item", "Amount", "Share"],
+          ["Cold coffee", "₹2,400.00", "32%"],
+          ["Sandwich", "₹1,500.00", null],
+          ["Lassi", "₹1,200.00", null],
+          ["Chai", "₹1,000.00", null],
+          ["Brownie", "₹800.00", null],
+          ["Samosa", "₹600.00", null],
+          ["Total", "₹7,500.00", null]
+        ],
+        "selection": "B2:B8"
+      },
+      "clues": ["The $ sign lives on the 4 key. You'll get your own currency."]
+    },
+    {
+      "id": "s10",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Job 9: stand-out headings",
+      "prompt": "The headings `A1:C1` look like the data. They're selected. Make them stand out.",
+      "keys": { "win": "Ctrl+B", "mac": "Cmd+B" },
+      "grid": [
+        ["Item", "Amount", "Share"],
+        ["Cold coffee", "₹2,400.00", "32%"],
+        ["Sandwich", "₹1,500.00", null],
+        ["Lassi", "₹1,200.00", null],
+        ["Chai", "₹1,000.00", null],
+        ["Brownie", "₹800.00", null],
+        ["Samosa", "₹600.00", null],
+        ["Total", "₹7,500.00", null]
+      ],
+      "activeCell": "A1:C1",
+      "postcondition": { "selection": "A1:C1", "format": { "A1:C1": ["bold"] } },
+      "clues": ["B for bold."]
+    },
+    {
+      "id": "s11",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Job 10: keep headings in view",
+      "prompt": "When the owner adds a few hundred more rows, the headings will scroll away. You're in `B4`.\n\nKeep row 1 on screen while you scroll, using the ribbon keys.",
+      "keys": { "win": ["Alt", "W", "F", "R"], "mac": null },
+      "grid": [
+        ["Item", "Amount", "Share"],
+        ["Cold coffee", "₹2,400.00", "32%"],
+        ["Sandwich", "₹1,500.00", null],
+        ["Lassi", "₹1,200.00", null],
+        ["Chai", "₹1,000.00", null],
+        ["Brownie", "₹800.00", null],
+        ["Samosa", "₹600.00", null],
+        ["Total", "₹7,500.00", null]
+      ],
+      "activeCell": "B4",
+      "postcondition": {
+        "grid": [
+          ["Item", "Amount", "Share"],
+          ["Cold coffee", "₹2,400.00", "32%"],
+          ["Sandwich", "₹1,500.00", null],
+          ["Lassi", "₹1,200.00", null],
+          ["Chai", "₹1,000.00", null],
+          ["Brownie", "₹800.00", null],
+          ["Samosa", "₹600.00", null],
+          ["Total", "₹7,500.00", null]
+        ],
+        "selection": "B4"
+      },
+      "clues": ["View tab, Freeze Panes, then the choice that says Top Row."]
+    },
+    {
+      "id": "s12",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Job 11: send the numbers",
+      "prompt": "The owner will forward the figures, but the Amount column is made of formulas that break outside this file. You've copied `D2:D4` and you're on `F2`.\n\nPaste them as plain numbers.",
+      "keys": { "win": ["Ctrl+Alt+V", "V", "Enter"], "mac": null },
+      "grid": [
+        ["Item", "Qty", "Price", "Amount", null, "To send"],
+        ["Cold coffee", 30, 80, "=B2*C2", null, null],
+        ["Sandwich", 25, 60, "=B3*C3", null, null],
+        ["Lassi", 30, 40, "=B4*C4", null, null]
+      ],
+      "activeCell": "F2",
+      "postcondition": {
+        "grid": [
+          ["Item", "Qty", "Price", "Amount", null, "To send"],
+          ["Cold coffee", 30, 80, "=B2*C2", null, 2400],
+          ["Sandwich", 25, 60, "=B3*C3", null, 1500],
+          ["Lassi", 30, 40, "=B4*C4", null, 1200]
+        ],
+        "selection": "F2:F4"
+      },
+      "clues": ["Paste Special, then the letter for Values, then Enter."]
+    },
+    {
+      "id": "s13",
+      "type": "mcq",
+      "topic": "Job 12: a late order",
+      "prompt": "A late order arrives. You insert a new row **just above the Total row** (row 8), type its amount in `B8`, and glance at the Total.\n\nDoes the Total include the new amount?",
+      "grid": [
+        ["Item", "Amount"],
+        ["Cold coffee", 2400],
+        ["Sandwich", 1500],
+        ["Lassi", 1200],
+        ["Chai", 1000],
+        ["Brownie", 800],
+        ["Samosa", 600],
+        ["Total", "=SUM(B2:B7)"]
+      ],
+      "activeCell": "B8",
+      "showFormulaBar": true,
+      "options": [
+        "Yes: Excel always updates totals",
+        "No: the formula still ends at `B7`",
+        "It shows `#REF!`"
+      ],
+      "answer": 1,
+      "explain": "The new row sits just **outside** `B2:B7`, so the SUM can't see it. Insert the row **inside** the list (above the last item) or drag the formula's range to take in row 8.",
+      "wrongFeedback": [
+        "Only when the row goes **inside** the range. A row added at its edge isn't counted.",
+        null,
+        "`#REF!` comes from deleting cells a formula uses, not from adding a row."
+      ],
+      "clues": ["Is the new row between `B2` and `B7`, or after it?"]
+    },
+    {
+      "id": "s14",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Challenge. The owner asks: “How much more did my best seller bring in than my weakest one?”\n\nPut the answer in ==B8==.",
+      "grid": [
+        ["Item", "Amount"],
+        ["Cold coffee", 2400],
+        ["Sandwich", 1500],
+        ["Lassi", 1200],
+        ["Chai", 1000],
+        ["Brownie", 800],
+        ["Samosa", 600],
+        ["Gap", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A1",
+      "expectedValue": 1800,
+      "solution": "=B2-B7",
+      "explain": "**1800**: Cold coffee's 2400 minus Samosa's 600. Because the list is sorted, the best seller is at the top and the weakest at the bottom.",
+      "mobileButtons": ["=", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel does the subtraction.",
+        "wrongValue": "Biggest minus smallest: the Amount in `B2` minus the one in `B7`."
+      },
+      "clues": ["The list is sorted, so the extremes are at the two ends."]
+    }
+  ]
+}

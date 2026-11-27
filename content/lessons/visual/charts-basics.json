@@ -1,0 +1,302 @@
+{
+  "id": "charts-basics",
+  "module": "visual",
+  "title": "Charts: the basics",
+  "goal": "Pick the right chart for your data, select what to chart, create an instant chart with Alt + F1, and give it a clear title and sensible colours.",
+  "difficulty": 1,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "A picture of your cells",
+      "text": "Here are six months of cups sold at a café. Can you spot the problem month in a second?\n\nNow picture the same table as a **line chart**: a line climbs from 420 in January to a peak of 600 in May, then **drops** to 380 in ==B7==. You see June's slump instantly.\n\nA chart is a picture of your cells. Change a number and the chart redraws itself. In this lesson you'll pick the right chart, build one with a keystroke and label it so people understand it.",
+      "grid": [
+        ["Month", "Cups sold"],
+        ["Jan", 420],
+        ["Feb", 450],
+        ["Mar", 510],
+        ["Apr", 480],
+        ["May", 600],
+        ["Jun", 380]
+      ],
+      "yellowCells": ["B7"],
+      "activeCell": "A1"
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Select before charting",
+      "prompt": "Excel draws a chart from whatever is selected. Select the **headers too**: the first column gives the labels along the bottom, the first row names the series.\n\nClick ==A1==, drag to ==B7==, then press [[Enter]].",
+      "grid": [
+        ["Month", "Cups sold"],
+        ["Jan", 420],
+        ["Feb", 450],
+        ["Mar", 510],
+        ["Apr", 480],
+        ["May", 600],
+        ["Jun", 380]
+      ],
+      "target": "A1:B7",
+      "wrongFeedback": "Start at `A1`, not `A2`, and end at `B7`. The headers “Month” and “Cups sold” become the chart's labels.",
+      "clues": ["Drag from the top-left header to the last number."],
+      "yellowCells": ["A1:B7"]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Instant chart",
+      "prompt": "With the table selected, press [[Alt]] + [[F1]]. Excel drops a **column chart** onto the sheet straight away (on a laptop you may need [[Fn]] too). [[F11]] puts it on a sheet of its own.\n\nOn a Mac: Insert tab → Recommended Charts.",
+      "keys": {
+        "win": "Alt+F1",
+        "mac": null
+      },
+      "grid": [
+        ["Month", "Cups sold"],
+        ["Jan", 420],
+        ["Feb", 450],
+        ["Mar", 510],
+        ["Apr", 480],
+        ["May", 600],
+        ["Jun", 380]
+      ],
+      "postcondition": {
+        "selection": "A1:B7"
+      },
+      "clues": ["Hold Alt and tap F1."],
+      "activeCell": "A1:B7"
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Compare categories",
+      "prompt": "You want to **compare orders** across four branches. Some names are very long.\n\nWhich chart fits best?",
+      "options": ["Pie chart", "Bar chart (horizontal bars)", "Line chart"],
+      "answer": 1,
+      "explain": "Horizontal **bars** put the long names down the left side where they stay readable, and bar lengths are easy to compare. Columns would squash or tilt those names.",
+      "wrongFeedback": [
+        "Slices of 280, 320 and 390 look almost identical. A pie shows share of a whole, not an easy comparison.",
+        null,
+        "A line joins points in order, which suggests time or sequence. Branches have no order."
+      ],
+      "clues": ["Which chart makes the lengths easy to compare and fits long names?"],
+      "grid": [
+        ["Branch", "Orders"],
+        ["Thiruvananthapuram", 320],
+        ["Visakhapatnam", 280],
+        ["Bengaluru", 450],
+        ["Ahmedabad", 390]
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Show change over time",
+      "prompt": "You want people to see how cups sold **rose and fell from January to June**.\n\nWhich is the best choice?",
+      "options": [
+        "Pie chart: one slice per month",
+        "Line chart: months left to right, in order",
+        "Bars sorted from biggest to smallest month"
+      ],
+      "answer": 1,
+      "explain": "A **line** keeps the months in order, so the climb and the June drop are obvious. Sorting by size (the third option) shuffles the months and destroys the story over time. Time always goes left to right.",
+      "wrongFeedback": [
+        "Six slices tell you each month's share of the half-year, not whether sales rose or fell.",
+        null,
+        "Sorting scrambles the calendar: May would sit first and January somewhere in the middle."
+      ],
+      "clues": ["Which chart keeps the months in their natural order?"],
+      "grid": [
+        ["Month", "Cups sold"],
+        ["Jan", 420],
+        ["Feb", 450],
+        ["Mar", 510],
+        ["Apr", 480],
+        ["May", 600],
+        ["Jun", 380]
+      ],
+      "yellowCells": ["A2:A7"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Pie = share of a whole",
+      "prompt": "A pie is for **shares of a whole**. Its labels show percentages, which Excel works out as part ÷ whole.\n\nCheck it yourself: in ==C2==, find Rent's share of the whole budget as a decimal (0.5 means 50%).",
+      "grid": [
+        ["Item", "Amount", "Rent's share"],
+        ["Rent", 12000, null],
+        ["Food", 7200, null],
+        ["Travel", 4800, null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 0.5,
+      "solution": "=B2/SUM(B2:B4)",
+      "explain": "**0.5**: Rent is 12000 of 24000, exactly half the pie. With three slices a pie works; with ten, use bars.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets and the `/` sign.",
+        "wrongValue": "Share = the part ÷ the **whole**. The whole is Rent + Food + Travel, not just one other item.",
+        "missingFunction": "Use `SUM` for the whole, so you divide by the full total."
+      },
+      "mobileButtons": ["=", "(", ")", ":", "/"],
+      "clues": ["Divide Rent (`B2`) by the total of `B2:B4`."],
+      "mustUse": ["SUM"],
+      "highlightCells": ["B2:B4"],
+      "yellowCells": ["C2"],
+      "activeCell": "C2"
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "Titles and labels",
+      "prompt": "The café chart still says **Chart Title** and nothing else. Click the chart and use the **+** (Chart Elements) button to add a title and labels.\n\nWhich title helps the reader most?",
+      "options": ["Chart Title", "Cups sold per month, Jan–Jun 2026", "CUPS!!!"],
+      "answer": 1,
+      "explain": "A good title says **what** and **when**. Add axis titles or **data labels** (the numbers on the bars) if people need exact values; skip them when the shape matters more.",
+      "wrongFeedback": [
+        "That's the placeholder Excel leaves behind. Readers won't know what they're looking at.",
+        null,
+        "It's loud but says nothing: no measure, no period."
+      ],
+      "clues": ["Which title tells you what is measured and over which time?"],
+      "grid": [
+        ["Month", "Cups sold"],
+        ["Jan", 420],
+        ["Feb", 450],
+        ["Mar", 510],
+        ["Apr", 480],
+        ["May", 600],
+        ["Jun", 380]
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Predict: text in a number cell",
+      "prompt": "In this table, March was typed as **“51 cups”** (text). The chart is built from `A1:B6`.\n\nWhat will March look like in the chart?",
+      "options": [
+        "A bar of height 51",
+        "No bar at all, or zero: Excel ignores the text",
+        "Excel quietly removes the word “cups” and plots 51"
+      ],
+      "answer": 1,
+      "explain": "Charts can only plot **numbers**. Text such as “51 cups” is plotted as zero or skipped, so the chart quietly lies. Fix the cell and the bar appears.",
+      "wrongFeedback": [
+        "Excel doesn't read numbers out of text. It sees a word.",
+        null,
+        "Excel never edits your cells for you."
+      ],
+      "clues": ["Look at the left side of `B4`. Where do numbers normally sit?"],
+      "grid": [
+        ["Month", "Cups sold"],
+        ["Jan", 42],
+        ["Feb", 38],
+        ["Mar", "51 cups"],
+        ["Apr", 47],
+        ["May", 63]
+      ],
+      "yellowCells": ["B4"]
+    },
+    {
+      "id": "s9",
+      "type": "entry",
+      "topic": "Fix the cell, fix the chart",
+      "prompt": "Fix it: click ==B4== and type just the number **51**, then press [[Enter]].",
+      "grid": [
+        ["Month", "Cups sold"],
+        ["Jan", 42],
+        ["Feb", 38],
+        ["Mar", "51 cups"],
+        ["Apr", 47],
+        ["May", 63]
+      ],
+      "expect": {
+        "B4": 51
+      },
+      "explain": "Now `B4` sits on the right like the other numbers, so March gets a real bar. Put units in the **header** (“Cups sold”), not in each cell.",
+      "clues": ["Only the digits, no word."],
+      "wrongFeedback": {
+        "textNotNumber": "Still text. Type only **51**, with no word after it.",
+        "wrongValue": "`B4` should hold the number **51**."
+      },
+      "activeCell": "A4",
+      "yellowCells": ["B4"]
+    },
+    {
+      "id": "s10",
+      "type": "select",
+      "topic": "Leave the total out",
+      "prompt": "Select what to chart: months and cups, but **not** the Total row. A bar of 178 would tower over four bars near 45 and squash them.\n\nClick ==A1==, drag to ==B5==, then press [[Enter]].",
+      "grid": [
+        ["Month", "Cups sold"],
+        ["Jan", 42],
+        ["Feb", 38],
+        ["Mar", 51],
+        ["Apr", 47],
+        ["Total", 178]
+      ],
+      "target": "A1:B5",
+      "wrongFeedback": "End the selection at row 5 (`B5`). Row 6 is the Total, which isn't a month.",
+      "clues": ["The last month is Apr, row 5."],
+      "yellowCells": ["A1:B5"]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Colours that help",
+      "prompt": "You're charting **six shops**' sales. You want the manager to notice only **Pune**.\n\nHow should you colour the bars?",
+      "options": [
+        "A different bright colour for every shop",
+        "Pune in one strong colour, the others in grey",
+        "Rainbow colours in alphabetical order"
+      ],
+      "answer": 1,
+      "explain": "Colour should **point** at the story. One strong colour against quiet grey says “look here”. Six bright colours make the eye wander and say nothing.",
+      "wrongFeedback": [
+        "With six loud colours, nothing stands out. The eye has nowhere to land.",
+        null,
+        "The rainbow is decoration, and it follows alphabet order, not meaning."
+      ],
+      "clues": ["What do you want the reader's eye to land on?"],
+      "grid": [
+        ["Shop", "Sales"],
+        ["Pune", 64],
+        ["Delhi", 52],
+        ["Goa", 48],
+        ["Mumbai", 55],
+        ["Surat", 41],
+        ["Agra", 37]
+      ]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "The café will show a pie chart of cups sold by drink.\n\nWhat share of all cups is **Tea**? Put it in ==C2== as a decimal (0.25 means 25%).",
+      "grid": [
+        ["Drink", "Cups", "Tea's share"],
+        ["Chai", 120, null],
+        ["Coffee", 200, null],
+        ["Tea", 80, null],
+        ["Lassi", 100, null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 0.16,
+      "solution": "=B4/SUM(B2:B5)",
+      "explain": "**0.16**: 80 of 500 cups, so Tea gets a 16% slice. Check with a pie: if you add all four slices you must get 1.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets and the `/` sign.",
+        "wrongValue": "Tea's cups ÷ the total of **all four** drinks.",
+        "missingFunction": "Add up all the drinks to get the whole."
+      },
+      "mobileButtons": ["=", "(", ")", ":", "/"],
+      "clues": ["Part ÷ whole."],
+      "mustUse": ["SUM"],
+      "activeCell": "A1"
+    }
+  ]
+}

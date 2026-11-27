@@ -1,0 +1,268 @@
+{
+  "id": "copilot-agent",
+  "module": "ai",
+  "title": "Copilot Agent Mode",
+  "goal": "Say what Agent Mode needs, write it a clear task, and review its work: check its rules, spot a formula swapped for a number, undo, and re-count its summary yourself.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "One request, many edits",
+      "text": "Your manager says: “Flag the late orders and total them by region.” By hand that's a new column, a formula and a summary table.\n\n**Copilot's Agent Mode** can take that one request in plain words, work out the steps and make the edits across your workbook for you. It became generally available in early 2026.\n\nWhat it needs:\n• The file saved in **OneDrive or SharePoint**\n• A **Microsoft 365 Copilot** licence\n\nMenus and availability vary by plan and version, so check yours. One thing never changes: **you** are responsible for what's in the workbook. Agent Mode makes edits fast, not automatically right. This lesson is about reviewing them.",
+      "grid": [
+        ["Order", "Region", "Promised", "Delivered", "Status"],
+        ["A101", "West", "=DATE(2026,8,10)", "=DATE(2026,8,10)", null],
+        ["A102", "East", "=DATE(2026,8,12)", "=DATE(2026,8,14)", null],
+        ["A103", "West", "=DATE(2026,8,15)", "=DATE(2026,8,14)", null]
+      ],
+      "activeCell": "E1",
+      "yellowCells": ["E2:E4"]
+    },
+    {
+      "id": "s2",
+      "type": "mcq",
+      "topic": "Why is Copilot greyed out?",
+      "prompt": "You open `orders.xlsx` from your Desktop and the Copilot button is greyed out. What's the **first thing to check**?",
+      "options": [
+        "Save it as a `.csv` file",
+        "Save it to OneDrive or SharePoint, and check you have a Copilot licence",
+        "Make the file read-only"
+      ],
+      "answer": 1,
+      "explain": "Copilot in Excel works on files stored in OneDrive or SharePoint, and it needs a Microsoft 365 Copilot licence on your account. A file only on your Desktop, or a plain `.csv`, won't do. Ask your IT team if the licence is the problem.",
+      "wrongFeedback": [
+        "A `.csv` has no formulas or formatting for it to work with, and it's still not in the cloud.",
+        null,
+        "Read-only makes it harder to edit, not easier for Copilot to see."
+      ],
+      "clues": ["Where must the file live, and what must your account have?"]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "Pick the better task",
+      "prompt": "You want Copilot to add a Status column to the Orders sheet. Which request will give the **fewest surprises**?",
+      "options": [
+        "“Make this workbook better.”",
+        "“Do whatever you think the Orders sheet needs.”",
+        "“On the Orders sheet, add column E called Status: Late if Delivered is after Promised, otherwise On time. Don't change the existing columns.”"
+      ],
+      "answer": 2,
+      "explain": "The best task names the sheet, the new column, the exact rule and what to leave alone. An agent that can change many cells at once needs **more** precision than a chat reply does, not less.",
+      "wrongFeedback": [
+        "“Better” could mean formatting, deleting, re-sorting… The agent has to guess.",
+        "That hands it the steering wheel. It may change things you wanted left as they were.",
+        null
+      ],
+      "clues": ["Which request says what to add, what the rule is and what not to touch?"]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Check the rule yourself",
+      "prompt": "Copilot's plan says: “Add **Status**: **Late** if Delivered is after Promised, otherwise **On time**.”\n\nBefore you let it fill 3,000 rows, write that rule yourself for the first order in ==E2==. (`C` is Promised, `D` is Delivered.)",
+      "grid": [
+        ["Order", "Region", "Promised", "Delivered", "Status"],
+        ["A101", "West", "=DATE(2026,8,10)", "=DATE(2026,8,10)", null],
+        ["A102", "East", "=DATE(2026,8,12)", "=DATE(2026,8,14)", null],
+        ["A103", "West", "=DATE(2026,8,15)", "=DATE(2026,8,14)", null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": "On time",
+      "solution": "=IF(D2>C2,\"Late\",\"On time\")",
+      "explain": "`On time`: A101 was delivered on the promised day, which isn't “after”. If the agent had used `>=` it would call that order Late. Checking the first rows against your own formula is the quickest way to catch a misread rule.",
+      "wrongFeedback": {
+        "missingFunction": "The rule is a decision between two words: `IF`.",
+        "wrongValue": "A101 was delivered on the same day it was promised, so it's **On time**. “After” means strictly later: use `>`."
+      },
+      "clues": ["`=IF(Delivered > Promised, \"Late\", \"On time\")`: use `D2` and `C2`."],
+      "mobileButtons": ["=", "(", ")", ",", "\"", ">"],
+      "mustUse": ["IF"],
+      "highlightCells": ["C2:D2"],
+      "yellowCells": ["E2"],
+      "activeCell": "E1"
+    },
+    {
+      "id": "s5",
+      "type": "select",
+      "topic": "Read the plan",
+      "prompt": "Imagine the agent's plan for “tidy the Orders sheet” looks like the list below.\n\nClick the cell for the step that could **destroy data** and needs your closest look, then press [[Enter]].",
+      "grid": [
+        ["Step", "Action"],
+        [1, "Add Status column"],
+        [2, "Delete blank rows"],
+        [3, "Add summary table"]
+      ],
+      "target": "B3",
+      "wrongFeedback": "Not that one. Adding a column or a table leaves your data alone. Which step **removes** things?",
+      "clues": ["A blank Delivered date might mean the order is still on the road."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Same number, different cell",
+      "prompt": "Before the agent ran, the Total was `=SUM(C2:C5)`. Afterwards it still shows **1850**. You click `C6`, and the formula bar shows `1850`.\n\nWhat's wrong?",
+      "grid": [
+        ["Order", "Region", "Amount"],
+        ["A101", "West", 450],
+        ["A102", "East", 300],
+        ["A103", "West", 600],
+        ["A104", "East", 500],
+        ["Total", null, 1850]
+      ],
+      "options": [
+        "Nothing: 1850 is correct, so it's fine",
+        "The formula was replaced by a typed number",
+        "The agent hid the formula for safety"
+      ],
+      "answer": 1,
+      "explain": "The cell shows the **answer**; the formula bar shows the **recipe**. A typed 1850 looks identical today but won't change when an amount changes. After any bulk edit, click your key totals and read the formula bar, not just the cell.",
+      "wrongFeedback": [
+        "The value is right today. But it's frozen: change an amount and this total will be wrong.",
+        null,
+        "Excel doesn't hide formulas that way. A plain `1850` in the bar means a plain typed number."
+      ],
+      "clues": ["What does the formula bar show for a real total?"],
+      "activeCell": "C6",
+      "showFormulaBar": true,
+      "yellowCells": ["C6"]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Put the formula back",
+      "prompt": "Repair it. In ==C6== put a formula that adds the four amounts, so the total updates again.",
+      "grid": [
+        ["Order", "Region", "Amount"],
+        ["A101", "West", 450],
+        ["A102", "East", 300],
+        ["A103", "West", 600],
+        ["A104", "East", 500],
+        ["Total", null, null]
+      ],
+      "targetCell": "C6",
+      "expectedValue": 1850,
+      "solution": "=SUM(C2:C5)",
+      "explain": "**1850** again, but now alive: change `C2` and the total follows. Rejecting or repairing one bad change is normal; reviewing is part of the job, not a sign Copilot failed.",
+      "wrongFeedback": {
+        "missingFunction": "Add the amounts with `SUM`, so it's a formula and not a typed number.",
+        "wrongValue": "The four amounts add to 1850: `C2` to `C5`, leaving out the Total row itself."
+      },
+      "clues": ["`=SUM(C2:C5)`"],
+      "mobileButtons": ["=", "(", ")", ":"],
+      "mustUse": ["SUM"],
+      "highlightCells": ["C2:C5"],
+      "yellowCells": ["C6"],
+      "activeCell": "C1"
+    },
+    {
+      "id": "s8",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Undo what you don't want",
+      "prompt": "The agent filled every Status cell with “Late”, which isn't what you asked for. Edits made for you usually go on Excel's undo list, so press [[Ctrl]] + [[Z]] to step back.\n\nFor bigger problems, a OneDrive or SharePoint file keeps a **Version History** you can open to restore an earlier copy.",
+      "keys": {
+        "win": "Ctrl+Z",
+        "mac": "Cmd+Z"
+      },
+      "grid": [
+        ["Order", "Status"],
+        ["A101", "Late"],
+        ["A102", "Late"],
+        ["A103", "Late"]
+      ],
+      "postcondition": {
+        "grid": [
+          ["Order", "Status"],
+          ["A101", null],
+          ["A102", null],
+          ["A103", null]
+        ],
+        "selection": "B2:B4"
+      },
+      "clues": ["Hold Ctrl and tap Z. Mac: Cmd + Z."],
+      "activeCell": "B2:B4"
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Check the agent's summary",
+      "prompt": "The agent's summary says: “**3** of **West's** orders were **Late**.” Check it. In ==D2== count the rows that are West **and** Late.",
+      "grid": [
+        ["Region", "Status", null, "Real count"],
+        ["West", "Late", null, null],
+        ["West", "On time", null, null],
+        ["East", "Late", null, null],
+        ["West", "Late", null, null],
+        ["East", "On time", null, null],
+        ["West", "On time", null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 2,
+      "solution": "=COUNTIFS(A2:A7,\"West\",B2:B7,\"Late\")",
+      "explain": "**2.** The agent's 3 is the number of Late orders in **all** regions, so it dropped the West condition. Summaries built from two conditions are exactly where agents slip, so re-count one yourself.",
+      "wrongFeedback": {
+        "missingFunction": "Two conditions, one count: `COUNTIFS`.",
+        "wrongValue": "Count rows where the region is West **and** the status is Late. East's late order doesn't count."
+      },
+      "clues": ["`=COUNTIFS(regions, \"West\", statuses, \"Late\")`"],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "mustUse": ["COUNTIFS"],
+      "highlightCells": ["A2:B7"],
+      "yellowCells": ["D2"],
+      "activeCell": "D1"
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "A safe routine",
+      "prompt": "Which routine for using an agent on an important workbook is the **safest**?",
+      "options": [
+        "Give a short vague task, accept all changes, send the file",
+        "Run it on the original and delete your backup to save space",
+        "Keep a copy, give a clear task, then check each change and key totals before keeping it"
+      ],
+      "answer": 2,
+      "explain": "Keep a copy (or know where Version History is), be specific, then review: formulas still formulas, totals still adding up, nothing deleted that you didn't expect. Review is the step that makes the speed safe.",
+      "wrongFeedback": [
+        "Vague tasks plus blind acceptance is how wrong numbers end up in front of your boss.",
+        "Without a backup, one bad change can be permanent.",
+        null
+      ],
+      "clues": ["Which routine has a way back and a check?"]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "The agent's report says: “**West's late orders** are worth **1,200**.” Is that right? Put the true figure in ==E2==.",
+      "grid": [
+        ["Region", "Status", "Amount", null, "Real figure"],
+        ["West", "Late", 450, null, null],
+        ["West", "On time", 300, null, null],
+        ["East", "Late", 600, null, null],
+        ["West", "Late", 250, null, null],
+        ["East", "On time", 500, null, null],
+        ["West", "Late", 200, null, null]
+      ],
+      "targetCell": "E2",
+      "expectedValue": 900,
+      "solution": "=SUMIFS(C2:C7,A2:A7,\"West\",B2:B7,\"Late\")",
+      "explain": "**900** (450 + 250 + 200). The agent's 1,200 is **all** West orders including the on-time one. Your check took one formula. Making that check a habit is what makes an agent useful instead of risky.",
+      "wrongFeedback": {
+        "missingFunction": "Add amounts that meet two conditions: `SUMIFS`.",
+        "wrongValue": "Use both conditions: West **and** Late. 1,200 is every West order, late or not."
+      },
+      "clues": ["Add `C2:C7` where region is West and status is Late."],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "mustUse": ["SUMIFS"],
+      "highlightCells": ["A2:C7"],
+      "yellowCells": ["E2"],
+      "activeCell": "E1"
+    }
+  ]
+}

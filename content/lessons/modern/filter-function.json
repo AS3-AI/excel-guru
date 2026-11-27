@@ -1,0 +1,348 @@
+{
+  "id": "filter-function",
+  "module": "modern",
+  "title": "FILTER",
+  "goal": "Pull the rows that match one or several conditions into a live list, show a friendly message when nothing matches, and sort the result.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Pull out matching rows",
+      "text": "You have six orders and only want the **Pune** ones. The Filter button from Sort & Filter hides rows on the spot. A **FILTER formula** is different: it builds a **separate list** of the matching rows and keeps it up to date.\n\nThat list in ==E2== is one formula. Click **Change Jai's city** and watch Jai join it.",
+      "grid": [
+        ["Customer", "City", "Amount", null, "Customer", "City", "Amount"],
+        ["Isha", "Pune", 400, null, "=FILTER(A2:C7,B2:B7=\"Pune\")", null, null],
+        ["Jai", "Delhi", 250, null, null, null, null],
+        ["Kabir", "Pune", 300, null, null, null, null],
+        ["Lata", "Mumbai", 500, null, null, null, null],
+        ["Mira", "Delhi", 150, null, null, null, null],
+        ["Neel", "Pune", 350, null, null, null, null]
+      ],
+      "activeCell": "E2",
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "B3",
+          "fromValue": "Delhi",
+          "toValue": "Pune",
+          "resultCell": "E3",
+          "buttonLabel": "Change Jai's city: Delhi → Pune",
+          "resetLabel": "Put Delhi back"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "One condition",
+      "prompt": "**FILTER** needs two things: the table to take rows from, and a test that is TRUE for the rows to keep.\n\nClick ==E2== and type `=FILTER(A2:C7,B2:B7=\"Sales\")`: “from `A2:C7`, keep rows where Dept is Sales”.",
+      "grid": [
+        ["Name", "Dept", "Salary", null, "Name", "Dept", "Salary"],
+        ["Bina", "HR", 28, null, null, null, null],
+        ["Aarav", "Sales", 30, null, null, null, null],
+        ["Chen", "Sales", 35, null, null, null, null],
+        ["Divya", "IT", 42, null, null, null, null],
+        ["Esha", "HR", 31, null, null, null, null],
+        ["Farid", "Sales", 27, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "E1",
+      "highlightCells": ["A2:C7", "B2:B7"],
+      "yellowCells": ["E2"],
+      "expectedValue": "Aarav",
+      "mustUse": ["FILTER"],
+      "solution": "=FILTER(A2:C7,B2:B7=\"Sales\")",
+      "explain": "Three rows came out, complete with all three columns: Aarav, Chen and Farid. The test `B2:B7=\"Sales\"` is TRUE or FALSE for each row, and FILTER keeps the TRUE rows.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check brackets, commas and the quotes around Sales: `=FILTER(A2:C7,B2:B7=\"Sales\")`.",
+        "missingFunction": "Use **FILTER** to pull out the matching rows.",
+        "wrongValue": "Give FILTER the whole table `A2:C7` first, then the test on the Dept column: `B2:B7=\"Sales\"`."
+      },
+      "clues": ["First argument: the table. Second: the test, with Sales in quotes."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "A number test",
+      "prompt": "The test can be any comparison. Pass mark is **40 or more**.\n\nClick ==D2== and type `=FILTER(A2:B7,B2:B7>=40)` to list who passed, with their marks.",
+      "grid": [
+        ["Student", "Marks", null, "Student", "Marks"],
+        ["Leela", 40, null, null, null],
+        ["Manu", 38, null, null, null],
+        ["Nina", 67, null, null, null],
+        ["Om", 40, null, null, null],
+        ["Pia", 25, null, null, null],
+        ["Kiran", 52, null, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "D1",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["D2"],
+      "expectedValue": "Leela",
+      "mustUse": ["FILTER"],
+      "solution": "=FILTER(A2:B7,B2:B7>=40)",
+      "explain": "Leela, Nina, Om and Kiran passed. Leela and Om scored exactly 40, and `>=` keeps them. With `>40` they would be left out.",
+      "mobileButtons": ["=", "(", ")", ":", ",", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check brackets and commas: `=FILTER(A2:B7,B2:B7>=40)`.",
+        "missingFunction": "Use **FILTER**.",
+        "wrongValue": "Two students scored exactly 40 and should pass. Use `>=40`, not `>40`."
+      },
+      "clues": ["“40 or more” is `>=40`."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Both conditions: AND",
+      "prompt": "For **North** drivers who delivered **40 or more** parcels, put each test in its own brackets and join them with `*` (it means AND).\n\nClick ==E2== and type `=FILTER(A2:C7,(B2:B7=\"North\")*(C2:C7>=40))`.",
+      "grid": [
+        ["Driver", "Zone", "Parcels", null, "Driver", "Zone", "Parcels"],
+        ["Sana", "South", 58, null, null, null, null],
+        ["Ravi", "North", 42, null, null, null, null],
+        ["Tom", "North", 35, null, null, null, null],
+        ["Uma", "North", 61, null, null, null, null],
+        ["Vik", "South", 47, null, null, null, null],
+        ["Wen", "East", 53, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "E1",
+      "highlightCells": ["B2:B7", "C2:C7"],
+      "yellowCells": ["E2"],
+      "expectedValue": "Ravi",
+      "mustUse": ["FILTER"],
+      "solution": "=FILTER(A2:C7,(B2:B7=\"North\")*(C2:C7>=40))",
+      "explain": "Ravi (42) and Uma (61). Tom is North but delivered only 35, and Sana, Vik and Wen delivered 40 or more but aren't North. A row must pass **both** tests to be kept.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Each test needs its own brackets: `(B2:B7=\"North\")*(C2:C7>=40)`.",
+        "missingFunction": "Use **FILTER**.",
+        "wrongValue": "A row should be kept only when **both** tests are true. Put each test in brackets and multiply them with `*`."
+      },
+      "clues": [
+        "Two tests: Zone is North, and Parcels is `>=40`.",
+        "TRUE × TRUE = 1 (keep); anything × FALSE = 0 (drop)."
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Either condition: OR",
+      "prompt": "For **OR**, add the tests with `+` instead. A row is kept if at least one test is true.\n\nClick ==E2== and type `=FILTER(A2:C7,(B2:B7=\"Snack\")+(B2:B7=\"Dessert\"))` to list everything that isn't a drink.",
+      "grid": [
+        ["Item", "Type", "Price", null, "Item", "Type", "Price"],
+        ["Chai", "Drink", 20, null, null, null, null],
+        ["Samosa", "Snack", 15, null, null, null, null],
+        ["Sandwich", "Snack", 50, null, null, null, null],
+        ["Coffee", "Drink", 30, null, null, null, null],
+        ["Cake", "Dessert", 60, null, null, null, null],
+        ["Juice", "Drink", 40, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "E1",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["E2"],
+      "expectedValue": "Samosa",
+      "mustUse": ["FILTER"],
+      "solution": "=FILTER(A2:C7,(B2:B7=\"Snack\")+(B2:B7=\"Dessert\"))",
+      "explain": "Samosa, Sandwich and Cake. Snacks alone would miss the cake and desserts alone would miss the snacks: `+` gives you both. (TRUE + FALSE = 1, and any non-zero number is kept.)",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "+"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check the brackets around each test and the `+` between them.",
+        "missingFunction": "Use **FILTER**.",
+        "wrongValue": "You want rows that are Snack **or** Dessert. Put each test in brackets and join them with `+`, not `*`."
+      },
+      "clues": ["Two tests on the Type column, joined by `+`."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "A common mistake",
+      "prompt": "A colleague writes `=FILTER(A2:C7,AND(B2:B7=\"North\",C2:C7>=40))` to get the same North, 40-or-more drivers.\n\nWhy doesn't it work like the `*` version?",
+      "grid": [
+        ["Driver", "Zone", "Parcels", null, "Driver", "Zone", "Parcels"],
+        ["Sana", "South", 58, null, null, null, null],
+        ["Ravi", "North", 42, null, null, null, null],
+        ["Tom", "North", 35, null, null, null, null],
+        ["Uma", "North", 61, null, null, null, null],
+        ["Vik", "South", 47, null, null, null, null],
+        ["Wen", "East", 53, null, null, null, null]
+      ],
+      "highlightCells": ["B2:C7"],
+      "options": [
+        "It works the same, just longer",
+        "AND gives one overall TRUE or FALSE, not one per row",
+        "AND can only test text, not numbers"
+      ],
+      "answer": 1,
+      "explain": "FILTER needs one TRUE or FALSE **for each row**. AND squashes the whole column into a single answer, so it can't pick rows one by one. Multiplying with `*` keeps the tests row by row. The same goes for OR: use `+`.",
+      "wrongFeedback": [
+        "It looks the same but behaves differently: AND collapses all the rows into one answer.",
+        null,
+        "AND can test numbers fine. The problem is that it returns just one answer for the whole column."
+      ],
+      "clues": ["How many answers does FILTER need: one, or one per row?"]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "When nothing matches",
+      "prompt": "The library has no comics yet, so filtering for **Comics** has nothing to show. Without help Excel would display an error.\n\nAdd a third argument, a message in quotes, to show instead: click ==E2== and type `=FILTER(A2:C7,B2:B7=\"Comics\",\"No matches\")`.",
+      "grid": [
+        ["Title", "Genre", "Pages", null, "Title", "Genre", "Pages"],
+        ["Dune", "Science", 412, null, null, null, null],
+        ["Emma", "Fiction", 320, null, null, null, null],
+        ["Gitanjali", "Poetry", 120, null, null, null, null],
+        ["Cosmos", "Science", 396, null, null, null, null],
+        ["Godan", "Fiction", 280, null, null, null, null],
+        ["Sapiens", "History", 450, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "E1",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["E2"],
+      "expectedValue": "No matches",
+      "mustUse": ["FILTER"],
+      "solution": "=FILTER(A2:C7,B2:B7=\"Comics\",\"No matches\")",
+      "explain": "No row said Comics, so FILTER showed your message instead of an error. In Excel that error is `#CALC!`. The third argument is also a good place for `0` or a blank `\"\"`.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check commas and quotes: `=FILTER(A2:C7,B2:B7=\"Comics\",\"No matches\")`.",
+        "missingFunction": "Use **FILTER**.",
+        "wrongValue": "Add the message as a **third** argument, in quotes, after the test: `...,\"No matches\")`."
+      },
+      "clues": ["Three arguments: table, test, message."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "This is the Sales list from before: Aarav, Chen and Farid. Divya's Dept is changed from **IT** to **Sales** in ==B5==.\n\nHow many rows will the filtered list have?",
+      "grid": [
+        ["Name", "Dept", "Salary", null, "Name", "Dept", "Salary"],
+        ["Bina", "HR", 28, null, "=FILTER(A2:C7,B2:B7=\"Sales\")", null, null],
+        ["Aarav", "Sales", 30, null, null, null, null],
+        ["Chen", "Sales", 35, null, null, null, null],
+        ["Divya", "IT", 42, null, null, null, null],
+        ["Esha", "HR", 31, null, null, null, null],
+        ["Farid", "Sales", 27, null, null, null, null]
+      ],
+      "activeCell": "B5",
+      "yellowCells": ["B5"],
+      "highlightCells": ["E2:G4"],
+      "options": [
+        "Still 3: the list is frozen",
+        "4: Divya joins automatically",
+        "4, but only after you retype the formula"
+      ],
+      "answer": 1,
+      "explain": "FILTER re-checks every row each time anything changes. Divya now passes `=\"Sales\"`, so she joins the list at once, in her row's order.",
+      "wrongFeedback": [
+        "A FILTER list is live. It isn't a pasted copy.",
+        null,
+        "You never need to retype it. The formula re-checks the data on its own."
+      ],
+      "clues": ["Does the formula remember the old answer, or look again?"]
+    },
+    {
+      "id": "s9",
+      "type": "entry",
+      "topic": "The list grows",
+      "prompt": "Prove it. Click ==B5==, type **Sales**, press [[Enter]], and watch the list in `E:G`.",
+      "grid": [
+        ["Name", "Dept", "Salary", null, "Name", "Dept", "Salary"],
+        ["Bina", "HR", 28, null, "=FILTER(A2:C7,B2:B7=\"Sales\")", null, null],
+        ["Aarav", "Sales", 30, null, null, null, null],
+        ["Chen", "Sales", 35, null, null, null, null],
+        ["Divya", "IT", 42, null, null, null, null],
+        ["Esha", "HR", 31, null, null, null, null],
+        ["Farid", "Sales", 27, null, null, null, null]
+      ],
+      "activeCell": "A5",
+      "yellowCells": ["B5"],
+      "highlightCells": ["E4"],
+      "expect": {
+        "B5": "Sales",
+        "E4": "Divya"
+      },
+      "explain": "Divya slid into the list at `E4`, between Chen and Farid, matching her place in the source. The list stays in the same order as your data.",
+      "wrongFeedback": {
+        "wrongValue": "Type **Sales** in `B5` (Divya's Dept). Then the third name in the list becomes Divya."
+      },
+      "clues": ["Divya's Dept is in column B, row 5."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "FILTER then SORT",
+      "prompt": "Put FILTER **inside** SORT to filter first, then order the result.\n\nClick ==E2== and type `=SORT(FILTER(A2:C7,B2:B7=\"Red\"),3,-1)`: the Red team's players, most runs first.",
+      "grid": [
+        ["Player", "Team", "Runs", null, "Player", "Team", "Runs"],
+        ["Aman", "Red", 45, null, null, null, null],
+        ["Bala", "Blue", 72, null, null, null, null],
+        ["Cyrus", "Red", 88, null, null, null, null],
+        ["Dia", "Blue", 30, null, null, null, null],
+        ["Eli", "Red", 61, null, null, null, null],
+        ["Faisal", "Blue", 55, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "E1",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["E2"],
+      "expectedValue": "Cyrus",
+      "mustUse": ["SORT", "FILTER"],
+      "solution": "=SORT(FILTER(A2:C7,B2:B7=\"Red\"),3,-1)",
+      "explain": "Cyrus 88, Eli 61, Aman 45. FILTER picked the three Red rows first and SORT ordered those three by their Runs column (column 3 of the result).",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Count the brackets: FILTER sits inside SORT, so close FILTER first.",
+        "missingFunction": "Use both: **FILTER** inside **SORT**.",
+        "wrongValue": "Filter to Red, then sort by column `3` with `-1` so the highest runs come first."
+      },
+      "clues": ["`=SORT(` + the FILTER formula + `,3,-1)`."]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nShow every order from **Delhi** worth **300 or more**, biggest amount first. Build it in `E2` with a single formula.",
+      "grid": [
+        ["Order", "City", "Amount", null, "Order", "City", "Amount"],
+        ["Isha", "Delhi", 300, null, null, null, null],
+        ["Jai", "Pune", 450, null, null, null, null],
+        ["Kabir", "Delhi", 250, null, null, null, null],
+        ["Lata", "Delhi", 500, null, null, null, null],
+        ["Mira", "Mumbai", 350, null, null, null, null],
+        ["Neel", "Delhi", 350, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "A1",
+      "expectedValue": "Lata",
+      "mustUse": ["FILTER"],
+      "solution": "=SORT(FILTER(A2:C7,(B2:B7=\"Delhi\")*(C2:C7>=300)),3,-1)",
+      "explain": "Lata 500, Neel 350, Isha 300. Kabir is Delhi but only 250, and Jai and Mira are big but not Delhi. Isha sits exactly on 300, which is why `>=` matters.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">", "*", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check your brackets: every test needs its own pair, and so does each function.",
+        "missingFunction": "You need to pull out matching rows first.",
+        "wrongValue": "Keep rows that are Delhi **and** 300 or more, then put the biggest first."
+      },
+      "clues": [
+        "Two tests joined with `*`, inside FILTER, inside SORT.",
+        "Biggest first is `-1` on the Amount column (column 3)."
+      ]
+    }
+  ]
+}

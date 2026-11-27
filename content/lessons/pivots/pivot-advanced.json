@@ -1,0 +1,344 @@
+{
+  "id": "pivot-advanced",
+  "module": "pivots",
+  "title": "PivotTables: group, % of total & calculated fields",
+  "goal": "Group dates into months, work out what a pivot will show as a share of the Grand Total, and add a calculated field such as Profit while avoiding the ratio trap.",
+  "difficulty": 2,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Why group dates",
+      "text": "A shop logs every sale with its date. The boss wants **monthly** totals. Put Date in Rows and the pivot lists every single day, which is 365 lines a year. Not helpful.\n\nRight-click any date in the pivot, choose **Group**, pick **Months**, and Excel rolls the days into Jan, Feb, Mar. (Newer Excel often groups dates for you the moment you drop them in Rows.)\n\nThe table on the right is the grouped result. Imagine **5,000** daily rows behind it.\n\nYou'll work the numbers out yourself, so you'll know when a pivot is right.",
+      "grid": [
+        ["Date", "Sales", "Cost", null, "Row Labels", "Sum of Sales"],
+        ["=DATE(2026,1,5)", 700, 400, null, "Jan", 1500],
+        ["=DATE(2026,1,18)", 800, 500, null, "Feb", 1000],
+        ["=DATE(2026,2,1)", 400, 300, null, "Mar", 2500],
+        ["=DATE(2026,2,21)", 600, 300, null, "Grand Total", 5000],
+        ["=DATE(2026,3,1)", 600, 300, null, null, null],
+        ["=DATE(2026,3,9)", 1400, 800, null, null, null],
+        ["=DATE(2026,3,30)", 500, 300, null, null, null]
+      ],
+      "highlightCells": ["E1:F5"],
+      "activeCell": "A1"
+    },
+    {
+      "id": "s2",
+      "type": "mcq",
+      "topic": "Group Months",
+      "prompt": "Your pivot lists one row per day. How do you roll the dates up into months?",
+      "grid": [
+        ["Row Labels", "Sum of Sales"],
+        ["=DATE(2026,1,5)", 700],
+        ["=DATE(2026,1,18)", 800],
+        ["=DATE(2026,2,1)", 400],
+        ["=DATE(2026,2,21)", 600]
+      ],
+      "options": [
+        "Sort the Date column A to Z",
+        "Right-click a date in the pivot, then Group",
+        "Type Jan, Feb, Mar over the dates"
+      ],
+      "answer": 1,
+      "explain": "**Right-click → Group** (Mac: Control-click) opens a box where you pick Months, Quarters, Years and more. The pivot then adds up all the days inside each month.",
+      "wrongFeedback": [
+        "Sorting only reorders the days. They stay as separate lines.",
+        null,
+        "Typing over a pivot isn't allowed, and the totals would still be per day. Group does the rolling up."
+      ],
+      "clues": ["Which action tells Excel to treat many days as one month?"]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Monthly total",
+      "prompt": "Grouping by month means: all orders from the 1st of the month up to, but not including, the 1st of the next month.\n\nIn ==F2== work out **January** with a **SUMIFS** on a date range. Type:\n`=SUMIFS(B2:B8,A2:A8,\">=\"&DATE(2026,1,1),A2:A8,\"<\"&DATE(2026,2,1))`",
+      "grid": [
+        ["Date", "Sales", "Cost", null, "Month", "Sum of Sales"],
+        ["=DATE(2026,1,5)", 700, 400, null, "=DATE(2026,1,1)", null],
+        ["=DATE(2026,1,18)", 800, 500, null, "=DATE(2026,2,1)", null],
+        ["=DATE(2026,2,1)", 400, 300, null, "=DATE(2026,3,1)", null],
+        ["=DATE(2026,2,21)", 600, 300, null, "Grand Total", null],
+        ["=DATE(2026,3,1)", 600, 300, null, null, null],
+        ["=DATE(2026,3,9)", 1400, 800, null, null, null],
+        ["=DATE(2026,3,30)", 500, 300, null, null, null]
+      ],
+      "targetCell": "F2",
+      "highlightCells": ["A2:B3"],
+      "yellowCells": ["F2"],
+      "activeCell": "E2",
+      "expectedValue": 1500,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(B2:B8,A2:A8,\">=\"&DATE(2026,1,1),A2:A8,\"<\"&DATE(2026,2,1))",
+      "explain": "**1500**, the 700 from 5 Jan and the 800 from 18 Jan. `>=` the 1st and `<` the next 1st catches every day, including orders placed on the 1st itself.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">", "<", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Use `SUMIFS` with two date conditions.",
+        "wrongValue": "January should be 1500: from `>=` 1 Jan up to `<` 1 Feb."
+      },
+      "clues": [
+        "The `&` joins the symbol and the date: `\">=\"&DATE(2026,1,1)`.",
+        "Pick Sales `B2:B8` to add up and Date `A2:A8` to test, twice."
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Month from a cell",
+      "prompt": "Typing dates by hand for every month is slow. Here the month labels hold real dates: `E4` is 1-Mar.\n\nFor ==F4==, work out **March** using `E4` instead of typing the date. **EDATE(E4,1)** gives the date one month later.",
+      "grid": [
+        ["Date", "Sales", "Cost", null, "Month", "Sum of Sales"],
+        ["=DATE(2026,1,5)", 700, 400, null, "=DATE(2026,1,1)", 1500],
+        ["=DATE(2026,1,18)", 800, 500, null, "=DATE(2026,2,1)", 1000],
+        ["=DATE(2026,2,1)", 400, 300, null, "=DATE(2026,3,1)", null],
+        ["=DATE(2026,2,21)", 600, 300, null, "Grand Total", null],
+        ["=DATE(2026,3,1)", 600, 300, null, null, null],
+        ["=DATE(2026,3,9)", 1400, 800, null, null, null],
+        ["=DATE(2026,3,30)", 500, 300, null, null, null]
+      ],
+      "targetCell": "F4",
+      "highlightCells": ["E4"],
+      "yellowCells": ["F4"],
+      "activeCell": "E4",
+      "expectedValue": 2500,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(B2:B8,A2:A8,\">=\"&E4,A2:A8,\"<\"&EDATE(E4,1))",
+      "explain": "**2500.** The 600 on 1 Mar counts because of `>=`, and the 500 on 30 Mar counts because it is before 1 Apr. Using `>` instead of `>=` would lose that 600.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">", "<", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Use `SUMIFS` with the date in `E4` and one month later.",
+        "wrongValue": "March runs from `>=` `E4` up to, but not including, one month later: `<\"&EDATE(E4,1)`."
+      },
+      "clues": ["The first condition: `\">=\"&E4`.", "The second: `\"<\"&EDATE(E4,1)`."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Months across years",
+      "prompt": "This data covers two years. You group by **Months** only and leave Years unticked.\n\nHow many “Jan” rows will the pivot show?",
+      "grid": [
+        ["Date", "Sales"],
+        ["=DATE(2025,1,10)", 300],
+        ["=DATE(2025,6,5)", 200],
+        ["=DATE(2026,1,12)", 500],
+        ["=DATE(2026,6,9)", 400]
+      ],
+      "highlightCells": ["A2", "A4"],
+      "options": ["Two: one per year", "None", "One: both Januaries added together"],
+      "answer": 2,
+      "explain": "With only Months ticked, every January from every year lands in one “Jan” row: 300 + 500 = **800**. Tick **Years** as well (click both in the Group box) to keep them apart.",
+      "wrongFeedback": [
+        "That only happens if Years is ticked too. By default Excel groups by the first thing you select.",
+        "Months always show, whatever the year. The Group box has no reason to hide them.",
+        null
+      ],
+      "clues": ["Which part of the date does Months-only throw away?"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "% of total",
+      "prompt": "Managers love shares. Right-click a number → **Show Values As → % of Grand Total**, and the pivot divides each month by the Grand Total for you.\n\nSee how it works: type `=F2/F5` in ==G2==. (Part divided by whole. Excel then shows it as 30%.)",
+      "grid": [
+        ["Date", "Sales", "Cost", null, "Month", "Sum of Sales", "% of Grand Total"],
+        ["=DATE(2026,1,5)", 700, 400, null, "Jan", 1500, null],
+        ["=DATE(2026,1,18)", 800, 500, null, "Feb", 1000, null],
+        ["=DATE(2026,2,1)", 400, 300, null, "Mar", 2500, null],
+        ["=DATE(2026,2,21)", 600, 300, null, "Grand Total", 5000, null],
+        ["=DATE(2026,3,1)", 600, 300, null, null, null, null],
+        ["=DATE(2026,3,9)", 1400, 800, null, null, null, null],
+        ["=DATE(2026,3,30)", 500, 300, null, null, null, null]
+      ],
+      "targetCell": "G2",
+      "highlightCells": ["F2", "F5"],
+      "yellowCells": ["G2"],
+      "activeCell": "G1",
+      "mustReference": ["F5"],
+      "expectedValue": 0.3,
+      "mustUse": [],
+      "solution": "=F2/F5",
+      "explain": "**0.3, which is 30%.** January's 1500 out of 5000. You just did by hand what Show Values As does for every row at once.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Divide the month by the Grand Total with `/`.",
+        "wrongValue": "Divide January `F2` by the Grand Total `F5`: 1500 ÷ 5000."
+      },
+      "clues": ["Part ÷ whole: January over the Grand Total."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Share of March",
+      "prompt": "Same pivot. What share of the year's sales will the pivot show for **March**? Put it in ==G4==.",
+      "grid": [
+        ["Date", "Sales", "Cost", null, "Month", "Sum of Sales", "% of Grand Total"],
+        ["=DATE(2026,1,5)", 700, 400, null, "Jan", 1500, 0.3],
+        ["=DATE(2026,1,18)", 800, 500, null, "Feb", 1000, 0.2],
+        ["=DATE(2026,2,1)", 400, 300, null, "Mar", 2500, null],
+        ["=DATE(2026,2,21)", 600, 300, null, "Grand Total", 5000, null],
+        ["=DATE(2026,3,1)", 600, 300, null, null, null, null],
+        ["=DATE(2026,3,9)", 1400, 800, null, null, null, null],
+        ["=DATE(2026,3,30)", 500, 300, null, null, null, null]
+      ],
+      "targetCell": "G4",
+      "mustReference": ["F5"],
+      "activeCell": "G1",
+      "expectedValue": 0.5,
+      "mustUse": [],
+      "solution": "=F4/F5",
+      "explain": "**0.5, or 50%.** March's 2500 is half of 5000. Check: 30% + 20% + 50% = 100%, so the shares of the Grand Total always add to the whole.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Divide March by the Grand Total.",
+        "wrongValue": "March is `F4` and the Grand Total is `F5`: 2500 ÷ 5000."
+      },
+      "clues": ["Same idea as January: month over Grand Total."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Where is it?",
+      "prompt": "A colleague tries to show shares by selecting the Sales numbers and clicking **% Style** on the Home tab. The pivot now says 150000%.\n\nWhat should they have done?",
+      "grid": [
+        ["Month", "Sum of Sales"],
+        ["Jan", 150000],
+        ["Feb", 100000],
+        ["Mar", 250000]
+      ],
+      "options": [
+        "Right-click a number → Show Values As → % of Grand Total",
+        "Design → Grand Totals → Off",
+        "Type each percentage by hand"
+      ],
+      "answer": 0,
+      "explain": "% Style only multiplies by 100 and adds a % sign (1500 becomes 150000%). **Show Values As** changes what the pivot calculates: part ÷ Grand Total.",
+      "wrongFeedback": [
+        null,
+        "That only hides the Grand Total row. It doesn't change the numbers.",
+        "Hand-typed numbers inside a pivot are lost the next time you refresh. Let the pivot calculate."
+      ],
+      "clues": ["One option formats the number; the other changes what's calculated."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Calculated field",
+      "prompt": "The list has Sales and Cost but no **Profit** column. You don't have to add one to the data: click the pivot, then **PivotTable Analyze → Fields, Items & Sets → Calculated Field**, name it Profit and enter `= Sales - Cost`.\n\nExcel does that sum on the **totals** in each cell. What will Profit show for **Feb** in ==D3==?",
+      "grid": [
+        ["Month", "Sum of Sales", "Sum of Cost", "Profit", "Margin"],
+        ["Jan", 1500, 900, 600, null],
+        ["Feb", 1000, 600, null, null],
+        ["Mar", 2500, 1400, 1100, null],
+        ["Grand Total", 5000, 2900, 2100, null]
+      ],
+      "targetCell": "D3",
+      "highlightCells": ["B3:C3"],
+      "activeCell": "A1",
+      "expectedValue": 400,
+      "mustUse": [],
+      "solution": "=B3-C3",
+      "explain": "**400**, which is 1000 − 600. A calculated field works on each cell's totals, so the Profit column adds up: 600 + 400 + 1100 = 2100.",
+      "mobileButtons": ["="],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Subtract Cost from Sales.",
+        "wrongValue": "Feb Profit is Sales `B3` minus Cost `C3`: 1000 − 600."
+      },
+      "clues": ["Use the two pivot cells to the left in the same row."]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Predict: ratios",
+      "prompt": "Now a calculated field **Margin = Profit / Sales**. February has two orders: 400 sales with 100 profit (25%), and 600 sales with 300 profit (50%).\n\nWhat will the pivot show for Feb?",
+      "grid": [
+        ["Order", "Sales", "Profit", "Margin"],
+        ["1 Feb", 400, 100, 0.25],
+        ["21 Feb", 600, 300, 0.5]
+      ],
+      "options": ["37.5%, the average of 25% and 50%", "75%", "40%"],
+      "answer": 2,
+      "explain": "A calculated field **adds up first, then divides**: profit 400 ÷ sales 1000 = **40%**. It never averages the row percentages (that would be 37.5%) or adds them (75%).",
+      "wrongFeedback": [
+        "That's an average of the two row margins. The pivot divides totals, which weights the bigger order more.",
+        "75% is 25% + 50%. A ratio can't be added up like that.",
+        null
+      ],
+      "clues": ["Sum Profit first, sum Sales first, then divide once."]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Ratio of sums",
+      "prompt": "Prove it on the Grand Total. The pivot's Margin column has Jan, Feb and Mar done.\n\nWhat Margin will it show in the **Grand Total** row, ==E5==? Divide the Profit total by the Sales total.",
+      "grid": [
+        ["Month", "Sum of Sales", "Sum of Cost", "Profit", "Margin"],
+        ["Jan", 1500, 900, 600, 0.4],
+        ["Feb", 1000, 600, 400, 0.4],
+        ["Mar", 2500, 1400, 1100, 0.44],
+        ["Grand Total", 5000, 2900, 2100, null]
+      ],
+      "targetCell": "E5",
+      "highlightCells": ["D5", "B5"],
+      "mustReference": ["D5", "B5"],
+      "activeCell": "A1",
+      "expectedValue": 0.42,
+      "mustUse": [],
+      "solution": "=D5/B5",
+      "explain": "**0.42, or 42%** (2100 ÷ 5000). Averaging the three monthly margins would give about 41.3%. Those are different because March is bigger than the other months.",
+      "mobileButtons": ["="],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Divide the total Profit by the total Sales.",
+        "wrongValue": "Grand Total Margin is Profit `D5` ÷ Sales `B5` (2100 ÷ 5000), not an average of the months."
+      },
+      "clues": ["Use the Grand Total row: `D5` over `B5`."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nA pivot over these sales is grouped by **month** and shows each month as a **% of Grand Total**. What will it show for **May**? Put the answer in ==D2==.",
+      "grid": [
+        ["Date", "Sales", null, "May share"],
+        ["=DATE(2026,4,3)", 300, null, null],
+        ["=DATE(2026,4,30)", 200, null, null],
+        ["=DATE(2026,5,1)", 500, null, null],
+        ["=DATE(2026,5,15)", 400, null, null],
+        ["=DATE(2026,6,1)", 250, null, null],
+        ["=DATE(2026,6,20)", 150, null, null],
+        ["=DATE(2026,6,30)", 200, null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 0.45,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(B2:B8,A2:A8,\">=\"&DATE(2026,5,1),A2:A8,\"<\"&DATE(2026,6,1))/SUM(B2:B8)",
+      "explain": "**0.45, or 45%.** May is 500 + 400 = 900 out of 2000. The order on 1 Jun belongs to June, and the one on 1 May belongs to May, so the date edges matter.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">", "<", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Two parts: a `SUMIFS` for the month, divided by the total.",
+        "wrongValue": "May is 900 (1 May to 31 May) out of 2000. Divide the month's sum by `SUM(B2:B8)`."
+      },
+      "clues": [
+        "May total first (a date range), then divide by the whole column.",
+        "May starts `>=` 1 May and ends `<` 1 Jun."
+      ]
+    }
+  ]
+}

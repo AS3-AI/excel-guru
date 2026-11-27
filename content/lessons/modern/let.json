@@ -1,0 +1,286 @@
+{
+  "id": "let",
+  "module": "modern",
+  "title": "LET",
+  "goal": "Name the repeated parts of a long formula with LET so it's shorter, easier to read, and calculates each part once.",
+  "difficulty": 3,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "The repeated part",
+      "text": "A shop works out what each customer pays. The rule: **net = price × qty × (1 − discount)**. If net is **1000 or more**, delivery is free. Otherwise add **50** for delivery.\n\nThe long formula for row 2:\n\n`=IF(B2*C2*(1-D2)>=1000, B2*C2*(1-D2), B2*C2*(1-D2)+50)`\n\nSpot it? `B2*C2*(1-D2)` is typed **three times**. It's hard to read, easy to mistype, and Excel works it out three times.\n\n`LET` lets you give that part a **name** and reuse it. First you'll write the long way, then meet LET.",
+      "grid": [
+        ["Item", "Price", "Qty", "Discount", "Pay"],
+        ["Desk lamp", 400, 3, 0.1, 1080],
+        ["Notebook set", 250, 4, 0, 1000],
+        ["Mouse", 600, 2, 0.5, 650],
+        ["Chair", 1200, 1, 0.25, 950]
+      ],
+      "yellowCells": ["E2:E5"]
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Net first",
+      "prompt": "Start with the repeated part on its own. In ==E2==, work out the **net**: price × qty × (1 − discount).",
+      "grid": [
+        ["Item", "Price", "Qty", "Discount", "Net"],
+        ["Desk lamp", 400, 3, 0.1, null],
+        ["Notebook set", 250, 4, 0, null],
+        ["Mouse", 600, 2, 0.5, null],
+        ["Chair", 1200, 1, 0.25, null]
+      ],
+      "targetCell": "E2",
+      "highlightCells": ["B2:D2"],
+      "activeCell": "E2",
+      "expectedValue": 1080,
+      "solution": "=B2*C2*(1-D2)",
+      "explain": "1080: 400 × 3 = 1200, less 10% is 1080. Forgetting the discount would give 1200.",
+      "mobileButtons": ["=", "(", ")", "*", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets: `=B2*C2*(1-D2)`.",
+        "wrongValue": "Multiply price by qty, then by (1 − discount): the discount is in `D2`."
+      },
+      "clues": ["Price × Qty × (1 − Discount), using B2, C2 and D2."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "The long way",
+      "prompt": "Now the real rule, written the long way. In ==E3==: if the net is **1000 or more** the customer pays the net, otherwise net **plus 50**.\n\nType the whole net calculation each time you need it.",
+      "grid": [
+        ["Item", "Price", "Qty", "Discount", "Pay"],
+        ["Desk lamp", 400, 3, 0.1, null],
+        ["Notebook set", 250, 4, 0, null],
+        ["Mouse", 600, 2, 0.5, null],
+        ["Chair", 1200, 1, 0.25, null]
+      ],
+      "targetCell": "E3",
+      "mustUse": ["IF"],
+      "mustReference": ["B3", "C3", "D3"],
+      "highlightCells": ["B3:D3"],
+      "activeCell": "E3",
+      "expectedValue": 1000,
+      "solution": "=IF(B3*C3*(1-D3)>=1000,B3*C3*(1-D3),B3*C3*(1-D3)+50)",
+      "explain": "1000: this net is exactly 1000, and “1000 or more” includes 1000, so no delivery is added. Using `>` instead would wrongly give 1050.",
+      "mobileButtons": ["=", "(", ")", ",", "*", "-", ">", "+"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check brackets and commas: `IF(test, if true, if false)`.",
+        "missingFunction": "Use IF.",
+        "missingReference": "Use the cells `B3`, `C3` and `D3` for this row.",
+        "wrongValue": "Net is exactly 1000 here, and 1000 counts as free delivery: use `>=`, not `>`."
+      },
+      "clues": ["=IF(net>=1000, net, net+50) where net is B3*C3*(1-D3), typed out each time."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Spot the typo",
+      "prompt": "The Mouse total in ==E4== looks wrong: it shows **1050**, but the mouse's net is only 600 so it should be 600 plus 50. One of the three copies of the calculation points at the wrong row.\n\nRetype the formula for ==E4== correctly.",
+      "grid": [
+        ["Item", "Price", "Qty", "Discount", "Pay"],
+        ["Desk lamp", 400, 3, 0.1, "=IF(B2*C2*(1-D2)>=1000,B2*C2*(1-D2),B2*C2*(1-D2)+50)"],
+        ["Notebook set", 250, 4, 0, "=IF(B3*C3*(1-D3)>=1000,B3*C3*(1-D3),B3*C3*(1-D3)+50)"],
+        ["Mouse", 600, 2, 0.5, "=IF(B4*C4*(1-D4)>=1000,B4*C4*(1-D4),B3*C3*(1-D3)+50)"],
+        ["Chair", 1200, 1, 0.25, null]
+      ],
+      "targetCell": "E4",
+      "mustUse": ["IF"],
+      "mustReference": ["B4", "C4", "D4"],
+      "activeCell": "E4",
+      "highlightCells": ["E4"],
+      "expectedValue": 650,
+      "solution": "=IF(B4*C4*(1-D4)>=1000,B4*C4*(1-D4),B4*C4*(1-D4)+50)",
+      "explain": "650: net 600 is under 1000, so 50 delivery is added. The bug was a stray `B3*C3*(1-D3)`: one tiny typo in one of three copies. This is exactly why LET exists.",
+      "mobileButtons": ["=", "(", ")", ",", "*", "-", ">", "+"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check brackets and commas.",
+        "missingReference": "Every copy must point at row 4: `B4`, `C4`, `D4`.",
+        "wrongValue": "Mouse should pay 650 (net 600 + 50 delivery). Check that all three copies use `B4`, `C4` and `D4`."
+      },
+      "clues": ["Look for B3, C3 or D3: they belong to another row."]
+    },
+    {
+      "id": "s5",
+      "type": "info",
+      "topic": "LET: name it once",
+      "text": "One typo in one of three copies. **LET** fixes that. Its recipe:\n\n`=LET(name, value, calculation)`\n\nYou can add more name and value pairs. The **last** argument is always the calculation that gives the answer.\n\nYour long formula for row 3 becomes:\n\n`=LET(net, B3*C3*(1-D3), IF(net>=1000, net, net+50))`\n\n• `net` is the name you choose\n• `B3*C3*(1-D3)` is worked out **once**\n• the `IF` reuses `net` wherever it's needed\n\nSame answer, one place to fix. Honest notes: LET needs Excel 2021 or newer or Microsoft 365, and this practice sheet can't run it, so you'll read and predict LET formulas from here.",
+      "grid": [
+        ["Item", "Price", "Qty", "Discount", "Pay"],
+        ["Desk lamp", 400, 3, 0.1, 1080],
+        ["Notebook set", 250, 4, 0, 1000],
+        ["Mouse", 600, 2, 0.5, 650],
+        ["Chair", 1200, 1, 0.25, 950]
+      ],
+      "highlightCells": ["B3:D3"],
+      "yellowCells": ["E3"]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Rewrite with LET",
+      "prompt": "Which is the correct LET version of `=IF(B5*C5*(1-D5)>=1000, B5*C5*(1-D5), B5*C5*(1-D5)+50)`?",
+      "grid": [
+        ["Item", "Price", "Qty", "Discount", "Pay"],
+        ["Desk lamp", 400, 3, 0.1, 1080],
+        ["Notebook set", 250, 4, 0, 1000],
+        ["Mouse", 600, 2, 0.5, 650],
+        ["Chair", 1200, 1, 0.25, 950]
+      ],
+      "activeCell": "E5",
+      "options": [
+        "`=LET(net, B5*C5*(1-D5), IF(net>=1000, net, net+50))`",
+        "`=LET(IF(net>=1000, net, net+50), net, B5*C5*(1-D5))`",
+        "`=LET(net = B5*C5*(1-D5), IF(net>=1000, net, net+50))`"
+      ],
+      "answer": 0,
+      "explain": "Names and values come in pairs, with a comma between: `net, B5*C5*(1-D5)`. The calculation that uses the name goes **last**.",
+      "wrongFeedback": [
+        null,
+        "The calculation must come last, after the names it uses. Here `net` is used before it's defined.",
+        "LET doesn't use `=` between a name and its value. It's `name, value` separated by a comma."
+      ],
+      "clues": ["Pairs first (name, value), the finished calculation last."]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "You rewrite row 3 (Notebook set, net exactly **1000**) with LET exactly as above. What will it show?",
+      "grid": [
+        ["Item", "Price", "Qty", "Discount", "Pay"],
+        ["Desk lamp", 400, 3, 0.1, 1080],
+        ["Notebook set", 250, 4, 0, null],
+        ["Mouse", 600, 2, 0.5, 650],
+        ["Chair", 1200, 1, 0.25, 950]
+      ],
+      "activeCell": "E3",
+      "options": ["`1000`", "`1050`", "`#NAME?`"],
+      "answer": 0,
+      "explain": "LET changes how the formula is written, not the maths: 1000 is “1000 or more”, so no delivery is added, the same as your long formula. And `net` is calculated once, not three times, which adds up on thousands of rows.",
+      "wrongFeedback": [
+        null,
+        "1050 would mean delivery got added. The net is 1000 and `>=` includes 1000.",
+        "#NAME? only appears if a name is used before it's defined (or the Excel version has no LET). This one is fine."
+      ],
+      "clues": ["Does LET change the rule, or only how it's written?"]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Another repeat",
+      "prompt": "Trend labels. If sales rose by **more than 10%** show “Up big”, if they fell by more than 10% show “Down big”, otherwise “Flat”.\n\nWrite it the long way in ==D2== for Tea. The change is `(C2-B2)/B2`, and you'll type it twice.",
+      "grid": [
+        ["Product", "Last month", "This month", "Trend"],
+        ["Tea", 200, 220, null],
+        ["Coffee", 500, 450, null],
+        ["Juice", 300, 390, null],
+        ["Water", 100, 100, null]
+      ],
+      "targetCell": "D2",
+      "mustUse": ["IF"],
+      "mustReference": ["B2", "C2"],
+      "activeCell": "D2",
+      "expectedValue": "Flat",
+      "solution": "=IF((C2-B2)/B2>0.1,\"Up big\",IF((C2-B2)/B2<-0.1,\"Down big\",\"Flat\"))",
+      "explain": "“Flat”: Tea rose exactly 10% (20 ÷ 200 = 0.1), and “more than 10%” doesn't include exactly 10%. With LET the change would be named once: `chg`.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "/", "-", ">", "<"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check brackets, commas and quotes. IF goes inside IF.",
+        "missingFunction": "Use IF.",
+        "missingReference": "Use `B2` and `C2`: last month and this month for Tea.",
+        "wrongValue": "Tea went from 200 to 220: exactly +10%. “More than 10%” means `>`, so it's not “Up big”."
+      },
+      "clues": ["Change = (C2-B2)/B2. Test it against 0.1 and -0.1 inside nested IFs."]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Spot the bug in this LET",
+      "prompt": "This LET gives an error: `=LET(label, IF(chg>0.1,\"Up big\",\"Flat\"), chg, (C2-B2)/B2, label)`. What's wrong?",
+      "options": [
+        "`chg` is used before it's defined",
+        "LET can't contain an IF",
+        "Names must be in capital letters"
+      ],
+      "answer": 0,
+      "explain": "LET reads left to right. `label` uses `chg`, but `chg` is only defined **after** it, so Excel doesn't know it yet (#NAME?). Define `chg` first, then `label`.",
+      "wrongFeedback": [
+        null,
+        "LET can hold any formula inside, IF included. The order is the problem.",
+        "Names can be lowercase, uppercase or mixed. LET doesn't care about case."
+      ],
+      "clues": ["Read the pairs from left to right: is every name defined before it's used?"]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Naming rules",
+      "prompt": "Which of these can **not** be used as a name inside LET?",
+      "options": ["`net_price`", "`Q1`", "`discount`"],
+      "answer": 1,
+      "explain": "`Q1` is a cell address (column Q, row 1), so Excel refuses it as a name. Use letters and underscores, no spaces, and nothing that looks like a cell.",
+      "wrongFeedback": [
+        "Letters and an underscore are fine: that's a valid name.",
+        null,
+        "A plain word is a fine name, and it makes the formula easy to read."
+      ],
+      "clues": ["Which one looks like something you'd click in the grid?"]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Why bother?",
+      "prompt": "A colleague asks why you'd use LET instead of the long formula. Which answer is true?",
+      "options": [
+        "It's easier to read, and each named part is worked out once",
+        "It makes answers more accurate",
+        "It works in every version of Excel"
+      ],
+      "answer": 0,
+      "explain": "Names make a formula read like a sentence, and a repeated calculation is done once instead of every time it appears. The result is identical, and LET needs a newer Excel.",
+      "wrongFeedback": [
+        null,
+        "LET never changes the result. It's the same maths, written more neatly.",
+        "LET needs Excel 2021 or newer or Microsoft 365. Older versions show #NAME?."
+      ],
+      "clues": ["Think about what changed in row 3: the answer, or the way it's written?"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Label each item by its profit margin (profit ÷ revenue, where profit is revenue minus cost). **30% or more** is “Good”, **under 15%** is “Low”, anything else is “OK”.\n\nFill in ==D2== for Chai.",
+      "grid": [
+        ["Item", "Revenue", "Cost", "Label"],
+        ["Chai", 100, 70, null],
+        ["Samosa", 200, 170, null],
+        ["Juice", 80, 40, null],
+        ["Cake", 400, 380, null]
+      ],
+      "targetCell": "D2",
+      "mustUse": ["IF"],
+      "mustReference": ["B2", "C2"],
+      "activeCell": "A1",
+      "expectedValue": "Good",
+      "solution": "=IF((B2-C2)/B2>=0.3,\"Good\",IF((B2-C2)/B2<0.15,\"Low\",\"OK\"))",
+      "explain": "“Good”: Chai's margin is exactly 30% (30 ÷ 100), and “30% or more” includes 30%. As a LET it would read `=LET(margin, (B2-C2)/B2, IF(margin>=0.3, \"Good\", IF(margin<0.15, \"Low\", \"OK\")))`.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "/", "-", ">", "<"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check brackets, commas and quotes.",
+        "missingReference": "Use `B2` and `C2` for Chai's revenue and cost.",
+        "wrongValue": "Chai's margin is exactly 30%, and “30% or more” includes 30%, so use `>=` there."
+      },
+      "clues": ["Margin = (B2-C2)/B2. Test the 30% rule first, then the under-15% rule."]
+    }
+  ]
+}

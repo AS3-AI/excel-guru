@@ -1,0 +1,376 @@
+{
+  "id": "countif",
+  "module": "decisions",
+  "title": "COUNTIF & COUNTIFS",
+  "goal": "Count the rows that match a word, a number condition (like 40 or more), a pattern with * or several conditions at once, and point the condition at a cell so you can change it later.",
+  "difficulty": 2,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Count only what matches",
+      "text": "COUNT counts numbers. But the questions you really get asked sound like: **“How many reps are in Pune?”**\n\n**COUNTIF** counts only the cells that match a condition: `=COUNTIF(range, condition)`. The condition goes in “quotes” when it's a word.\n\nClick the button. Ben moves to Pune, and the count in ==D2== updates on its own.",
+      "grid": [
+        ["Rep", "City", null, "Pune reps"],
+        ["Asha", "Pune", null, "=COUNTIF(B2:B7,\"Pune\")"],
+        ["Ben", "Delhi", null, null],
+        ["Chitra", "Pune", null, null],
+        ["Dev", "Mumbai", null, null],
+        ["Esha", "Delhi", null, null],
+        ["Farhan", "Pune", null, null]
+      ],
+      "activeCell": "D2",
+      "yellowCells": ["D2"],
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "B3",
+          "fromValue": "Delhi",
+          "toValue": "Pune",
+          "resultCell": "D2",
+          "buttonLabel": "Ben moves: Delhi → Pune",
+          "resetLabel": "Put Ben back in Delhi"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Count a word",
+      "prompt": "A café logged six orders. How many were **Latte**?\n\nIn ==D2==, type `=COUNTIF(B2:B7,\"Latte\")` and press [[Enter]]. The first part is **where to look**, the second is **what to count**.",
+      "grid": [
+        ["Order", "Drink", null, "Lattes"],
+        [1, "Latte", null, null],
+        [2, "Mocha", null, null],
+        [3, "Latte", null, null],
+        [4, "Tea", null, null],
+        [5, "Latte", null, null],
+        [6, "Mocha", null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["D2"],
+      "expectedValue": 3,
+      "mustUse": ["COUNTIF"],
+      "solution": "=COUNTIF(B2:B7,\"Latte\")",
+      "explain": "**3 lattes.** Excel looked down `B2:B7` and counted only the cells equal to “Latte”. Capital letters don't matter: “latte” would be counted too.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `COUNTIF(` to count only matching cells.",
+        "parseError": "Check the brackets, and put quote marks around the word: `\"Latte\"`.",
+        "wrongValue": "Count the **Drink** column only: `B2:B7`, with the word `\"Latte\"` in quotes."
+      },
+      "clues": ["`=COUNTIF(B2:B7,\"Latte\")`: where to look, then what to count."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Count numbers: at least 40",
+      "prompt": "Conditions can compare numbers too. Put the **whole condition** in one pair of quotes, like `\">=40\"` (the `>=` and the number together).\n\nThe pass mark is **40 or more**. In ==D2==, count how many students passed.",
+      "grid": [
+        ["Student", "Score", null, "Passed"],
+        ["Asha", 72, null, null],
+        ["Ben", 35, null, null],
+        ["Chitra", 40, null, null],
+        ["Dev", 58, null, null],
+        ["Esha", 39, null, null],
+        ["Farhan", 91, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["D2"],
+      "expectedValue": 4,
+      "mustUse": ["COUNTIF"],
+      "solution": "=COUNTIF(B2:B7,\">=40\")",
+      "explain": "**4 passed**: Asha, Chitra, Dev and Farhan. Chitra's **exactly 40** counts because `>=` includes the number itself. `\">40\"` would have given 3.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `COUNTIF` with the condition in quotes.",
+        "parseError": "Check the brackets. The condition is one piece in quotes: `\">=40\"`.",
+        "wrongValue": "Count scores of **40 or more**, and remember Chitra scored exactly 40. Use `\">=40\"`, not `\">40\"`."
+      },
+      "clues": ["`=COUNTIF(B2:B7,` then the condition in quotes, then `)`."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Point the condition at a cell",
+      "prompt": "Typing `5000` inside the formula means you'd rewrite it whenever the target changes. Better: keep the target in a cell, and **join** it onto the symbol with `&`.\n\nThe target is in `E1`. In ==E2==, type `=COUNTIF(B2:B7,\">=\"&E1)` to count reps who hit it.",
+      "grid": [
+        ["Rep", "Sales", null, "Target", 5000],
+        ["Asha", 4200, null, "Reps at target", null],
+        ["Ben", 6100, null, null, null],
+        ["Chitra", 5000, null, null, null],
+        ["Dev", 7800, null, null, null],
+        ["Esha", 2900, null, null, null],
+        ["Farhan", 5400, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "A2",
+      "highlightCells": ["B2:B7", "E1"],
+      "yellowCells": ["E2"],
+      "expectedValue": 4,
+      "mustUse": ["COUNTIF"],
+      "mustReference": ["E1"],
+      "solution": "=COUNTIF(B2:B7,\">=\"&E1)",
+      "explain": "**4 reps** (Ben, Chitra, Dev, Farhan). `\">=\"&E1` builds the condition `>=5000` from the symbol and the cell, and Chitra's exact 5000 counts. Writing `\">=E1\"` all in one quote would look for the letters “E1” and find nothing.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `COUNTIF` for this one.",
+        "missingReference": "Point the condition at the target cell: `\">=\"&E1`.",
+        "parseError": "Check the brackets. The symbol sits in quotes, then `&`, then the cell: `\">=\"&E1`.",
+        "wrongValue": "Count the Sales column `B2:B7` for values at or above `E1`. Use `\">=\"&E1` and keep the `>=` in quotes."
+      },
+      "clues": ["Only the symbol goes in quotes: `\">=\"`, then `&E1`."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "The manager raises the target in `E1` from **5000** to **6000**.\n\nBefore you change anything: what will `E2` show?",
+      "grid": [
+        ["Rep", "Sales", null, "Target", 5000],
+        ["Asha", 4200, null, "Reps at target", "=COUNTIF(B2:B7,\">=\"&E1)"],
+        ["Ben", 6100, null, null, null],
+        ["Chitra", 5000, null, null, null],
+        ["Dev", 7800, null, null, null],
+        ["Esha", 2900, null, null, null],
+        ["Farhan", 5400, null, null, null]
+      ],
+      "activeCell": "E1",
+      "yellowCells": ["E1"],
+      "highlightCells": ["E2"],
+      "options": ["`4`: it stays the same", "`2`", "`6000`"],
+      "answer": 1,
+      "explain": "Only Ben (6100) and Dev (7800) are at 6000 or more, so the count drops to **2**. You'll see Excel agree in a moment.",
+      "wrongFeedback": [
+        "The formula reads `E1` each time, so a new target gives a new count. Chitra's 5000 and Farhan's 5400 no longer reach it.",
+        null,
+        "COUNTIF returns **how many** reps reach the target, not the target itself."
+      ],
+      "clues": ["Which sales are 6000 or more?"]
+    },
+    {
+      "id": "s6",
+      "type": "entry",
+      "topic": "Change the cell, not the formula",
+      "prompt": "Now prove it. Click ==E1==, type **6000**, press [[Enter]] and watch `E2`.",
+      "grid": [
+        ["Rep", "Sales", null, "Target", 5000],
+        ["Asha", 4200, null, "Reps at target", "=COUNTIF(B2:B7,\">=\"&E1)"],
+        ["Ben", 6100, null, null, null],
+        ["Chitra", 5000, null, null, null],
+        ["Dev", 7800, null, null, null],
+        ["Esha", 2900, null, null, null],
+        ["Farhan", 5400, null, null, null]
+      ],
+      "activeCell": "A2",
+      "yellowCells": ["E1"],
+      "highlightCells": ["E2"],
+      "expect": { "E1": 6000, "E2": 2 },
+      "explain": "You never touched the formula, yet the count went from 4 to **2**. Keeping the condition in a cell lets anyone try different targets without editing a formula.",
+      "wrongFeedback": {
+        "textNotNumber": "Type just the digits **6000**: no commas or symbols.",
+        "wrongValue": "`E1` should be **6000**. Click it and type again."
+      },
+      "clues": ["Change only `E1`."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Wildcards: starts with",
+      "prompt": "A **wildcard** stands in for any letters. The star `*` means “anything, any length”.\n\nIn ==D2==, count the fruits that **start with A**. Type `=COUNTIF(A2:A7,\"A*\")`.",
+      "grid": [
+        ["Fruit", null, null, "Starts with A"],
+        ["Apple", null, null, null],
+        ["Apricot", null, null, null],
+        ["Banana", null, null, null],
+        ["Pineapple", null, null, null],
+        ["Avocado", null, null, null],
+        ["Mango", null, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "highlightCells": ["A2:A7"],
+      "yellowCells": ["D2"],
+      "expectedValue": 3,
+      "mustUse": ["COUNTIF"],
+      "solution": "=COUNTIF(A2:A7,\"A*\")",
+      "explain": "**3**: Apple, Apricot and Avocado. `\"A*\"` means “an A, then anything”. Pineapple has an “a” inside it, but it doesn't **start** with one.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `COUNTIF` with a wildcard pattern.",
+        "parseError": "Check the brackets and quote marks: the pattern is `\"A*\"`.",
+        "wrongValue": "Count fruits that **begin** with A. The pattern is `\"A*\"`: the A first, then the star."
+      },
+      "clues": ["Put the star **after** the A."]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Wildcards: ends with",
+      "prompt": "The star can go at the **front** too, to match “anything, then this ending”.\n\nIn ==D2==, count the items whose name **ends with** “berry”. Watch out for the near-miss in the list.",
+      "grid": [
+        ["Item", null, null, "Ends in berry"],
+        ["Strawberry", null, null, null],
+        ["Blueberry", null, null, null],
+        ["Berry Mix", null, null, null],
+        ["Raspberry", null, null, null],
+        ["Banana", null, null, null],
+        ["Mango", null, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "highlightCells": ["A2:A7"],
+      "yellowCells": ["D2"],
+      "expectedValue": 3,
+      "mustUse": ["COUNTIF"],
+      "solution": "=COUNTIF(A2:A7,\"*berry\")",
+      "explain": "**3**: Strawberry, Blueberry and Raspberry. “Berry Mix” has the word, but at the **start**, so `\"*berry\"` skips it. Stars at both ends, `\"*berry*\"`, would have counted 4.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `COUNTIF` with a pattern.",
+        "parseError": "Check the brackets and quote marks.",
+        "wrongValue": "The star goes **before** “berry”: `\"*berry\"`. A star on both sides would also count “Berry Mix”."
+      },
+      "clues": ["`\"*berry\"`: anything, then berry."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "COUNTIFS: two conditions",
+      "prompt": "Sometimes one condition isn't enough. **COUNTIFS** counts rows that meet **all** the conditions, as pairs of “range, condition”.\n\nHow many **Pune** orders were **500 or more**? In ==D2==, type `=COUNTIFS(A2:A8,\"Pune\",B2:B8,\">=500\")`.",
+      "grid": [
+        ["Region", "Amount", null, "Big Pune orders"],
+        ["Pune", 600, null, null],
+        ["Pune", 400, null, null],
+        ["Delhi", 700, null, null],
+        ["Pune", 500, null, null],
+        ["Delhi", 300, null, null],
+        ["Pune", 900, null, null],
+        ["Delhi", 800, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "highlightCells": ["A2:B8"],
+      "yellowCells": ["D2"],
+      "expectedValue": 3,
+      "mustUse": ["COUNTIFS"],
+      "solution": "=COUNTIFS(A2:A8,\"Pune\",B2:B8,\">=500\")",
+      "explain": "**3**: the Pune orders of 600, 500 and 900. Four rows are Pune and five are 500 or more, but only three are **both**. COUNTIFS keeps just the rows that pass every pair.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `COUNTIFS` (with an S) for several conditions.",
+        "parseError": "Check the brackets. Each pair is a range, a comma, then its condition in quotes.",
+        "wrongValue": "Both pairs must be in: `A2:A8` with `\"Pune\"`, and `B2:B8` with `\">=500\"`. The 500 order counts."
+      },
+      "clues": ["Pair 1: `A2:A8,\"Pune\"`. Pair 2: `B2:B8,\">=500\"`."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "COUNTIFS: a range between two limits",
+      "prompt": "You can use the **same column twice** to count numbers between two limits.\n\nIn ==D2==, count the students who scored **from 50 to 80, both included**.",
+      "grid": [
+        ["Student", "Score", null, "50 to 80"],
+        ["Anil", 45, null, null],
+        ["Bela", 80, null, null],
+        ["Chen", 50, null, null],
+        ["Dhruv", 92, null, null],
+        ["Eva", 65, null, null],
+        ["Faiz", 30, null, null],
+        ["Gauri", 80, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "highlightCells": ["B2:B8"],
+      "yellowCells": ["D2"],
+      "expectedValue": 4,
+      "mustUse": ["COUNTIFS"],
+      "solution": "=COUNTIFS(B2:B8,\">=50\",B2:B8,\"<=80\")",
+      "explain": "**4**: Bela (80), Chen (50), Eva (65) and Gauri (80). A score has to pass both tests, and the two edge scores of exactly 50 and 80 are in because of `>=` and `<=`.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">", "<"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use `COUNTIFS`, with `B2:B8` as the range in both pairs.",
+        "parseError": "Check the brackets and quote marks around each condition.",
+        "wrongValue": "Use `>=50` and `<=80`, so the scores of exactly 50 and exactly 80 are included. Both pairs look at `B2:B8`."
+      },
+      "clues": ["Pair 1: `B2:B8,\">=50\"`. Pair 2: `B2:B8,\"<=80\"`."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Spot the problem",
+      "prompt": "This COUNTIFS shows `#VALUE!`. The formula is spelled right, and both conditions are fine.\n\nWhat's wrong?",
+      "grid": [
+        ["City", "Hours", null, "Result"],
+        ["Pune", 8, null, "=COUNTIFS(A2:A8,\"Pune\",B2:B7,\">=6\")"],
+        ["Delhi", 5, null, null],
+        ["Pune", 6, null, null],
+        ["Pune", 3, null, null],
+        ["Delhi", 9, null, null],
+        ["Pune", 7, null, null],
+        ["Delhi", 4, null, null]
+      ],
+      "activeCell": "D2",
+      "yellowCells": ["D2"],
+      "showFormulaBar": true,
+      "options": [
+        "The two ranges are different sizes",
+        "COUNTIFS can't use two conditions",
+        "`\">=6\"` needs no quote marks"
+      ],
+      "answer": 0,
+      "explain": "`A2:A8` has 7 cells, but `B2:B7` only has 6. COUNTIFS pairs them up row by row, so every range must be **the same size**. Change `B2:B7` to `B2:B8`.",
+      "wrongFeedback": [
+        null,
+        "Two conditions is exactly what COUNTIFS is for. You can use up to 127.",
+        "A condition with a symbol like `>=` **does** need quotes. The problem is the ranges."
+      ],
+      "clues": ["Compare the end of the first range with the end of the second."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A delivery team tracks its orders by region and status.\n\nHow many **Mumbai** orders are still **Pending**? Put the answer in `D2`.",
+      "grid": [
+        ["Region", "Status", null, "Answer"],
+        ["Mumbai", "Pending", null, null],
+        ["Mumbai", "Paid", null, null],
+        ["Delhi", "Pending", null, null],
+        ["Mumbai", "Pending", null, null],
+        ["Pune", "Paid", null, null],
+        ["Delhi", "Paid", null, null],
+        ["Mumbai", "Paid", null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A1",
+      "expectedValue": 2,
+      "mustUse": ["COUNTIFS"],
+      "solution": "=COUNTIFS(A2:A8,\"Mumbai\",B2:B8,\"Pending\")",
+      "explain": "**2.** Four orders are Mumbai and three are Pending, but only two are **both**. Two conditions on two columns: that's COUNTIFS.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Two conditions at once means using `COUNTIFS`.",
+        "parseError": "Check the brackets and put quote marks around both words.",
+        "wrongValue": "Count rows that are Mumbai **and** Pending: one pair for the Region column, one for the Status column."
+      },
+      "clues": ["Region column with `\"Mumbai\"`, then Status column with `\"Pending\"`."]
+    }
+  ]
+}

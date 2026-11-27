@@ -1,0 +1,289 @@
+{
+  "id": "percent-rounding",
+  "module": "formulas",
+  "title": "Percentages, Rounding & Basic Math",
+  "goal": "Work out a share of a total and a percent change, add GST or a discount, round with ROUND, ROUNDUP and ROUNDDOWN, and use brackets so Excel calculates in the right order.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "A percent is just a number",
+      "text": "Your boss asks: “What share of our sales comes from Pune?”\n\nA percentage is a **fraction of 1**: 50% is 0.5, 25% is 0.25, 100% is 1. Excel stores it as a normal number and only the **format** adds the % sign.\n\nIn this topic: share of a total, change and growth, adding GST, rounding, and why brackets matter.",
+      "grid": [
+        ["City", "Sales", "Share"],
+        ["Pune", 240, "=B2/B5"],
+        ["Delhi", 360, "=B3/B5"],
+        ["Goa", 400, "=B4/B5"],
+        ["Total", "=SUM(B2:B4)", null]
+      ],
+      "activeCell": "C2",
+      "yellowCells": ["C2"],
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Percent of total",
+      "prompt": "A share is **part ÷ total**. Pune sold 240 out of 1000.\n\nIn ==C2==, type `=B2/B5` and press [[Enter]].",
+      "grid": [
+        ["City", "Sales", "Share"],
+        ["Pune", 240, null],
+        ["Delhi", 360, null],
+        ["Goa", 400, null],
+        ["Total", "=SUM(B2:B4)", null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "highlightCells": ["B2", "B5"],
+      "yellowCells": ["C2"],
+      "expectedValue": 0.24,
+      "mustReference": ["B2"],
+      "solution": "=B2/B5",
+      "explain": "**0.24**: Pune sold 240 of 1000. Excel shows the plain number; the next step turns it into 24%.",
+      "mobileButtons": ["=", "/"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingReference": "Divide Pune's sales in `B2` by the total in `B5`.",
+        "wrongValue": "Part ÷ total: Pune's `B2` divided by the Total in `B5`."
+      },
+      "clues": ["`/` means divide. Pune is `B2`, the Total is `B5`."]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Show it as a %: Ctrl + Shift + 5",
+      "prompt": "`C2` to `C4` show 0.24, 0.36 and 0.4. People read those as percentages much faster.\n\nWith them selected, press [[Ctrl]] + [[Shift]] + [[5]] (the % key). The numbers don't change: only how they look.",
+      "keys": {
+        "win": "Ctrl+Shift+5",
+        "mac": "Ctrl+Shift+5"
+      },
+      "grid": [
+        ["City", "Sales", "Share"],
+        ["Pune", 240, "=B2/B5"],
+        ["Delhi", 360, "=B3/B5"],
+        ["Goa", 400, "=B4/B5"],
+        ["Total", "=SUM(B2:B4)", null]
+      ],
+      "activeCell": "C2:C4",
+      "postcondition": {
+        "grid": [
+          ["City", "Sales", "Share"],
+          ["Pune", 240, "24%"],
+          ["Delhi", 360, "36%"],
+          ["Goa", 400, "40%"],
+          ["Total", "=SUM(B2:B4)", null]
+        ],
+        "selection": "C2:C4"
+      },
+      "clues": ["The % sign lives on the 5 key. Hold Ctrl and Shift, then tap 5."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Percent change and growth",
+      "prompt": "Growth is the **change ÷ the old value**: (new − old) ÷ old.\n\nChai sold 250 cups last year and 300 this year. In ==D2==, type the growth with brackets around the subtraction.",
+      "grid": [
+        ["Product", "Last year", "This year", "Change"],
+        ["Chai", 250, 300, null],
+        ["Coffee", 400, 380, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "yellowCells": ["D2"],
+      "expectedValue": 0.2,
+      "mustReference": ["B2", "C2"],
+      "disallowFunctions": true,
+      "solution": "=(C2-B2)/B2",
+      "explain": "**0.2**, which is 20% growth: 50 extra cups on a base of 250. Divide by the **old** value, not the new one. Coffee would give −0.05: a negative result means a fall.",
+      "mobileButtons": ["=", "(", ")", "-", "/"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingReference": "Use both years: `B2` (old) and `C2` (new).",
+        "wrongValue": "(new − old) ÷ old. Divide by last year's `B2`, and put the subtraction in brackets."
+      },
+      "clues": ["The change is `C2-B2`. Put it in brackets, then divide by `B2`."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Predict: order of operations",
+      "prompt": "Meera scored 80 in Maths and 90 in Science. Someone types `=B2+C2/2` to find her average.\n\nWhat does it show?",
+      "grid": [
+        ["Student", "Maths", "Science", "Average"],
+        ["Meera", 80, 90, "=B2+C2/2"]
+      ],
+      "activeCell": "D2",
+      "yellowCells": ["D2"],
+      "showFormulaBar": true,
+      "options": ["`85`", "`125`", "`170`"],
+      "answer": 1,
+      "explain": "Excel does **multiplication and division before addition and subtraction**: 90 ÷ 2 = 45, then 80 + 45 = **125**. Brackets go first, so `=(B2+C2)/2` gives the real average, 85.",
+      "wrongFeedback": [
+        "85 is what Meera's average should be. But without brackets, Excel divides first.",
+        null,
+        "170 is just the two marks added. The `/2` still happens, just in the wrong place."
+      ],
+      "clues": ["Division beats addition. What does `C2/2` come to?"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Add GST",
+      "prompt": "Brackets also fix prices. A price **plus 18%** is price × (1 + 18%).\n\nHeadphones cost 2500 before GST. In ==C2==, type the price including GST. You can type `18%` straight into a formula.",
+      "grid": [
+        ["Item", "Price", "With GST"],
+        ["Headphones", 2500, null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "yellowCells": ["C2"],
+      "expectedValue": 2950,
+      "mustReference": ["B2"],
+      "disallowFunctions": true,
+      "solution": "=B2*(1+18%)",
+      "explain": "**2950**: 2500 plus 450 of GST. `=B2*1+18%` would add just 0.18, and `=B2*18%` would give only the 450. The brackets make Excel add 1 + 0.18 first.",
+      "mobileButtons": ["=", "*", "(", ")", "+", "%"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingReference": "Start from the price in `B2`.",
+        "wrongValue": "You need the price **plus** 18% of it: price × (1 + 18%). Put the `1+18%` in brackets."
+      },
+      "clues": [
+        "Price + 18% of the price is the same as price × 1.18.",
+        "Write it as `B2*(1+18%)`."
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "The off-by-one trap",
+      "prompt": "These prices are really 10.4, 20.4 and 30.4. You click **Decrease Decimal** until they **look** like 10, 20 and 30.\n\nWhat does the Total show?",
+      "grid": [
+        ["Item", "Price"],
+        ["Tea", 10.4],
+        ["Cake", 20.4],
+        ["Juice", 30.4],
+        ["Total", "=SUM(B2:B4)"]
+      ],
+      "activeCell": "B5",
+      "yellowCells": ["B5"],
+      "showFormulaBar": true,
+      "options": [
+        "`60`: what you see added up",
+        "`61`: Excel adds the real values",
+        "`61.2`: decimals stay visible"
+      ],
+      "answer": 1,
+      "explain": "Formatting only changes what you **see**. Excel still adds 10.4 + 20.4 + 30.4 = 61.2, then displays it as **61**. Your report would show 10 + 20 + 30 = 61. To change the actual value, use ROUND.",
+      "wrongFeedback": [
+        "That's what a person adding the visible numbers gets. Excel adds what's really stored.",
+        null,
+        "Hiding decimals applies to the total too, so it displays 61."
+      ],
+      "clues": ["Which numbers does SUM add: the ones you see, or the ones stored?"]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "ROUND",
+      "prompt": "**ROUND** changes the value itself: `=ROUND(number, digits)`. Digits 2 means two places after the decimal point.\n\nA bill of 200 is split between 3 friends. In ==C2==, work out what each pays, rounded to 2 decimals.",
+      "grid": [
+        ["Bill", "Friends", "Each"],
+        [200, 3, null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "yellowCells": ["C2"],
+      "expectedValue": 66.67,
+      "mustUse": ["ROUND"],
+      "solution": "=ROUND(A2/B2,2)",
+      "explain": "**66.67**: 200 ÷ 3 is 66.6666…, rounded to the nearest paisa. Unlike formatting, `ROUND` really stores 66.67.",
+      "mobileButtons": ["=", "(", ")", "/", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Use **ROUND** so the value itself is rounded.",
+        "wrongValue": "Divide the bill by the number of friends inside ROUND, then add `,2` for two decimals."
+      },
+      "clues": ["`=ROUND(` then the division `A2/B2`, then `,2)`."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "ROUNDUP",
+      "prompt": "**ROUNDUP** always rounds **away from zero**, even for 4.1. That's what you want when you can't buy part of something.\n\nYou have 41 mugs and each box holds 10. In ==C2==, work out how many boxes you need.",
+      "grid": [
+        ["Mugs", "Per box", "Boxes"],
+        [41, 10, null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "yellowCells": ["C2"],
+      "expectedValue": 5,
+      "mustUse": ["ROUNDUP"],
+      "solution": "=ROUNDUP(A2/B2,0)",
+      "explain": "**5**: 41 ÷ 10 = 4.1, and four boxes would leave one mug out. `ROUND` would say 4; `ROUNDUP` gives the box you actually need. Digits 0 means whole numbers.",
+      "mobileButtons": ["=", "(", ")", "/", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Use **ROUNDUP**: a part-filled box still has to be bought.",
+        "wrongValue": "41 ÷ 10 is 4.1. You need to round **up** to whole boxes."
+      },
+      "clues": ["`=ROUNDUP(A2/B2,0)`: digits 0 gives a whole number."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "ROUNDDOWN",
+      "prompt": "**ROUNDDOWN** cuts the extra off, even for 9.6.\n\nA shop has 48 kg of rice and fills 5 kg bags. In ==C2==, work out how many **full** bags it can make.",
+      "grid": [
+        ["Rice (kg)", "Bag size", "Full bags"],
+        [48, 5, null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "yellowCells": ["C2"],
+      "expectedValue": 9,
+      "mustUse": ["ROUNDDOWN"],
+      "solution": "=ROUNDDOWN(A2/B2,0)",
+      "explain": "**9**: 48 ÷ 5 = 9.6, but only 9 bags can be filled. `ROUND` would say 10, which is more rice than you have.",
+      "mobileButtons": ["=", "(", ")", "/", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Use **ROUNDDOWN**: only full bags count.",
+        "wrongValue": "48 ÷ 5 is 9.6. Only whole bags count, so round **down**."
+      },
+      "clues": ["Same shape as ROUNDUP, just the other direction."]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A shirt is priced 2999 in `B2`. Take 10% off, then add 18% GST on the discounted price.\n\nWhat does the customer pay, to the nearest rupee? Answer in ==C2==.",
+      "grid": [
+        ["Item", "Price", "Customer pays"],
+        ["Shirt", 2999, null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A1",
+      "expectedValue": 3185,
+      "mustUse": ["ROUND"],
+      "solution": "=ROUND(B2*(1-10%)*(1+18%),0)",
+      "explain": "**3185**: 2999 × 0.9 = 2699.1, × 1.18 = 3184.938, rounded to 3185. Two brackets, one ROUND.",
+      "mobileButtons": ["=", "(", ")", "*", "-", "+", "%", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "The answer must be a whole rupee, so round the value itself.",
+        "wrongValue": "Discount first: price × (1 − 10%). Then GST on that: × (1 + 18%). Round the result to 0 decimals."
+      },
+      "clues": [
+        "Two brackets: `(1-10%)` and `(1+18%)`.",
+        "Wrap the whole thing in ROUND with 0 digits."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,293 @@
+{
+  "id": "ai-cleaning",
+  "module": "ai",
+  "title": "AI for Cleaning & Analysis",
+  "goal": "Describe a messy column to an AI, test its cleaning formula (text-numbers, blanks, duplicates), and verify its answers about your data with your own formulas.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Mess in, answer out",
+      "text": "Exports are messy: stray spaces, mixed capitals, numbers with units, blanks, duplicates. An AI can suggest a formula for each mess in seconds, and answer questions about your data. But it can't see your sheet's mess unless you describe it.\n\nThree habits:\n• Describe the mess **with one real example** (“12 kg”)\n• Ask for the result in a **new column**: keep the original\n• Test on the messiest rows, then **check every answer** it gives about your data\n\nThis export has three kinds of mess. Can you spot them?",
+      "grid": [
+        ["Name", "City", "Weight"],
+        ["Asha Rao ", "pune", "12 kg"],
+        ["asha rao", "Pune", "8 kg"],
+        ["Ben Lopez", "Goa", null],
+        ["Ben Lopez", "Goa", "20 kg"]
+      ],
+      "activeCell": "A1",
+      "yellowCells": ["A2", "B2", "C2", "C4"]
+    },
+    {
+      "id": "s2",
+      "type": "mcq",
+      "topic": "Pick the better prompt",
+      "prompt": "Column B holds weights like `12 kg`, typed as text. Which prompt will get the **most useful** cleaning formula?",
+      "grid": [
+        ["Item", "Weight"],
+        ["Rice", "12 kg"],
+        ["Dal", "8 kg"],
+        ["Oil", "20 kg"]
+      ],
+      "options": [
+        "“Clean my data.”",
+        "“Make column B numbers.”",
+        "“Column B has weights like “12 kg”, stored as text. I need real numbers in column C and column B left alone. Give me one formula for C2.”"
+      ],
+      "answer": 2,
+      "explain": "A good cleaning prompt has the mess, one real example, and where the result goes. A **new column** keeps your original safe if the formula turns out to be wrong.",
+      "wrongFeedback": [
+        "“Clean” could mean anything: spaces, capitals, duplicates. The AI has to guess.",
+        "It doesn't know what's wrong, and it might suggest overwriting your only copy.",
+        null
+      ],
+      "clues": ["Which prompt shows an example and says where the answer goes?"],
+      "highlightCells": ["B1:B4"]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "Predict the total",
+      "prompt": "The AI suggests `=SUBSTITUTE(B2,\" kg\",\"\")`, which cuts the “ kg” off. You fill it down column C.\n\nNow you total `C2:C5` with `SUM`. The weights are 12, 8, 20 and 5. What will `SUM` show?",
+      "grid": [
+        ["Item", "Weight", "Clean"],
+        ["Rice", "12 kg", "=SUBSTITUTE(B2,\" kg\",\"\")"],
+        ["Dal", "8 kg", "=SUBSTITUTE(B3,\" kg\",\"\")"],
+        ["Oil", "20 kg", "=SUBSTITUTE(B4,\" kg\",\"\")"],
+        ["Salt", "5 kg", "=SUBSTITUTE(B5,\" kg\",\"\")"]
+      ],
+      "options": ["`45`", "`0`", "`#VALUE!`"],
+      "answer": 1,
+      "explain": "`SUBSTITUTE` always returns **text**, so “12” in column C is a text-number, and `SUM` skips text. You get **0**, with no error to warn you. That's a classic AI-cleaning trap.",
+      "wrongFeedback": [
+        "That's what you'd hope. But the cleaned cells are text, and `SUM` ignores text.",
+        null,
+        "`SUM` doesn't complain about text-numbers: it quietly skips them, which is worse."
+      ],
+      "clues": ["Is the “12” that `SUBSTITUTE` returns a number or text?"],
+      "activeCell": "C2",
+      "showFormulaBar": true,
+      "highlightCells": ["C2:C5"]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Turn the text into a number",
+      "prompt": "Fix the AI's formula in ==C2== so that `12` is a **real number**. Keep working from the weight in `B2`.",
+      "grid": [
+        ["Item", "Weight", "Clean"],
+        ["Rice", "12 kg", null],
+        ["Dal", "8 kg", null],
+        ["Oil", "20 kg", null],
+        ["Salt", "5 kg", null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": 12,
+      "solution": "=VALUE(SUBSTITUTE(B2,\" kg\",\"\"))",
+      "explain": "**12**, now a true number: it sits on the right side of the cell, and `SUM(C2:C5)` would give 45. `VALUE` turns text that looks like a number into a number.",
+      "wrongFeedback": {
+        "wrongValue": "The result must be the number `12`, not the text “12”. Wrap the cleaned text in `VALUE`.",
+        "missingReference": "Build it from the weight cell `B2`, so it also works when you fill it down."
+      },
+      "clues": ["`=VALUE(` + the `SUBSTITUTE` part + `)`"],
+      "mobileButtons": ["=", "(", ")", ",", "\""],
+      "mustUse": ["VALUE"],
+      "mustReference": ["B2"],
+      "highlightCells": ["B2"],
+      "yellowCells": ["C2"],
+      "activeCell": "C1"
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Fill the blanks",
+      "prompt": "Next mess: Ben's city is empty. An AI suggests: “Show **Unknown** when the city is empty, otherwise show the city.”\n\nWrite that formula for Ben's row in ==C2==.",
+      "grid": [
+        ["Customer", "City", "Clean city"],
+        ["Ben", null, null],
+        ["Asha", "Pune", null],
+        ["Chitra", "Goa", null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": "Unknown",
+      "solution": "=IF(ISBLANK(B2),\"Unknown\",B2)",
+      "explain": "`Unknown`. Without the check, `=B2` would show **0** for an empty cell, which is a worse mess than a blank. Test on the row that's actually empty.",
+      "wrongFeedback": {
+        "missingFunction": "Choose between two outcomes: that's `IF`.",
+        "wrongValue": "Ben's city is empty, so the answer should be the word Unknown. Test with `ISBLANK(B2)` or `B2=\"\"`."
+      },
+      "clues": ["`=IF(is it empty?, \"Unknown\", B2)`"],
+      "mobileButtons": ["=", "(", ")", ",", "\""],
+      "mustUse": ["IF"],
+      "highlightCells": ["B2"],
+      "yellowCells": ["C2"],
+      "activeCell": "C1"
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Spot duplicates",
+      "prompt": "To flag duplicate emails, the AI says: “Count how many times each email appears.” In ==B2== count how often the email in `A2` appears in `A2:A6`. Anything above 1 is a duplicate.",
+      "grid": [
+        ["Email", "Times"],
+        ["asha@mail.com", null],
+        ["ben@mail.com", null],
+        ["chitra@mail.com", null],
+        ["ASHA@mail.com", null],
+        ["dev@mail.com", null]
+      ],
+      "targetCell": "B2",
+      "expectedValue": 2,
+      "solution": "=COUNTIF(A2:A6,A2)",
+      "explain": "**2.** Row 5 is the same email in capitals, and `COUNTIF` ignores capitals, so it counts as a repeat. (Stray spaces would still fool it: clean with `TRIM` first.)",
+      "wrongFeedback": {
+        "missingFunction": "Counting matches is `COUNTIF`.",
+        "wrongValue": "Look in the whole list `A2:A6`, not just `A2`, for the value in `A2`."
+      },
+      "clues": ["`=COUNTIF(range to look in, value to find)`"],
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "mustUse": ["COUNTIF"],
+      "highlightCells": ["A2:A6"],
+      "yellowCells": ["B2"],
+      "activeCell": "B1"
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Freeze the clean column",
+      "prompt": "Column B is made of formulas that read the messy column A. Before you delete A, turn the answers into plain values.\n\nYou've copied `B2:B4` and you're on `D2`. Open Paste Special with [[Ctrl]] + [[Alt]] + [[V]], press [[V]] for **Values**, then [[Enter]].",
+      "keys": {
+        "win": ["Ctrl+Alt+V", "V", "Enter"],
+        "mac": null
+      },
+      "grid": [
+        ["Messy", "Clean", null, "Final"],
+        [" asha rao", "=PROPER(TRIM(A2))", null, null],
+        ["BEN  lopez", "=PROPER(TRIM(A3))", null, null],
+        [" chitra das", "=PROPER(TRIM(A4))", null, null]
+      ],
+      "postcondition": {
+        "grid": [
+          ["Messy", "Clean", null, "Final"],
+          [" asha rao", "=PROPER(TRIM(A2))", null, "Asha Rao"],
+          ["BEN  lopez", "=PROPER(TRIM(A3))", null, "Ben Lopez"],
+          [" chitra das", "=PROPER(TRIM(A4))", null, "Chitra Das"]
+        ],
+        "selection": "D2:D4"
+      },
+      "clues": [
+        "Ctrl + Alt + V together, then V alone, then Enter. On a Mac, use the Paste Special menu and choose Values."
+      ],
+      "activeCell": "D2"
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Dirty data skews answers",
+      "prompt": "An AI says: “Average delivery time: **25 minutes**.” But row 3 is a test order with 0 minutes.\n\nWhat's the real average of the actual deliveries? Put it in ==D2==.",
+      "grid": [
+        ["Order", "Minutes", null, "Real average"],
+        ["T1", 30, null, null],
+        ["T2", 0, null, null],
+        ["T3", 25, null, null],
+        ["T4", 35, null, null],
+        ["T5", 40, null, null],
+        ["T6", 20, null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 30,
+      "solution": "=AVERAGEIF(B2:B7,\">0\")",
+      "explain": "**30**, not 25. The zero from the test order pulled the AI's average down. An AI treats every row as real data, so remove test rows, blanks and zeros before you ask, or exclude them like this.",
+      "wrongFeedback": {
+        "wrongValue": "25 includes the test order's 0. Leave the zero out: average only the minutes above 0.",
+        "missingReference": "Average the minutes column, `B2:B7`."
+      },
+      "clues": ["Average only the cells that are greater than 0."],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "mustReference": ["B2:B7"],
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["D2"],
+      "activeCell": "D1"
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Keep the original",
+      "prompt": "An AI gives you a formula that cleans the messy names in column A. Where should you put it?",
+      "options": [
+        "In a new column next to it, leaving A untouched",
+        "Over column A, replacing the messy names",
+        "Delete column A first, then add the formula"
+      ],
+      "answer": 0,
+      "explain": "A cleaned copy beside the original lets you compare, spot AI mistakes and start again. Then freeze the clean column as values (as you just did) and hide or delete the old one.",
+      "wrongFeedback": [
+        null,
+        "A formula can't replace the cells it reads (it would point at itself), and if it's wrong, the original is gone.",
+        "Once column A is deleted the formula has nothing to read, and you've lost the evidence."
+      ],
+      "clues": ["Which choice lets you compare before and after?"]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Ask your data a question",
+      "prompt": "You ask an AI: “How many orders from **Pune** were **over 600**?” It answers **4**. Check it in ==D2==.",
+      "grid": [
+        ["Order", "City", "Amount", null, "Real count"],
+        ["A101", "Pune", 600, null, null],
+        ["A102", "Pune", 750, null, null],
+        ["A103", "Goa", 900, null, null],
+        ["A104", "Pune", 620, null, null],
+        ["A105", "Pune", 400, null, null],
+        ["A106", "Goa", 610, null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": 2,
+      "solution": "=COUNTIFS(B2:B7,\"Pune\",C2:C7,\">600\")",
+      "explain": "**2** (A102 and A104). The AI's 4 matches **all Pune orders** and also all orders over 600, so it applied only one condition. The 600 row, which isn't “over 600”, is the trap for `>=`.",
+      "wrongFeedback": {
+        "missingFunction": "Two conditions at once: `COUNTIFS` handles that.",
+        "wrongValue": "Count rows that are Pune **and** more than 600. Order A101 is exactly 600, so it doesn't count."
+      },
+      "clues": ["`=COUNTIFS(city range, \"Pune\", amount range, \">600\")`"],
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "mustUse": ["COUNTIFS"],
+      "highlightCells": ["B2:C7"],
+      "yellowCells": ["D2"],
+      "activeCell": "D1"
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "An AI says: “The best seller this week was **Tea**.” Check it. Which item **really** sold the most units? Put its name in ==D2==.",
+      "grid": [
+        ["Item", "Units", null, "Real best seller"],
+        ["Tea", 120, null, null],
+        ["Samosa", 150, null, null],
+        ["Coffee", 140, null, null],
+        ["Juice", 90, null, null],
+        ["Sandwich", 135, null, null]
+      ],
+      "targetCell": "D2",
+      "expectedValue": "Samosa",
+      "solution": "=INDEX(A2:A6,MATCH(MAX(B2:B6),B2:B6,0))",
+      "explain": "**Samosa** with 150 units, ahead of Coffee (140) and Tea (120). Finding the biggest number and then looking up its name is a check you can run on any “top” claim an AI makes.",
+      "wrongFeedback": {
+        "wrongValue": "Tea sold 120, but another item sold more. Find the biggest units number, then return that item's name.",
+        "missingReference": "Look at both columns: items in `A2:A6` and units in `B2:B6`."
+      },
+      "clues": ["Step 1: the biggest units number. Step 2: look up the name next to it."],
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "mustReference": ["A2:A6", "B2:B6"],
+      "activeCell": "A1"
+    }
+  ]
+}

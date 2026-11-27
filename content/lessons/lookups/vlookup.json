@@ -1,0 +1,341 @@
+{
+  "id": "vlookup",
+  "module": "lookups",
+  "title": "VLOOKUP & HLOOKUP",
+  "goal": "Read and write VLOOKUP and HLOOKUP, avoid the column-number and TRUE traps, and know when to switch to XLOOKUP.",
+  "difficulty": 2,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "The classic lookup",
+      "text": "Open an old workbook and you'll often find **VLOOKUP**. It's the lookup everyone used before XLOOKUP arrived, and it still works in every version of Excel. Learn to **read** it.\n\n`=VLOOKUP(F2,A2:D7,3,FALSE)` has four parts:\n• `F2`: what to look for\n• `A2:D7`: the whole table. The column you search must be its **first** column.\n• `3`: which column of the table to bring back, counted from the left\n• `FALSE`: exact match only\n\nThe **V** is for vertical (searches down a column). **HLOOKUP** is its sideways twin.",
+      "grid": [
+        ["Code", "Item", "Price", "Stock", null, "Code", "Result"],
+        [301, "Hammer", 250, 12, null, 305, "=VLOOKUP(F2,A2:D7,3,FALSE)"],
+        [302, "Pliers", 180, 8, null, null, null],
+        [303, "Drill", 1500, 3, null, null, null],
+        [304, "Tape", 30, 40, null, null, null],
+        [305, "Saw", 320, 6, null, null, null],
+        [306, "Nails", 90, 55, null, null, null]
+      ],
+      "activeCell": "G2",
+      "yellowCells": ["G2"],
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "The table",
+      "prompt": "VLOOKUP wants the **whole table**, not just two columns. The first column (Code) is the one it searches.\n\nPress on ==A2== and drag to ==D7==, then press [[Enter]].",
+      "grid": [
+        ["Code", "Item", "Price", "Stock", null, "Code", "Result"],
+        [301, "Hammer", 250, 12, null, 305, null],
+        [302, "Pliers", 180, 8, null, null, null],
+        [303, "Drill", 1500, 3, null, null, null],
+        [304, "Tape", 30, 40, null, null, null],
+        [305, "Saw", 320, 6, null, null, null],
+        [306, "Nails", 90, 55, null, null, null]
+      ],
+      "yellowCells": ["A2:D7"],
+      "target": "A2:D7",
+      "wrongFeedback": "Select the whole block of data, `A2` to `D7`: all four columns and all six rows. Leave out the headings.",
+      "clues": ["The Name Box shows `6R x 4C` when you have it right."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Your first VLOOKUP",
+      "prompt": "A customer wants the price of code **305** (==F2==). The Price is the **third** column of the table (Code, Item, Price).\n\nIn ==G2==, type `=VLOOKUP(F2,A2:D7,3,FALSE)`.",
+      "grid": [
+        ["Code", "Item", "Price", "Stock", null, "Code", "Result"],
+        [301, "Hammer", 250, 12, null, 305, null],
+        [302, "Pliers", 180, 8, null, null, null],
+        [303, "Drill", 1500, 3, null, null, null],
+        [304, "Tape", 30, 40, null, null, null],
+        [305, "Saw", 320, 6, null, null, null],
+        [306, "Nails", 90, 55, null, null, null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "F2",
+      "highlightCells": ["A2:D7"],
+      "yellowCells": ["G2"],
+      "expectedValue": 320,
+      "mustUse": ["VLOOKUP"],
+      "mustReference": ["F2"],
+      "solution": "=VLOOKUP(F2,A2:D7,3,FALSE)",
+      "explain": "**320** is the price of the Saw. Excel found 305 in the first column, then went to the 3rd column of the same row. For the stock you'd write `4` instead.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas: `=VLOOKUP(F2,A2:D7,3,FALSE)`.",
+        "missingFunction": "Use **VLOOKUP**: what to find, the table, the column number, FALSE.",
+        "wrongValue": "Code 305 is the Saw, and the answer should be **320**. Count the columns from the left of the table: Code is 1, Item is 2, Price is 3."
+      },
+      "clues": ["Four parts: `F2`, the table `A2:D7`, `3`, `FALSE`."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Count from the table, not the sheet",
+      "prompt": "Now the lookup column isn't column A. Staff IDs are in column **B**, so the table starts at ==B2==.\n\nIn ==G2==, find the **salary** of the ID in `F2`. Careful with the column number: you count from where the table starts.",
+      "grid": [
+        ["Name", "ID", "Dept", "Salary", null, "ID", "Salary"],
+        ["Priya", 2101, "Sales", 32000, null, 2104, null],
+        ["Rahul", 2102, "HR", 28000, null, null, null],
+        ["Sana", 2103, "Accounts", 41000, null, null, null],
+        ["Tom", 2104, "Sales", 35000, null, null, null],
+        ["Uma", 2105, "HR", 30000, null, null, null],
+        ["Vik", 2106, "Accounts", 38000, null, null, null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "F2",
+      "highlightCells": ["B2:D7"],
+      "yellowCells": ["G2"],
+      "expectedValue": 35000,
+      "mustUse": ["VLOOKUP"],
+      "mustReference": ["F2"],
+      "solution": "=VLOOKUP(F2,B2:D7,3,FALSE)",
+      "explain": "**35000.** In the table `B2:D7`, ID is column **1**, Dept is **2**, Salary is **3**, even though Salary sits in sheet column D. Using 4 would give `#REF!`, because the table has only three columns.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas.",
+        "missingFunction": "Use **VLOOKUP**.",
+        "wrongValue": "The table is `B2:D7`, and you count its columns: ID = 1, Dept = 2, Salary = 3. A 4 gives `#REF!`, since there's no fourth column. Also end with `FALSE`."
+      },
+      "clues": ["Column letters on the sheet don't matter. Count columns **inside** `B2:D7`."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "The column-number trap",
+      "prompt": "Stock used to be the 4th column, and your formula was `=VLOOKUP(F2,A2:D7,4,FALSE)`. Then a colleague **inserted a Colour column** before Stock. Excel stretched your table to `A2:E7`, and the formula now reads as shown.\n\nWhat does `G2` show for code 305?",
+      "grid": [
+        ["Code", "Item", "Price", "Colour", "Stock", null, null],
+        [305, "Saw", 320, "Black", 6, 305, "=VLOOKUP(F2,A2:E7,4,FALSE)"],
+        [306, "Nails", 90, "Silver", 55, null, null]
+      ],
+      "activeCell": "G2",
+      "yellowCells": ["G2", "D1"],
+      "showFormulaBar": true,
+      "options": [
+        "Still the stock (6): Excel also fixes the 4",
+        "The colour (Black), with no error warning",
+        "`#REF!`"
+      ],
+      "answer": 1,
+      "explain": "Excel widens the table but never touches the **4**, so column 4 is now Colour. You get a confident wrong answer with no error. XLOOKUP points straight at the Stock column, so it follows it when columns move. That's the best reason to switch.",
+      "wrongFeedback": [
+        "Excel updates ranges when you insert a column, but a typed number like 4 is just a number to it.",
+        null,
+        "The table still has five columns, so 4 is still valid. No error."
+      ],
+      "clues": ["Which column is 4th in the new layout?"]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Predict: the FALSE trap",
+      "prompt": "ID **1045** isn't on the staff list. In `F2`, someone wrote `=VLOOKUP(E2,A2:B6,2)`, **leaving off the last part**.\n\nWhat do you think it shows?",
+      "grid": [
+        ["ID", "Name", "Dept", null, "ID to find", "Name"],
+        [1010, "Asha", "Sales", null, 1045, null],
+        [1020, "Ben", "HR", null, null, null],
+        [1030, "Chitra", "Accounts", null, null, null],
+        [1040, "Dev", "Sales", null, null, null],
+        [1050, "Esha", "HR", null, null, null]
+      ],
+      "activeCell": "F2",
+      "yellowCells": ["E2"],
+      "options": [
+        "`#N/A`: ID 1045 doesn't exist",
+        "`Dev`: the row for 1040",
+        "`Esha`: the row for 1050"
+      ],
+      "answer": 1,
+      "explain": "Leave out the last part (or write `TRUE`) and VLOOKUP assumes your list is sorted and picks the **closest ID that isn't bigger**. That's 1040, Dev. Let's prove it.",
+      "wrongFeedback": [
+        "That's what you'd **want**, but without FALSE VLOOKUP doesn't report a missing ID.",
+        null,
+        "It steps down, never up. The closest ID that isn't bigger than 1045 is 1040."
+      ],
+      "clues": ["With no 4th part, VLOOKUP looks for the nearest smaller ID."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "See the wrong answer",
+      "prompt": "Prove it. In ==F2==, type the formula exactly as it was, with no last part: `=VLOOKUP(E2,A2:B6,2)`.",
+      "grid": [
+        ["ID", "Name", "Dept", null, "ID to find", "Name"],
+        [1010, "Asha", "Sales", null, 1045, null],
+        [1020, "Ben", "HR", null, null, null],
+        [1030, "Chitra", "Accounts", null, null, null],
+        [1040, "Dev", "Sales", null, null, null],
+        [1050, "Esha", "HR", null, null, null]
+      ],
+      "targetCell": "F2",
+      "activeCell": "E2",
+      "yellowCells": ["F2"],
+      "expectedValue": "Dev",
+      "mustUse": ["VLOOKUP"],
+      "mustReference": ["E2"],
+      "solution": "=VLOOKUP(E2,A2:B6,2)",
+      "explain": "**Dev.** No error, no warning, just the wrong person for an ID that doesn't exist. A real payroll file could pay the wrong person this way. **Always finish VLOOKUP with `FALSE`** (or `0`) unless you really want bands.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Type it exactly: `=VLOOKUP(E2,A2:B6,2)`.",
+        "missingFunction": "Use **VLOOKUP** with three parts: the ID, the table, the column number.",
+        "wrongValue": "Leave off the last part: `=VLOOKUP(E2,A2:B6,2)`. Excel will pick a name anyway."
+      },
+      "clues": ["Three parts only: `E2`, `A2:B6`, `2`."]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Fix it",
+      "prompt": "Now fix it so the sheet tells the truth. In ==F2==, ask for an **exact** match, and if the ID isn't on the list, show \"Not on list\".\n\nWrap the lookup in **IFERROR**.",
+      "grid": [
+        ["ID", "Name", "Dept", null, "ID to find", "Name"],
+        [1010, "Asha", "Sales", null, 1045, null],
+        [1020, "Ben", "HR", null, null, null],
+        [1030, "Chitra", "Accounts", null, null, null],
+        [1040, "Dev", "Sales", null, null, null],
+        [1050, "Esha", "HR", null, null, null]
+      ],
+      "targetCell": "F2",
+      "activeCell": "E2",
+      "yellowCells": ["F2"],
+      "expectedValue": "Not on list",
+      "mustUse": ["IFERROR", "VLOOKUP"],
+      "mustReference": ["E2"],
+      "solution": "=IFERROR(VLOOKUP(E2,A2:B6,2,FALSE),\"Not on list\")",
+      "explain": "**Not on list.** `FALSE` stops the guessing, so a missing ID becomes `#N/A`, and `IFERROR` turns that error into words. Change `E2` to 1040 and you'd see Dev, correctly.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets, commas and quotes.",
+        "missingFunction": "Use both: **IFERROR** around **VLOOKUP**, with `FALSE` as the last part of the lookup.",
+        "wrongValue": "The cell should say **Not on list**. Ask VLOOKUP for an exact match (`FALSE`), and give IFERROR the words in quotes."
+      },
+      "clues": ["`=IFERROR(VLOOKUP(E2,A2:B6,2,FALSE),\"Not on list\")`"]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "HLOOKUP: sideways",
+      "prompt": "This table runs **across**: months are in the top row. **HLOOKUP** searches the top row and brings back from the row number you give. Rows are counted **down from the top row of the table**, header included.\n\nIn ==B7==, find **Coffee's** sales for the month in `B6`. Coffee is the 3rd row of the table.",
+      "grid": [
+        ["Item", "Jan", "Feb", "Mar", "Apr"],
+        ["Tea", 120, 135, 150, 110],
+        ["Coffee", 200, 180, 210, 190],
+        ["Juice", 90, 95, 100, 85],
+        [null, null, null, null, null],
+        ["Month", "Mar", null, null, null],
+        ["Coffee sales", null, null, null, null]
+      ],
+      "targetCell": "B7",
+      "activeCell": "B6",
+      "highlightCells": ["A1:E4"],
+      "yellowCells": ["B7"],
+      "expectedValue": 210,
+      "mustUse": ["HLOOKUP"],
+      "mustReference": ["B6"],
+      "solution": "=HLOOKUP(B6,A1:E4,3,FALSE)",
+      "explain": "**210.** HLOOKUP found Mar across the top row, then went down 3 rows: header is 1, Tea 2, Coffee 3. Using 2 would give Tea's 150.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas: `=HLOOKUP(B6,A1:E4,3,FALSE)`.",
+        "missingFunction": "Use **HLOOKUP**: month, table (headings row included), row number, FALSE.",
+        "wrongValue": "Coffee in March is **210**. The table is `A1:E4`, and the row number counts the heading row as 1: header 1, Tea 2, Coffee 3."
+      },
+      "clues": ["Same four parts as VLOOKUP, but the third is a **row** number."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Switch to XLOOKUP",
+      "prompt": "A librarian knows a **title** (==D2==) and needs the **Book ID**. But the ID column is to the **left** of the titles, and VLOOKUP can only bring back columns to the right of the one it searches.\n\nThis is when you switch. In ==E2==, find the ID for the title.",
+      "grid": [
+        ["Book ID", "Title", null, "Title", "Book ID"],
+        ["B101", "Godan", null, "The Guide", null],
+        ["B102", "Gitanjali", null, null, null],
+        ["B103", "Malgudi Days", null, null, null],
+        ["B104", "The Guide", null, null, null],
+        ["B105", "Train to Pakistan", null, null, null],
+        ["B106", "Discovery of India", null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "yellowCells": ["E2"],
+      "expectedValue": "B104",
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["D2"],
+      "solution": "=XLOOKUP(D2,B2:B7,A2:A7)",
+      "explain": "**B104.** Search the titles, bring back the IDs on the left. XLOOKUP also defaults to an exact match and follows moved columns, which is why new files should use it.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas.",
+        "missingFunction": "VLOOKUP can't look left. Use **XLOOKUP** here.",
+        "wrongValue": "Search the **titles** (`B2:B7`) and bring back the **IDs** (`A2:A7`)."
+      },
+      "clues": ["XLOOKUP's three parts: what to find, where to look, what to bring back."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Keep or rewrite?",
+      "prompt": "You inherit a five-year-old workbook full of working VLOOKUPs, and some colleagues still use Excel 2019, which has no XLOOKUP.\n\nWhat's the sensible move?",
+      "options": [
+        "Rewrite every VLOOKUP today, or the file will stop working",
+        "Leave the working ones alone; use XLOOKUP in new work you don't share with old Excel",
+        "Delete them: VLOOKUP no longer works"
+      ],
+      "answer": 1,
+      "explain": "VLOOKUP works in every Excel version, so a working one isn't a problem. Use XLOOKUP for new formulas when everyone has Excel 2021 or 365. In Excel 2019, an XLOOKUP shows `#NAME?`.",
+      "wrongFeedback": [
+        "Nothing forces a rewrite. A working VLOOKUP keeps working.",
+        null,
+        "VLOOKUP is still fully supported."
+      ],
+      "clues": ["Who opens the file? Do they have XLOOKUP?"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "The class teacher asks: **what did roll number 15 score?** The roll number is in ==F2==.\n\nPut the marks in ==G2==.",
+      "grid": [
+        ["Roll", "Name", "Class", "Marks", null, "Roll", "Marks"],
+        [11, "Anil", "7A", 72, null, 15, null],
+        [12, "Beena", "7B", 85, null, null, null],
+        [13, "Chetan", "7A", 64, null, null, null],
+        [14, "Divya", "7C", 91, null, null, null],
+        [15, "Eshaan", "7B", 58, null, null, null],
+        [16, "Farah", "7A", 77, null, null, null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A1",
+      "yellowCells": ["G2"],
+      "expectedValue": 58,
+      "mustReference": ["F2"],
+      "solution": "=XLOOKUP(F2,A2:A7,D2:D7)",
+      "explain": "**58** for Eshaan. Either lookup works here. XLOOKUP is shorter and has no column number to miscount.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas.",
+        "missingFunction": "Look the roll number up in the table.",
+        "wrongValue": "Roll 15 is Eshaan, and the question asks for **marks**, the last column. With VLOOKUP, remember the exact-match `FALSE`."
+      },
+      "clues": ["Search the Roll column, bring back Marks. Use whichever lookup you prefer."]
+    }
+  ]
+}

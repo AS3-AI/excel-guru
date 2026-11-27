@@ -128,7 +128,7 @@
         {
           "n": 11,
           "title": "Rows, Columns, Sheets & Freeze Panes",
-          "lesson": null,
+          "lesson": "rows-columns",
           "covers": [
             "Insert and delete rows and columns",
             "Hide, unhide and resize",
@@ -139,7 +139,7 @@
         {
           "n": 12,
           "title": "Find & Replace, Go To Special",
-          "lesson": null,
+          "lesson": "find-replace",
           "covers": [
             "Find anything (Ctrl + F)",
             "Replace across a sheet (Ctrl + H)",
@@ -150,7 +150,7 @@
         {
           "n": 13,
           "title": "Print, Protect & Share",
-          "lesson": null,
+          "lesson": "print-protect",
           "covers": [
             "Page setup and print titles",
             "Fit to one page and save as PDF",
@@ -161,7 +161,7 @@
         {
           "n": 14,
           "title": "Checkpoint: a small weekly report",
-          "lesson": null,
+          "lesson": "checkpoint-weekly-report",
           "covers": ["Build a tidy weekly report from raw data using everything so far"]
         }
       ]
@@ -172,7 +172,7 @@
         {
           "n": 15,
           "title": "Cell References: relative, absolute & mixed",
-          "lesson": null,
+          "lesson": "cell-references",
           "covers": [
             "Why some formulas break when copied",
             "Lock a cell with $ (F4)",
@@ -182,7 +182,7 @@
         {
           "n": 16,
           "title": "Percentages, Rounding & Basic Math",
-          "lesson": null,
+          "lesson": "percent-rounding",
           "covers": [
             "Percent of total, change and growth",
             "ROUND, ROUNDUP and ROUNDDOWN",
@@ -192,19 +192,19 @@
         {
           "n": 17,
           "title": "AVERAGE, MIN & MAX",
-          "lesson": null,
+          "lesson": "average-min-max",
           "covers": ["Average a list", "Find the smallest and largest", "Blanks vs zeros"]
         },
         {
           "n": 18,
           "title": "COUNT, COUNTA & COUNTBLANK",
-          "lesson": null,
+          "lesson": "count-functions",
           "covers": ["Count numbers", "Count anything filled in", "Find what's missing"]
         },
         {
           "n": 19,
           "title": "Named Ranges",
-          "lesson": null,
+          "lesson": "named-ranges",
           "covers": ["Name a cell or range", "Use names in formulas", "Manage names"]
         }
       ]
@@ -215,7 +215,7 @@
         {
           "n": 20,
           "title": "IF: make a decision",
-          "lesson": null,
+          "lesson": "if",
           "covers": [
             "Pass or fail, yes or no",
             "Comparing with >, <, =",
@@ -225,31 +225,31 @@
         {
           "n": 21,
           "title": "AND, OR & NOT",
-          "lesson": null,
+          "lesson": "and-or-not",
           "covers": ["Two conditions at once", "Either condition", "Combining with IF"]
         },
         {
           "n": 22,
           "title": "IFS & SWITCH",
-          "lesson": null,
+          "lesson": "ifs-switch",
           "covers": ["Grades and bands without nesting", "Match one value to many results"]
         },
         {
           "n": 23,
           "title": "COUNTIF & COUNTIFS",
-          "lesson": null,
+          "lesson": "countif",
           "covers": ["Count matches", "Counts with several conditions", "Wildcards"]
         },
         {
           "n": 24,
           "title": "SUMIF, SUMIFS & AVERAGEIFS",
-          "lesson": null,
+          "lesson": "sumif",
           "covers": ["Total by category", "Totals with several conditions", "Conditional averages"]
         },
         {
           "n": 25,
           "title": "Formula Errors, IFERROR & Auditing",
-          "lesson": null,
+          "lesson": "formula-errors",
           "covers": [
             "What each # error means",
             "IFERROR for clean output",
@@ -259,7 +259,7 @@
         {
           "n": 26,
           "title": "Checkpoint: answer questions from an orders sheet",
-          "lesson": null,
+          "lesson": "checkpoint-orders",
           "covers": ["Use IF, COUNTIFS and SUMIFS to answer real business questions"]
         }
       ]
@@ -270,31 +270,31 @@
         {
           "n": 27,
           "title": "LEFT, RIGHT, MID & LEN",
-          "lesson": null,
+          "lesson": "left-right-mid",
           "covers": ["Pull out codes and parts of text", "Count characters"]
         },
         {
           "n": 28,
           "title": "FIND & SEARCH",
-          "lesson": null,
+          "lesson": "find-search",
           "covers": ["Find where text sits", "Combine with LEFT and MID"]
         },
         {
           "n": 29,
           "title": "TRIM, PROPER & SUBSTITUTE",
-          "lesson": null,
+          "lesson": "trim-proper",
           "covers": ["Remove stray spaces", "Fix capitalisation", "Swap characters"]
         },
         {
           "n": 30,
           "title": "TEXTBEFORE, TEXTAFTER, TEXTSPLIT & TEXTJOIN",
-          "lesson": null,
+          "lesson": "text-split-join",
           "covers": ["Split text at a separator", "Join a list with commas"]
         },
         {
           "n": 31,
           "title": "Dates & Time: the real kind",
-          "lesson": null,
+          "lesson": "dates-time",
           "covers": [
             "Real dates vs text dates",
             "Today's date (Ctrl + ;)",
@@ -304,7 +304,7 @@
         {
           "n": 32,
           "title": "Date Calculations",
-          "lesson": null,
+          "lesson": "date-calc",
           "covers": ["Days between dates", "Working days and deadlines", "Month ends and ages"]
         }
       ]
@@ -315,13 +315,13 @@
         {
           "n": 33,
           "title": "XLOOKUP: find a matching value",
-          "lesson": null,
+          "lesson": "xlookup",
           "covers": ["Look up a price or name", "Exact matches"]
         },
         {
           "n": 34,
           "title": "XLOOKUP: across sheets & missing matches",
-          "lesson": null,
+          "lesson": "xlookup-advanced",
           "covers": [
             "Look up from another sheet",
             "Handle not-found values",
@@ -331,19 +331,19 @@
         {
           "n": 35,
           "title": "VLOOKUP & HLOOKUP",
-          "lesson": null,
+          "lesson": "vlookup",
           "covers": ["Read older workbooks", "The column-number trap", "When to switch to XLOOKUP"]
         },
         {
           "n": 36,
           "title": "INDEX & XMATCH",
-          "lesson": null,
+          "lesson": "index-match",
           "covers": ["Find a position", "Two-way lookups"]
         },
         {
           "n": 37,
           "title": "Checkpoint: check a reference list",
-          "lesson": null,
+          "lesson": "checkpoint-reference",
           "covers": ["Match two lists and flag what's missing"]
         }
       ]
@@ -354,7 +354,7 @@
         {
           "n": 38,
           "title": "Conditional Formatting",
-          "lesson": null,
+          "lesson": "conditional-format",
           "covers": [
             "Highlight above or below a value",
             "Colour scales, data bars and icons",
@@ -364,19 +364,19 @@
         {
           "n": 39,
           "title": "Conditional Formatting with Formulas",
-          "lesson": null,
+          "lesson": "conditional-format-formulas",
           "covers": ["Highlight whole rows", "Overdue dates", "Rules that use other cells"]
         },
         {
           "n": 40,
           "title": "Drop-downs, Checkboxes & Validation",
-          "lesson": null,
+          "lesson": "dropdowns-validation",
           "covers": ["Drop-down lists", "Checkboxes in cells", "Stop bad data at entry"]
         },
         {
           "n": 41,
           "title": "Charts: the basics",
-          "lesson": null,
+          "lesson": "charts-basics",
           "covers": [
             "Pick the right chart",
             "Instant chart (Alt + F1)",
@@ -386,7 +386,7 @@
         {
           "n": 42,
           "title": "Charts: combo, formatting & sparklines",
-          "lesson": null,
+          "lesson": "charts-advanced",
           "covers": [
             "Two measures on one chart",
             "Clean, honest formatting",
@@ -401,19 +401,19 @@
         {
           "n": 43,
           "title": "PivotTables: the basics",
-          "lesson": null,
+          "lesson": "pivot-basics",
           "covers": ["Summarise thousands of rows by dragging", "Rows, columns, values and filters"]
         },
         {
           "n": 44,
           "title": "PivotTables: group, % of total & calculated fields",
-          "lesson": null,
+          "lesson": "pivot-advanced",
           "covers": ["Group dates into months", "Show % of total", "Add a calculated field"]
         },
         {
           "n": 45,
           "title": "Slicers, Timelines & PivotCharts",
-          "lesson": null,
+          "lesson": "slicers",
           "covers": ["Clickable filters", "Date timelines", "Charts from a pivot"]
         }
       ]
@@ -424,49 +424,49 @@
         {
           "n": 46,
           "title": "Dynamic Arrays & Spill",
-          "lesson": null,
+          "lesson": "dynamic-arrays",
           "covers": ["One formula, many results", "The spill range and #SPILL!"]
         },
         {
           "n": 47,
           "title": "UNIQUE, SORT & SORTBY",
-          "lesson": null,
+          "lesson": "unique-sort",
           "covers": ["A list of distinct values", "Sorted lists that update themselves"]
         },
         {
           "n": 48,
           "title": "FILTER",
-          "lesson": null,
+          "lesson": "filter-function",
           "covers": ["Pull matching rows with a formula", "Several conditions", "Empty results"]
         },
         {
           "n": 49,
           "title": "SEQUENCE, VSTACK, TAKE & DROP",
-          "lesson": null,
+          "lesson": "sequence-stack",
           "covers": ["Number lists", "Stack tables", "Top and bottom N"]
         },
         {
           "n": 50,
           "title": "GROUPBY & PIVOTBY",
-          "lesson": null,
+          "lesson": "groupby-pivotby",
           "covers": ["Pivot-style summaries as formulas"]
         },
         {
           "n": 51,
           "title": "REGEX Functions",
-          "lesson": null,
+          "lesson": "regex",
           "covers": ["Test, extract and replace text patterns"]
         },
         {
           "n": 52,
           "title": "LET",
-          "lesson": null,
+          "lesson": "let",
           "covers": ["Name parts of a long formula", "Faster, readable formulas"]
         },
         {
           "n": 53,
           "title": "LAMBDA",
-          "lesson": null,
+          "lesson": "lambda",
           "covers": ["Make your own reusable function"]
         }
       ]
@@ -477,13 +477,13 @@
         {
           "n": 54,
           "title": "Clean a Messy Export",
-          "lesson": null,
+          "lesson": "messy-export",
           "covers": ["Text-numbers, stray spaces, duplicates and split columns, fixed step by step"]
         },
         {
           "n": 55,
           "title": "Power Query: import & transform",
-          "lesson": null,
+          "lesson": "power-query",
           "covers": [
             "Load a file",
             "Clean it with recorded steps",
@@ -493,13 +493,13 @@
         {
           "n": 56,
           "title": "Power Query: merge & append",
-          "lesson": null,
+          "lesson": "power-query-merge",
           "covers": ["Combine monthly files", "Join two tables"]
         },
         {
           "n": 57,
           "title": "What-If Analysis & Forecasting",
-          "lesson": null,
+          "lesson": "what-if",
           "covers": ["Goal Seek", "Scenarios and data tables", "Forecast Sheet"]
         }
       ]
@@ -510,7 +510,7 @@
         {
           "n": 58,
           "title": "AI with Spreadsheets: privacy & checking answers",
-          "lesson": null,
+          "lesson": "ai-privacy",
           "covers": [
             "What's safe to share",
             "Spotting confident wrong answers",
@@ -520,7 +520,7 @@
         {
           "n": 59,
           "title": "Write a Good Excel Prompt",
-          "lesson": null,
+          "lesson": "ai-prompts",
           "covers": [
             "Describe your columns",
             "Ask for one step at a time",
@@ -530,25 +530,25 @@
         {
           "n": 60,
           "title": "AI for Formulas",
-          "lesson": null,
+          "lesson": "ai-formulas",
           "covers": ["Generate, explain and fix formulas"]
         },
         {
           "n": 61,
           "title": "AI for Cleaning & Analysis",
-          "lesson": null,
+          "lesson": "ai-cleaning",
           "covers": ["Clean data with AI help", "Ask questions of your data"]
         },
         {
           "n": 62,
           "title": "Copilot Agent Mode",
-          "lesson": null,
+          "lesson": "copilot-agent",
           "covers": ["Plan and edit a workbook with Copilot", "Review every change"]
         },
         {
           "n": 63,
           "title": "ChatGPT, Claude & Gemini with Excel",
-          "lesson": null,
+          "lesson": "chatbots-excel",
           "covers": ["Upload files safely", "Turn answers back into formulas you own"]
         }
       ]
@@ -559,25 +559,25 @@
         {
           "n": 64,
           "title": "Project: messy export → report (with AI)",
-          "lesson": null,
+          "lesson": "project-report",
           "covers": ["Clean, summarise and present a real export"]
         },
         {
           "n": 65,
           "title": "Project: budget & expense tracker",
-          "lesson": null,
+          "lesson": "project-budget",
           "covers": ["Build a monthly tracker you'll actually use"]
         },
         {
           "n": 66,
           "title": "Project: interactive dashboard",
-          "lesson": null,
+          "lesson": "project-dashboard",
           "covers": ["Pivots, charts and slicers on one page"]
         },
         {
           "n": 67,
           "title": "Final Exam & Certificate",
-          "lesson": null,
+          "lesson": "final-exam",
           "covers": ["Mixed tasks from every level"]
         }
       ]

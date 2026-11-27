@@ -1,0 +1,314 @@
+{
+  "id": "dropdowns-validation",
+  "module": "visual",
+  "title": "Drop-downs, Checkboxes & Validation",
+  "goal": "Stop bad data at the door with drop-down lists, checkboxes and number or date limits, and count the results reliably.",
+  "difficulty": 1,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Free typing makes a mess",
+      "text": "Five tasks, and every one of them is finished. But the count says only **3**.\n\nOne person typed “Complete”, another typed “Dne”. Excel counts only the exact word **Done**.\n\n**Data validation** stops this at the door: a cell accepts only what you allow, usually through a **drop-down list**. Press the button to see the count after one cell is fixed.",
+      "grid": [
+        ["Task", "Status", "Done count"],
+        ["Mop", "Done", "=COUNTIF(B2:B6,\"Done\")"],
+        ["Pack", "done", null],
+        ["Label", "Complete", null],
+        ["Ship", "Dne", null],
+        ["Clean", "Done", null]
+      ],
+      "yellowCells": ["B4", "B5"],
+      "activeCell": "C2",
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "B4",
+          "fromValue": "Complete",
+          "toValue": "Done",
+          "resultCell": "C2",
+          "buttonLabel": "Fix Label: Complete → Done",
+          "resetLabel": "Put “Complete” back"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Select first",
+      "prompt": "Validation rules apply to the cells you select **first**. Select the Status cells of the four parcels.\n\nClick ==B2==, drag down to ==B5==, then press [[Enter]].",
+      "grid": [
+        ["Parcel", "Status", "Note", "Allowed"],
+        ["P-1", null, "Arrived yesterday", "Pending"],
+        ["P-2", null, "Left the shop today", "Shipped"],
+        ["P-3", null, "Not collected yet", "Delivered"],
+        ["P-4", null, "Handed to the customer", null]
+      ],
+      "target": "B2:B5",
+      "wrongFeedback": "The Status cells are `B2` to `B5`. Leave out the header, and the Allowed list in column D.",
+      "clues": ["Drag from the first empty Status cell to the last."],
+      "yellowCells": ["B2:B5"]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Open Data Validation",
+      "prompt": "Tap [[Alt]], [[A]], [[V]], [[V]] one after another: Data → Data Validation → Data Validation.\n\nIn the box, set **Allow** to **List**, and **Source** to the three words in column D: `=$D$2:$D$4` (or type `Pending,Shipped,Delivered`). Keep **In-cell dropdown** ticked and press OK. On a Mac, use the Data tab → Data Validation.",
+      "keys": {
+        "win": ["Alt", "A", "V", "V"],
+        "mac": null
+      },
+      "grid": [
+        ["Parcel", "Status", "Note", "Allowed"],
+        ["P-1", null, "Arrived yesterday", "Pending"],
+        ["P-2", null, "Left the shop today", "Shipped"],
+        ["P-3", null, "Not collected yet", "Delivered"],
+        ["P-4", null, "Handed to the customer", null]
+      ],
+      "postcondition": {
+        "selection": "B2:B5"
+      },
+      "clues": ["Alt, A, V, V: tap each key, one after another."],
+      "activeCell": "B2:B5"
+    },
+    {
+      "id": "s4",
+      "type": "entry",
+      "topic": "Choose only allowed words",
+      "prompt": "The list is ready. A drop-down lets you click a word; our sheet makes you type it, but only words from the list in column D.\n\nUse the notes to fill ==B2:B5==, then check each word is spelled exactly like the list.",
+      "grid": [
+        ["Parcel", "Status", "Note", "Allowed"],
+        ["P-1", null, "Arrived yesterday", "Pending"],
+        ["P-2", null, "Left the shop today", "Shipped"],
+        ["P-3", null, "Not collected yet", "Delivered"],
+        ["P-4", null, "Handed to the customer", null]
+      ],
+      "expect": {
+        "B2": "Delivered",
+        "B3": "Shipped",
+        "B4": "Pending",
+        "B5": "Delivered"
+      },
+      "explain": "Every status is now one of three exact words. That's why a count of “Delivered” will be right: 2 here, no typos hiding.",
+      "clues": [
+        "“Arrived” and “Handed over” mean the same allowed word.",
+        "Use [[Enter]] to move down after each one."
+      ],
+      "wrongFeedback": {
+        "wrongValue": "Use only the three words in column D: Pending, Shipped, Delivered. Arrived or handed over means the parcel is **Delivered**; left the shop means **Shipped**; not collected yet means **Pending**."
+      },
+      "activeCell": "A2",
+      "yellowCells": ["B2:B5"],
+      "highlightCells": ["D2:D4"]
+    },
+    {
+      "id": "s5",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Open the list with the keyboard",
+      "prompt": "You're on a cell that has a drop-down. Press [[Alt]] + [[↓]] and the list opens. Use the arrow keys to choose, then [[Enter]].\n\nSame on a Mac: [[Option]] + [[↓]].",
+      "keys": {
+        "win": "Alt+ArrowDown",
+        "mac": "Alt+ArrowDown"
+      },
+      "grid": [
+        ["Parcel", "Status", "Note", "Allowed"],
+        ["P-1", "Delivered", "Arrived yesterday", "Pending"],
+        ["P-2", "Shipped", "Left the shop today", "Shipped"],
+        ["P-3", "Pending", "Not collected yet", "Delivered"],
+        ["P-4", "Delivered", "Handed to the customer", null]
+      ],
+      "postcondition": {
+        "selection": "B3"
+      },
+      "clues": ["Hold Alt and press the Down arrow."],
+      "activeCell": "B3"
+    },
+    {
+      "id": "s6",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Checkboxes are TRUE and FALSE",
+      "prompt": "A **checkbox** is a drop-down's cousin. Select cells, then Insert tab → **Checkbox** (recent Microsoft 365 only).\n\nA ticked box holds the value **TRUE**; an empty one holds **FALSE**. Toggle one from the keyboard: click ==B4== (Charger) and press [[Space]].",
+      "keys": {
+        "win": "Space",
+        "mac": "Space"
+      },
+      "grid": [
+        ["Item", "Packed"],
+        ["Passport", true],
+        ["Tickets", true],
+        ["Charger", false],
+        ["Hat", true],
+        ["Sunscreen", false],
+        ["Camera", true]
+      ],
+      "postcondition": {
+        "grid": [
+          ["Item", "Packed"],
+          ["Passport", true],
+          ["Tickets", true],
+          ["Charger", true],
+          ["Hat", true],
+          ["Sunscreen", false],
+          ["Camera", true]
+        ],
+        "selection": "B4"
+      },
+      "clues": ["Select the Charger cell, then press the space bar."],
+      "activeCell": "B4"
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Count the ticks",
+      "prompt": "Because a tick is just TRUE, you can count ticks like any value.\n\nCharger is packed now. In ==B8== count how many items are ticked.",
+      "grid": [
+        ["Item", "Packed"],
+        ["Passport", true],
+        ["Tickets", true],
+        ["Charger", true],
+        ["Hat", true],
+        ["Sunscreen", false],
+        ["Camera", true],
+        ["Total ticked", null]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 5,
+      "solution": "=COUNTIF(B2:B7,TRUE)",
+      "explain": "**5**: only Sunscreen is still FALSE. Counting `TRUE` gives you a live progress count that rises with every tick.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets and commas.",
+        "wrongValue": "Count only the ticked boxes, which hold TRUE. Don't count all six rows.",
+        "missingFunction": "Use a function that counts cells matching a condition."
+      },
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "clues": ["Count the cells in `B2:B7` equal to `TRUE`."],
+      "mustUse": ["COUNTIF"],
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["B8"],
+      "activeCell": "B8"
+    },
+    {
+      "id": "s8",
+      "type": "select",
+      "topic": "Number limits",
+      "prompt": "Another rule: **Whole number between 1 and 5**, so ratings can't be silly. Excel refuses anything that breaks it.\n\nThese guests were typed one after another. Click the **first** entry Excel would have refused, then press [[Enter]].",
+      "grid": [
+        ["Guest", "Rating (1 to 5)"],
+        ["Asha", 4],
+        ["Ben", 3],
+        ["Chitra", 2.5],
+        ["Dev", 7],
+        ["Esha", 5]
+      ],
+      "target": "B4",
+      "wrongFeedback": "`B5` (the 7) is also refused, but look earlier. “Whole number” means no decimals, so Chitra's 2.5 fails first.",
+      "clues": ["Whole numbers have nothing after the decimal point."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Date limits",
+      "prompt": "A hotel's check-in column allows **dates on or after today** (15 Jan 2026) only.\n\nIn ==C2== test whether Asha's date in `B2` would be accepted: TRUE or FALSE.",
+      "grid": [
+        ["Guest", "Check-in", "Accepted?"],
+        ["Asha", "=DATE(2026,1,15)", null],
+        ["Ben", "=DATE(2026,1,10)", null]
+      ],
+      "targetCell": "C2",
+      "expectedValue": true,
+      "solution": "=B2>=DATE(2026,1,15)",
+      "explain": "**TRUE**: Asha's date is exactly today, and “on or after” includes it. Ben's 10 Jan would be refused. In Data Validation that's Allow: **Date**, Data: **greater than or equal to**.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the symbols and brackets: `DATE(2026,1,15)`.",
+        "wrongValue": "“On or after today” includes today. Use `>=`, not `>`.",
+        "missingReference": "Test the date in `B2`."
+      },
+      "mobileButtons": ["=", "(", ")", ",", ">"],
+      "clues": ["`>=` means “greater than or equal to”."],
+      "mustReference": ["B2"],
+      "highlightCells": ["B2"],
+      "yellowCells": ["C2"],
+      "activeCell": "C2"
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Error Alert style",
+      "prompt": "Your supplier list is mostly fixed, but a **new supplier** turns up now and then. Staff should be warned that the name isn't on the list, and be allowed to continue if they're sure.\n\nWhich **Error Alert** style fits?",
+      "options": ["Stop", "Warning", "Information"],
+      "answer": 1,
+      "explain": "**Stop** blocks the entry completely. **Warning** says “This isn't on the list. Continue?” and lets them choose Yes. **Information** only tells them and doesn't ask. Add an **Input Message** too: a small note that appears when the cell is selected, like “Pick from the list”.",
+      "wrongFeedback": [
+        "Stop never lets them continue. That's right for IDs or ratings, but too strict here.",
+        null,
+        "Information just informs and accepts the entry. It doesn't ask the user to confirm."
+      ],
+      "clues": ["Which style asks the person whether to continue?"]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "A real mistake",
+      "prompt": "You add a Status drop-down to a column that **already** has “Dne” and “Complete” typed in.\n\nWhat happens to those old entries?",
+      "options": [
+        "Excel corrects them to the nearest list item",
+        "Nothing: they stay, because validation only checks new typing",
+        "Excel deletes them"
+      ],
+      "answer": 1,
+      "explain": "Validation only checks what's typed **after** the rule exists, and it doesn't check pasted values at all. To find old bad entries use Data Validation → **Circle Invalid Data**.",
+      "wrongFeedback": [
+        "Excel never guesses. It leaves existing values untouched.",
+        null,
+        "Nothing is deleted. The old values just sit there, unchecked."
+      ],
+      "clues": ["When does Excel check a cell against the rule?"],
+      "grid": [
+        ["Task", "Status"],
+        ["Mop", "Done"],
+        ["Label", "Complete"],
+        ["Ship", "Dne"]
+      ],
+      "yellowCells": ["B3", "B4"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "This to-do list uses checkboxes. How many tasks are **still not ticked**? Put the answer in ==B8==.",
+      "grid": [
+        ["Task", "Done"],
+        ["Prep", true],
+        ["Book", false],
+        ["Pack", true],
+        ["Pay", false],
+        ["Call", false],
+        ["Email", false],
+        ["Not ticked", null]
+      ],
+      "targetCell": "B8",
+      "expectedValue": 4,
+      "solution": "=COUNTIF(B2:B7,FALSE)",
+      "explain": "**4**: Book, Pay, Call and Email are FALSE. Only 2 tasks are ticked, so don't mix up which value you're counting.",
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check the brackets and the comma.",
+        "wrongValue": "Count the unticked boxes: the cells holding FALSE.",
+        "missingReference": "Look at the checkbox cells `B2:B7`."
+      },
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "clues": ["An empty checkbox holds FALSE."],
+      "mustReference": ["B2:B7"],
+      "activeCell": "A1"
+    }
+  ]
+}

@@ -1,0 +1,400 @@
+{
+  "id": "xlookup",
+  "module": "lookups",
+  "title": "XLOOKUP: find a matching value",
+  "goal": "Look up a price, a name or any detail from a list with XLOOKUP, bring back the column you want, and fill the formula down safely with $ locks.",
+  "difficulty": 1,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "One question, three answers",
+      "text": "A customer says **“Samosa”**. What does it cost?\n\nYou could scroll down the menu and read across. With 6 items that's fine. With 600 items it's slow, and one slip gives the wrong price.\n\n**XLOOKUP** does the hunt for you. You tell it three things:\n• what to look for (`D2`)\n• where to look (the item names)\n• what to bring back (the prices)\n\nPress **Play** to watch it built. XLOOKUP is in Microsoft 365 and Excel 2021 or newer.",
+      "grid": [
+        ["Item", "Price", null, "Ordered", "Price"],
+        ["Tea", 20, null, "Samosa", "=XLOOKUP(D2,A2:A7,B2:B7)"],
+        ["Coffee", 35, null, null, null],
+        ["Samosa", 15, null, null, null],
+        ["Sandwich", 60, null, null, null],
+        ["Cake", 45, null, null, null],
+        ["Juice", 40, null, null, null]
+      ],
+      "activeCell": "E2",
+      "yellowCells": ["E2"],
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "formula-build",
+        "targetCell": "E2",
+        "frames": [
+          {
+            "label": "Click the cell for the answer",
+            "draft": "",
+            "focusCell": "E2"
+          },
+          {
+            "label": "Type =XLOOKUP(",
+            "draft": "=XLOOKUP(",
+            "focusCell": "E2"
+          },
+          {
+            "label": "What to look for: click D2",
+            "draft": "=XLOOKUP(D2",
+            "focusCell": "E2",
+            "highlightCells": ["D2"]
+          },
+          {
+            "label": "Where to look: the item names",
+            "draft": "=XLOOKUP(D2,A2:A7",
+            "focusCell": "E2",
+            "highlightCells": ["A2:A7"]
+          },
+          {
+            "label": "What to bring back: the prices",
+            "draft": "=XLOOKUP(D2,A2:A7,B2:B7",
+            "focusCell": "E2",
+            "highlightCells": ["B2:B7"]
+          },
+          {
+            "label": "Close the bracket",
+            "draft": "=XLOOKUP(D2,A2:A7,B2:B7)",
+            "focusCell": "E2"
+          },
+          {
+            "label": "Press Enter",
+            "key": "Enter",
+            "draft": "=XLOOKUP(D2,A2:A7,B2:B7)",
+            "resultCell": "E2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Where to look",
+      "prompt": "Every XLOOKUP needs two columns. First, the one Excel **searches**: the item names.\n\nPress on ==A2== and drag down to ==A7==, then press [[Enter]].",
+      "grid": [
+        ["Item", "Price", null, "Ordered", "Price"],
+        ["Tea", 20, null, "Samosa", null],
+        ["Coffee", 35, null, null, null],
+        ["Samosa", 15, null, null, null],
+        ["Sandwich", 60, null, null, null],
+        ["Cake", 45, null, null, null],
+        ["Juice", 40, null, null, null]
+      ],
+      "yellowCells": ["A2:A7"],
+      "target": "A2:A7",
+      "wrongFeedback": "Select the six item names only: from **Tea** (`A2`) down to **Juice** (`A7`). Leave out the header and the prices.",
+      "clues": ["The Name Box shows `6R x 1C` when you have the right block."]
+    },
+    {
+      "id": "s3",
+      "type": "select",
+      "topic": "What to bring back",
+      "prompt": "Second, the column Excel **brings back** from: the prices.\n\nPress on ==B2== and drag down to ==B7==, then press [[Enter]].",
+      "grid": [
+        ["Item", "Price", null, "Ordered", "Price"],
+        ["Tea", 20, null, "Samosa", null],
+        ["Coffee", 35, null, null, null],
+        ["Samosa", 15, null, null, null],
+        ["Sandwich", 60, null, null, null],
+        ["Cake", 45, null, null, null],
+        ["Juice", 40, null, null, null]
+      ],
+      "yellowCells": ["B2:B7"],
+      "target": "B2:B7",
+      "wrongFeedback": "Select the six prices, `B2` to `B7`. They must line up with the names row by row.",
+      "clues": ["Same six rows as the names, but one column to the right."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Your first XLOOKUP",
+      "prompt": "A customer ordered a **Samosa** (==D2==). Click ==E2== and type `=XLOOKUP(D2,A2:A7,B2:B7)`, then press [[Enter]].\n\nRead it out loud: look for `D2` in `A2:A7`, and bring back the matching cell from `B2:B7`.",
+      "grid": [
+        ["Item", "Price", null, "Ordered", "Price"],
+        ["Tea", 20, null, "Samosa", null],
+        ["Coffee", 35, null, null, null],
+        ["Samosa", 15, null, null, null],
+        ["Sandwich", 60, null, null, null],
+        ["Cake", 45, null, null, null],
+        ["Juice", 40, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "highlightCells": ["A2:B7"],
+      "yellowCells": ["E2"],
+      "expectedValue": 15,
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["D2"],
+      "solution": "=XLOOKUP(D2,A2:A7,B2:B7)",
+      "explain": "**15.** Excel found Samosa in the third row of the names, then brought back the third price. Change `D2` to **Cake** and the answer changes by itself.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas: `=XLOOKUP(D2,A2:A7,B2:B7)`.",
+        "missingFunction": "Start with `=XLOOKUP(` and give it three parts separated by commas.",
+        "wrongValue": "You should get **15**. Part two is the names (`A2:A7`, where to look) and part three is the prices (`B2:B7`, what to bring back). Swapped them? Excel can't find “Samosa” among prices."
+      },
+      "clues": ["Three parts, separated by commas: `D2`, then the names, then the prices."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Look to the left",
+      "prompt": "A teacher knows a **roll number** (==E2==) and needs the **name**.\n\nNotice the roll numbers are in column B, to the **right** of the names. In ==F2==, search the roll numbers and bring back the name.",
+      "grid": [
+        ["Name", "Roll no", "Marks", null, "Roll no", "Name"],
+        ["Priya", 21, 78, null, 24, null],
+        ["Rahul", 22, 64, null, null, null],
+        ["Sana", 23, 91, null, null, null],
+        ["Tom", 24, 55, null, null, null],
+        ["Uma", 25, 82, null, null, null],
+        ["Vik", 26, 70, null, null, null]
+      ],
+      "targetCell": "F2",
+      "activeCell": "E2",
+      "yellowCells": ["F2"],
+      "expectedValue": "Tom",
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["E2"],
+      "solution": "=XLOOKUP(E2,B2:B7,A2:A7)",
+      "explain": "**Tom.** XLOOKUP can bring back a column on either side of the one it searched. Older lookup formulas can't look left. You'll meet them in Topic 35.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas: `=XLOOKUP(E2,B2:B7,A2:A7)`.",
+        "missingFunction": "Use **XLOOKUP**: what to find, where to look, what to bring back.",
+        "wrongValue": "Search the **roll numbers** (`B2:B7`) and bring back the **names** (`A2:A7`). Which is which?"
+      },
+      "clues": ["Where to look: the roll numbers. What to bring back: the names."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Use the answer in a sum",
+      "prompt": "A customer orders **3 Brownies**. In ==F2==, work out the bill: look up the price of the item in `D2`, then multiply it by the quantity in `E2`.",
+      "grid": [
+        ["Item", "Price", null, "Item", "Qty", "Total"],
+        ["Bun", 12, null, "Brownie", 3, null],
+        ["Brownie", 25, null, null, null, null],
+        ["Cookie", 8, null, null, null, null],
+        ["Pastry", 30, null, null, null, null],
+        ["Bread", 40, null, null, null, null],
+        ["Muffin", 18, null, null, null, null]
+      ],
+      "targetCell": "F2",
+      "activeCell": "D2",
+      "yellowCells": ["F2"],
+      "expectedValue": 75,
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["D2", "E2"],
+      "solution": "=XLOOKUP(D2,A2:A7,B2:B7)*E2",
+      "explain": "**75** (25 × 3). An XLOOKUP gives back a plain value, so you can multiply it, add it or join it like any other cell.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas, then add `*E2` at the end.",
+        "missingFunction": "The price must come from a lookup, not typed in: use **XLOOKUP** for it.",
+        "wrongValue": "One Brownie costs 25. The bill is the price **times** the quantity in `E2`."
+      },
+      "clues": ["`=XLOOKUP(...)*E2`"]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Lock the lists with $",
+      "prompt": "Four orders are waiting in `D2:D5`, and you'll copy the formula down them. So **lock the two lists** with `$` first.\n\nIn ==E2==, type `=XLOOKUP(D2,$A$2:$A$7,$B$2:$B$7)`. (Click inside each range and press [[F4]] to add the `$` signs, or just type them.)",
+      "grid": [
+        ["Item", "Price", null, "Ordered", "Price"],
+        ["Pen", 10, null, "Folder", null],
+        ["Notebook", 45, null, "Pen", null],
+        ["Stapler", 80, null, "Tape", null],
+        ["Folder", 25, null, "Notebook", null],
+        ["Marker", 30, null, null, null],
+        ["Tape", 15, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "highlightCells": ["A2:B7"],
+      "yellowCells": ["E2"],
+      "expectedValue": 25,
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["D2"],
+      "solution": "=XLOOKUP(D2,$A$2:$A$7,$B$2:$B$7)",
+      "explain": "**25** for the Folder. The `$` signs pin the lists in place. `D2` has none, so it will move down to `D3`, `D4`, `D5` when you copy.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "$"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets, commas and `$` signs: `=XLOOKUP(D2,$A$2:$A$7,$B$2:$B$7)`.",
+        "missingFunction": "Use **XLOOKUP** with the two locked lists.",
+        "wrongValue": "The first order is a **Folder**: its price is 25. Check the lookup value is `D2` and the lists are the names and prices."
+      },
+      "clues": [
+        "Same formula as before, with `$` in front of every column letter and row number in the two ranges."
+      ]
+    },
+    {
+      "id": "s8",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Fill down: Ctrl + D",
+      "prompt": "`E2` to `E5` are selected, with your formula in the top cell.\n\nPress [[Ctrl]] + [[D]] to copy it down. Every row looks up its **own** order, while the `$` lists stay put.",
+      "keys": {
+        "win": "Ctrl+D",
+        "mac": "Cmd+D"
+      },
+      "grid": [
+        ["Item", "Price", null, "Ordered", "Price"],
+        ["Pen", 10, null, "Folder", "=XLOOKUP(D2,$A$2:$A$7,$B$2:$B$7)"],
+        ["Notebook", 45, null, "Pen", null],
+        ["Stapler", 80, null, "Tape", null],
+        ["Folder", 25, null, "Notebook", null],
+        ["Marker", 30, null, null, null],
+        ["Tape", 15, null, null, null]
+      ],
+      "activeCell": "E2:E5",
+      "postcondition": {
+        "grid": [
+          ["Item", "Price", null, "Ordered", "Price"],
+          ["Pen", 10, null, "Folder", "=XLOOKUP(D2,$A$2:$A$7,$B$2:$B$7)"],
+          ["Notebook", 45, null, "Pen", "=XLOOKUP(D3,$A$2:$A$7,$B$2:$B$7)"],
+          ["Stapler", 80, null, "Tape", "=XLOOKUP(D4,$A$2:$A$7,$B$2:$B$7)"],
+          ["Folder", 25, null, "Notebook", "=XLOOKUP(D5,$A$2:$A$7,$B$2:$B$7)"],
+          ["Marker", 30, null, null, null],
+          ["Tape", 15, null, null, null]
+        ],
+        "selection": "E2:E5"
+      },
+      "clues": ["Hold Ctrl, then tap D once."]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "Imagine you had left the `$` signs out. Filled down, the lists slide down one row at a time, so `E3` would hold `=XLOOKUP(D3,A3:A8,B3:B8)`.\n\n`D3` says **Pen**, and Pen sits in `A2`. What would `E3` show?",
+      "grid": [
+        ["Item", "Price", null, "Ordered", "Price"],
+        ["Pen", 10, null, "Folder", "=XLOOKUP(D2,A2:A7,B2:B7)"],
+        ["Notebook", 45, null, "Pen", null],
+        ["Stapler", 80, null, "Tape", null],
+        ["Folder", 25, null, "Notebook", null],
+        ["Marker", 30, null, null, null],
+        ["Tape", 15, null, null, null]
+      ],
+      "highlightCells": ["A3:A8"],
+      "yellowCells": ["E3"],
+      "options": [
+        "`10`: Pen's price, found as usual",
+        "`#N/A`: Pen is above the slid-down list",
+        "`45`: the Notebook's price"
+      ],
+      "answer": 1,
+      "explain": "The new list starts at row 3, so Pen (row 2) has fallen off the top. Next, see it for yourself.",
+      "wrongFeedback": [
+        "Excel doesn't remember where the list used to start. It only searches the cells the formula names now.",
+        null,
+        "Nothing in the formula points at the Notebook row."
+      ],
+      "clues": ["Which rows does `A3:A8` cover? Is row 2 in there?"]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "See it break",
+      "prompt": "Prove it. In ==E3==, type the formula Excel would have written without locks: `=XLOOKUP(D3,A3:A8,B3:B8)`.",
+      "grid": [
+        ["Item", "Price", null, "Ordered", "Price"],
+        ["Pen", 10, null, "Folder", "=XLOOKUP(D2,A2:A7,B2:B7)"],
+        ["Notebook", 45, null, "Pen", null],
+        ["Stapler", 80, null, "Tape", null],
+        ["Folder", 25, null, "Notebook", null],
+        ["Marker", 30, null, null, null],
+        ["Tape", 15, null, null, null]
+      ],
+      "targetCell": "E3",
+      "activeCell": "D3",
+      "highlightCells": ["A3:A8"],
+      "yellowCells": ["E3"],
+      "expectedValue": {
+        "error": "#N/A"
+      },
+      "mustUse": ["XLOOKUP"],
+      "solution": "=XLOOKUP(D3,A3:A8,B3:B8)",
+      "explain": "**#N/A** means “not available”: Excel searched `A3:A8`, and Pen isn't there. Always lock the lists with `$` before you copy a lookup down. (Whole columns like `A:A` avoid the problem too.)",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Type it exactly: `=XLOOKUP(D3,A3:A8,B3:B8)`.",
+        "missingFunction": "Use `=XLOOKUP(D3,A3:A8,B3:B8)`.",
+        "wrongValue": "Use the slid-down lists exactly: `A3:A8` and `B3:B8`. Pen isn't in those rows, so you'll see an error."
+      },
+      "clues": ["Notice the lists start at row **3** now, not row 2."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Exact match",
+      "prompt": "The menu has **Samosa**, yet `E2` shows `#N/A`. The order cell says **Samosas**.\n\nWhy didn't XLOOKUP find it?",
+      "grid": [
+        ["Item", "Price", null, "Ordered", "Price"],
+        ["Tea", 20, null, "Samosas", "=XLOOKUP(D2,A2:A7,B2:B7)"],
+        ["Coffee", 35, null, null, null],
+        ["Samosa", 15, null, null, null],
+        ["Sandwich", 60, null, null, null],
+        ["Cake", 45, null, null, null],
+        ["Juice", 40, null, null, null]
+      ],
+      "activeCell": "E2",
+      "yellowCells": ["D2", "E2"],
+      "showFormulaBar": true,
+      "options": [
+        "XLOOKUP only finds an exact match: “Samosas” isn't “Samosa”",
+        "XLOOKUP can't search for text, only numbers",
+        "The prices must be sorted first"
+      ],
+      "answer": 0,
+      "explain": "XLOOKUP is **exact** unless you tell it otherwise. Capitals don't matter (“samosa” works), but an extra letter or a stray space does. Tip: **TRIM** removes stray spaces. The next lesson shows how to show a friendly message instead of `#N/A`.",
+      "wrongFeedback": [
+        null,
+        "It searches text and numbers equally. Look closely at the two spellings.",
+        "XLOOKUP doesn't need any sorting for an exact match."
+      ],
+      "clues": ["Compare the order cell letter by letter with the menu."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "The shop owner asks: **how many Bowls are in stock?** The item name is in ==E2==.\n\nPut the answer in ==F2==.",
+      "grid": [
+        ["Item", "Price", "Stock", null, "Item", "Stock"],
+        ["Mug", 120, 14, null, "Bowl", null],
+        ["Plate", 90, 25, null, null, null],
+        ["Bowl", 75, 9, null, null, null],
+        ["Spoon", 15, 60, null, null, null],
+        ["Jug", 200, 6, null, null, null],
+        ["Tray", 150, 18, null, null, null]
+      ],
+      "targetCell": "F2",
+      "activeCell": "A1",
+      "yellowCells": ["F2"],
+      "expectedValue": 9,
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["E2"],
+      "solution": "=XLOOKUP(E2,A2:A7,C2:C7)",
+      "explain": "**9 Bowls.** You searched the names, and brought back the **Stock** column, not the price next to it. Choosing the right column to bring back is the whole skill.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "parseError": "Check the brackets and commas.",
+        "missingFunction": "Look the item up: what to find, where to look, what to bring back.",
+        "wrongValue": "Bowl's price is 75, but the question asks about **stock**. Bring back the Stock column."
+      },
+      "clues": ["Search the item names. Bring back the column that holds the stock."]
+    }
+  ]
+}

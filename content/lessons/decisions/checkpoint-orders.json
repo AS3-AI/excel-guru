@@ -1,0 +1,380 @@
+{
+  "id": "checkpoint-orders",
+  "module": "decisions",
+  "title": "Checkpoint: answer questions from an orders sheet",
+  "goal": "Answer twelve real questions about one orders sheet by choosing the right tool each time: totals, counts, averages, decisions with IF and safety nets with IFERROR.",
+  "difficulty": 3,
+  "requiredCorrect": 12,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "The orders sheet",
+      "text": "Lakshmi runs a small stationery shop. This is her week of orders: **Region**, **Item**, **Qty**, **Price**, **Status**, and a **Total** that is already worked out for each order.\n\nThere's no new teaching here. A manager will ask you real questions about this sheet, and you pick the right tool each time: totals, counts, averages, decisions and safety nets.\n\nPut every answer in column ==G==. Look for the near-misses in the data: a lot of questions have a tempting wrong answer.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Answer"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "activeCell": "G2",
+      "yellowCells": ["G2"]
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Warm-up",
+      "prompt": "What is the **total value of all orders**? Put the answer in `G2`.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Answer"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A1",
+      "expectedValue": 3780,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(F2:F8)",
+      "explain": "**3780.** The Total column already multiplies Qty by Price, so one SUM over `F2:F8` adds up the whole week.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Add up the **Total** column with a function.",
+        "wrongValue": "Add the **Total** column (`F2:F8`) only. Qty and Price columns are not money totals."
+      },
+      "clues": ["Totals live in column F."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Count by status",
+      "prompt": "How many orders are still **Pending**? Put the answer in `G2`.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Answer"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A1",
+      "expectedValue": 3,
+      "mustUse": ["COUNTIF"],
+      "solution": "=COUNTIF(E2:E8,\"Pending\")",
+      "explain": "**3**: the Delhi notebook order, the Delhi bag order and the Pune notebook order. Only the Status column is searched.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "You need to count only the cells that match a word.",
+        "wrongValue": "Look only in the **Status** column `E2:E8` for the word `\"Pending\"`."
+      },
+      "clues": ["Where to look, then what to count."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Total by region",
+      "prompt": "What is the **total value of Pune's orders**? Put the answer in `G2`.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Answer"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A1",
+      "expectedValue": 1480,
+      "mustUse": ["SUMIF"],
+      "solution": "=SUMIF(A2:A8,\"Pune\",F2:F8)",
+      "explain": "**1480**: 200 + 800 + 480. SUMIF adds the Total column only where Region says Pune.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "You need a total that only adds the Pune rows.",
+        "wrongValue": "Look in **Region** (`A2:A8`) for Pune and add the **Total** column (`F2:F8`). Check the order of the three parts."
+      },
+      "clues": ["Look in Region, match Pune, add Total."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "A condition in a cell",
+      "prompt": "Cell `G1` holds a region name, **Mumbai**. What is the **total value of orders for that region**? Put the answer in `G2`, using the cell `G1` in your formula so it works for any region you type there.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Mumbai"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A1",
+      "expectedValue": 1600,
+      "mustUse": ["SUMIF"],
+      "mustReference": ["G1"],
+      "solution": "=SUMIF(A2:A8,G1,F2:F8)",
+      "explain": "**1600**: Mumbai's 400 + 1200. Because the formula reads `G1`, typing Delhi there would instantly give Delhi's total with no edit to the formula.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "$"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "You need a total that adds only the matching region.",
+        "missingReference": "Point the condition at `G1` instead of typing the word.",
+        "wrongValue": "Look in **Region** `A2:A8`, match `G1` (no quotes), and add **Total** `F2:F8`."
+      },
+      "clues": ["No quote marks around a cell address."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Two conditions: count",
+      "prompt": "How many **Pune** orders are still **Pending**? Put the answer in `G2`.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Answer"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A1",
+      "expectedValue": 1,
+      "mustUse": ["COUNTIFS"],
+      "solution": "=COUNTIFS(A2:A8,\"Pune\",E2:E8,\"Pending\")",
+      "explain": "**1**: only the Pune notebook order. Pune has 3 orders and 3 orders are Pending overall, but only one is both.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Two conditions at once needs a function that counts with several pairs.",
+        "wrongValue": "If you got 3, only one condition was used. Region = Pune **and** Status = Pending."
+      },
+      "clues": ["One pair for Region, one pair for Status."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Two conditions: total",
+      "prompt": "What is the **total value of Paid orders from Pune**? Put the answer in `G2`.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Answer"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A1",
+      "expectedValue": 1000,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(F2:F8,A2:A8,\"Pune\",E2:E8,\"Paid\")",
+      "explain": "**1000**: the Pune pens (200) and the Pune bags (800). Pune alone is 1480 and Paid alone is 2600, so both conditions matter. Note that SUMIFS puts the numbers to add **first**.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "You need a total with two conditions.",
+        "wrongValue": "Start with the **Total** column to add, then Region = Pune, then Status = Paid."
+      },
+      "clues": ["The numbers to add come first in SUMIFS."]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "A number condition",
+      "prompt": "What is the **total value of Bag orders where at least 2 bags were ordered**? Put the answer in `G2`.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Answer"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A1",
+      "expectedValue": 2000,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(F2:F8,B2:B8,\"Bag\",C2:C8,\">=2\")",
+      "explain": "**2000**: the Pune order of 2 bags (800) and the Mumbai order of 3 bags (1200). Delhi's single bag is out, and the order of exactly 2 counts because it's “at least 2”.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "You need a total with a text condition and a number condition.",
+        "wrongValue": "Item = Bag **and** Qty at least 2. The order of exactly 2 bags should be included, so use `\">=2\"`."
+      },
+      "clues": ["Qty is column C. Put the symbol and the number together in quotes."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Conditional average",
+      "prompt": "What is the **average value of a Notebook order**? Put the answer in `G2`.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Answer"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A1",
+      "expectedValue": 390,
+      "mustUse": ["AVERAGEIFS"],
+      "solution": "=AVERAGEIFS(F2:F8,B2:B8,\"Notebook\")",
+      "explain": "**390**: the two notebook orders are 300 and 480. The average of every order would be 540.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "You need an average that only uses the matching rows.",
+        "wrongValue": "Average the **Total** column (`F2:F8`) where **Item** (`B2:B8`) is `\"Notebook\"`."
+      },
+      "clues": ["The numbers to average come first."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Make a decision: a discount",
+      "prompt": "Orders of **10 or more items** get **5% off** their Total; smaller orders get no discount. What is the **discount for the order in row 2** (Pune pens)? Put the answer in `G2`.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Answer"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A1",
+      "expectedValue": 10,
+      "mustUse": ["IF"],
+      "solution": "=IF(C2>=10,F2*5%,0)",
+      "explain": "**10**: Qty is exactly 10, which qualifies, and 5% of 200 is 10. The yes-answer is a calculation and the no-answer is just `0`.",
+      "mobileButtons": ["=", "(", ")", ",", ">", "*", "%"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "This is a yes/no decision, so it needs a function that chooses.",
+        "wrongValue": "Row 2 has exactly 10 items, and “10 or more” includes it. The discount is 5% of the Total, `F2*5%`."
+      },
+      "clues": ["Test the Qty cell, `C2`."]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Make a decision: two tests",
+      "prompt": "An order should be **Chase** if it is still **Pending** and its Total is **400 or more**; otherwise it is **OK**. What does **row 6** (Delhi bag) say? Put the answer in `G6`.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Answer"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "targetCell": "G6",
+      "activeCell": "A1",
+      "expectedValue": "Chase",
+      "mustUse": ["IF", "AND"],
+      "solution": "=IF(AND(E6=\"Pending\",F6>=400),\"Chase\",\"OK\")",
+      "explain": "**Chase**: Delhi's bag order is Pending and its Total is exactly 400, so both tests pass. A strict `>400` would have wrongly said OK.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "You need a decision that checks two things together.",
+        "wrongValue": "Both must be true: Status = Pending **and** Total at least 400. The Total of exactly 400 counts."
+      },
+      "clues": ["Both tests go inside one function that needs both to be true."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "A safety net",
+      "prompt": "**Chennai** hasn't ordered anything yet. Work out the **average Total of Chennai orders**, but show the words **No orders** instead of an error. Put the answer in `G2`.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Answer"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A1",
+      "expectedValue": "No orders",
+      "mustUse": ["IFERROR"],
+      "solution": "=IFERROR(AVERAGEIFS(F2:F8,A2:A8,\"Chennai\"),\"No orders\")",
+      "explain": "**No orders.** Averaging zero matching rows divides by zero, which is an error you **expected**, so a safety net is the right fix. For Pune the very same formula would give a normal average.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "The average will fail because there are no Chennai rows. Wrap it in something that catches errors.",
+        "wrongValue": "The cell must show the words **No orders**, not an error. Put the average inside the safety net and the words after it."
+      },
+      "clues": ["Average first, safety net around it."]
+    },
+    {
+      "id": "s13",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "The manager asks: **“How many Pune orders of 5 items or more have been Paid?”** Put the answer in `G2`.",
+      "grid": [
+        ["Region", "Item", "Qty", "Price", "Status", "Total", "Answer"],
+        ["Pune", "Pen", 10, 20, "Paid", "=C2*D2", null],
+        ["Delhi", "Notebook", 5, 60, "Pending", "=C3*D3", null],
+        ["Pune", "Bag", 2, 400, "Paid", "=C4*D4", null],
+        ["Mumbai", "Pen", 20, 20, "Paid", "=C5*D5", null],
+        ["Delhi", "Bag", 1, 400, "Pending", "=C6*D6", null],
+        ["Pune", "Notebook", 8, 60, "Pending", "=C7*D7", null],
+        ["Mumbai", "Bag", 3, 400, "Paid", "=C8*D8", null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A1",
+      "expectedValue": 1,
+      "mustUse": ["COUNTIFS"],
+      "solution": "=COUNTIFS(A2:A8,\"Pune\",C2:C8,\">=5\",E2:E8,\"Paid\")",
+      "explain": "**1**: only the 10-pen order. Pune has 3 orders, 2 are Paid, 2 are 5 items or more, and only one passes **all three** tests.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Three conditions at once needs a function that counts with several pairs.",
+        "wrongValue": "Three pairs: Region = Pune, Qty at least 5, Status = Paid. If you got 2, one pair is missing."
+      },
+      "clues": ["Three pairs: Region, Qty, Status."]
+    }
+  ]
+}

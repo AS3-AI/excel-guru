@@ -1,0 +1,375 @@
+{
+  "id": "pivot-basics",
+  "module": "pivots",
+  "title": "PivotTables: the basics",
+  "goal": "Insert a PivotTable with the keyboard, drag fields into Rows, Columns, Values and Filters, predict what it will show, and refresh it with Alt + F5 when the data changes.",
+  "difficulty": 1,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Why PivotTables",
+      "text": "Your manager asks: “How much did each region sell?”\n\nHere are just 7 orders, but **imagine 5,000**. Writing a formula per region is slow, and one new region means more work.\n\nA **PivotTable** is a summary table Excel builds for you when you **drag** column headings into boxes. No formulas to type. The table on the right is what one would show: regions down the side, total sales beside each.\n\nIn real Excel the pivot usually opens on a **new sheet**. Here it sits beside the data so you can see both.",
+      "grid": [
+        ["Region", "Product", "Sales", null, "Row Labels", "Sum of Sales"],
+        ["North", "Tea", 500, null, "East", 1300],
+        ["South", "Coffee", 1200, null, "North", 1220],
+        ["South", "Tea", 750, null, "South", 2430],
+        ["East", "Coffee", 300, null, "Grand Total", 4950],
+        ["North", "Coffee", 720, null, null, null],
+        ["South", "Coffee", 480, null, null, null],
+        ["East", "Tea", 1000, null, null, null]
+      ],
+      "highlightCells": ["E1:F5"],
+      "activeCell": "A1"
+    },
+    {
+      "id": "s2",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Insert a PivotTable",
+      "prompt": "A pivot needs a **clean list**: one heading on every column, no blank rows or columns inside, and one kind of thing per column. Yours is.\n\nClick any cell in the list, then tap [[Alt]], [[N]], [[V]] one after another: **Insert → PivotTable**. In the menu that opens you'd pick **From Table/Range**; Excel guesses the whole list for you. On a Mac, use the **Insert** tab → **PivotTable**.",
+      "keys": {
+        "win": ["Alt", "N", "V"],
+        "mac": null
+      },
+      "grid": [
+        ["Region", "Product", "Sales"],
+        ["North", "Tea", 500],
+        ["South", "Coffee", 1200],
+        ["South", "Tea", 750],
+        ["East", "Coffee", 300],
+        ["North", "Coffee", 720],
+        ["South", "Coffee", 480],
+        ["East", "Tea", 1000]
+      ],
+      "activeCell": "B3",
+      "postcondition": {
+        "grid": [
+          ["Region", "Product", "Sales"],
+          ["North", "Tea", 500],
+          ["South", "Coffee", 1200],
+          ["South", "Tea", 750],
+          ["East", "Coffee", 300],
+          ["North", "Coffee", 720],
+          ["South", "Coffee", 480],
+          ["East", "Tea", 1000]
+        ],
+        "selection": "A1:C8"
+      },
+      "clues": ["Press and release Alt, then N, then V."]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "Clean source data",
+      "prompt": "Before inserting a pivot you check the list on the left. What do you fix first?",
+      "grid": [
+        ["Region", "Product", null],
+        ["North", "Tea", 500],
+        ["South", "Coffee", 1200],
+        [null, null, null],
+        ["East", "Coffee", 300]
+      ],
+      "highlightCells": ["C1", "A4:C4"],
+      "options": [
+        "Sort Region from A to Z",
+        "Name column C and delete the blank row",
+        "Add a Total row at the bottom"
+      ],
+      "answer": 1,
+      "explain": "A blank heading stops Excel building the pivot, and a blank row cuts the list short, so only the rows above it get summarised. Fix both and Excel picks up the full list.",
+      "wrongFeedback": [
+        "A pivot groups the regions by itself, so sorting the source changes nothing.",
+        null,
+        "A Total row would be read as one more order, so every figure would be counted **twice**. Never type totals inside pivot data."
+      ],
+      "clues": ["Which of these would make Excel stop reading the list?"]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Rows and Values",
+      "prompt": "The field list has four boxes: **Filters**, **Columns**, **Rows** and **Values**.\n\nYour manager wants “one line per region, with its sales added up beside it”. What do you drag where?",
+      "grid": [
+        ["Filters", "Columns"],
+        [null, null],
+        ["Rows", "Values"],
+        [null, null]
+      ],
+      "options": [
+        "Region to Values, Sales to Rows",
+        "Region to Filters, Sales to Columns",
+        "Region to Rows, Sales to Values"
+      ],
+      "answer": 2,
+      "explain": "**Rows** gives one line for each different Region, and **Values** is the number Excel adds up. That is the table you saw in the first step.",
+      "wrongFeedback": [
+        "Values is the box for the numbers to add up. Putting Region there would count the words instead.",
+        "Filters only hides things, and Columns would spread Sales across the top. Neither gives one line per region.",
+        null
+      ],
+      "clues": [
+        "The box that makes one line per item is Rows; the box that holds numbers to add is Values."
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Predict the pivot",
+      "prompt": "You dragged **Region** to Rows and **Sales** to Values. The pivot sits in `E1:F5`, with South left blank.\n\nWhat will the pivot show for South? Work it out from the list with a **SUMIFS** in ==F4==: add Sales where Region matches the label in `E4`.",
+      "grid": [
+        ["Region", "Product", "Sales", null, "Row Labels", "Sum of Sales"],
+        ["North", "Tea", 500, null, "East", 1300],
+        ["South", "Coffee", 1200, null, "North", 1220],
+        ["South", "Tea", 750, null, "South", null],
+        ["East", "Coffee", 300, null, "Grand Total", null],
+        ["North", "Coffee", 720, null, null, null],
+        ["South", "Coffee", 480, null, null, null],
+        ["East", "Tea", 1000, null, null, null]
+      ],
+      "targetCell": "F4",
+      "highlightCells": ["A2:C8"],
+      "yellowCells": ["F4"],
+      "activeCell": "E4",
+      "expectedValue": 2430,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(C2:C8,A2:A8,E4)",
+      "explain": "**2430.** That's 1200 + 750 + 480, the three South orders. A pivot is SUMIFS done for you, once per row label, even when there are 5,000 rows.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Use `SUMIFS` to add Sales for one region.",
+        "wrongValue": "South has three orders (1200, 750, 480). Sum Sales `C2:C8` where Region `A2:A8` equals `E4`."
+      },
+      "clues": [
+        "`=SUMIFS(sum range, criteria range, criteria)`: the Sales column first.",
+        "The criteria is the label in `E4`."
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Columns",
+      "prompt": "Now drag **Product** to **Columns** as well. Products run across the top, regions down the side, and each cell shows the sales for one pair.\n\nWhat will the cell where **South** meets **Coffee** show? Put your **SUMIFS** in ==F4==. It needs two conditions.",
+      "grid": [
+        ["Region", "Product", "Sales", null, "Region", "Coffee", "Tea"],
+        ["North", "Tea", 500, null, "East", 300, 1000],
+        ["South", "Coffee", 1200, null, "North", 720, 500],
+        ["South", "Tea", 750, null, "South", null, 750],
+        ["East", "Coffee", 300, null, null, null, null],
+        ["North", "Coffee", 720, null, null, null, null],
+        ["South", "Coffee", 480, null, null, null, null],
+        ["East", "Tea", 1000, null, null, null, null]
+      ],
+      "targetCell": "F4",
+      "highlightCells": ["E4", "F1"],
+      "yellowCells": ["F4"],
+      "activeCell": "E1",
+      "expectedValue": 1680,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(C2:C8,A2:A8,E4,B2:B8,F1)",
+      "explain": "**1680.** South's two Coffee orders, 1200 and 480. Using only the region would give 2430, and only the product 2700; the cell needs both conditions.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Use `SUMIFS` with two pairs of range and criteria.",
+        "wrongValue": "Both must match: Region `A2:A8` equals `E4` **and** Product `B2:B8` equals `F1`."
+      },
+      "clues": [
+        "Add a second pair to the formula: product range, then the label in `F1`.",
+        "South Coffee orders: 1200 and 480."
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Filters",
+      "prompt": "Drag **Product** to **Filters** and pick **Tea** from the little menu above the pivot. Now the whole pivot shows Tea orders only.\n\nWhat will **Grand Total** show in ==F7==? Work it out from the list with a **SUMIFS**, not by adding the cells above it.",
+      "grid": [
+        ["Region", "Product", "Sales", null, "Product", "Tea"],
+        ["North", "Tea", 500, null, null, null],
+        ["South", "Coffee", 1200, null, "Row Labels", "Sum of Sales"],
+        ["South", "Tea", 750, null, "East", 1000],
+        ["East", "Coffee", 300, null, "North", 500],
+        ["North", "Coffee", 720, null, "South", 750],
+        ["South", "Coffee", 480, null, "Grand Total", null],
+        ["East", "Tea", 1000, null, null, null]
+      ],
+      "targetCell": "F7",
+      "highlightCells": ["B2:B8", "F1"],
+      "yellowCells": ["F7"],
+      "activeCell": "F1",
+      "expectedValue": 2250,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(C2:C8,B2:B8,F1)",
+      "explain": "**2250.** Tea orders only: 500 + 750 + 1000. The Filters box doesn't add a row or column; it just decides which orders the pivot is allowed to count.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Use `SUMIFS` to add Sales where Product is Tea.",
+        "wrongValue": "Only Tea orders count: Product `B2:B8` equals `F1`. All sales together would be 4950."
+      },
+      "clues": ["One condition this time: Product equals the word in `F1`."]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Sum or Count?",
+      "prompt": "Mira drags **Product** into Values instead of Sales. Product is a column of **words**, and Excel can't add words, so it quietly switches to **Count**. The heading changes to “Count of Product”.\n\nWhat will the pivot show for South? Use **COUNTIF** in ==F4==.",
+      "grid": [
+        ["Region", "Product", "Sales", null, "Row Labels", "Count of Product"],
+        ["North", "Tea", 500, null, "East", 2],
+        ["South", "Coffee", 1200, null, "North", 2],
+        ["South", "Tea", 750, null, "South", null],
+        ["East", "Coffee", 300, null, null, null],
+        ["North", "Coffee", 720, null, null, null],
+        ["South", "Coffee", 480, null, null, null],
+        ["East", "Tea", 1000, null, null, null]
+      ],
+      "targetCell": "F4",
+      "highlightCells": ["A2:A8"],
+      "yellowCells": ["F4"],
+      "activeCell": "E4",
+      "expectedValue": 3,
+      "mustUse": ["COUNTIF"],
+      "solution": "=COUNTIF(A2:A8,E4)",
+      "explain": "**3.** South has three orders, so Excel counts 3 and shows no rupees at all. Always read the heading: “Sum of Sales” is money, “Count of Product” is just how many rows.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Use `COUNTIF` to count the South rows.",
+        "wrongValue": "Count the rows where Region `A2:A8` equals `E4`. Adding Sales would give 2430, but this pivot counts words."
+      },
+      "clues": ["`=COUNTIF(range, criteria)`: how many cells in Region match `E4`?"]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Count of Sales?",
+      "prompt": "Another pivot shows “**Count of Sales**” even though Sales is a column of numbers. What's the most likely cause?",
+      "grid": [
+        ["Region", "Product", "Sales"],
+        ["North", "Tea", 500],
+        ["South", "Coffee", "n/a"],
+        ["South", "Tea", 750]
+      ],
+      "highlightCells": ["C3"],
+      "options": [
+        "Some Sales cells are text or blank",
+        "The pivot hasn't been refreshed",
+        "Region is in the Rows box"
+      ],
+      "answer": 0,
+      "explain": "Excel looks at the column when you drop it in Values: if even some cells are text (like “n/a”) or blank, it defaults to **Count**. Clean the source cells, or switch the value to Sum in **Value Field Settings**.",
+      "wrongFeedback": [
+        null,
+        "A stale pivot shows old numbers, but it would still say “Sum of”.",
+        "Rows only decides the lines. The Sum or Count choice depends on what the Sales column holds."
+      ],
+      "clues": ["Look at the Sales column for anything that isn't a number."]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Predict: stale pivot",
+      "prompt": "You fix an order: South's Coffee sale in `C3` was 1200, but it should be **1500**. You type it in and look at the pivot on screen.\n\nWhat does South show now?",
+      "grid": [
+        ["Region", "Product", "Sales", null, "Row Labels", "Sum of Sales"],
+        ["North", "Tea", 500, null, "East", 1300],
+        ["South", "Coffee", 1500, null, "North", 1220],
+        ["South", "Tea", 750, null, "South", 2430],
+        ["East", "Coffee", 300, null, "Grand Total", 4950],
+        ["North", "Coffee", 720, null, null, null],
+        ["South", "Coffee", 480, null, null, null],
+        ["East", "Tea", 1000, null, null, null]
+      ],
+      "yellowCells": ["C3"],
+      "highlightCells": ["F4"],
+      "options": ["2730", "An error", "2430, until you refresh"],
+      "answer": 2,
+      "explain": "A pivot is a **snapshot**. It does not follow the source live, so it still says 2430 until you refresh it. This catches out everyone once.",
+      "wrongFeedback": [
+        "It will be 2730 after a refresh, but not before. Unlike a formula, a pivot doesn't recalculate on its own.",
+        "Nothing is broken. The pivot simply hasn't looked at the new number yet.",
+        null
+      ],
+      "clues": ["Is a pivot live like `=SUM()`, or a snapshot?"]
+    },
+    {
+      "id": "s11",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Refresh",
+      "prompt": "Click inside the pivot (`F4` is) and press [[Alt]] + [[F5]]: **Refresh**. South jumps to 2730 and the Grand Total follows.\n\nTo refresh every pivot in the file, use [[Ctrl]] + [[Alt]] + [[F5]]. On a Mac, use **Data → Refresh All**.",
+      "keys": {
+        "win": "Alt+F5",
+        "mac": null
+      },
+      "grid": [
+        ["Region", "Product", "Sales", null, "Row Labels", "Sum of Sales"],
+        ["North", "Tea", 500, null, "East", 1300],
+        ["South", "Coffee", 1500, null, "North", 1220],
+        ["South", "Tea", 750, null, "South", 2430],
+        ["East", "Coffee", 300, null, "Grand Total", 4950],
+        ["North", "Coffee", 720, null, null, null],
+        ["South", "Coffee", 480, null, null, null],
+        ["East", "Tea", 1000, null, null, null]
+      ],
+      "activeCell": "F4",
+      "postcondition": {
+        "grid": [
+          ["Region", "Product", "Sales", null, "Row Labels", "Sum of Sales"],
+          ["North", "Tea", 500, null, "East", 1300],
+          ["South", "Coffee", 1500, null, "North", 1220],
+          ["South", "Tea", 750, null, "South", 2730],
+          ["East", "Coffee", 300, null, "Grand Total", 5250],
+          ["North", "Coffee", 720, null, null, null],
+          ["South", "Coffee", 480, null, null, null],
+          ["East", "Tea", 1000, null, null, null]
+        ],
+        "selection": "F4"
+      },
+      "clues": ["Hold Alt and tap F5."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nA delivery team's pivot has **City** in Rows, **Day** in Filters set to **Sat**, and **Orders** in Values. What number will it show for **Pune**? Put the answer in ==G5==.",
+      "grid": [
+        ["Rider", "City", "Day", "Orders", null, "Day", "Sat"],
+        ["Asha", "Pune", "Fri", 12, null, null, null],
+        ["Ben", "Delhi", "Fri", 9, null, "Row Labels", "Sum of Orders"],
+        ["Chitra", "Pune", "Sat", 15, null, "Delhi", 20],
+        ["Dev", "Pune", "Sat", 8, null, "Pune", null],
+        ["Esha", "Delhi", "Sat", 20, null, "Grand Total", null],
+        ["Farhan", "Pune", "Fri", 5, null, null, null],
+        ["Gita", "Delhi", "Fri", 7, null, null, null]
+      ],
+      "targetCell": "G5",
+      "expectedValue": 23,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS(D2:D8,B2:B8,F5,C2:C8,G1)",
+      "explain": "**23.** Pune's two Saturday orders, 15 + 8. Pune on any day is 40, and every Saturday is 43, so both the Rows label and the Filter had to count.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">", "<", "&"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula.",
+        "parseError": "Excel can't read that. Check every bracket and comma.",
+        "missingFunction": "Several conditions mean `SUMIFS`.",
+        "wrongValue": "The pivot counts only Pune **and** only Saturday. Pune's Saturday orders are 15 and 8."
+      },
+      "clues": [
+        "Rows decides which city; Filters decides which day. Both are conditions.",
+        "Sum of Orders: add the Orders column `D2:D8`."
+      ]
+    }
+  ]
+}

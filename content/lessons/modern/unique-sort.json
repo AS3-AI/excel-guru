@@ -1,0 +1,367 @@
+{
+  "id": "unique-sort",
+  "module": "modern",
+  "title": "UNIQUE, SORT & SORTBY",
+  "goal": "Build a list of distinct values, count them, sort lists or whole tables with a formula that updates itself, and know when SORTBY is the right tool.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Each value once",
+      "text": "This order list repeats its cities: Pune three times, Delhi and Mumbai twice. **How many different cities are there?** Which ones?\n\nThe old way is copying the column and clicking Remove Duplicates, and the copy goes stale the moment the orders change.\n\nThe new way is a **UNIQUE** formula in ==E2==. Click **Change Gita's city** and watch a new city join the list by itself.",
+      "grid": [
+        ["Customer", "City", "Amount", null, "Cities"],
+        ["Asha", "Pune", 400, null, "=UNIQUE(B2:B8)"],
+        ["Ben", "Delhi", 250, null, null],
+        ["Chitra", "Pune", 300, null, null],
+        ["Dev", "Mumbai", 500, null, null],
+        ["Esha", "Delhi", 150, null, null],
+        ["Farhan", "Pune", 350, null, null],
+        ["Gita", "Mumbai", 200, null, null]
+      ],
+      "activeCell": "E2",
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "B8",
+          "fromValue": "Mumbai",
+          "toValue": "Goa",
+          "resultCell": "E5",
+          "buttonLabel": "Change Gita's city: Mumbai → Goa",
+          "resetLabel": "Put Mumbai back"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "A list without repeats",
+      "prompt": "Click ==E2==, type `=UNIQUE(B2:B8)`, then press [[Enter]].\n\n**UNIQUE** reads a range and returns each different value once, in the order it first appears.",
+      "grid": [
+        ["Customer", "City", "Amount", null, "Cities"],
+        ["Asha", "Pune", 400, null, null],
+        ["Ben", "Delhi", 250, null, null],
+        ["Chitra", "Pune", 300, null, null],
+        ["Dev", "Mumbai", 500, null, null],
+        ["Esha", "Delhi", 150, null, null],
+        ["Farhan", "Pune", 350, null, null],
+        ["Gita", "Mumbai", 200, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "E1",
+      "highlightCells": ["B2:B8"],
+      "yellowCells": ["E2"],
+      "expectedValue": "Pune",
+      "mustUse": ["UNIQUE"],
+      "solution": "=UNIQUE(B2:B8)",
+      "explain": "Three cities spilled out: Pune, Delhi, Mumbai, in the order they first appear in the list. The 7 orders collapsed into 3 cities.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check the brackets: `=UNIQUE(B2:B8)`.",
+        "missingFunction": "Use **UNIQUE** so each city appears only once.",
+        "wrongValue": "Use the City column only, `B2:B8`. If you see seven rows, UNIQUE isn't wrapped around the range."
+      },
+      "clues": ["`=UNIQUE(` then the City cells then `)`."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Count the distinct ones",
+      "prompt": "How many **different** people visited this week? Names repeat, so counting rows would overstate it.\n\nClick ==D2== and type `=ROWS(UNIQUE(A2:A8))`. **ROWS** counts how many rows the unique list has.",
+      "grid": [
+        ["Visitor", "Day", null, "Distinct visitors"],
+        ["Asha", "Mon", null, null],
+        ["Ben", "Mon", null, null],
+        ["Asha", "Tue", null, null],
+        ["Chitra", "Tue", null, null],
+        ["Ben", "Wed", null, null],
+        ["Asha", "Wed", null, null],
+        ["Dev", "Wed", null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "D1",
+      "highlightCells": ["A2:A8"],
+      "yellowCells": ["D2"],
+      "expectedValue": 4,
+      "mustUse": ["UNIQUE"],
+      "solution": "=ROWS(UNIQUE(A2:A8))",
+      "explain": "**4** people: Asha, Ben, Chitra and Dev. There are 7 visits, which is what `=ROWS(A2:A8)` would wrongly report. `=COUNTA(UNIQUE(A2:A8))` gives the same 4.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Two brackets close at the end: `=ROWS(UNIQUE(A2:A8))`.",
+        "missingFunction": "Put **UNIQUE** inside, so repeats are removed before counting.",
+        "wrongValue": "That counts every visit (7). Wrap the range in **UNIQUE** first, then count its rows."
+      },
+      "clues": ["Work from the inside out: UNIQUE of the names, then ROWS of that."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Sort A to Z",
+      "prompt": "Now **SORT**. It returns the same list in order, leaving your original alone.\n\nClick ==D2== and type `=SORT(A2:A7)`.",
+      "grid": [
+        ["Fruit", "Stock", null, "A to Z"],
+        ["Mango", 12, null, null],
+        ["Guava", 8, null, null],
+        ["Banana", 20, null, null],
+        ["Apple", 15, null, null],
+        ["Kiwi", 6, null, null],
+        ["Cherry", 9, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "D1",
+      "highlightCells": ["A2:A7"],
+      "yellowCells": ["D2"],
+      "expectedValue": "Apple",
+      "mustUse": ["SORT"],
+      "solution": "=SORT(A2:A7)",
+      "explain": "Apple, Banana, Cherry, Guava, Kiwi, Mango. Column A is untouched, and the sorted copy re-sorts itself if a fruit is renamed.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check the brackets: `=SORT(A2:A7)`.",
+        "missingFunction": "Use **SORT** to put the list in order.",
+        "wrongValue": "Sort the fruit names only, `A2:A7`, not the stock column."
+      },
+      "clues": ["`=SORT(` then the fruit cells then `)`."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Largest first",
+      "prompt": "SORT has two more settings: **which column** to sort by (a number) and **the order**: `1` is smallest first, `-1` is largest first.\n\nClick ==D2== and type `=SORT(B2:B7,1,-1)` to rank the scores from highest to lowest.",
+      "grid": [
+        ["Student", "Score", null, "Ranked"],
+        ["Asha", 62, null, null],
+        ["Ben", 88, null, null],
+        ["Chitra", 45, null, null],
+        ["Dev", 91, null, null],
+        ["Esha", 70, null, null],
+        ["Farhan", 88, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "D1",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["D2"],
+      "expectedValue": 91,
+      "mustUse": ["SORT"],
+      "solution": "=SORT(B2:B7,1,-1)",
+      "explain": "91, 88, 88, 70, 62, 45. The tied 88s both stay. The `-1` flipped the order: without it you'd start at 45.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check commas and brackets: `=SORT(B2:B7,1,-1)`.",
+        "missingFunction": "Use **SORT**.",
+        "wrongValue": "The list should start at the highest score. Add `1` (first column) and `-1` (largest first) after the range."
+      },
+      "clues": ["Three parts: the range, the column number `1`, then `-1`."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Sort a whole table",
+      "prompt": "A table has several columns that must stay together. Give SORT the **whole table** and say which column to sort by.\n\nClick ==E2== and type `=SORT(A2:C7,3,-1)`: the table, **column 3** (Parcels), largest first.",
+      "grid": [
+        ["Driver", "Zone", "Parcels", null, "Driver", "Zone", "Parcels"],
+        ["Ravi", "North", 42, null, null, null, null],
+        ["Sana", "South", 58, null, null, null, null],
+        ["Tom", "East", 35, null, null, null, null],
+        ["Uma", "North", 61, null, null, null, null],
+        ["Vik", "South", 47, null, null, null, null],
+        ["Wen", "East", 53, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "E1",
+      "highlightCells": ["A2:C7"],
+      "yellowCells": ["E2"],
+      "expectedValue": "Uma",
+      "mustUse": ["SORT"],
+      "solution": "=SORT(A2:C7,3,-1)",
+      "explain": "Uma delivered the most (61) and her zone and parcels came along with her. Every row moved as a unit, so no name got separated from its number.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check commas and brackets: `=SORT(A2:C7,3,-1)`.",
+        "missingFunction": "Use **SORT** on the whole table.",
+        "wrongValue": "Select all three columns, `A2:C7`, sort by column `3`, and use `-1` for largest first."
+      },
+      "clues": [
+        "The first part is the whole table, `A2:C7`.",
+        "Parcels is the **third** column of that table."
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "info",
+      "topic": "SORTBY",
+      "text": "**SORTBY** sorts one column **by another**. Say you want only a leaderboard of names, ordered by points that you don't want in the result.\n\n`=SORTBY(A2:A5,B2:B5,-1)` in ==D2== reads as “give me the names, sorted by the points, largest first”.\n\nThis practice sheet can't run SORTBY, so here is what Excel shows. With SORT you can only sort by a column that is **inside** the range you return.",
+      "grid": [
+        ["Name", "Points", null, "Leaderboard"],
+        ["Tara", 30, null, "Uday"],
+        ["Uday", 55, null, "Vani"],
+        ["Vani", 42, null, "Tara"],
+        ["Wes", 18, null, "Wes"]
+      ],
+      "activeCell": "D2",
+      "highlightCells": ["A2:A5", "B2:B5"],
+      "yellowCells": ["D2:D5"]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "SORT or SORTBY?",
+      "prompt": "You have names in `A2:A5` and ages in `B2:B5`. You want a **names-only** list, oldest first.\n\nWhich formula does it?",
+      "grid": [
+        ["Name", "Age"],
+        ["Rita", 34],
+        ["Sam", 51],
+        ["Tej", 28],
+        ["Uma", 45]
+      ],
+      "highlightCells": ["A2:A5", "B2:B5"],
+      "options": [
+        "`=SORTBY(A2:A5,B2:B5,-1)`",
+        "`=SORT(A2:A5,B2:B5,-1)`",
+        "`=SORTBY(B2:B5,A2:A5,-1)`"
+      ],
+      "answer": 0,
+      "explain": "SORTBY takes the list to return first, then the column to sort by, then the order: Sam, Uma, Rita, Tej. Option 3 swaps the ranges and would return ages sorted by name.",
+      "wrongFeedback": [
+        null,
+        "SORT's second argument is a column **number**, such as `1`, not a range. Sorting by a separate range is exactly what SORTBY is for.",
+        "The ranges are the wrong way round: that returns the ages, ordered by the names."
+      ],
+      "clues": ["Which range do you want to see in the result, and which one decides the order?"]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "The two functions nest: `=SORT(UNIQUE(B2:B8))` lists each team once, in A to Z order. Right now `D2` shows Blue, Green, Red.\n\nBen moves from Blue to a brand new team, **Amber**. Esha is still Blue. What will `D2` show?",
+      "grid": [
+        ["Student", "Team", null, "Teams A to Z"],
+        ["Asha", "Red", null, "=SORT(UNIQUE(B2:B8))"],
+        ["Ben", "Blue", null, null],
+        ["Chitra", "Red", null, null],
+        ["Dev", "Green", null, null],
+        ["Esha", "Blue", null, null],
+        ["Farhan", "Red", null, null],
+        ["Gita", "Green", null, null]
+      ],
+      "activeCell": "D2",
+      "yellowCells": ["B3"],
+      "options": [
+        "`Amber`, sorted to the top",
+        "`Blue`, because it is still in the list",
+        "`Red`, the team with most players"
+      ],
+      "answer": 0,
+      "explain": "UNIQUE adds Amber, and SORT puts it first because A comes before B. The list is now Amber, Blue, Green, Red. Blue stays because Esha is still in it.",
+      "wrongFeedback": [
+        null,
+        "Blue is still on the list, but it isn't the first item once Amber is added.",
+        "Red is the biggest team but SORT goes alphabetically, not by size."
+      ],
+      "clues": ["Which of Amber, Blue, Green and Red comes first alphabetically?"]
+    },
+    {
+      "id": "s10",
+      "type": "entry",
+      "topic": "The list updates itself",
+      "prompt": "Prove it. Click ==B3==, type **Amber**, press [[Enter]], and look at `D2`.",
+      "grid": [
+        ["Student", "Team", null, "Teams A to Z"],
+        ["Asha", "Red", null, "=SORT(UNIQUE(B2:B8))"],
+        ["Ben", "Blue", null, null],
+        ["Chitra", "Red", null, null],
+        ["Dev", "Green", null, null],
+        ["Esha", "Blue", null, null],
+        ["Farhan", "Red", null, null],
+        ["Gita", "Green", null, null]
+      ],
+      "activeCell": "A3",
+      "yellowCells": ["B3"],
+      "highlightCells": ["D2"],
+      "expect": {
+        "B3": "Amber",
+        "D2": "Amber"
+      },
+      "explain": "`D2` now starts with **Amber**, and the list is one longer. You didn't touch the formula: it re-reads the data every time.",
+      "wrongFeedback": {
+        "wrongValue": "Type the new team name **Amber** in `B3` (Ben's team) and watch the sorted list."
+      },
+      "clues": ["Ben's team is in column B, row 3."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "The classic mistake",
+      "prompt": "A pet shop lists animal types. The formula `=SORT(UNIQUE(B2:B7))` in `D2` shows Cat, Dog, Fish. Then a new row 8 is added: **Bird**.\n\nBird never appears in the list. Why?",
+      "grid": [
+        ["Customer", "Pet", null, "Pets A to Z"],
+        ["Anu", "Cat", null, "=SORT(UNIQUE(B2:B7))"],
+        ["Biju", "Dog", null, null],
+        ["Cara", "Cat", null, null],
+        ["Dev", "Fish", null, null],
+        ["Eva", "Dog", null, null],
+        ["Farid", "Cat", null, null],
+        ["Gopi", "Bird", null, null]
+      ],
+      "activeCell": "D2",
+      "yellowCells": ["B8"],
+      "options": [
+        "The formula's range stops at row 7, so row 8 is outside it",
+        "UNIQUE only works with words it has seen before",
+        "Spilled lists need Ctrl+Shift+Enter to refresh"
+      ],
+      "answer": 0,
+      "explain": "A spill follows its **data**, but only the cells the formula points at. Edit the range to `B2:B8`, or better, turn the list into an Excel Table (Ctrl + T) so formulas grow with it.",
+      "wrongFeedback": [
+        null,
+        "UNIQUE has no memory of words. It simply reads the cells it is given.",
+        "Spilled formulas refresh by themselves. Ctrl+Shift+Enter is an old trick you don't need now."
+      ],
+      "clues": ["Look at which rows the formula reads."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nThe library wants a notice board that lists **each genre once**, in A to Z order. Build it in `D2` with a single formula.",
+      "grid": [
+        ["Book", "Genre", null, "Genres"],
+        ["Dune", "Science", null, null],
+        ["Emma", "Fiction", null, null],
+        ["Sapiens", "History", null, null],
+        ["Matilda", "Fiction", null, null],
+        ["Cosmos", "Science", null, null],
+        ["Gitanjali", "Poetry", null, null],
+        ["Godan", "Fiction", null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A1",
+      "expectedValue": "Fiction",
+      "mustUse": ["SORT", "UNIQUE"],
+      "solution": "=SORT(UNIQUE(B2:B8))",
+      "explain": "Fiction, History, Poetry, Science: seven books became four genres, in order. Without the SORT, the list would start with Science, the first genre in the data.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula.",
+        "parseError": "Check your brackets, and that each one is closed.",
+        "missingFunction": "You need two jobs done: remove the repeats **and** put the result in order.",
+        "wrongValue": "The list should be each genre once, in A to Z order. Nest one function inside the other."
+      },
+      "clues": [
+        "First remove the repeats, then sort what's left.",
+        "Nest them: one function inside the other."
+      ]
+    }
+  ]
+}

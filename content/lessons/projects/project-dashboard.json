@@ -1,0 +1,519 @@
+{
+  "id": "project-dashboard",
+  "module": "projects",
+  "title": "Project: interactive dashboard",
+  "goal": "Build the numbers behind a dashboard: KPI tiles that follow a selector cell, a lookup and a FILTER list that update with it, and the checks you need before trusting a PivotTable, picking a chart or adding slicers.",
+  "difficulty": 3,
+  "requiredCorrect": 13,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "What you'll build",
+      "text": "Sunrise Mobiles sells phones and laptops in three regions. The owner wants a **dashboard**: pick a region in ==G1== and every number on the page follows it.\n\nPress the button and watch ==G2== change.\n\nUnder the hood it's just formulas that point at `G1`. In a real workbook `G1` is a **drop-down**, with a PivotTable, a chart and slicers beside it. You'll build the numbers, check them, then decide on the chart and slicers. Clues are there if you need them.",
+      "grid": [
+        ["Region", "Rep", "Product", "Sales", null, "Region", "North"],
+        ["North", "Asha", "Phone", 24000, null, "Sales", "=SUMIFS(D2:D8,A2:A8,G1)"],
+        ["South", "Ben", "Laptop", 45000, null, "Avg sale", "=AVERAGEIFS(D2:D8,A2:A8,G1)"],
+        ["North", "Chitra", "Laptop", 54000, null, "Biggest sale", "=MAXIFS(D2:D8,A2:A8,G1)"],
+        ["East", "Dev", "Phone", 48000, null, null, null],
+        ["South", "Esha", "Laptop", 90000, null, null, null],
+        ["North", "Farhan", "Phone", 12000, null, null, null],
+        ["East", "Gita", "Laptop", 40000, null, null, null]
+      ],
+      "activeCell": "G1",
+      "yellowCells": ["G1"],
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "G1",
+          "fromValue": "North",
+          "toValue": "South",
+          "resultCell": "G2",
+          "buttonLabel": "Pick South in G1",
+          "resetLabel": "Pick North again"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "KPI: region sales",
+      "prompt": "The selector in ==G1== says North. In ==G2==, show the **total sales** for whichever region `G1` names.",
+      "grid": [
+        ["Region", "Rep", "Product", "Sales", null, "Region", "North"],
+        ["North", "Asha", "Phone", 24000, null, "Sales", null],
+        ["South", "Ben", "Laptop", 45000, null, "Avg sale", null],
+        ["North", "Chitra", "Laptop", 54000, null, "Biggest sale", null],
+        ["East", "Dev", "Phone", 48000, null, "Phone sales", null],
+        ["South", "Esha", "Laptop", 90000, null, "Top rep", null],
+        ["North", "Farhan", "Phone", 12000, null, null, null],
+        ["East", "Gita", "Laptop", 40000, null, null, null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "F2",
+      "highlightCells": ["A2:A8", "D2:D8"],
+      "yellowCells": ["G2"],
+      "expectedValue": 90000,
+      "mustUse": ["SUMIFS"],
+      "mustReference": ["G1"],
+      "solution": "=SUMIFS(D2:D8,A2:A8,G1)",
+      "explain": "**90000**: Asha 24000 + Chitra 54000 + Farhan 12000. Because the formula points at `G1` instead of the word “North”, changing `G1` changes the answer.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingReference": "Point at the selector cell `G1`, not the word “North”, so the KPI follows it.",
+        "wrongValue": "Only the selected region's sales: the three North rows, not all seven."
+      },
+      "clues": ["Add the Sales column where Region equals `G1`."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "KPI: average sale",
+      "prompt": "Next tile. In ==G3==, show the **average** sale in the selected region.",
+      "grid": [
+        ["Region", "Rep", "Product", "Sales", null, "Region", "North"],
+        ["North", "Asha", "Phone", 24000, null, "Sales", "=SUMIFS(D2:D8,A2:A8,G1)"],
+        ["South", "Ben", "Laptop", 45000, null, "Avg sale", null],
+        ["North", "Chitra", "Laptop", 54000, null, "Biggest sale", null],
+        ["East", "Dev", "Phone", 48000, null, "Phone sales", null],
+        ["South", "Esha", "Laptop", 90000, null, "Top rep", null],
+        ["North", "Farhan", "Phone", 12000, null, null, null],
+        ["East", "Gita", "Laptop", 40000, null, null, null]
+      ],
+      "targetCell": "G3",
+      "activeCell": "F3",
+      "highlightCells": ["A2:A8", "D2:D8"],
+      "yellowCells": ["G3"],
+      "expectedValue": 30000,
+      "mustUse": ["AVERAGEIFS"],
+      "mustReference": ["G1"],
+      "solution": "=AVERAGEIFS(D2:D8,A2:A8,G1)",
+      "explain": "**30000**: 90000 across North's three sales. The average of all seven sales would be about 44,714: a very different story, which is why the condition matters.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingReference": "Point at the selector cell `G1`.",
+        "wrongValue": "Average only the selected region's sales, not the whole Sales column."
+      },
+      "clues": ["It's the “average” version of the function you just used."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "KPI: biggest sale",
+      "prompt": "In ==G4==, show the **biggest single sale** in the selected region.",
+      "grid": [
+        ["Region", "Rep", "Product", "Sales", null, "Region", "North"],
+        ["North", "Asha", "Phone", 24000, null, "Sales", "=SUMIFS(D2:D8,A2:A8,G1)"],
+        ["South", "Ben", "Laptop", 45000, null, "Avg sale", "=AVERAGEIFS(D2:D8,A2:A8,G1)"],
+        ["North", "Chitra", "Laptop", 54000, null, "Biggest sale", null],
+        ["East", "Dev", "Phone", 48000, null, "Phone sales", null],
+        ["South", "Esha", "Laptop", 90000, null, "Top rep", null],
+        ["North", "Farhan", "Phone", 12000, null, null, null],
+        ["East", "Gita", "Laptop", 40000, null, null, null]
+      ],
+      "targetCell": "G4",
+      "activeCell": "F4",
+      "highlightCells": ["A2:A8", "D2:D8"],
+      "yellowCells": ["G4"],
+      "expectedValue": 54000,
+      "mustUse": ["MAXIFS"],
+      "mustReference": ["G1"],
+      "solution": "=MAXIFS(D2:D8,A2:A8,G1)",
+      "explain": "**54000**, Chitra's laptop. The biggest sale in the whole sheet is 90000 (South), so a plain `MAX` would show the wrong number for North.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "A plain MAX looks at every region. You need the biggest value that also meets a condition.",
+        "missingReference": "Point at the selector cell `G1`.",
+        "wrongValue": "The biggest sale among the selected region's rows only."
+      },
+      "clues": ["MAX with an S and a condition, like SUMIFS."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "KPI: phone sales",
+      "prompt": "The owner cares most about phones. In ==G5==, show the selected region's **Phone** sales.",
+      "grid": [
+        ["Region", "Rep", "Product", "Sales", null, "Region", "North"],
+        ["North", "Asha", "Phone", 24000, null, "Sales", "=SUMIFS(D2:D8,A2:A8,G1)"],
+        ["South", "Ben", "Laptop", 45000, null, "Avg sale", "=AVERAGEIFS(D2:D8,A2:A8,G1)"],
+        ["North", "Chitra", "Laptop", 54000, null, "Biggest sale", "=MAXIFS(D2:D8,A2:A8,G1)"],
+        ["East", "Dev", "Phone", 48000, null, "Phone sales", null],
+        ["South", "Esha", "Laptop", 90000, null, "Top rep", null],
+        ["North", "Farhan", "Phone", 12000, null, null, null],
+        ["East", "Gita", "Laptop", 40000, null, null, null]
+      ],
+      "targetCell": "G5",
+      "activeCell": "F5",
+      "highlightCells": ["A2:D8"],
+      "yellowCells": ["G5"],
+      "expectedValue": 36000,
+      "mustUse": ["SUMIFS"],
+      "mustReference": ["G1"],
+      "solution": "=SUMIFS(D2:D8,A2:A8,G1,C2:C8,\"Phone\")",
+      "explain": "**36000**: Asha's 24000 + Farhan's 12000. Region alone gives 90000 and Phone alone gives 84000, so you need both conditions together.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingReference": "Keep the selector `G1` in the formula so the tile follows it.",
+        "wrongValue": "Both conditions at once: the selected region **and** Phone."
+      },
+      "clues": ["Two pairs after the sum range: Region = `G1`, Product = \"Phone\"."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Look up the top rep",
+      "prompt": "Who made that biggest sale? In ==G6==, look up the rep who is behind the number in `G4`.",
+      "grid": [
+        ["Region", "Rep", "Product", "Sales", null, "Region", "North"],
+        ["North", "Asha", "Phone", 24000, null, "Sales", "=SUMIFS(D2:D8,A2:A8,G1)"],
+        ["South", "Ben", "Laptop", 45000, null, "Avg sale", "=AVERAGEIFS(D2:D8,A2:A8,G1)"],
+        ["North", "Chitra", "Laptop", 54000, null, "Biggest sale", "=MAXIFS(D2:D8,A2:A8,G1)"],
+        [
+          "East",
+          "Dev",
+          "Phone",
+          48000,
+          null,
+          "Phone sales",
+          "=SUMIFS(D2:D8,A2:A8,G1,C2:C8,\"Phone\")"
+        ],
+        ["South", "Esha", "Laptop", 90000, null, "Top rep", null],
+        ["North", "Farhan", "Phone", 12000, null, null, null],
+        ["East", "Gita", "Laptop", 40000, null, null, null]
+      ],
+      "targetCell": "G6",
+      "activeCell": "F6",
+      "highlightCells": ["B2:B8", "D2:D8"],
+      "yellowCells": ["G6"],
+      "expectedValue": "Chitra",
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["G4"],
+      "solution": "=XLOOKUP(G4,D2:D8,B2:B8)",
+      "explain": "**Chitra**: XLOOKUP found 54000 in the Sales column and returned the name from the same row. It works here because every sale amount is different; with two sales of exactly 54000 you'd only ever get the first.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "Find a value in one column and return the matching entry from another: that's a lookup.",
+        "missingReference": "Look up the biggest-sale tile, `G4`.",
+        "wrongValue": "Search the Sales column for the number in `G4`, and return from the **Rep** column."
+      },
+      "clues": ["Look up `G4` in `D2:D8`, return from `B2:B8`."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "A live team list",
+      "prompt": "Add a team list. In ==E2==, list every rep in the selected region with **one** formula.",
+      "grid": [
+        ["Region", "Rep", "Product", "Sales", "Reps", "Region", "North"],
+        ["North", "Asha", "Phone", 24000, null, "Sales", "=SUMIFS(D2:D8,A2:A8,G1)"],
+        ["South", "Ben", "Laptop", 45000, null, "Avg sale", "=AVERAGEIFS(D2:D8,A2:A8,G1)"],
+        ["North", "Chitra", "Laptop", 54000, null, "Biggest sale", "=MAXIFS(D2:D8,A2:A8,G1)"],
+        [
+          "East",
+          "Dev",
+          "Phone",
+          48000,
+          null,
+          "Phone sales",
+          "=SUMIFS(D2:D8,A2:A8,G1,C2:C8,\"Phone\")"
+        ],
+        ["South", "Esha", "Laptop", 90000, null, "Top rep", "=XLOOKUP(G4,D2:D8,B2:B8)"],
+        ["North", "Farhan", "Phone", 12000, null, null, null],
+        ["East", "Gita", "Laptop", 40000, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "highlightCells": ["B2:B8"],
+      "yellowCells": ["E2"],
+      "expectedValue": "Asha",
+      "mustUse": ["FILTER"],
+      "mustReference": ["G1"],
+      "solution": "=FILTER(B2:B8,A2:A8=G1)",
+      "explain": "Asha, Chitra and Farhan: one formula spilled three names into `E2:E4`. If another region is picked, the list grows or shrinks by itself.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "You want to pull out **all** matching names, not just one. Excel has a function that filters a list by a condition.",
+        "missingReference": "Point at the selector cell `G1`.",
+        "wrongValue": "Only the reps whose Region equals `G1`: Asha, Chitra and Farhan."
+      },
+      "clues": ["Return the Rep column, `B2:B8`, include rows where `A2:A8=G1`."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "Someone picks **South** in `G1`. What will **Biggest sale** (`G4`) show?",
+      "grid": [
+        ["Region", "Rep", "Product", "Sales", "Reps", "Region", "North"],
+        [
+          "North",
+          "Asha",
+          "Phone",
+          24000,
+          "=FILTER(B2:B8,A2:A8=G1)",
+          "Sales",
+          "=SUMIFS(D2:D8,A2:A8,G1)"
+        ],
+        ["South", "Ben", "Laptop", 45000, null, "Avg sale", "=AVERAGEIFS(D2:D8,A2:A8,G1)"],
+        ["North", "Chitra", "Laptop", 54000, null, "Biggest sale", "=MAXIFS(D2:D8,A2:A8,G1)"],
+        [
+          "East",
+          "Dev",
+          "Phone",
+          48000,
+          null,
+          "Phone sales",
+          "=SUMIFS(D2:D8,A2:A8,G1,C2:C8,\"Phone\")"
+        ],
+        ["South", "Esha", "Laptop", 90000, null, "Top rep", "=XLOOKUP(G4,D2:D8,B2:B8)"],
+        ["North", "Farhan", "Phone", 12000, null, null, null],
+        ["East", "Gita", "Laptop", 40000, null, null, null]
+      ],
+      "showFormulaBar": true,
+      "activeCell": "G4",
+      "yellowCells": ["G1"],
+      "options": ["54000: it stays the same", "90000", "135000"],
+      "answer": 1,
+      "explain": "South's biggest single sale is Esha's 90000. 135000 is South's **total**, which is what `G2` will show.",
+      "wrongFeedback": [
+        "`G4` is a formula that points at `G1`, so it moves when the region moves.",
+        null,
+        "That's two sales added together. This tile shows the biggest **single** sale."
+      ],
+      "clues": ["South has two sales: Ben's 45000 and Esha's 90000."]
+    },
+    {
+      "id": "s9",
+      "type": "entry",
+      "topic": "Pick a region",
+      "prompt": "Now try the selector. Click ==G1==, type **South**, press [[Enter]], and watch the tiles and the team list.\n\nIn a real workbook you'd click the drop-down arrow instead of typing.",
+      "grid": [
+        ["Region", "Rep", "Product", "Sales", "Reps", "Region", "North"],
+        [
+          "North",
+          "Asha",
+          "Phone",
+          24000,
+          "=FILTER(B2:B8,A2:A8=G1)",
+          "Sales",
+          "=SUMIFS(D2:D8,A2:A8,G1)"
+        ],
+        ["South", "Ben", "Laptop", 45000, null, "Avg sale", "=AVERAGEIFS(D2:D8,A2:A8,G1)"],
+        ["North", "Chitra", "Laptop", 54000, null, "Biggest sale", "=MAXIFS(D2:D8,A2:A8,G1)"],
+        [
+          "East",
+          "Dev",
+          "Phone",
+          48000,
+          null,
+          "Phone sales",
+          "=SUMIFS(D2:D8,A2:A8,G1,C2:C8,\"Phone\")"
+        ],
+        ["South", "Esha", "Laptop", 90000, null, "Top rep", "=XLOOKUP(G4,D2:D8,B2:B8)"],
+        ["North", "Farhan", "Phone", 12000, null, null, null],
+        ["East", "Gita", "Laptop", 40000, null, null, null]
+      ],
+      "activeCell": "F1",
+      "yellowCells": ["G1"],
+      "highlightCells": ["G2", "G4", "G6", "E2"],
+      "expect": {
+        "G1": "South",
+        "G2": 135000,
+        "G4": 90000,
+        "G6": "Esha",
+        "E2": "Ben"
+      },
+      "explain": "Everything moved from one cell: sales 135000, biggest sale 90000, top rep Esha and a team of Ben and Esha. This is the heart of an interactive dashboard.",
+      "wrongFeedback": {
+        "wrongValue": "Only `G1` should change, to the word **South**. The rest follows by itself."
+      },
+      "clues": ["Type the region name exactly: South."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Check the pivot",
+      "prompt": "The owner built a PivotTable (Rows: Region, Values: Sum of Sales). It says **East = 48000**, which doesn't feel right. In ==G8==, add up East's sales yourself.",
+      "grid": [
+        ["Region", "Rep", "Product", "Sales", "Reps", "Region", "South"],
+        [
+          "North",
+          "Asha",
+          "Phone",
+          24000,
+          "=FILTER(B2:B8,A2:A8=G1)",
+          "Sales",
+          "=SUMIFS(D2:D8,A2:A8,G1)"
+        ],
+        ["South", "Ben", "Laptop", 45000, null, "Avg sale", "=AVERAGEIFS(D2:D8,A2:A8,G1)"],
+        ["North", "Chitra", "Laptop", 54000, null, "Biggest sale", "=MAXIFS(D2:D8,A2:A8,G1)"],
+        [
+          "East",
+          "Dev",
+          "Phone",
+          48000,
+          null,
+          "Phone sales",
+          "=SUMIFS(D2:D8,A2:A8,G1,C2:C8,\"Phone\")"
+        ],
+        ["South", "Esha", "Laptop", 90000, null, "Top rep", "=XLOOKUP(G4,D2:D8,B2:B8)"],
+        ["North", "Farhan", "Phone", 12000, null, "Pivot: East", 48000],
+        ["East", "Gita", "Laptop", 40000, null, "My check", null]
+      ],
+      "targetCell": "G8",
+      "activeCell": "F8",
+      "highlightCells": ["A2:D8"],
+      "yellowCells": ["G8"],
+      "expectedValue": 88000,
+      "mustUse": ["SUMIFS"],
+      "mustReference": ["D2:D8"],
+      "solution": "=SUMIFS(D2:D8,A2:A8,\"East\")",
+      "explain": "**88000**: Dev's 48000 plus Gita's 40000. The pivot is showing only Dev, so something is missing from it.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "Add up the Sales for the rows where Region is East: a conditional total.",
+        "wrongValue": "East only. Type the word East in quotes: `G1` currently says South, so it can't be used here."
+      },
+      "clues": ["Sum the Sales where Region equals \"East\"."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Why is the pivot short?",
+      "prompt": "Your formula says **88000**, but the pivot says **48000**. Gita's East sale is in row 8, the newest row.\n\nWhat most likely happened?",
+      "grid": [
+        ["Region", "Rep", "Product", "Sales"],
+        ["North", "Asha", "Phone", 24000],
+        ["South", "Ben", "Laptop", 45000],
+        ["North", "Chitra", "Laptop", 54000],
+        ["East", "Dev", "Phone", 48000],
+        ["South", "Esha", "Laptop", 90000],
+        ["North", "Farhan", "Phone", 12000],
+        ["East", "Gita", "Laptop", 40000]
+      ],
+      "yellowCells": ["A8:D8"],
+      "options": [
+        "The pivot's source range stops before row 8",
+        "PivotTables show only the first row of each region",
+        "SUMIFS counts some rows twice"
+      ],
+      "answer": 0,
+      "explain": "A pivot reads the range it was built on, and Refresh re-reads that **same** range: it doesn't grow it. If the source ended at row 7, Gita's row was never in it. Turn the data into a Table first and a pivot built from it picks up new rows.",
+      "wrongFeedback": [
+        null,
+        "A PivotTable adds up **every** row in a group. The rows must have been missing from its source.",
+        "SUMIFS counts each row once, and 88000 matches Dev + Gita exactly."
+      ],
+      "clues": ["Which row is missing from the pivot's total?"]
+    },
+    {
+      "id": "s12",
+      "type": "mcq",
+      "topic": "Pick the chart: reps",
+      "prompt": "The owner wants a chart to compare the **seven reps'** sales, so the best seller is easy to spot.\n\nWhich chart?",
+      "grid": [
+        ["Rep", "Sales"],
+        ["Asha", 24000],
+        ["Ben", 45000],
+        ["Chitra", 54000],
+        ["Dev", 48000],
+        ["Esha", 90000],
+        ["Farhan", 12000],
+        ["Gita", 40000]
+      ],
+      "options": [
+        "A bar chart, longest bar first",
+        "A pie chart with seven slices",
+        "A line chart joining the reps"
+      ],
+      "answer": 0,
+      "explain": "Bars compare sizes at a glance, and sorting them makes the ranking obvious. Seven pie slices are hard to compare, and a line suggests the reps follow each other in time, which they don't.",
+      "wrongFeedback": [
+        null,
+        "Slices of similar size are almost impossible to compare by eye, and seven is too many.",
+        "A line implies a trend from one point to the next. Reps aren't a sequence."
+      ],
+      "clues": ["Does the picture need to show sizes, a trend, or parts of a whole?"]
+    },
+    {
+      "id": "s13",
+      "type": "mcq",
+      "topic": "Pick the chart: trend",
+      "prompt": "Now the owner wants to see whether total sales are **rising or falling** over six months.\n\nWhich chart?",
+      "grid": [
+        ["Month", "Sales"],
+        ["Jan", 210],
+        ["Feb", 230],
+        ["Mar", 260],
+        ["Apr", 250],
+        ["May", 300],
+        ["Jun", 330]
+      ],
+      "options": [
+        "A pie chart, one slice per month",
+        "A line chart, months left to right",
+        "A bar chart of random order"
+      ],
+      "answer": 1,
+      "explain": "Time runs left to right, and a line shows the direction of travel. Pie slices hide any trend, and a chart with months in a random order destroys it.",
+      "wrongFeedback": [
+        "Pie slices show shares of a whole, not change over time.",
+        null,
+        "Months must stay in calendar order or the trend disappears."
+      ],
+      "clues": ["What is the chart supposed to show: a size, a share, or a change?"]
+    },
+    {
+      "id": "s14",
+      "type": "formula",
+      "topic": "Challenge: slicers",
+      "prompt": "The dashboard has a Region slicer set to **East** and a Product slicer set to **Phone**. Slicers combine: a row must match both. What Grand Total will the PivotTable show? Answer in ==G2==.",
+      "grid": [
+        ["Region", "Rep", "Product", "Sales", null, "Slicers", "Grand Total"],
+        ["North", "Asha", "Phone", 24000, null, "East + Phone", null],
+        ["South", "Ben", "Laptop", 45000, null, null, null],
+        ["North", "Chitra", "Laptop", 54000, null, null, null],
+        ["East", "Dev", "Phone", 48000, null, null, null],
+        ["South", "Esha", "Laptop", 90000, null, null, null],
+        ["North", "Farhan", "Phone", 12000, null, null, null],
+        ["East", "Gita", "Laptop", 40000, null, null, null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "F2",
+      "highlightCells": ["A2:D8"],
+      "yellowCells": ["G2"],
+      "expectedValue": 48000,
+      "mustUse": ["SUMIFS"],
+      "mustReference": ["D2:D8"],
+      "solution": "=SUMIFS(D2:D8,A2:A8,\"East\",C2:C8,\"Phone\")",
+      "explain": "**48000**: only Dev's phones match both slicers. East alone is 88000 and Phone alone is 84000, so the answer only works if both slicers are applied together.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "Both slicers must match, so the total needs two conditions.",
+        "wrongValue": "Only rows that are East **and** Phone count."
+      },
+      "clues": ["One condition per slicer."]
+    }
+  ]
+}

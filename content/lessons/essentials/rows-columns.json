@@ -1,0 +1,304 @@
+{
+  "id": "rows-columns",
+  "module": "essentials",
+  "title": "Rows, Columns, Sheets & Freeze Panes",
+  "goal": "Insert and delete rows, hide columns without losing them, auto-fit a squashed column, copy a sheet, and freeze headings so they stay in view while you scroll.",
+  "difficulty": 1,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Sheets change shape",
+      "text": "This is a delivery team's week. Look closely: **Wednesday is missing**, so the Total in ==B7== is too low.\n\nReal sheets are never finished. You'll add a row, remove one, hide a column before sharing, and keep headings in view when a list gets long.\n\nWe'll start with the missing day, from the keyboard.",
+      "grid": [
+        ["Day", "Parcels", "Rider"],
+        ["Mon", 24, "Asha"],
+        ["Tue", 31, "Ben"],
+        ["Thu", 28, "Chitra"],
+        ["Fri", 35, "Dev"],
+        ["Sat", 40, "Esha"],
+        ["Total", "=SUM(B2:B6)", null]
+      ],
+      "activeCell": "B7",
+      "yellowCells": ["B7"],
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "select",
+      "topic": "Select a whole row",
+      "prompt": "Excel adds a new row **above** the row you've selected. Wednesday belongs between Tue and Thu, so the new row must appear at row 4.\n\nClick any cell in Thu's row, press [[Shift]] + [[Space]] to select the whole row, then press [[Enter]].",
+      "grid": [
+        ["Day", "Parcels", "Rider"],
+        ["Mon", 24, "Asha"],
+        ["Tue", 31, "Ben"],
+        ["Thu", 28, "Chitra"],
+        ["Fri", 35, "Dev"],
+        ["Sat", 40, "Esha"],
+        ["Total", "=SUM(B2:B6)", null]
+      ],
+      "yellowCells": ["4:4"],
+      "target": "4:4",
+      "wrongFeedback": "Wednesday goes **above** Thu, so Thu's row (row 4) is the one to select. Click a cell in it, then hold Shift and tap Space.",
+      "clues": [
+        "Clicking the number 4 on the left edge selects the row too.",
+        "Space is the long bar at the bottom. Shift + Space means “whole row”."
+      ]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Insert a row: Ctrl + Shift + =",
+      "prompt": "Row 4 is selected. Press [[Ctrl]] + [[Shift]] + [[=]] (the **+** key) to insert a blank row above it.\n\nWith a whole row selected, Excel inserts at once. With just one cell selected it asks whether to shift cells down or right, so select the row first.\n\nOn a Mac, right-click the row number and choose **Insert**.",
+      "keys": { "win": "Ctrl+Shift+=", "mac": null },
+      "grid": [
+        ["Day", "Parcels", "Rider"],
+        ["Mon", 24, "Asha"],
+        ["Tue", 31, "Ben"],
+        ["Thu", 28, "Chitra"],
+        ["Fri", 35, "Dev"],
+        ["Sat", 40, "Esha"],
+        ["Total", "=SUM(B2:B6)", null]
+      ],
+      "activeCell": "4:4",
+      "postcondition": {
+        "grid": [
+          ["Day", "Parcels", "Rider"],
+          ["Mon", 24, "Asha"],
+          ["Tue", 31, "Ben"],
+          [null, null, null],
+          ["Thu", 28, "Chitra"],
+          ["Fri", 35, "Dev"],
+          ["Sat", 40, "Esha"],
+          ["Total", "=SUM(B2:B7)", null]
+        ],
+        "selection": "4:4"
+      },
+      "clues": ["Hold Ctrl and Shift, then tap the key with = and + on it."]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "Before you insert, look at the Total in `B7`: `=SUM(B2:B6)`.\n\nThe new row goes **inside** the list, between Tue and Thu. What will happen to the formula?",
+      "grid": [
+        ["Day", "Parcels", "Rider"],
+        ["Mon", 24, "Asha"],
+        ["Tue", 31, "Ben"],
+        ["Thu", 28, "Chitra"],
+        ["Fri", 35, "Dev"],
+        ["Sat", 40, "Esha"],
+        ["Total", "=SUM(B2:B6)", null]
+      ],
+      "activeCell": "B7",
+      "highlightCells": ["B2:B6"],
+      "showFormulaBar": true,
+      "options": [
+        "It stays `=SUM(B2:B6)`",
+        "It grows to `=SUM(B2:B7)` by itself",
+        "It shows `#REF!`"
+      ],
+      "answer": 1,
+      "explain": "When a row goes in **inside** a range, Excel stretches the range, so Wednesday's number will be counted. Insert **below** the last row and the range would not stretch.",
+      "wrongFeedback": [
+        "If that were true, every new row would be silently left out of your totals. Excel stretches the range instead.",
+        null,
+        "`#REF!` appears when you **delete** cells a formula points to, not when you add one."
+      ],
+      "clues": ["The new row lands in the middle of `B2:B6`."]
+    },
+    {
+      "id": "s5",
+      "type": "entry",
+      "topic": "Fill the gap",
+      "prompt": "Row 4 is ready. Click ==A4==, type **Wed**, press [[Tab]], type **22**, then press [[Enter]].\n\nWatch the Total in `B8`.",
+      "grid": [
+        ["Day", "Parcels", "Rider"],
+        ["Mon", 24, "Asha"],
+        ["Tue", 31, "Ben"],
+        [null, null, null],
+        ["Thu", 28, "Chitra"],
+        ["Fri", 35, "Dev"],
+        ["Sat", 40, "Esha"],
+        ["Total", "=SUM(B2:B7)", null]
+      ],
+      "activeCell": "A1",
+      "yellowCells": ["A4:B4"],
+      "highlightCells": ["B8"],
+      "expect": { "A4": "Wed", "B4": 22, "B8": 180 },
+      "explain": "The Total went from 158 to **180**. The formula had already grown to `=SUM(B2:B7)` when the row went in, so Wednesday's 22 counted the moment you typed it.",
+      "wrongFeedback": {
+        "wrongValue": "Row 4 should say **Wed** in column A and **22** in column B. Then the Total in `B8` shows 180."
+      },
+      "clues": ["Click `A4`, type Wed, Tab, 22, Enter."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Delete is not Delete",
+      "prompt": "**Pens** was typed twice, so row 3 is a duplicate. You click its row number and press the [[Delete]] key.\n\nWhat happens?",
+      "grid": [
+        ["Item", "Qty"],
+        ["Pens", 20],
+        ["Pens", 20],
+        ["Files", 8]
+      ],
+      "highlightCells": ["3:3"],
+      "options": [
+        "Row 3 disappears and Files moves up",
+        "Row 3 is emptied but stays as a blank gap",
+        "Excel asks if you want to remove the row"
+      ],
+      "answer": 1,
+      "explain": "The [[Delete]] key only **clears what's inside**. To remove the row itself, press [[Ctrl]] + [[-]] with the row selected, or right-click the row number and choose **Delete**. Formulas that pointed at removed cells then show `#REF!`.",
+      "wrongFeedback": [
+        "That's what **Delete row** does. The plain Delete key is gentler: it only wipes the contents.",
+        null,
+        "Excel doesn't ask. The key just clears the cells."
+      ],
+      "clues": ["Delete (the key) empties cells. Which one removes the row as well?"]
+    },
+    {
+      "id": "s7",
+      "type": "select",
+      "topic": "Hide before you share",
+      "prompt": "You're sending this price list to a customer, but they shouldn't see **Cost** or **Profit**.\n\nFirst select both columns: press on the letter ==C== at the top and drag across to ==D==, then press [[Enter]].\n\nOnce they're selected, Excel hides them with a right-click and **Hide** (or [[Ctrl]] + [[0]]).",
+      "grid": [
+        ["Item", "Price", "Cost", "Profit"],
+        ["Kettle", 1200, 800, "=B2-C2"],
+        ["Toaster", 900, 650, "=B3-C3"],
+        ["Mixer", 3500, 2400, "=B4-C4"]
+      ],
+      "yellowCells": ["C:D"],
+      "target": "C:D",
+      "wrongFeedback": "Select **both** columns, Cost and Profit: press on the letter C and drag across to D. Leave Price (column B) alone.",
+      "clues": ["Cost is column C and Profit is column D, side by side."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Hidden is not deleted",
+      "prompt": "You hid columns `C` and `D`, so the letters along the top now read A, B, E…\n\n`B5` holds `=SUM(D2:D4)`, which adds the hidden Profit column. What does `B5` show now?",
+      "grid": [
+        ["Item", "Price", "Cost", "Profit"],
+        ["Kettle", 1200, 800, "=B2-C2"],
+        ["Toaster", 900, 650, "=B3-C3"],
+        ["Mixer", 3500, 2400, "=B4-C4"],
+        ["Profit total", "=SUM(D2:D4)", null, null]
+      ],
+      "activeCell": "B5",
+      "showFormulaBar": true,
+      "highlightCells": ["D2:D4"],
+      "options": [
+        "`1750`, the same as before",
+        "`0`, because hidden cells don't count",
+        "`#REF!`, because column D has gone"
+      ],
+      "answer": 0,
+      "explain": "Hiding only **hides**: every number is still there and still counted. To bring columns back, select the columns on both sides of the gap, right-click and choose **Unhide**.",
+      "wrongFeedback": [
+        null,
+        "Hidden cells are still in the sheet, and SUM still adds them. Hiding changes what you see, not what is there.",
+        "`#REF!` would come from **deleting** column D. Hiding keeps it, so nothing breaks."
+      ],
+      "clues": ["Is the Profit data still in the sheet?"]
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Auto-fit a column",
+      "prompt": "Column B shows `########`. That's Excel saying the number is too wide for the column, not that your data is lost.\n\nDouble-clicking the right edge of a column letter fits it to its contents. The keyboard way: tap [[Alt]], [[H]], [[O]], [[I]] one after another (**Home → Format → AutoFit Column Width**). For row height, the last key is [[A]].\n\nOn a Mac, double-click the edge between the column letters.",
+      "keys": { "win": ["Alt", "H", "O", "I"], "mac": null },
+      "grid": [
+        ["Branch", "Revenue"],
+        ["Pune", "########"],
+        ["Delhi", "########"],
+        ["Kochi", 45000]
+      ],
+      "activeCell": "B2",
+      "postcondition": {
+        "grid": [
+          ["Branch", "Revenue"],
+          ["Pune", 1250000],
+          ["Delhi", 980500],
+          ["Kochi", 45000]
+        ],
+        "selection": "B2"
+      },
+      "clues": ["Alt, then H, then O, then I. Tap and release each."]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Sheets: copy, rename, move",
+      "prompt": "Your workbook has tabs **Jan** and **Feb**. March needs the same layout as Feb, headings and column widths included, and Feb must stay as it is.\n\nWhat's the cleanest way?",
+      "options": [
+        "Right-click the **Feb** tab, choose **Move or Copy**, tick **Create a copy**",
+        "Rename the **Feb** tab to **Mar**",
+        "Select every cell in Feb, copy, and paste into a new sheet"
+      ],
+      "answer": 0,
+      "explain": "A copied tab brings its widths, formats and formulas along. Double-click the new tab to rename it, drag a tab to move it, and [[Shift]] + [[F11]] adds a fresh blank sheet.",
+      "wrongFeedback": [
+        null,
+        "That renames February's sheet: you'd lose Feb and still have to rebuild it.",
+        "That pastes the cells but not the column widths, so you'd redo the layout by hand."
+      ],
+      "clues": ["You want a duplicate tab, not a renamed one."]
+    },
+    {
+      "id": "s11",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Freeze the header: Alt, W, F, R",
+      "prompt": "This list will soon have 500 rows. Scroll down and the headings vanish, and nobody can tell which column is **Fee**. **Freeze Panes** pins rows so they stay in view.\n\nYou're in `B5`. Tap [[Alt]], [[W]], [[F]], [[R]] one after another: **View → Freeze Panes → Freeze Top Row**.\n\nA thin line appears under row 1. To undo it, open the same menu: the entry now reads **Unfreeze Panes**.\n\nOn a Mac, use **View → Freeze Panes → Freeze Top Row**.",
+      "keys": { "win": ["Alt", "W", "F", "R"], "mac": null },
+      "grid": [
+        ["Member", "Plan", "Fee", "Due"],
+        ["Anil", "Gold", 2500, "5 Jan"],
+        ["Bela", "Silver", 1800, "7 Jan"],
+        ["Chetan", "Gold", 2500, "9 Jan"],
+        ["Dhara", "Basic", 1200, "12 Jan"],
+        ["Eshan", "Silver", 1800, "14 Jan"],
+        ["Fiza", "Basic", 1200, "15 Jan"],
+        ["Gopal", "Gold", 2500, "20 Jan"]
+      ],
+      "activeCell": "B5",
+      "postcondition": {
+        "grid": [
+          ["Member", "Plan", "Fee", "Due"],
+          ["Anil", "Gold", 2500, "5 Jan"],
+          ["Bela", "Silver", 1800, "7 Jan"],
+          ["Chetan", "Gold", 2500, "9 Jan"],
+          ["Dhara", "Basic", 1200, "12 Jan"],
+          ["Eshan", "Silver", 1800, "14 Jan"],
+          ["Fiza", "Basic", 1200, "15 Jan"],
+          ["Gopal", "Gold", 2500, "20 Jan"]
+        ],
+        "selection": "B5"
+      },
+      "clues": ["W is for the View tab's Window group, then F for Freeze, then R for top Row."]
+    },
+    {
+      "id": "s12",
+      "type": "select",
+      "topic": "Challenge",
+      "prompt": "Challenge. This sales sheet will have 300 customers down the side and twelve months across. Scroll either way and you lose the month headings **or** the customer names.\n\nClick the cell you'd select **before** choosing Freeze Panes, so that row 1 **and** column A both stay put. Then press [[Enter]].\n\n(In Excel you'd follow it with [[Alt]], [[W]], [[F]], [[F]].)",
+      "grid": [
+        ["Customer", "Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        ["Dhruv Foods", 120, 135, 140, 128, 150, 160],
+        ["Eva Stores", 80, 95, 90, 100, 110, 105],
+        ["Farm Fresh", 200, 190, 210, 220, 205, 230],
+        ["Gupta & Sons", 65, 70, 60, 75, 80, 72]
+      ],
+      "target": "B2",
+      "wrongFeedback": "Freeze Panes pins everything **above and to the left** of the selected cell. Which cell has the heading row above it and the names column to its left?",
+      "clues": ["Not in row 1 and not in column A: it's the first cell of the numbers."]
+    }
+  ]
+}

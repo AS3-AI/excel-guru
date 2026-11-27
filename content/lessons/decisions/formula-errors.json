@@ -1,0 +1,325 @@
+{
+  "id": "formula-errors",
+  "module": "decisions",
+  "title": "Formula Errors, IFERROR & Auditing",
+  "goal": "Read what each # error is telling you, fix the common ones, use IFERROR for clean output without hiding real bugs, and audit a sheet by showing its formulas.",
+  "difficulty": 2,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Errors are messages",
+      "text": "An error isn't Excel breaking. It's Excel telling you **why** it couldn't work something out, and the word after the `#` is the clue:\n\n• `#DIV/0!`: dividing by zero (or by an empty cell)\n• `#N/A`: a lookup couldn't find what you asked for\n• `#VALUE!`: a calculation hit text where it needed a number\n• `#REF!`: the formula points at a cell that was deleted\n• `#NAME?`: Excel doesn't know a name, usually a typo\n\nSee ==D2==: Pens has a Qty of 0. Click the button to give it a real quantity.",
+      "grid": [
+        ["Item", "Total", "Qty", "Price each"],
+        ["Pens", 300, 0, "=B2/C2"],
+        ["Pads", 200, 4, "=B3/C3"],
+        ["Files", 150, 5, "=B4/C4"]
+      ],
+      "activeCell": "D2",
+      "yellowCells": ["D2"],
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "C2",
+          "fromValue": 0,
+          "toValue": 6,
+          "resultCell": "D2",
+          "buttonLabel": "Pens Qty: 0 → 6",
+          "resetLabel": "Put Qty back to 0"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "#NAME?: a typo",
+      "prompt": "This Total shows `#NAME?`. Excel doesn't know a function called `SUMM`.\n\nFix the formula in ==B5== so it adds the three costs.",
+      "grid": [
+        ["Item", "Cost"],
+        ["Paint", 450],
+        ["Brushes", 120],
+        ["Tape", 80],
+        ["Total", "=SUMM(B2:B4)"]
+      ],
+      "targetCell": "B5",
+      "activeCell": "B5",
+      "highlightCells": ["B2:B4"],
+      "yellowCells": ["B5"],
+      "expectedValue": 650,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(B2:B4)",
+      "explain": "**650.** `#NAME?` nearly always means a typo in a function name (or text without quotes). Tip: as you type a function name, Excel lists matches. Press [[Tab]] to accept one and you'll never mistype it.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use the real function name, **SUM**, to add the costs.",
+        "parseError": "Check the brackets: `=SUM(B2:B4)`.",
+        "wrongValue": "The costs are in `B2:B4`. Make sure the function name is spelled exactly `SUM`."
+      },
+      "clues": ["The name has one M, not two."]
+    },
+    {
+      "id": "s3",
+      "type": "entry",
+      "topic": "#VALUE!: text in a sum",
+      "prompt": "`D2` shows `#VALUE!` because Pens' quantity is **“12 pcs”**, which is text. Multiplying text fails.\n\nFix the data: click ==B2==, type just **12**, press [[Enter]].",
+      "grid": [
+        ["Item", "Qty", "Price", "Total"],
+        ["Pens", "12 pcs", 5, "=B2*C2"]
+      ],
+      "activeCell": "A2",
+      "yellowCells": ["B2"],
+      "highlightCells": ["D2"],
+      "expect": { "B2": 12, "D2": 60 },
+      "explain": "Once `B2` is a true number, `D2` works out **12 × 5 = 60**. Units like “pcs” belong in the header, not in the cell. A hidden space or a number typed as text causes `#VALUE!` the same way.",
+      "wrongFeedback": {
+        "textNotNumber": "Still text. Type only the digits **12**: no “pcs”, no spaces.",
+        "wrongValue": "`B2` should be **12**. Click it and type again."
+      },
+      "clues": ["Only the digits 1 and 2."]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "#REF!: a broken pointer",
+      "prompt": "The Total used to be `=B2+C2`. After a tidy-up it shows `#REF!`.\n\nWhat happened?",
+      "grid": [
+        ["Item", "Jan", "Total"],
+        ["Rent", 1200, "=B2+#REF!"]
+      ],
+      "activeCell": "C2",
+      "yellowCells": ["C2"],
+      "showFormulaBar": true,
+      "options": [
+        "Someone deleted the column the formula pointed to",
+        "The numbers are too big",
+        "The formula divided by zero"
+      ],
+      "answer": 0,
+      "explain": "The formula pointed at `C2`, then column C was **deleted**, and `#REF!` replaced the address. Fix: press [[Ctrl]] + [[Z]] straight away to undo the delete, or retype the formula with the right cells.",
+      "wrongFeedback": [
+        null,
+        "Excel handles huge numbers fine. A `#REF!` is about a **reference** to a cell.",
+        "Dividing by zero gives `#DIV/0!`. `#REF!` means a cell that was pointed to has gone."
+      ],
+      "clues": ["`REF` is short for reference: the address in the formula."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "#N/A: not found",
+      "prompt": "A lookup formula is hunting for **Mango** in the fruit list, and shows `#N/A`.\n\nWhat is it telling you?",
+      "grid": [
+        ["Fruit", "Price", null, "Find", "Price"],
+        ["Apple", 40, null, "Mango", "=VLOOKUP(D2,A2:B4,2,FALSE)"],
+        ["Banana", 30, null, null, null],
+        ["Cherry", 90, null, null, null]
+      ],
+      "activeCell": "E2",
+      "yellowCells": ["E2"],
+      "showFormulaBar": true,
+      "options": [
+        "The thing being looked up isn't in the list",
+        "A cell was deleted",
+        "The price is text, not a number"
+      ],
+      "answer": 0,
+      "explain": "`#N/A` means “not available”: Mango isn't in `A2:A4`. Before blaming the formula, check the spelling and look for extra spaces in the word being searched for.",
+      "wrongFeedback": [
+        null,
+        "A deleted cell gives `#REF!`. `#N/A` is a lookup saying “I couldn't find it”.",
+        "Text where a number is needed gives `#VALUE!`. `#N/A` is about not finding the item."
+      ],
+      "clues": ["Is “Mango” anywhere in column A?"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "IFERROR: clean output",
+      "prompt": "Chai had **0** visitors, so dividing by zero gives `#DIV/0!` in the Per visitor column. A report full of errors looks bad.\n\n**IFERROR** takes a formula, plus what to show if it fails: `=IFERROR(formula, backup)`. In ==D3==, type `=IFERROR(B3/C3,\"No visitors\")`.",
+      "grid": [
+        ["Stall", "Revenue", "Visitors", "Per visitor"],
+        ["Tea", 600, 50, null],
+        ["Chai", 400, 0, null],
+        ["Juice", 300, 30, null]
+      ],
+      "targetCell": "D3",
+      "activeCell": "A3",
+      "highlightCells": ["B3:C3"],
+      "yellowCells": ["D3"],
+      "expectedValue": "No visitors",
+      "mustUse": ["IFERROR"],
+      "solution": "=IFERROR(B3/C3,\"No visitors\")",
+      "explain": "`400 ÷ 0` would be `#DIV/0!`, so IFERROR shows its backup, **No visitors**. For Tea, the same formula would simply give 12, because no error happens.",
+      "mobileButtons": ["=", "(", ")", "/", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Wrap the division in `IFERROR(`.",
+        "parseError": "Check the brackets and put quote marks around the words.",
+        "wrongValue": "Chai has 0 visitors, so the backup message should appear. The formula is `=IFERROR(B3/C3,\"No visitors\")`."
+      },
+      "clues": ["`=IFERROR(` the division, a comma, the backup in quotes, `)`."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "IFERROR with a number",
+      "prompt": "The backup can be a number too, and then it needs **no quotes**.\n\nA shop's **Rate** is Orders ÷ Visits. Nobody visited on Tuesday, so the rate is an error. In ==D3==, show **0** instead.",
+      "grid": [
+        ["Day", "Visits", "Orders", "Rate"],
+        ["Mon", 200, 20, null],
+        ["Tue", 0, 0, null],
+        ["Wed", 50, 10, null]
+      ],
+      "targetCell": "D3",
+      "activeCell": "A3",
+      "highlightCells": ["B3:C3"],
+      "yellowCells": ["D3"],
+      "expectedValue": 0,
+      "mustUse": ["IFERROR"],
+      "solution": "=IFERROR(C3/B3,0)",
+      "explain": "Tuesday has 0 visits, so `0 ÷ 0` would be `#DIV/0!`. IFERROR swaps it for a plain **0** that later totals and averages can still use.",
+      "mobileButtons": ["=", "(", ")", "/", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Wrap the division in `IFERROR(`.",
+        "parseError": "Check the brackets and commas. A number backup needs no quotes.",
+        "wrongValue": "Divide Orders by Visits (`C3/B3`), and give `0` as the backup."
+      },
+      "clues": ["Orders ÷ Visits is `C3/B3`."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "Meera's three taxi fares total **270**. She types `=IFERROR(SUMM(B2:B4),0)`, with the typo from earlier, because “IFERROR makes errors go away”.\n\nWhat will her Total cell show?",
+      "grid": [
+        ["Day", "Fare"],
+        ["Mon", 90],
+        ["Tue", 120],
+        ["Wed", 60],
+        ["Total", null]
+      ],
+      "activeCell": "B5",
+      "yellowCells": ["B5"],
+      "options": ["`#NAME?`", "`0`", "`270`"],
+      "answer": 1,
+      "explain": "`SUMM` fails with `#NAME?`, and IFERROR **swallows** any error, so the cell quietly shows **0**. Nothing looks broken, but the total is wrong. Let's catch it.",
+      "wrongFeedback": [
+        "That's what you'd see **without** IFERROR. IFERROR catches every kind of error, typos included.",
+        null,
+        "IFERROR can't repair the typo. It only replaces the error with the backup, **0**."
+      ],
+      "clues": ["What does IFERROR do when the formula inside it fails?"]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Don't hide real bugs",
+      "prompt": "Here's Meera's sheet. The total says **0**, but the fares add up to 270.\n\nFix ==B5== with a plain formula, so the typo can't hide.",
+      "grid": [
+        ["Day", "Fare"],
+        ["Mon", 90],
+        ["Tue", 120],
+        ["Wed", 60],
+        ["Total", "=IFERROR(SUMM(B2:B4),0)"]
+      ],
+      "targetCell": "B5",
+      "activeCell": "B5",
+      "highlightCells": ["B2:B4"],
+      "yellowCells": ["B5"],
+      "expectedValue": 270,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(B2:B4)",
+      "explain": "**270.** Only use IFERROR where you **expect** an error, like dividing by a possible zero. Wrapped around everything, it hides real mistakes. First make the formula work, then decide if it needs a safety net.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use the real function name, **SUM**.",
+        "parseError": "Check the brackets: `=SUM(B2:B4)`.",
+        "wrongValue": "The total should be 270. Spell the function `SUM`, then the fares in `B2:B4`."
+      },
+      "clues": ["Drop the IFERROR wrapper and correct the name."]
+    },
+    {
+      "id": "s10",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Show formulas",
+      "prompt": "To audit a sheet you'd like to see every formula **at once**, not click cell by cell.\n\nPress [[Ctrl]] + [[`]]: the key above [[Tab]], left of [[1]]. Press it again to switch back. On a Mac it's [[Control]] + [[`]].\n\nIn Excel, this flips every cell between its **answer** and its **formula**.",
+      "keys": { "win": "Ctrl+`", "mac": "Ctrl+`" },
+      "grid": [
+        ["Item", "Qty", "Price", "Total"],
+        ["Pens", 12, 5, "=B2*C2"],
+        ["Pads", 4, 40, "=B3*C3"],
+        ["Total", null, null, "=SUM(D2:D3)"]
+      ],
+      "activeCell": "A1",
+      "postcondition": {
+        "grid": [
+          ["Item", "Qty", "Price", "Total"],
+          ["Pens", 12, 5, " =B2*C2"],
+          ["Pads", 4, 40, " =B3*C3"],
+          ["Total", null, null, " =SUM(D2:D3)"]
+        ],
+        "selection": "A1"
+      },
+      "clues": ["It's the backtick key, usually top-left of the keyboard under Esc."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Trace Precedents",
+      "prompt": "Your Total looks wrong and you want arrows drawn from it to **the cells that feed it**.\n\nWhich command does that? (**Formulas** tab → **Formula Auditing** group)",
+      "grid": [
+        ["Item", "Qty", "Price", "Total"],
+        ["Pens", 12, 5, "=B2*C2"],
+        ["Pads", 4, 40, "=B3*C3"],
+        ["Total", null, null, "=SUM(D2:D3)"]
+      ],
+      "activeCell": "D4",
+      "yellowCells": ["D4"],
+      "options": ["Trace Precedents", "Trace Dependents", "Show Formulas"],
+      "answer": 0,
+      "explain": "**Trace Precedents** draws arrows **from the cells a formula uses** to the formula. Select `D4`, then use [[Alt]], [[M]], [[P]] to see arrows from `D2` and `D3`. **Trace Dependents** goes the other way: which formulas use the selected cell.",
+      "wrongFeedback": [
+        null,
+        "Close, but that's the reverse: Dependents show which formulas **use** the selected cell. You want the cells that feed `D4`.",
+        "Show Formulas replaces every answer with its formula text, but it doesn't draw arrows to the cells."
+      ],
+      "clues": ["“Precedents” come **before**: they're the cells that feed the formula."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Each class's average is its Total marks divided by its number of Students. **Class C** has no students yet, so its average would be an error.\n\nIn `D4`, work out Class C's average, but show the words **No students** instead of an error.",
+      "grid": [
+        ["Class", "Total marks", "Students", "Average"],
+        ["A", 400, 5, null],
+        ["B", 360, 4, null],
+        ["C", 0, 0, null],
+        ["D", 270, 3, null]
+      ],
+      "targetCell": "D4",
+      "activeCell": "A1",
+      "expectedValue": "No students",
+      "mustReference": ["B4", "C4"],
+      "solution": "=IFERROR(B4/C4,\"No students\")",
+      "explain": "**No students.** Class C divides by 0, a `#DIV/0!` that you **expected**, so a safety net is the right tool. The same formula copied down would still work out proper averages for A, B and D.",
+      "mobileButtons": ["=", "(", ")", "/", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingReference": "Divide Class C's Total marks by its Students, using `B4` and `C4`.",
+        "parseError": "Check the brackets and put quote marks around the words.",
+        "wrongValue": "The cell must show the words **No students**, not an error. Wrap the division with a backup."
+      },
+      "clues": ["Marks ÷ Students is `B4/C4`; give that a backup in case it fails."]
+    }
+  ]
+}

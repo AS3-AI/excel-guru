@@ -1,0 +1,348 @@
+{
+  "id": "messy-export",
+  "module": "clean-data",
+  "title": "Clean a Messy Export",
+  "goal": "Fix a messy export step by step: turn text into real numbers, trim stray spaces, fix capitals, remove duplicates and split a column, then get a total you can trust.",
+  "difficulty": 2,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Why totals go wrong",
+      "text": "An online shop sent this order export. The **Total** says **1,050**. Add the four amounts by hand and you get **4,550**.\n\nExcel isn't broken. The file is **messy**, and that's normal for anything exported from a bank, a shop or a payment app. Look for the clues:\n• ==B2== and ==B4== sit on the **left**: they're numbers stored as **text**, so SUM skips them.\n• ==A2== has extra spaces at the start, ==A3== at the end.\n• The capital letters are all over the place.\n\nIn this lesson you'll fix each problem with a small formula, then remove duplicates, split a column and finally get a total you can trust.",
+      "grid": [
+        ["Customer", "Amount"],
+        ["  priya SHAH", "1,200"],
+        ["Rahul Mehta ", 450],
+        ["AMIT jain", "2,300"],
+        ["Neha Rao", 600],
+        ["Total", 1050]
+      ],
+      "activeCell": "B6",
+      "yellowCells": ["B2", "B4", "B6"]
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Text to number: VALUE",
+      "prompt": "Fix the first problem. `B2` says `1,250`, but sits on the left, so Excel sees **text**.\n\nIn ==C2==, type `=VALUE(B2)` and press [[Enter]]. **VALUE** turns text that looks like a number into a real one.",
+      "grid": [
+        ["Order", "Amount", "Clean"],
+        ["A101", "1,250", null],
+        ["A102", 800, null],
+        ["A103", "2,100", null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "highlightCells": ["B2"],
+      "yellowCells": ["C2"],
+      "expectedValue": 1250,
+      "mustUse": ["VALUE"],
+      "mustReference": ["B2"],
+      "solution": "=VALUE(B2)",
+      "explain": "**1250**, and now it's a real number on the right of its cell. The comma was only a look; VALUE read it as a thousands separator.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel treats it as a formula: `=VALUE(B2)`.",
+        "missingFunction": "Use **VALUE** around the cell: `=VALUE(B2)`.",
+        "missingReference": "The text lives in `B2`, so point VALUE at it.",
+        "wrongValue": "You should get 1250. Type `=VALUE(B2)` in `C2`."
+      },
+      "clues": ["`=VALUE(` then click `B2`, then `)`."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Another way: × 1",
+      "prompt": "There's a shortcut trick. Maths forces Excel to read text as a number, so **multiplying by 1** changes nothing except the type.\n\nIn ==C3==, convert `B3` **without** a function: just `B3` times 1.",
+      "grid": [
+        ["Order", "Amount", "Clean"],
+        ["A104", "1980", null],
+        ["A105", "2450", null],
+        ["A106", 700, null]
+      ],
+      "targetCell": "C3",
+      "activeCell": "A3",
+      "yellowCells": ["C3"],
+      "expectedValue": 2450,
+      "disallowFunctions": true,
+      "mustReference": ["B3"],
+      "solution": "=B3*1",
+      "explain": "**2450**. `B3*1` is the quick trick; `B3+0` or `--B3` do the same. Use whichever you remember at 6 pm on month-end.",
+      "mobileButtons": ["=", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=B3*1`.",
+        "disallowedFunction": "No function this time, just the cell, `*` and 1.",
+        "missingReference": "The text-number is in `B3`.",
+        "wrongValue": "`=B3` alone just copies the text. Multiply it: `=B3*1`."
+      },
+      "clues": ["Click `B3`, then type `*1`."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Stray spaces: TRIM",
+      "prompt": "Next problem: invisible spaces. `A2` is 16 characters long, but the name needs only 11. Extra spaces make `Rahul Mehta` ≠ `Rahul Mehta ` when you search or look things up.\n\nIn ==C2==, use **TRIM** to clean `A2`.",
+      "grid": [
+        ["Customer", "Amount", "Clean name"],
+        ["  Rahul   Mehta ", 450, null],
+        ["Neha Rao ", 600, null],
+        ["Zoya Khan", 900, null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["C2"],
+      "expectedValue": "Rahul Mehta",
+      "mustUse": ["TRIM"],
+      "mustReference": ["A2"],
+      "solution": "=TRIM(A2)",
+      "explain": "**Rahul Mehta**. TRIM removed the spaces at both ends **and** squeezed the three between the words down to one. Tip: `=LEN(A2)` is the quick way to see hidden spaces.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=TRIM(A2)`.",
+        "missingFunction": "Use **TRIM** around the cell.",
+        "missingReference": "Point TRIM at `A2`.",
+        "wrongValue": "Expected `Rahul Mehta` with single spaces. Try `=TRIM(A2)`."
+      },
+      "clues": ["`=TRIM(A2)`: one cell inside the brackets."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Messy capitals: PROPER",
+      "prompt": "Now the capital letters. **PROPER** makes each word start with a capital and the rest small. This name has **both** problems.\n\nIn ==C2==, clean `A2` in one formula: remove the extra spaces **and** fix the capitals.",
+      "grid": [
+        ["Customer", "Amount", "Clean name"],
+        ["  AMIT   jain ", 2300, null],
+        ["sunita VERMA", 1100, null],
+        ["Kabir Das", 650, null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["C2"],
+      "expectedValue": "Amit Jain",
+      "mustUse": ["PROPER", "TRIM"],
+      "mustReference": ["A2"],
+      "solution": "=PROPER(TRIM(A2))",
+      "explain": "**Amit Jain**. Formulas nest: TRIM runs first, then PROPER fixes the capitals of the result. `=PROPER(A2)` alone would keep the spaces; `=TRIM(A2)` alone would keep `AMIT`.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "You need both: one function inside the other, like `=PROPER(TRIM(A2))`.",
+        "missingReference": "Both functions should work on `A2`.",
+        "wrongValue": "Close, but check the result: single spaces **and** `Amit Jain` capitals. Put TRIM inside PROPER."
+      },
+      "clues": ["Put TRIM inside PROPER: `=PROPER(TRIM(A2))`."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Duplicates: count them",
+      "prompt": "Exports often list the same order twice. First **find** them: count how often each order number appears.\n\nIn ==D2==, count how many times the order in `A2` shows up in the whole list `A2:A8`. Lock the list with `$` so it stays put if you copy the formula down.",
+      "grid": [
+        ["Order", "Customer", "Amount", "Times"],
+        ["A201", "Asha", 450, null],
+        ["A202", "Ben", 800, null],
+        ["A201", "Asha", 450, null],
+        ["A203", "Chen", 1200, null],
+        ["A204", "Divya", 300, null],
+        ["A202", "Ben", 800, null],
+        ["A201", "Asha", 450, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "highlightCells": ["A2:A8"],
+      "yellowCells": ["D2"],
+      "expectedValue": 3,
+      "mustUse": ["COUNTIF"],
+      "mustReference": ["A2"],
+      "solution": "=COUNTIF($A$2:$A$8,A2)",
+      "explain": "**3**: A201 is in the list three times. Any row with a count above 1 is a duplicate, so `=COUNTIF($A$2:$A$8,A2)>1` flags it, and you can filter on that.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "$"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use **COUNTIF**: the list first, then what to count.",
+        "missingReference": "Count the order number in `A2`.",
+        "wrongValue": "Count `A2` across the **whole** list `A2:A8`. `=COUNTIF($A$2:$A$8,A2)`."
+      },
+      "clues": [
+        "`=COUNTIF(range, what to count)`: the range is `A2:A8`, what to count is `A2`.",
+        "Press [[F4]] while the range is selected to add the `$` signs."
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Remove Duplicates: Alt, A, M",
+      "prompt": "Counting finds duplicates; **Remove Duplicates** deletes them. You're inside the data, on `A2`. Order `B11` and `B12` each appear twice.\n\nTap [[Alt]], [[A]], [[M]] one after another (**Data → Remove Duplicates**). The box opens with every column ticked. Press [[Enter]] for OK.\n\nExcel then reports how many it removed. On a Mac, use **Data → Remove Duplicates**.",
+      "keys": {
+        "win": ["Alt", "A", "M", "Enter"],
+        "mac": null
+      },
+      "grid": [
+        ["Order", "Customer", "Amount"],
+        ["B11", "Asha", 450],
+        ["B12", "Ben", 800],
+        ["B11", "Asha", 450],
+        ["B13", "Chen", 1200],
+        ["B12", "Ben", 800]
+      ],
+      "activeCell": "A2",
+      "postcondition": {
+        "grid": [
+          ["Order", "Customer", "Amount"],
+          ["B11", "Asha", 450],
+          ["B12", "Ben", 800],
+          ["B13", "Chen", 1200],
+          [null, null, null],
+          [null, null, null]
+        ],
+        "selection": "A1"
+      },
+      "clues": ["Press and release Alt, then A, then M, then Enter."]
+    },
+    {
+      "id": "s8",
+      "type": "mcq",
+      "topic": "Which columns to tick?",
+      "prompt": "Asha placed **two different orders** (C301 and C302) for the same 450. Only the second **C301** row is a real duplicate.\n\nThe Remove Duplicates box lists every column. Which should you tick?",
+      "grid": [
+        ["Order", "Customer", "Amount"],
+        ["C301", "Asha", 450],
+        ["C302", "Asha", 450],
+        ["C303", "Ben", 800],
+        ["C301", "Asha", 450]
+      ],
+      "yellowCells": ["A5:C5"],
+      "options": ["Only Customer", "Only Amount", "All three columns"],
+      "answer": 2,
+      "explain": "Excel removes a row only when **every ticked column** matches. With all three ticked, only the repeated `C301` row goes. Ticking Customer alone would also delete Asha's genuine C302 order.",
+      "wrongFeedback": [
+        "Asha appears in rows 2, 3 and 5, so Excel would keep only the first and delete a real order.",
+        "All three 450 rows match on Amount alone, so Excel would keep one and delete a real order, C302.",
+        null
+      ],
+      "clues": ["A real duplicate matches in every column."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Split a column: TEXTBEFORE",
+      "prompt": "Last mess: the export squashed the name and city into one cell, split by ` - `.\n\nIn ==B2==, pull out only the **name**: everything **before** the ` - `.",
+      "grid": [
+        ["Customer - City", "Name", "City"],
+        ["Asha Rao - Pune", null, null],
+        ["Ben Thomas - Delhi", null, null],
+        ["Chen Li - Mumbai", null, null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "Asha Rao",
+      "mustUse": ["TEXTBEFORE"],
+      "mustReference": ["A2"],
+      "solution": "=TEXTBEFORE(A2,\" - \")",
+      "explain": "**Asha Rao**. TEXTBEFORE takes the cell and the divider to look for. Its twin **TEXTAFTER**, `=TEXTAFTER(A2,\" - \")`, would give `Pune`. Type the divider exactly, spaces included.",
+      "mobileButtons": ["=", "(", ")", "\"", ",", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use **TEXTBEFORE**: the cell, then the divider in quotes.",
+        "missingReference": "Look inside `A2`.",
+        "wrongValue": "Expected `Asha Rao` with nothing after it. The divider is space, dash, space: `\" - \"`."
+      },
+      "clues": ["`=TEXTBEFORE(A2,\" - \")`: the divider goes in quotes, with its spaces."]
+    },
+    {
+      "id": "s10",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Or: Flash Fill, Ctrl + E",
+      "prompt": "No formula needed if you'd rather **show** Excel the pattern. We typed the first city, `Pune`, in `C2`. You're on `C3`.\n\nPress [[Ctrl]] + [[E]] and Excel fills the rest.\n\nOn a Mac, use **Data → Flash Fill**.",
+      "keys": {
+        "win": "Ctrl+E",
+        "mac": null
+      },
+      "grid": [
+        ["Customer - City", "Name", "City"],
+        ["Asha Rao - Pune", "Asha Rao", "Pune"],
+        ["Ben Thomas - Delhi", "Ben Thomas", null],
+        ["Chen Li - Mumbai", "Chen Li", null],
+        ["Divya Nair - Kochi", "Divya Nair", null]
+      ],
+      "activeCell": "C3",
+      "postcondition": {
+        "grid": [
+          ["Customer - City", "Name", "City"],
+          ["Asha Rao - Pune", "Asha Rao", "Pune"],
+          ["Ben Thomas - Delhi", "Ben Thomas", "Delhi"],
+          ["Chen Li - Mumbai", "Chen Li", "Mumbai"],
+          ["Divya Nair - Kochi", "Divya Nair", "Kochi"]
+        ],
+        "selection": "C2:C5"
+      },
+      "clues": ["Hold Ctrl, tap E. Flash Fill gives plain values, not formulas."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Predict the total",
+      "prompt": "Here are five orders. The plain total in `B6` skipped **two** amounts that are text.\n\nPredict: after you convert **all five** to real numbers, what will the total be?",
+      "grid": [
+        ["Order", "Amount", "Clean"],
+        ["D1", "1,500", "=VALUE(B2)"],
+        ["D2", 700, "=B3"],
+        ["D3", "2,200", "=VALUE(B4)"],
+        ["D4", 300, "=B5"],
+        ["Total", 1000, "=SUM(C2:C5)"]
+      ],
+      "activeCell": "C6",
+      "yellowCells": ["B6", "C6"],
+      "showFormulaBar": true,
+      "options": ["`1,000`: it stays the same", "`4,700`", "`1,500`"],
+      "answer": 1,
+      "explain": "SUM on the raw column only saw 700 + 300 = **1,000**: the two text amounts were skipped without a warning. Once converted, 1,500 + 700 + 2,200 + 300 = **4,700**. Always compare a total with a rough guess in your head.",
+      "wrongFeedback": [
+        "Converting adds the two skipped amounts, so it can't stay the same.",
+        null,
+        "1,500 is only one of the converted amounts. Add all four."
+      ],
+      "clues": ["Which two amounts were being skipped?"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Finance is waiting for the **true total** of this export. Put it in `B7`.\n\nSome amounts are text, so a plain total would quietly miss them.",
+      "grid": [
+        ["Customer", "Amount"],
+        ["Meera", "2,500"],
+        ["Vikram", 900],
+        ["Kabir", "1,750"],
+        ["Zoya", 600],
+        ["Isha", "3,200"],
+        ["Total", null]
+      ],
+      "targetCell": "B7",
+      "activeCell": "A1",
+      "expectedValue": 8950,
+      "solution": "=SUM(VALUE(B2:B6))",
+      "explain": "**8950**. A plain `=SUM(B2:B6)` gives only 1500, because three amounts are text. `=SUM(VALUE(B2:B6))` converts all five and adds them in one go; a helper column with `=VALUE(B2)` and a SUM below works equally well.",
+      "mobileButtons": ["=", "(", ")", ":", "*", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "wrongValue": "Check your total. A normal SUM skips the text amounts. Convert them first, with VALUE, then add."
+      },
+      "clues": [
+        "Compare with your head: 2,500 + 900 + 1,750 + 600 + 3,200.",
+        "VALUE can take the whole range: `=SUM(VALUE(B2:B6))`."
+      ]
+    }
+  ]
+}

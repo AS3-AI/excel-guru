@@ -1,0 +1,518 @@
+{
+  "id": "project-budget",
+  "module": "projects",
+  "title": "Project: budget & expense tracker",
+  "goal": "Build a monthly tracker: set up categories, total spending by category and month with SUMIFS, show each category as a share of income, warn when a budget is nearly used, and work out how long a savings goal will take.",
+  "difficulty": 2,
+  "requiredCorrect": 14,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "What you'll build",
+      "text": "Kavya earns ₹40,000 a month in Bengaluru and wants to know where it goes. This is the tracker you'll build: every category has a **budget**, what she **spent**, what's **left**, its share of her income and a warning when she's close to the limit.\n\nYou'll set up the categories, total her expense log with a formula, add the percentages and warnings, then check a savings goal. Work on your own: clues are there if you get stuck.",
+      "grid": [
+        ["Category", "Budget", "Spent", "Left", "% of income", "Status"],
+        ["Food", 5500, 6000, -500, "15%", "Over budget"],
+        ["Rent", 12000, 12000, 0, "30%", "Near limit"],
+        ["Travel", 2000, 1600, 400, "4%", "OK"],
+        ["Fun", 2000, 2000, 0, "5%", "Near limit"]
+      ],
+      "activeCell": "A1"
+    },
+    {
+      "id": "s2",
+      "type": "entry",
+      "topic": "Set up the categories",
+      "prompt": "Start with the list everything else will depend on. Type Kavya's four categories and monthly budgets in `A2:B5`, one row at a time ([[Tab]] between the cells, [[Enter]] at the end of a row):\n\n• Food 5500\n• Rent 12000\n• Travel 2000\n• Fun 2000",
+      "grid": [
+        ["Category", "Budget"],
+        [null, null],
+        [null, null],
+        [null, null],
+        [null, null]
+      ],
+      "activeCell": "A2",
+      "yellowCells": ["A2:B5"],
+      "keycaps": ["Food", "Tab", "5500", "Enter"],
+      "expect": {
+        "A2": "Food",
+        "B2": 5500,
+        "A3": "Rent",
+        "B3": 12000,
+        "A4": "Travel",
+        "B4": 2000,
+        "A5": "Fun",
+        "B5": 2000
+      },
+      "explain": "These four names are now the **single list** of categories. Later you'll point a drop-down at `A2:A5` (Data → Data Validation → List), so only these exact names can ever be typed into her log.",
+      "wrongFeedback": {
+        "textNotNumber": "A budget must be a plain number: only digits, no ₹ and no commas.",
+        "empty": "Something is still blank. Each category needs a name in column A and a number in column B.",
+        "wrongValue": "Check each row against the list: the name in column A, the number in column B."
+      },
+      "clues": ["Click `A2`, type Food, Tab, 5500, Enter. Then repeat for the next row."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Spent in a month",
+      "prompt": "Kavya's expense log for March and April is in `E:G`. In ==C2==, work out how much she spent on **Food in March**. Point at the category in `A2`, and lock the log ranges with `$` (press [[F4]] while the range is selected, or just type the dollar signs) so the formula can be copied down later.",
+      "grid": [
+        ["Category", "Budget", "Spent", null, "Month", "Category", "Paid"],
+        ["Food", 5500, null, null, "Mar", "Food", 3200],
+        ["Rent", 12000, null, null, "Mar", "Rent", 12000],
+        ["Travel", 2000, null, null, "Apr", "Food", 3600],
+        ["Fun", 2000, null, null, "Mar", "Travel", 1600],
+        [null, null, null, null, "Mar", "Food", 2800],
+        [null, null, null, null, "Mar", "Fun", 2000],
+        [null, null, null, null, "Apr", "Travel", 900]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "highlightCells": ["E2:G8"],
+      "yellowCells": ["C2"],
+      "expectedValue": 6000,
+      "mustUse": ["SUMIFS"],
+      "solution": "=SUMIFS($G$2:$G$8,$F$2:$F$8,A2,$E$2:$E$8,\"Mar\")",
+      "explain": "**6000**: the two March Food rows, 3200 + 2800. April's 3600 stays out because of the month condition, and all of March's other categories stay out because of the category condition.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", "$"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "You need to add amounts that match **two** things (category and month). That's SUMIFS: the numbers to add first, then each range with its condition.",
+        "wrongValue": "Food in **March** only. April's Food (3600) shouldn't be in, and nor should other categories. Is each condition in your formula?"
+      },
+      "clues": [
+        "Add the Paid column. Condition 1: Category equals `A2`. Condition 2: Month equals \"Mar\"."
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Fill the other categories",
+      "prompt": "Your formula is in `C2` and `C2:C5` is selected. Copy it down to Rent, Travel and Fun.\n\nThanks to the `$` signs, the log ranges stay put while `A2` slides down to `A3`, `A4` and `A5`.",
+      "keys": {
+        "win": "Ctrl+D",
+        "mac": "Cmd+D"
+      },
+      "grid": [
+        ["Category", "Budget", "Spent", null, "Month", "Category", "Paid"],
+        [
+          "Food",
+          5500,
+          "=SUMIFS($G$2:$G$8,$F$2:$F$8,A2,$E$2:$E$8,\"Mar\")",
+          null,
+          "Mar",
+          "Food",
+          3200
+        ],
+        ["Rent", 12000, null, null, "Mar", "Rent", 12000],
+        ["Travel", 2000, null, null, "Apr", "Food", 3600],
+        ["Fun", 2000, null, null, "Mar", "Travel", 1600],
+        [null, null, null, null, "Mar", "Food", 2800],
+        [null, null, null, null, "Mar", "Fun", 2000],
+        [null, null, null, null, "Apr", "Travel", 900]
+      ],
+      "activeCell": "C2:C5",
+      "postcondition": {
+        "grid": [
+          ["Category", "Budget", "Spent", null, "Month", "Category", "Paid"],
+          [
+            "Food",
+            5500,
+            "=SUMIFS($G$2:$G$8,$F$2:$F$8,A2,$E$2:$E$8,\"Mar\")",
+            null,
+            "Mar",
+            "Food",
+            3200
+          ],
+          [
+            "Rent",
+            12000,
+            "=SUMIFS($G$2:$G$8,$F$2:$F$8,A3,$E$2:$E$8,\"Mar\")",
+            null,
+            "Mar",
+            "Rent",
+            12000
+          ],
+          [
+            "Travel",
+            2000,
+            "=SUMIFS($G$2:$G$8,$F$2:$F$8,A4,$E$2:$E$8,\"Mar\")",
+            null,
+            "Apr",
+            "Food",
+            3600
+          ],
+          [
+            "Fun",
+            2000,
+            "=SUMIFS($G$2:$G$8,$F$2:$F$8,A5,$E$2:$E$8,\"Mar\")",
+            null,
+            "Mar",
+            "Travel",
+            1600
+          ],
+          [null, null, null, null, "Mar", "Food", 2800],
+          [null, null, null, null, "Mar", "Fun", 2000],
+          [null, null, null, null, "Apr", "Travel", 900]
+        ],
+        "selection": "C2:C5"
+      },
+      "clues": ["D is for down."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "A typo in the log",
+      "prompt": "One row in the log says **Foood** (three o's), so Food shows 3200 instead of 6000, and nothing warns Kavya.\n\nWhat's the best way to stop typos like this at the source?",
+      "grid": [
+        ["Category", "Budget", "Spent", null, "Month", "Category", "Paid"],
+        [
+          "Food",
+          5500,
+          "=SUMIFS($G$2:$G$8,$F$2:$F$8,A2,$E$2:$E$8,\"Mar\")",
+          null,
+          "Mar",
+          "Food",
+          3200
+        ],
+        [
+          "Rent",
+          12000,
+          "=SUMIFS($G$2:$G$8,$F$2:$F$8,A3,$E$2:$E$8,\"Mar\")",
+          null,
+          "Mar",
+          "Rent",
+          12000
+        ],
+        [
+          "Travel",
+          2000,
+          "=SUMIFS($G$2:$G$8,$F$2:$F$8,A4,$E$2:$E$8,\"Mar\")",
+          null,
+          "Apr",
+          "Food",
+          3600
+        ],
+        [
+          "Fun",
+          2000,
+          "=SUMIFS($G$2:$G$8,$F$2:$F$8,A5,$E$2:$E$8,\"Mar\")",
+          null,
+          "Mar",
+          "Travel",
+          1600
+        ],
+        [null, null, null, null, "Mar", "Foood", 2800],
+        [null, null, null, null, "Mar", "Fun", 2000],
+        [null, null, null, null, "Apr", "Travel", 900]
+      ],
+      "yellowCells": ["F6", "C2"],
+      "options": [
+        "Add a drop-down to the Category column",
+        "Wrap the formula in `IFERROR`",
+        "Sort the log by Category"
+      ],
+      "answer": 0,
+      "explain": "A drop-down (Data → Data Validation → Allow: List, Source `=$A$2:$A$5`) only accepts the four names from your list, so “Foood” can't be typed. SUMIFS never complains about a misspelt category: it just quietly adds nothing.",
+      "wrongFeedback": [
+        null,
+        "There's no error to hide: SUMIFS happily returns 3200. IFERROR can't see a typo.",
+        "Sorting would put `Foood` next to `Food`, but to SUMIFS it is still a different word."
+      ],
+      "clues": ["Think about preventing the typo, not hiding its effect."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "What's left",
+      "prompt": "The log is totalled (we pasted the answers into `C2:C5`). In ==D2==, show how much of Food's budget is **left**. A negative number means she has overspent.",
+      "grid": [
+        ["Category", "Budget", "Spent", "Left", "% of income", "Status"],
+        ["Food", 5500, 6000, null, null, null],
+        ["Rent", 12000, 12000, null, null, null],
+        ["Travel", 2000, 1600, null, null, null],
+        ["Fun", 2000, 2000, null, null, null],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", null, null, null],
+        ["Income", 40000, null, null, null, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "highlightCells": ["B2:C2"],
+      "yellowCells": ["D2"],
+      "expectedValue": -500,
+      "disallowFunctions": true,
+      "solution": "=B2-C2",
+      "explain": "**-500**: Food's budget was 5500 and she spent 6000. The minus sign is the warning, and the other rows follow the same pattern.",
+      "mobileButtons": ["=", "-"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "wrongValue": "Budget minus spent, so overspending comes out negative: `B2` take away `C2`."
+      },
+      "clues": ["Budget first, then subtract what she spent."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Share of income",
+      "prompt": "Now each category's share of Kavya's income. Her income is in `B7`. In ==E2==, divide Food's spending by her income, and lock the income cell with `$` so the formula can be copied down.",
+      "grid": [
+        ["Category", "Budget", "Spent", "Left", "% of income", "Status"],
+        ["Food", 5500, 6000, -500, null, null],
+        ["Rent", 12000, 12000, 0, null, null],
+        ["Travel", 2000, 1600, 400, null, null],
+        ["Fun", 2000, 2000, 0, null, null],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", null, null, null],
+        ["Income", 40000, null, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "A2",
+      "highlightCells": ["C2", "B7"],
+      "yellowCells": ["E2"],
+      "expectedValue": 0.15,
+      "mustReference": ["C2", "B7"],
+      "solution": "=C2/$B$7",
+      "explain": "**0.15**, which is 15% of her ₹40,000. `$B$7` stays locked when you copy down, so every category divides by the same income. Without the `$`, row 3 would divide by `B8`, an empty cell, and show an error.",
+      "mobileButtons": ["=", "$", "/"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingReference": "Divide by the income cell, `B7`.",
+        "wrongValue": "Divide what she spent on Food (`C2`) by her income (`B7`)."
+      },
+      "clues": ["Spent divided by income.", "Press [[F4]] on `B7` to lock it."]
+    },
+    {
+      "id": "s8",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Show as percentages",
+      "prompt": "`E2:E5` are filled in but read `0.15`, `0.3`, `0.04`, `0.05`, which is hard for anyone to read. They're selected.\n\nMake them look like percentages.",
+      "keys": {
+        "win": "Ctrl+Shift+5",
+        "mac": "Ctrl+Shift+5"
+      },
+      "grid": [
+        ["Category", "Budget", "Spent", "Left", "% of income", "Status"],
+        ["Food", 5500, 6000, -500, 0.15, null],
+        ["Rent", 12000, 12000, 0, 0.3, null],
+        ["Travel", 2000, 1600, 400, 0.04, null],
+        ["Fun", 2000, 2000, 0, 0.05, null],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", null, null, null],
+        ["Income", 40000, null, null, null, null]
+      ],
+      "activeCell": "E2:E5",
+      "postcondition": {
+        "grid": [
+          ["Category", "Budget", "Spent", "Left", "% of income", "Status"],
+          ["Food", 5500, 6000, -500, "15%", null],
+          ["Rent", 12000, 12000, 0, "30%", null],
+          ["Travel", 2000, 1600, 400, "4%", null],
+          ["Fun", 2000, 2000, 0, "5%", null],
+          ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", null, null, null],
+          ["Income", 40000, null, null, null, null]
+        ],
+        "selection": "E2:E5"
+      },
+      "clues": ["The % sign lives on the 5 key."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Early warnings",
+      "prompt": "Kavya wants early warnings. The first three rows are done. In ==F5==, show **Over budget** if Fun's spending is above its budget, **Near limit** if she has used **90% or more** of it, and **OK** otherwise.",
+      "grid": [
+        ["Category", "Budget", "Spent", "Left", "% of income", "Status"],
+        ["Food", 5500, 6000, -500, 0.15, "Over budget"],
+        ["Rent", 12000, 12000, 0, 0.3, "Near limit"],
+        ["Travel", 2000, 1600, 400, 0.04, "OK"],
+        ["Fun", 2000, 2000, 0, 0.05, null],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", null, null, null]
+      ],
+      "targetCell": "F5",
+      "activeCell": "A5",
+      "highlightCells": ["B5:C5"],
+      "yellowCells": ["F5"],
+      "expectedValue": "Near limit",
+      "mustReference": ["C5", "B5"],
+      "solution": "=IF(C5>B5,\"Over budget\",IF(C5>=0.9*B5,\"Near limit\",\"OK\"))",
+      "explain": "**Near limit**: Fun used 2000 of 2000. That isn't “over” (2000 is not more than 2000), but it's past 90%. The tests run worst first, so a category gets the first message that fits.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", ">", "*"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingReference": "Compare Fun's spending (`C5`) with its budget (`B5`).",
+        "wrongValue": "Fun spent exactly its budget. Is that over? Is it at least 90% used? Check your order of tests."
+      },
+      "clues": [
+        "Two IFs: one inside the other's “otherwise” part.",
+        "90% of the budget is `0.9*B5`."
+      ]
+    },
+    {
+      "id": "s10",
+      "type": "select",
+      "topic": "Which rows turn red?",
+      "prompt": "Kavya adds a conditional-formatting rule (Home → Conditional Formatting → New Rule → Use a formula) to `A2:F5`:\n\n`=$C2>$B2`\n\nIt colours a row when **Spent is more than Budget**. Select the row that turns red.",
+      "grid": [
+        ["Category", "Budget", "Spent", "Left", "% of income", "Status"],
+        ["Food", 5500, 6000, -500, 0.15, "Over budget"],
+        ["Rent", 12000, 12000, 0, 0.3, "Near limit"],
+        ["Travel", 2000, 1600, 400, 0.04, "OK"],
+        ["Fun", 2000, 2000, 0, 0.05, "Near limit"],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", null, null, null]
+      ],
+      "highlightCells": ["A2:F5"],
+      "activeCell": "A2",
+      "target": "A2:F2",
+      "wrongFeedback": "Compare Spent (column C) with Budget (column B) row by row. Only one row has Spent **above** Budget; rows where they're equal don't count.",
+      "clues": ["Rent and Fun spent exactly their budget. Is that “more than”?"]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Write the rule",
+      "prompt": "You're typing the rule for the first row, row 2, of `A2:F5`, so that every row is judged by its **own** numbers and the whole row changes colour.\n\nWhich rule is right?",
+      "grid": [
+        ["Category", "Budget", "Spent", "Left", "% of income", "Status"],
+        ["Food", 5500, 6000, -500, 0.15, "Over budget"],
+        ["Rent", 12000, 12000, 0, 0.3, "Near limit"],
+        ["Travel", 2000, 1600, 400, 0.04, "OK"],
+        ["Fun", 2000, 2000, 0, 0.05, "Near limit"],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", null, null, null]
+      ],
+      "options": ["`=$C2>$B2`", "`=C2>B2`", "`=$C$2>$B$2`"],
+      "answer": 0,
+      "explain": "The `$` before each column letter locks the **column** (every cell in the row looks at C and B), while the row number stays free to move down. Mixed references like `$C2` are made for rules that colour whole rows.",
+      "wrongFeedback": [
+        null,
+        "Without `$`, the columns slide too: cell B2 would compare D2 with C2, and so on, so the colours would be nonsense.",
+        "`$C$2` is locked to row 2 forever, so every row would copy Food's answer."
+      ],
+      "clues": ["The row number should change as you go down; the column letter shouldn't."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "How much was saved?",
+      "prompt": "How much did Kavya **save** this month? In ==B8==, show what's left of her income after her total spending (the total is in `C6`).",
+      "grid": [
+        ["Category", "Budget", "Spent", "Left", "% of income", "Status"],
+        ["Food", 5500, 6000, -500, 0.15, "Over budget"],
+        ["Rent", 12000, 12000, 0, 0.3, "Near limit"],
+        ["Travel", 2000, 1600, 400, 0.04, "OK"],
+        ["Fun", 2000, 2000, 0, 0.05, "Near limit"],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", null, null, null],
+        ["Income", 40000, null, null, null, null],
+        ["Saved", null, null, null, null, null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "highlightCells": ["B7", "C6"],
+      "yellowCells": ["B8"],
+      "expectedValue": 18400,
+      "mustReference": ["B7", "C6"],
+      "disallowFunctions": true,
+      "solution": "=B7-C6",
+      "explain": "**18400**: 40000 income minus 21600 spent. Because it points at the total in `C6`, it updates whenever an expense changes.",
+      "mobileButtons": ["=", "-"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "wrongValue": "Income (`B7`) minus the **total** spent (`C6`)."
+      },
+      "clues": ["Income, minus the total spending."]
+    },
+    {
+      "id": "s13",
+      "type": "mcq",
+      "topic": "Predict",
+      "prompt": "Kavya gets a raise: income becomes **48000**, and her spending stays exactly the same.\n\nWhat will Rent's **% of income** (`E3`, currently 30%) become?",
+      "grid": [
+        ["Category", "Budget", "Spent", "Left", "% of income", "Status"],
+        ["Food", 5500, 6000, -500, "=C2/$B$7", "Over budget"],
+        ["Rent", 12000, 12000, 0, "=C3/$B$7", "Near limit"],
+        ["Travel", 2000, 1600, 400, "=C4/$B$7", "OK"],
+        ["Fun", 2000, 2000, 0, "=C5/$B$7", "Near limit"],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", null, null, null],
+        ["Income", 40000, null, null, null, null],
+        ["Saved", "=B7-C6", null, null, null, null]
+      ],
+      "showFormulaBar": true,
+      "activeCell": "E3",
+      "yellowCells": ["B7"],
+      "options": ["25%", "30%: it stays the same", "40%"],
+      "answer": 0,
+      "explain": "Rent is still 12000, but it's now divided by 48000, and 12000 ÷ 48000 = 0.25. Next, see whether the sheet agrees.",
+      "wrongFeedback": [
+        null,
+        "The percentage is a formula that divides by income, so it moves when income moves.",
+        "A bigger income makes every share **smaller**, never bigger."
+      ],
+      "clues": ["Work out 12000 ÷ 48000."]
+    },
+    {
+      "id": "s14",
+      "type": "entry",
+      "topic": "Prove it",
+      "prompt": "Now check your prediction. Click ==B7==, type **48000**, press [[Enter]], and watch `E3` and `B8`.",
+      "grid": [
+        ["Category", "Budget", "Spent", "Left", "% of income", "Status"],
+        ["Food", 5500, 6000, -500, "=C2/$B$7", "Over budget"],
+        ["Rent", 12000, 12000, 0, "=C3/$B$7", "Near limit"],
+        ["Travel", 2000, 1600, 400, "=C4/$B$7", "OK"],
+        ["Fun", 2000, 2000, 0, "=C5/$B$7", "Near limit"],
+        ["Total", "=SUM(B2:B5)", "=SUM(C2:C5)", null, null, null],
+        ["Income", 40000, null, null, null, null],
+        ["Saved", "=B7-C6", null, null, null, null]
+      ],
+      "activeCell": "A7",
+      "yellowCells": ["B7"],
+      "highlightCells": ["E3", "B8"],
+      "expect": {
+        "B7": 48000,
+        "E3": 0.25,
+        "B8": 26400
+      },
+      "explain": "You changed one number and the whole tracker followed: Rent fell to **0.25** (25%) and savings jumped to **26400**. That's why you used formulas and `$`, instead of typing the answers.",
+      "wrongFeedback": {
+        "wrongValue": "Only `B7` should change, to 48000. The others will follow by themselves."
+      },
+      "clues": ["Change only the income cell."]
+    },
+    {
+      "id": "s15",
+      "type": "formula",
+      "topic": "Challenge: the laptop goal",
+      "prompt": "Kavya's raise has come through. She wants **90000** for a laptop. If she keeps saving the same amount every month, how many whole months until she has enough? Answer in ==B6==.",
+      "grid": [
+        ["Item", "Amount"],
+        ["Income", 48000],
+        ["Spent", 21600],
+        ["Saved each month", "=B2-B3"],
+        ["Goal", 90000],
+        ["Months to goal", null]
+      ],
+      "targetCell": "B6",
+      "activeCell": "A6",
+      "highlightCells": ["B4:B5"],
+      "yellowCells": ["B6"],
+      "expectedValue": 4,
+      "solution": "=ROUNDUP(B5/B4,0)",
+      "explain": "**4 months**: 90000 ÷ 26400 is about 3.4, but after 3 months she'd have only 79200. Whole months only, so round **up**. `ROUND` or `INT` would say 3 and leave her short.",
+      "mobileButtons": ["=", "(", ")", ",", "/"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "wrongValue": "Divide the goal by the monthly saving, then ask: does that many months actually get her there?"
+      },
+      "clues": ["Goal divided by monthly saving gives a decimal. What should you do with it?"]
+    }
+  ]
+}

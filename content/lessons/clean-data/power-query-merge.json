@@ -1,0 +1,280 @@
+{
+  "id": "power-query-merge",
+  "module": "clean-data",
+  "title": "Power Query: merge & append",
+  "goal": "Choose between Append (stack files) and Merge (join tables), predict what each join kind returns, and know why a merge comes back empty.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Stack or join?",
+      "text": "Two jobs come up again and again, and Power Query does both without formulas.\n\n**Append = stack.** January and February arrive as separate files with the **same columns**. Appending puts February's rows **under** January's, as one long list (below).\n\n**Merge = join.** Your orders list has a Product ID, and the prices live in another file. Merging brings the **Price column across**, matched on the ID. It's what XLOOKUP does, but recorded as a step that refreshes by itself.\n\nRule of thumb: **more rows → Append. More columns → Merge.** Both live on the **Home** tab of the Power Query Editor.",
+      "grid": [
+        ["File", "Product", "Qty"],
+        ["jan.csv", "Pen", 40],
+        ["jan.csv", "Book", 25],
+        ["jan.csv", "Bag", 10],
+        ["feb.csv", "Pen", 55],
+        ["feb.csv", "Book", 20],
+        ["feb.csv", "Bag", 15]
+      ],
+      "activeCell": "A5",
+      "yellowCells": ["A5:C7"]
+    },
+    {
+      "id": "s2",
+      "type": "mcq",
+      "topic": "Append or merge?",
+      "prompt": "You have **jan.csv** and **feb.csv**. Both have the columns `Product` and `Qty`. You want **one list** with both months.\n\nWhich command?",
+      "grid": [
+        ["Product", "Qty", null, "Product", "Qty"],
+        ["Pen", 40, null, "Pen", 55],
+        ["Book", 25, null, "Book", 20]
+      ],
+      "options": ["Append Queries", "Merge Queries", "Remove Duplicates"],
+      "answer": 0,
+      "explain": "Same columns, more rows: **Append**. In the editor, **Home → Append Queries** stacks one table under the other. Merge is for the day you need a **new column** from a second table.",
+      "wrongFeedback": [
+        null,
+        "Merge adds **columns** from a second table. Nothing here is missing a column; you need more rows.",
+        "Remove Duplicates deletes rows. You want to combine files, not delete anything."
+      ],
+      "clues": ["Same columns, extra rows. Which one stacks?"]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "Check the stacked table",
+      "prompt": "Here's what an appended café table looks like. The **File** column tells you which month each row came from.\n\nIn ==C8==, total the **Coffee** cups across **both** months.",
+      "grid": [
+        ["File", "Product", "Qty"],
+        ["jan.csv", "Tea", 120],
+        ["jan.csv", "Coffee", 90],
+        ["jan.csv", "Muffin", 45],
+        ["feb.csv", "Tea", 135],
+        ["feb.csv", "Coffee", 85],
+        ["feb.csv", "Muffin", 50],
+        ["Coffee total", null, null]
+      ],
+      "targetCell": "C8",
+      "activeCell": "A8",
+      "highlightCells": ["B2:C7"],
+      "yellowCells": ["C8"],
+      "expectedValue": 175,
+      "mustUse": ["SUMIF"],
+      "solution": "=SUMIF(B2:B7,\"Coffee\",C2:C7)",
+      "explain": "**175** = 90 in January + 85 in February. After an append, one formula covers every month, so you never add the files up by hand.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Add the Qty only where the Product is Coffee.",
+        "wrongValue": "Only the two Coffee rows, 90 and 85. Adding the whole Qty column gives 525."
+      },
+      "clues": ["Condition column `B2:B7`, numbers to add `C2:C7`."]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Headers must match",
+      "prompt": "Append lines columns up by **name**, not by position. Jan's file has `Product, Qty`. Feb's file, from a different system, says `Product, Quantity`.\n\nWhat happens when you append?",
+      "grid": [
+        ["Product", "Qty", null, "Product", "Quantity"],
+        ["Pen", 40, null, "Pen", 55],
+        ["Book", 25, null, "Book", 20]
+      ],
+      "options": [
+        "Excel pairs them by position, so all is fine",
+        "A separate `Quantity` column appears, with gaps",
+        "Power Query stops with an error"
+      ],
+      "answer": 1,
+      "explain": "Power Query sees `Qty` and `Quantity` as two different columns. January's rows have gaps (null) under `Quantity`, February's under `Qty`, and your totals are half-empty. Rename the column to match in one of the queries first.",
+      "wrongFeedback": [
+        "Append never guesses by position. A new name means a new column.",
+        null,
+        "There's no error. That's the danger: the append works, and the gaps only show up when you total."
+      ],
+      "clues": ["Are `Qty` and `Quantity` the same text?"]
+    },
+    {
+      "id": "s5",
+      "type": "select",
+      "topic": "Merge: pick the key",
+      "prompt": "Now a merge. **Home → Merge Queries** shows two tables. You click the **matching column** in each, then choose a **Join Kind**. The default, **Left Outer**, keeps every row of the first table and fetches matches from the second, like XLOOKUP.\n\nThis is the **Orders** table; the price list is the second one. Click the column in Orders that must match the price list's `Product ID`, then press [[Enter]].",
+      "grid": [
+        ["Order", "Product ID", "Qty"],
+        ["O1", "P01", 5],
+        ["O2", "P03", 2],
+        ["O3", "P02", 4]
+      ],
+      "target": "B:B",
+      "wrongFeedback": "The key is the column that **appears in both tables**: the product code, `Product ID` (column B).",
+      "clues": ["Which column would also be in the price list?"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "What the merge adds",
+      "prompt": "After the merge you expand the new column to get `Price`. Each order gets the price of its Product ID.\n\nIn ==D3==, find the price order `O2` will get from the price list in `F:G`.",
+      "grid": [
+        ["Order", "Product ID", "Qty", "Price", null, "ID", "List price"],
+        ["O1", "P01", 5, null, null, "P01", 20],
+        ["O2", "P03", 2, null, null, "P02", 35],
+        ["O3", "P02", 4, null, null, "P03", 50],
+        ["O4", "P01", 3, null, null, "P04", 15],
+        ["O5", "P09", 1, null, null, null, null]
+      ],
+      "targetCell": "D3",
+      "activeCell": "A3",
+      "highlightCells": ["B3", "F2:G5"],
+      "yellowCells": ["D3"],
+      "expectedValue": 50,
+      "mustUse": ["XLOOKUP"],
+      "solution": "=XLOOKUP(B3,F2:F5,G2:G5)",
+      "explain": "**50**: `P03` is the third item in the list. Merge does this for every row at once, and refreshes it whenever the price list changes.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingFunction": "Use **XLOOKUP**: what to find, where to look, what to return.",
+        "wrongValue": "Look up `B3` (P03) in `F2:F5` and return from `G2:G5`."
+      },
+      "clues": ["`=XLOOKUP(B3, IDs, prices)`: IDs are `F2:F5`, prices `G2:G5`."]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "Predict: Left Outer",
+      "prompt": "Look at order `O5`: its product `P09` is **not** in the price list.\n\nWith the default **Left Outer** join, how many rows will the merged table have?",
+      "grid": [
+        ["Order", "Product ID", "Qty", null, "ID", "List price"],
+        ["O1", "P01", 5, null, "P01", 20],
+        ["O2", "P03", 2, null, "P02", 35],
+        ["O3", "P02", 4, null, "P03", 50],
+        ["O4", "P01", 3, null, "P04", 15],
+        ["O5", "P09", 1, null, null, null]
+      ],
+      "yellowCells": ["B6"],
+      "options": [
+        "4: `O5` disappears",
+        "5: `O5` stays, with an empty price",
+        "6: the empty price adds a row"
+      ],
+      "answer": 1,
+      "explain": "**Left Outer** keeps **all** rows from the first table (all 5 orders). `O5` stays and its Price is empty (null). A merge never adds rows beyond the first table unless a key repeats on the other side.",
+      "wrongFeedback": [
+        "That's what an **Inner** join does. Left Outer keeps every row from the table on the left.",
+        null,
+        "A missing match leaves a blank, not an extra row."
+      ],
+      "clues": ["“Left” means the first table: all of its rows stay."]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Inner join",
+      "prompt": "Now switch the Join Kind to **Inner**, which keeps only orders whose product is in the price list.\n\nIn ==G2==, how many order rows survive?",
+      "grid": [
+        ["Order", "Product ID", "Qty", null, "ID", "Price", "Rows kept"],
+        ["O21", "P05", 3, null, "P05", 40, null],
+        ["O22", "P06", 2, null, "P06", 25, null],
+        ["O23", "P05", 1, null, "P07", 60, null],
+        ["O24", "P08", 6, null, null, null, null],
+        ["O25", "P07", 2, null, null, null, null],
+        ["O26", "P06", 4, null, null, null, null]
+      ],
+      "targetCell": "G2",
+      "activeCell": "A2",
+      "highlightCells": ["B2:B7", "E2:E4"],
+      "yellowCells": ["G2"],
+      "expectedValue": 5,
+      "solution": "=SUMPRODUCT(COUNTIF(E2:E4,B2:B7))",
+      "explain": "**5**: only `O24` (P08) has no price, so Inner drops it and keeps 5 of 6. A Left Outer join would keep all 6, so pick the one that matches your question: “all orders” or “only priced orders”.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "wrongValue": "Count the orders whose Product ID **is found** in `E2:E4`. P05 and P06 each repeat, and every order counts."
+      },
+      "clues": [
+        "Which order's product is missing from the list?",
+        "Count each order whose ID is in the list: `=SUMPRODUCT(COUNTIF(list, orders))`."
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "A common mistake",
+      "prompt": "You merge, expand **Price**, and **every** price comes back empty (null) even though the price list has P01, P02 and P03.\n\nWhat's the most likely cause?",
+      "grid": [
+        ["Order", "Product ID", "Qty", "Price"],
+        ["O1", "P01 ", 5, null],
+        ["O2", "P03 ", 2, null],
+        ["O3", "P02 ", 4, null]
+      ],
+      "yellowCells": ["B2:B4"],
+      "options": [
+        "Hidden spaces in the IDs: no key matches",
+        "Left Outer can't return prices",
+        "Expand needs Ctrl + Shift + Enter"
+      ],
+      "answer": 0,
+      "explain": "The merge needs **exact** matches: `P01 ` with a trailing space is not `P01`, and capital letters count too. Add a **Trim** step (Transform → Format → Trim) on the key column in both queries, then merge again.",
+      "wrongFeedback": [
+        null,
+        "Left Outer is the join kind that keeps every order; it can return prices happily when keys match.",
+        "There's no such key in Power Query. The problem is the data in the key column."
+      ],
+      "clues": ["Does `P01 ` with a space match `P01` exactly?"]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Predict: next month",
+      "prompt": "You used **Data → Get Data → From File → From Folder → Combine & Transform**, so Power Query reads **every file in a folder** and appends them. Today the folder has `jan.csv` and `feb.csv`.\n\nYou drop `mar.csv` (same columns) into the folder and press [[Ctrl]] + [[Alt]] + [[F5]]. What happens?",
+      "options": [
+        "March rows join the table automatically",
+        "Only Jan and Feb remain: rebuild the query",
+        "March replaces Jan and Feb"
+      ],
+      "answer": 0,
+      "explain": "The query points at the **folder**, not at one file, so a refresh re-reads everything inside, March included. That's the monthly routine: drop the file, refresh, done. (On a Mac, use **Data → Refresh All**.)",
+      "wrongFeedback": [
+        null,
+        "A folder query isn't tied to the files that existed when you built it.",
+        "Append stacks files, so all three months stay in the table."
+      ],
+      "clues": ["The query reads a folder, not a single file."]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Orders have been merged with the price list. Work out what order `O3` will be worth: its **quantity** times the **price** it gets from the list.\n\nPut it in ==D4==.",
+      "grid": [
+        ["Order", "Product ID", "Qty", "Value", null, "ID", "List price"],
+        ["O1", "P04", 6, null, null, "P01", 25],
+        ["O2", "P01", 3, null, null, "P02", 35],
+        ["O3", "P02", 4, null, null, "P03", 60],
+        ["O4", "P03", 2, null, null, "P04", 15],
+        ["O5", "P01", 1, null, null, null, null]
+      ],
+      "targetCell": "D4",
+      "activeCell": "A1",
+      "expectedValue": 140,
+      "solution": "=C4*XLOOKUP(B4,F2:F5,G2:G5)",
+      "explain": "**140** = 4 units × 35. O3's product is P02, and P02's price is 35. Next month the prices can change and a refresh will re-run the merge for you.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "*"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "wrongValue": "Find O3's price first: its Product ID is in `B4`, and the list is in `F:G`. Then multiply by its Qty in `C4`."
+      },
+      "clues": [
+        "Look up O3's price, then multiply by its quantity.",
+        "Use the price list `F2:G5` to find the price."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "id": "print-protect",
+  "module": "essentials",
+  "title": "Print, Protect & Share",
+  "goal": "Print only the cells you mean with headings on every page, send a PDF, lock formulas while leaving input cells open, and share a sheet with the right people.",
+  "difficulty": 2,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Three things that go wrong",
+      "text": "A weekly report is done, and then three things go wrong:\n\n• The printout splits over pages and page 2 has **no headings**.\n• The **Internal note** column, meant for you, prints for the customer.\n• A colleague types over a formula and nobody notices.\n\nThis lesson fixes all three: **print setup**, **locking** cells and **sharing** safely.",
+      "grid": [
+        ["Day", "Item", "Qty", "Amount", "Internal note"],
+        ["Mon", "Samosa", 40, 600, "Owes us 2 days"],
+        ["Tue", "Chai", 100, 1000, "Check rate"],
+        ["Wed", "Lassi", 30, 1200, "New supplier"],
+        ["Thu", "Brownie", 16, 800, "Ask Meena"],
+        ["Fri", "Sandwich", 25, 1500, "Regular order"]
+      ],
+      "yellowCells": ["E1:E6"],
+      "activeCell": "A1"
+    },
+    {
+      "id": "s2",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Print preview: Ctrl + P",
+      "prompt": "Look **before** you print. Press [[Ctrl]] + [[P]] and Excel opens a preview of the page on the right, with the settings on the left: printer, pages, orientation, scaling and margins.\n\nPress [[Esc]] afterwards to leave without printing anything. On a Mac, it's [[Cmd]] + [[P]].",
+      "keys": { "win": "Ctrl+P", "mac": "Cmd+P" },
+      "grid": [
+        ["Day", "Item", "Qty", "Amount", "Internal note"],
+        ["Mon", "Samosa", 40, 600, "Owes us 2 days"],
+        ["Tue", "Chai", 100, 1000, "Check rate"],
+        ["Wed", "Lassi", 30, 1200, "New supplier"],
+        ["Thu", "Brownie", 16, 800, "Ask Meena"],
+        ["Fri", "Sandwich", 25, 1500, "Regular order"]
+      ],
+      "activeCell": "A1",
+      "postcondition": {
+        "grid": [
+          ["Day", "Item", "Qty", "Amount", "Internal note"],
+          ["Mon", "Samosa", 40, 600, "Owes us 2 days"],
+          ["Tue", "Chai", 100, 1000, "Check rate"],
+          ["Wed", "Lassi", 30, 1200, "New supplier"],
+          ["Thu", "Brownie", 16, 800, "Ask Meena"],
+          ["Fri", "Sandwich", 25, 1500, "Regular order"]
+        ],
+        "selection": "A1"
+      },
+      "clues": ["P for Print. Hold Ctrl, tap P."]
+    },
+    {
+      "id": "s3",
+      "type": "select",
+      "topic": "Print only what you mean",
+      "prompt": "The customer shouldn't get the **Internal note** column. Tell Excel what to print by selecting only the cells that should appear: from ==A1== to the last row of **Amount**. Then press [[Enter]].\n\nIn Excel you'd follow it with **Page Layout → Print Area → Set Print Area**.",
+      "grid": [
+        ["Day", "Item", "Qty", "Amount", "Internal note"],
+        ["Mon", "Samosa", 40, 600, "Owes us 2 days"],
+        ["Tue", "Chai", 100, 1000, "Check rate"],
+        ["Wed", "Lassi", 30, 1200, "New supplier"],
+        ["Thu", "Brownie", 16, 800, "Ask Meena"],
+        ["Fri", "Sandwich", 25, 1500, "Regular order"]
+      ],
+      "yellowCells": ["A1:D6"],
+      "target": "A1:D6",
+      "wrongFeedback": "Select the heading row and all five days, in columns A to D only. Column E (Internal note) stays out.",
+      "clues": ["Start at `A1` and drag to `D6`."]
+    },
+    {
+      "id": "s4",
+      "type": "select",
+      "topic": "Print titles",
+      "prompt": "The real report runs to 120 rows over three pages, and pages 2 and 3 would have numbers but no headings. **Print Titles** repeats a row at the top of every page.\n\nClick the row number of the row with the **column headings**, then press [[Enter]].\n\nIn Excel: **Page Layout → Print Titles → Rows to repeat at top**.",
+      "grid": [
+        ["Chai Corner: weekly sales", null, null],
+        ["Item", "Qty", "Amount"],
+        ["Samosa", 40, 600],
+        ["Chai", 100, 1000],
+        ["Lassi", 30, 1200],
+        ["Brownie", 16, 800],
+        ["Sandwich", 25, 1500],
+        ["Cold coffee", 30, 2400]
+      ],
+      "yellowCells": ["2:2"],
+      "target": "2:2",
+      "wrongFeedback": "Repeat the **column headings** (Item, Qty, Amount) on every page, not the report title above them.",
+      "clues": ["The headings sit in row 2, under the big title."]
+    },
+    {
+      "id": "s5",
+      "type": "entry",
+      "topic": "How many pages?",
+      "prompt": "A report has **121** rows and about **60** rows fit on one page. A page that's only partly full still takes a whole sheet of paper.\n\nHow many pages will it print? Type the number in ==C2== and press [[Enter]].",
+      "grid": [
+        ["Rows in report", "Rows per page", "Pages to print"],
+        [121, 60, null]
+      ],
+      "activeCell": "A1",
+      "yellowCells": ["C2"],
+      "expect": { "C2": 3 },
+      "explain": "121 divided by 60 is just over 2, so row 121 spills onto a **third** page, holding one lonely row. Spotting that in the preview is why you look before you print.",
+      "wrongFeedback": { "wrongValue": "Two full pages hold 120 rows. Where does row 121 go?" },
+      "clues": ["Two pages hold 120 rows."]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Fit to the page width",
+      "prompt": "The report is 8 columns wide, so column H prints alone on extra pages. You want all columns on one page width, with the rows still running on to more pages if needed.\n\nWhat do you set under **Page Layout → Scale to Fit**?",
+      "options": [
+        "**Width: 1 page**, **Height: Automatic**",
+        "**Fit Sheet on One Page**",
+        "Shrink every font to size 5"
+      ],
+      "answer": 0,
+      "explain": "Width 1 page squeezes the columns together while **Automatic** height lets the rows flow on normally. “Fit Sheet on One Page” would cram all 121 rows onto one tiny page.",
+      "wrongFeedback": [
+        null,
+        "That also fits the width, but it squeezes all 121 rows onto a single page, so the text becomes tiny.",
+        "That works by hand but you'd have to redo it whenever the data changes. Scale to Fit does it for you."
+      ],
+      "clues": ["You want the width squeezed, not the height."]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "Save as PDF",
+      "prompt": "Your manager will read the report on her phone, and nobody should be able to change a number by accident. What do you send her?",
+      "options": [
+        "The `.xlsx` file as it is",
+        "A **PDF**: save a copy or export, and pick PDF as the file type",
+        "A photo of your screen"
+      ],
+      "answer": 1,
+      "explain": "A PDF looks exactly like the print preview and opens on any phone. Set the print area, titles and scaling **first**: the PDF uses those settings.",
+      "wrongFeedback": [
+        "The Excel file lets anyone edit formulas by accident, and it may look different on her phone.",
+        null,
+        "A photo is blurry and cropped, and the numbers can't be copied out."
+      ],
+      "clues": ["Which format looks the same everywhere and isn't easy to edit?"]
+    },
+    {
+      "id": "s8",
+      "type": "select",
+      "topic": "Unlock the input cells",
+      "prompt": "Every cell starts **locked**, but locking only does something once you **protect the sheet**. So decide first which cells people can still type in.\n\nCashiers type the **Qty**; the prices and totals must stay safe. Select the Qty cells, then press [[Enter]].\n\nIn Excel: right-click, **Format Cells**, **Protection** tab, then untick **Locked**.",
+      "grid": [
+        ["Item", "Price", "Qty", "Total"],
+        ["Tea", 10, null, "=B2*C2"],
+        ["Samosa", 15, null, "=B3*C3"],
+        ["Lassi", 40, null, "=B4*C4"],
+        ["Brownie", 50, null, "=B5*C5"]
+      ],
+      "yellowCells": ["C2:C5"],
+      "target": "C2:C5",
+      "wrongFeedback": "Only the Qty cells, `C2` to `C5`, should be unlocked. Item, Price and Total stay locked.",
+      "clues": ["Which column do the cashiers type into?"]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Predict: protect without unlocking",
+      "prompt": "You choose **Review → Protect Sheet** but forget to unlock the Qty cells. Sana opens the file and tries to type **3** in `C2`.\n\nWhat happens?",
+      "grid": [
+        ["Item", "Price", "Qty", "Total"],
+        ["Tea", 10, null, "=B2*C2"],
+        ["Samosa", 15, null, "=B3*C3"],
+        ["Lassi", 40, null, "=B4*C4"],
+        ["Brownie", 50, null, "=B5*C5"]
+      ],
+      "activeCell": "C2",
+      "highlightCells": ["C2"],
+      "options": [
+        "It works, because Qty cells are special",
+        "Excel refuses: the sheet is protected and every cell is still locked",
+        "Excel unlocks the cell for her"
+      ],
+      "answer": 1,
+      "explain": "Locked is the default for **every** cell, so Protect Sheet blocks them all, Qty included. Unlock the input cells first, then protect. If you set a password, keep it safe: Excel can't recover it for you.",
+      "wrongFeedback": [
+        "Excel has no special treatment for Qty. A cell is unlocked only if **you** unlocked it.",
+        null,
+        "Excel never unlocks anything on its own."
+      ],
+      "clues": ["Which cells did you unlock?"]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Share and co-edit",
+      "prompt": "The finished sheet is saved in OneDrive. Your manager only needs to **read** it. Two teammates need to **fill in** Qty at the same time. Which setup in the **Share** box is safest?",
+      "options": [
+        "Anyone with the link: **Can edit**",
+        "Manager **Can view**, teammates **Can edit**, each invited by name",
+        "Email the file to all three"
+      ],
+      "answer": 1,
+      "explain": "Give each person only the access they need, and invite them by name so a forwarded link doesn't let a stranger edit. People with **Can edit** on a OneDrive file can work in it together at the same time.",
+      "wrongFeedback": [
+        "That lets the manager, and anyone she forwards the link to, change your numbers.",
+        null,
+        "Three copies drift apart and you end up merging them by hand."
+      ],
+      "clues": ["Who needs to change things, and who only needs to look?"]
+    },
+    {
+      "id": "s11",
+      "type": "select",
+      "topic": "Challenge",
+      "prompt": "Challenge. Ms Rao will type marks into **Maths** and **Science** for four students. **Total** is a formula and the names must never change. You're about to protect the sheet.\n\nSelect the cells that must stay **unlocked**, then press [[Enter]].",
+      "grid": [
+        ["Student", "Maths", "Science", "Total"],
+        ["Ravi", null, null, "=B2+C2"],
+        ["Sia", null, null, "=B3+C3"],
+        ["Tara", null, null, "=B4+C4"],
+        ["Uday", null, null, "=B5+C5"]
+      ],
+      "target": "B2:C5",
+      "wrongFeedback": "Marks go into both subject columns, and nowhere else: not the names, not the Total formulas.",
+      "clues": ["Two columns of marks, four rows."]
+    }
+  ]
+}

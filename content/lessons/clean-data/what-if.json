@@ -1,0 +1,347 @@
+{
+  "id": "what-if",
+  "module": "clean-data",
+  "title": "What-If Analysis & Forecasting",
+  "goal": "Work backwards to a target like Goal Seek does, compare scenarios, build the results of a one-variable data table and read a forecast honestly.",
+  "difficulty": 2,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "What if…?",
+      "text": "A café owner asks two kinds of question:\n• **“What if** I sell 500 cups instead of 400?” Change the input, watch the answer. Click the button below.\n• **“How many cups** do I need to make 9,000 profit?” That's backwards: you know the answer you want and need the input.\n\n**What-If Analysis** (on the **Data** tab) is Excel's toolbox for both. **Goal Seek** works backwards, **Scenario Manager** stores Best/Worst cases, a **Data Table** tries a list of values, and **Forecast Sheet** predicts the future from the past.\n\nExcel does the trial and error. In this lesson you'll work out each result yourself, so you know what Excel should say.",
+      "grid": [
+        ["Café model", "Value"],
+        ["Cups sold", 400],
+        ["Price per cup", 60],
+        ["Cost per cup", 35],
+        ["Fixed costs", 6000],
+        ["Profit", "=B2*(B3-B4)-B5"]
+      ],
+      "activeCell": "B6",
+      "yellowCells": ["B6"],
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "live-update",
+        "liveUpdate": {
+          "watchCell": "B2",
+          "fromValue": 400,
+          "toValue": 500,
+          "resultCell": "B6",
+          "buttonLabel": "What if: 500 cups?",
+          "resetLabel": "Back to 400 cups"
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Work backwards",
+      "prompt": "Goal Seek tries input values until the answer hits your target. You can do the same with a little algebra.\n\nWe want **Profit = 9000**. Each cup earns `B3-B4`, and fixed costs are paid first. In ==B8==, work out how many cups we need to sell.",
+      "grid": [
+        ["Café model", "Value"],
+        ["Cups sold", 400],
+        ["Price per cup", 60],
+        ["Cost per cup", 35],
+        ["Fixed costs", 6000],
+        ["Profit", "=B2*(B3-B4)-B5"],
+        ["Profit goal", 9000],
+        ["Cups needed", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "highlightCells": ["B3:B5", "B7"],
+      "yellowCells": ["B8"],
+      "expectedValue": 600,
+      "mustReference": ["B7"],
+      "solution": "=(B7+B5)/(B3-B4)",
+      "explain": "**600** cups: (9000 + 6000) ÷ 25 profit per cup. Goal Seek would reach the same number by trial and error. Check it: 600 × 25 = 15,000, minus 6,000 fixed costs = 9,000.",
+      "mobileButtons": ["=", "(", ")", "+", "-", "/"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingReference": "The goal is in `B7`, so your formula should use it.",
+        "wrongValue": "Profit goal plus fixed costs, **divided by** the profit per cup (price minus cost): `=(B7+B5)/(B3-B4)`."
+      },
+      "clues": [
+        "Profit per cup is `B3-B4`.",
+        "We must earn the goal **plus** the fixed costs, then divide."
+      ]
+    },
+    {
+      "id": "s3",
+      "type": "mcq",
+      "topic": "The Goal Seek box",
+      "prompt": "Excel's Goal Seek box has three fields. We want profit to reach 9000 by changing the cups sold.\n\nWhich entries are right?",
+      "grid": [
+        ["Café model", "Value"],
+        ["Cups sold", 400],
+        ["Price per cup", 60],
+        ["Cost per cup", 35],
+        ["Fixed costs", 6000],
+        ["Profit", "=B2*(B3-B4)-B5"],
+        ["Profit goal", 9000]
+      ],
+      "activeCell": "B6",
+      "showFormulaBar": true,
+      "options": [
+        "Set `B6`, to value `9000`, by changing `B2`",
+        "Set `B2`, to value `600`, by changing `B6`",
+        "Set `B6`, to value `9000`, by changing `B7`"
+      ],
+      "answer": 0,
+      "explain": "**Set cell** is the formula you want to hit a target (`B6`). **To value** is the target number you type. **By changing cell** is the input Excel may adjust (`B2`), and it must be a typed number that feeds the formula.",
+      "wrongFeedback": [
+        null,
+        "You'd need to already know 600, and `B6` is a formula, so Excel can't change it. Goal Seek never edits a formula.",
+        "`B7` is a typed number, but the Profit formula doesn't use it. Changing it would never move `B6`: the input must feed the formula."
+      ],
+      "clues": [
+        "Which cell holds the formula? Which number do you type? Which input drives the formula?"
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Open Goal Seek: Alt, A, W, G",
+      "prompt": "Open the box from the keyboard: tap [[Alt]], [[A]], [[W]], [[G]] one after another (**Data → What-If Analysis → Goal Seek**).\n\nIn Excel you'd then fill in `B6`, `9000`, `B2` and click OK. The sheet isn't simulated here, so the grid shows the finished result: Excel changed `B2` to 600 and Profit hit 9000.\n\nOn a Mac, use **Data → What-If Analysis → Goal Seek**.",
+      "keys": {
+        "win": ["Alt", "A", "W", "G"],
+        "mac": null
+      },
+      "grid": [
+        ["Café model", "Value"],
+        ["Cups sold", 400],
+        ["Price per cup", 60],
+        ["Cost per cup", 35],
+        ["Fixed costs", 6000],
+        ["Profit", "=B2*(B3-B4)-B5"]
+      ],
+      "activeCell": "B6",
+      "postcondition": {
+        "grid": [
+          ["Café model", "Value"],
+          ["Cups sold", 600],
+          ["Price per cup", 60],
+          ["Cost per cup", 35],
+          ["Fixed costs", 6000],
+          ["Profit", "=B2*(B3-B4)-B5"]
+        ],
+        "selection": "B6"
+      },
+      "clues": ["Tap Alt, then A, then W, then G."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Change a different input",
+      "prompt": "Goal Seek can change **any** input. Now the bakery keeps its 500 loaves and wants **Profit = 12000**. This time the price must move.\n\nIn ==B8==, work out the price per loaf the bakery needs.",
+      "grid": [
+        ["Bakery model", "Value"],
+        ["Loaves sold", 500],
+        ["Price per loaf", 40],
+        ["Cost per loaf", 20],
+        ["Fixed costs", 8000],
+        ["Profit", "=B2*(B3-B4)-B5"],
+        ["Profit goal", 12000],
+        ["Price needed", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "yellowCells": ["B8"],
+      "expectedValue": 60,
+      "mustReference": ["B7"],
+      "solution": "=(B7+B5)/B2+B4",
+      "explain": "**60**: the bakery must earn 12000 + 8000 = 20000 from 500 loaves, which is 40 per loaf **above cost**, so the price is 20 + 40. Check: 500 × (60 − 20) − 8000 = 12000.",
+      "mobileButtons": ["=", "(", ")", "+", "/"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingReference": "Use the goal in `B7`.",
+        "wrongValue": "Earn goal + fixed costs, spread over 500 loaves. That's the profit **per loaf**, so add the cost of a loaf on top."
+      },
+      "clues": [
+        "Goal plus fixed costs, divided by loaves, gives the profit needed per loaf.",
+        "The price is that margin **plus** the cost per loaf."
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Scenarios: best and worst",
+      "prompt": "Instead of one answer, planners compare **scenarios**: the same model with different inputs. Here are three cases for the café.\n\nCopy the Profit logic into ==F4== to find out what the **Worst** case does.",
+      "grid": [
+        ["Scenario", "Cups", "Price", "Cost", "Fixed", "Profit"],
+        ["Best", 500, 65, 33, 6000, "=B2*(C2-D2)-E2"],
+        ["Likely", 400, 60, 35, 6000, "=B3*(C3-D3)-E3"],
+        ["Worst", 300, 55, 38, 6000, null]
+      ],
+      "targetCell": "F4",
+      "activeCell": "A4",
+      "highlightCells": ["B4:E4"],
+      "yellowCells": ["F4"],
+      "expectedValue": -900,
+      "mustReference": ["B4", "C4", "D4", "E4"],
+      "solution": "=B4*(C4-D4)-E4",
+      "explain": "**−900**: in the Worst case the café loses money, since 300 cups × 17 = 5,100 doesn't cover the 6,000 fixed costs. Seeing the downside next to the upside is the point of scenarios.",
+      "mobileButtons": ["=", "(", ")", "*", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingReference": "Use the Worst row's own cells: `B4`, `C4`, `D4` and `E4`.",
+        "wrongValue": "Same pattern as the rows above, but on row 4: `=B4*(C4-D4)-E4`."
+      },
+      "clues": ["Look at `F3` and shift every reference down one row."]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "Which tool?",
+      "prompt": "Your boss says: “Save Best, Likely and Worst as named cases, and let me **flip** the model between them.”\n\nWhich What-If tool does that?",
+      "options": ["Scenario Manager", "Goal Seek", "Forecast Sheet"],
+      "answer": 0,
+      "explain": "**Scenario Manager** (Data → What-If Analysis) saves named sets of **input** cells and can show them side by side in a summary. Goal Seek solves for one input. Forecast Sheet extends a series of past values.",
+      "wrongFeedback": [
+        null,
+        "Goal Seek hunts for **one** input value that hits a target. It doesn't store named cases.",
+        "Forecast Sheet predicts future values from dated history. It doesn't switch between your own input sets."
+      ],
+      "clues": ["Which tool stores named sets of inputs?"]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "One-variable data table",
+      "prompt": "A **data table** tries a whole list of values for **one** input. Excel puts each price in `D3:D6` into the Price cell `B5` and records the profit formula's answer in column E.\n\nIn ==E4==, work out what the table will show for the price in `D4`.",
+      "grid": [
+        ["Input", "Value", null, "Price", "Profit"],
+        ["Cups", 400, null, null, "=B2*(B5-B3)-B4"],
+        ["Cost", 35, null, 45, null],
+        ["Fixed", 6000, null, 50, null],
+        ["Price", 60, null, 55, null],
+        [null, null, null, 60, null]
+      ],
+      "targetCell": "E4",
+      "activeCell": "D4",
+      "highlightCells": ["D4"],
+      "yellowCells": ["E4"],
+      "expectedValue": 0,
+      "mustReference": ["D4"],
+      "solution": "=B2*(D4-B3)-B4",
+      "explain": "**0**: at a price of 50, 400 cups earn 15 each = 6000, exactly the fixed costs. The price where profit is zero is the **break-even** price. A data table shows the whole column at once.",
+      "mobileButtons": ["=", "(", ")", "*", "-"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingReference": "Use the price from `D4`, not the one in `B5`.",
+        "wrongValue": "Replace the Price in the formula with the price in `D4`: cups × (`D4` − cost) − fixed."
+      },
+      "clues": ["Take the profit formula in `E2` and swap `B5` for `D4`."]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "Column input cell",
+      "prompt": "You select `D2:E6` and open **Data → What-If Analysis → Data Table**. The prices run **down** column D, so you fill in **Column input cell**.\n\nWhich cell goes there?",
+      "grid": [
+        ["Input", "Value", null, "Price", "Profit"],
+        ["Cups", 400, null, null, "=B2*(B5-B3)-B4"],
+        ["Cost", 35, null, 45, -2000],
+        ["Fixed", 6000, null, 50, 0],
+        ["Price", 60, null, 55, 2000],
+        [null, null, null, 60, 4000]
+      ],
+      "yellowCells": ["B5"],
+      "options": [
+        "`B5`, the Price the formula uses",
+        "`E2`, the profit formula",
+        "`D3`, the first price in the list"
+      ],
+      "answer": 0,
+      "explain": "The **input cell** is the cell the formula already depends on, and Excel swaps each value of the list into it (`B5`). The list is in column D, so it's the **column** input; a list across a row would use the **row** input.",
+      "wrongFeedback": [
+        null,
+        "`E2` is the formula whose answers you want. It's already part of the selection; it isn't the input.",
+        "`D3` is one of the test values. Excel needs the cell the **formula** reads, which is the Price in `B5`."
+      ],
+      "clues": ["Which cell does the profit formula read the price from?"]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Forecast: a rough version",
+      "prompt": "**Forecast Sheet** (Data → Forecast Sheet) extends a dated series into the future. Let's do a rough version by hand, assuming sales keep growing by the **average monthly increase**.\n\nSales went from 120 in Jan to 170 in Jun, which is 5 steps. In ==B8==, predict July.",
+      "grid": [
+        ["Month", "Sales"],
+        ["Jan", 120],
+        ["Feb", 130],
+        ["Mar", 145],
+        ["Apr", 150],
+        ["May", 165],
+        ["Jun", 170],
+        ["Jul (forecast)", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["B8"],
+      "expectedValue": 180,
+      "mustReference": ["B7"],
+      "solution": "=B7+(B7-B2)/5",
+      "explain": "**180**: the average rise is (170 − 120) ÷ 5 = 10 a month, so July ≈ 170 + 10. Excel's Forecast Sheet uses a smarter method (exponential smoothing) and would give a slightly different number, but the idea is the same: extend the past trend.",
+      "mobileButtons": ["=", "(", ")", "+", "-", "/"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "missingReference": "Start from the last month, `B7`.",
+        "wrongValue": "Start from June (170) and add the average monthly increase: (Jun − Jan) ÷ 5."
+      },
+      "clues": ["Average increase = (Jun − Jan) ÷ 5.", "July = June + that increase."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "Read a forecast honestly",
+      "prompt": "In Excel you select the Month and Sales columns and click **Data → Forecast Sheet**. It draws a forecast **line** with a shaded **band** around it. (This browser sheet can't draw the chart.)\n\nWhat does the band mean?",
+      "options": [
+        "Where the real value will probably land (95% confidence by default)",
+        "The guaranteed minimum and maximum",
+        "Months with missing data"
+      ],
+      "answer": 0,
+      "explain": "A forecast is an **estimate**, and the band shows the uncertainty. The wider it gets, the less sure Excel is. It also needs a **timeline** of dates at regular steps (every month, say) with no duplicates, or the chart won't build.",
+      "wrongFeedback": [
+        null,
+        "Nothing in a forecast is guaranteed. The band is a probability range, not a promise.",
+        "Missing data would be a problem with your timeline. The band shows prediction uncertainty."
+      ],
+      "clues": ["Is a forecast a promise or an estimate?"]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A tuition class charges a fee per student. Its hall rent is the same however many attend. The class **breaks even** when profit is exactly 0.\n\nIn `B5`, how many students are needed at the very least? (You can't have part of a student.)",
+      "grid": [
+        ["Tuition class", "Value"],
+        ["Fee per student", 800],
+        ["Running cost per student", 150],
+        ["Hall rent", 9000],
+        ["Students needed", null]
+      ],
+      "targetCell": "B5",
+      "activeCell": "A1",
+      "expectedValue": 14,
+      "solution": "=ROUNDUP(B4/(B2-B3),0)",
+      "explain": "**14**: each student leaves 650 after costs, and 9000 ÷ 650 = 13.85. 13 students would still lose money, so you round **up** to 14. Goal Seek would stop at 13.846 and leave the rounding to you.",
+      "mobileButtons": ["=", "(", ")", "/", "-", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "wrongValue": "Each student adds fee minus running cost. Divide the rent by that, and round **up**: 13.85 students isn't enough."
+      },
+      "clues": [
+        "Per student you keep fee minus running cost.",
+        "Divide the rent by that, then round up to the next whole student."
+      ]
+    }
+  ]
+}

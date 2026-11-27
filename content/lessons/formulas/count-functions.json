@@ -1,0 +1,240 @@
+{
+  "id": "count-functions",
+  "module": "formulas",
+  "title": "COUNT, COUNTA & COUNTBLANK",
+  "goal": "Count numbers, filled cells or empty cells with COUNT, COUNTA and COUNTBLANK, and pick the right one for questions like “how many haven't paid yet?”.",
+  "difficulty": 1,
+  "requiredCorrect": 8,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Three kinds of counting",
+      "text": "A trip sign-up sheet: some people paid, some haven't, and every row has a receipt number or nothing.\n\n• **COUNT** counts cells that hold **numbers**.\n• **COUNTA** counts cells that hold **anything** (text, numbers, dates).\n• **COUNTBLANK** counts cells that are **empty**.\n\nSame column, three different answers.",
+      "grid": [
+        ["Name", "Fee paid", "Receipt"],
+        ["Aman", 500, "R101"],
+        ["Bela", 300, "R102"],
+        ["Cyrus", null, null],
+        ["Dina", 500, "R103"],
+        ["Esha", null, null]
+      ],
+      "activeCell": "B4",
+      "yellowCells": ["B4"],
+      "showFormulaBar": true
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "COUNT: how many numbers?",
+      "prompt": "Fees are numbers, and an unpaid fee is an empty cell. In ==B8==, type `=COUNT(B2:B7)` to count **how many people have paid**.",
+      "grid": [
+        ["Student", "Fee paid"],
+        ["Gia", 1200],
+        ["Hugo", null],
+        ["Ishan", 1200],
+        ["Jana", null],
+        ["Kabir", null],
+        ["Lara", 1200],
+        ["Paid", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["B8"],
+      "expectedValue": 3,
+      "mustUse": ["COUNT"],
+      "solution": "=COUNT(B2:B7)",
+      "explain": "**3**: Gia, Ishan and Lara. COUNT adds 1 for every cell holding a number and skips the empty ones.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Use **COUNT**.",
+        "wrongValue": "Count the fee column only, `B2` to `B7`."
+      },
+      "clues": ["It works like SUM, but it counts instead of adding."]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "COUNTBLANK: what's missing?",
+      "prompt": "New class, opposite question: **how many haven't paid yet**?\n\nIn ==B8==, use **COUNTBLANK** on the fee column.",
+      "grid": [
+        ["Student", "Fee paid"],
+        ["Aman", 800],
+        ["Bela", null],
+        ["Cyrus", null],
+        ["Dina", 800],
+        ["Esha", null],
+        ["Farah", null],
+        ["Not paid", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "highlightCells": ["B2:B7"],
+      "yellowCells": ["B8"],
+      "expectedValue": 4,
+      "mustUse": ["COUNTBLANK"],
+      "solution": "=COUNTBLANK(B2:B7)",
+      "explain": "**4**: Bela, Cyrus, Esha and Farah. COUNTBLANK counts the empty cells, which makes it perfect for chasing what's missing. Two have paid and four haven't: six students in all.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Use **COUNTBLANK** to count the empty cells.",
+        "wrongValue": "Count the empty cells in the fee column, `B2` to `B7`."
+      },
+      "clues": ["`=COUNTBLANK(` and the same six cells."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "COUNTA: anything filled in",
+      "prompt": "A guest list has a couple of gaps. **COUNTA** counts every cell that has **something** in it.\n\nIn ==A8==, count how many guests are listed.",
+      "grid": [["Guest"], ["Meena"], ["Joy"], [null], ["Karan"], ["Leela"], [null], [null]],
+      "targetCell": "A8",
+      "activeCell": "A1",
+      "highlightCells": ["A2:A7"],
+      "yellowCells": ["A8"],
+      "expectedValue": 4,
+      "mustUse": ["COUNTA"],
+      "solution": "=COUNTA(A2:A7)",
+      "explain": "**4**: Meena, Joy, Karan and Leela. The two empty rows aren't counted, and the header isn't in the range.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Use **COUNTA**: the guests are names, not numbers.",
+        "wrongValue": "Count the filled cells in `A2` to `A7`; the empty ones don't count."
+      },
+      "clues": ["A at the end stands for “all” kinds of content."]
+    },
+    {
+      "id": "s5",
+      "type": "mcq",
+      "topic": "Predict: COUNT on names",
+      "prompt": "Someone counts the students in this list with `=COUNT(A2:A6)`.\n\nWhat does it show?",
+      "grid": [["Student"], ["Nia"], ["Omar"], ["Priya"], ["Quinn"], ["Ravi"]],
+      "activeCell": "A2",
+      "highlightCells": ["A2:A6"],
+      "options": ["`5`", "`0`", "An error message"],
+      "answer": 1,
+      "explain": "COUNT only counts **numbers**, and names are text, so it shows **0** with no warning. When the answer should be more than zero, switch to COUNTA.",
+      "wrongFeedback": [
+        "That's what you'd hope for, but COUNT doesn't count text.",
+        null,
+        "No error appears: COUNT quietly finds no numbers and says 0."
+      ],
+      "clues": ["Are Nia, Omar and the rest numbers or text?"]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Fix the zero",
+      "prompt": "A shop writes receipt numbers like R101 in column B, and leaves it empty when nothing was issued. Someone typed `=COUNT(B2:B7)` and got 0.\n\nIn ==B8==, type a formula that counts how many receipts were **issued**.",
+      "grid": [
+        ["Customer", "Receipt"],
+        ["Tara", "R101"],
+        ["Uri", null],
+        ["Vera", "R102"],
+        ["Wes", "R103"],
+        ["Xena", null],
+        ["Yash", "R104"],
+        ["Issued", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "yellowCells": ["B8"],
+      "expectedValue": 4,
+      "mustUse": ["COUNTA"],
+      "solution": "=COUNTA(B2:B7)",
+      "explain": "**4**: R101 to R104 are text because of the R, so COUNT sees none. COUNTA counts anything non-empty. Uri and Xena have nothing, so they're skipped.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "Receipt numbers with a letter are text. Use the function that counts any filled cell.",
+        "wrongValue": "Count the filled cells in `B2` to `B7`. Four receipts exist."
+      },
+      "clues": ["Which of the three functions counts text?"]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "A zero is not a blank",
+      "prompt": "Quin and Tess typed **0** for “not paid”. Raj's cell is left empty.\n\nWhat does `=COUNTBLANK(B2:B6)` show?",
+      "grid": [
+        ["Student", "Fee paid"],
+        ["Pia", 500],
+        ["Quin", 0],
+        ["Raj", null],
+        ["Sid", 500],
+        ["Tess", 0]
+      ],
+      "activeCell": "B2",
+      "highlightCells": ["B2:B6"],
+      "yellowCells": ["B4"],
+      "options": ["`1`: only Raj's empty cell", "`3`: Quin, Raj and Tess", "`0`: nothing is empty"],
+      "answer": 0,
+      "explain": "A **0** is a number, so the cell isn't empty. Only Raj's truly blank cell counts. If you want “unpaid” counted, leave the cell empty, or you'll need a different formula.",
+      "wrongFeedback": [
+        null,
+        "Quin and Tess typed a real 0, so Excel sees a number there, not an empty cell.",
+        "Raj's cell really is empty, so it counts."
+      ],
+      "clues": ["Does a typed 0 count as empty?"]
+    },
+    {
+      "id": "s8",
+      "type": "entry",
+      "topic": "Watch the blanks shrink",
+      "prompt": "Two people still haven't paid, so the count shows 2. Raj pays 500 today.\n\nClick ==B4==, type **500**, press [[Enter]], and watch `B7`.",
+      "grid": [
+        ["Student", "Fee paid"],
+        ["Pia", 500],
+        ["Quin", 500],
+        ["Raj", null],
+        ["Sid", null],
+        ["Tess", 500],
+        ["Not paid", "=COUNTBLANK(B2:B6)"]
+      ],
+      "activeCell": "A4",
+      "yellowCells": ["B4"],
+      "highlightCells": ["B7"],
+      "expect": {
+        "B4": 500,
+        "B7": 1
+      },
+      "explain": "The count dropped from 2 to 1 by itself. Now only Sid is left to chase. This is a ready-made “who still owes us” counter.",
+      "clues": ["Type only in `B4`; `B7` updates on its own."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "A teacher marked a test. Absent students show the word “Absent”, and a blank means the paper isn't marked yet.\n\nHow many papers have a mark? Put the answer in ==B8==.",
+      "grid": [
+        ["Student", "Mark"],
+        ["Anil", 72],
+        ["Bhavna", "Absent"],
+        ["Chitra", 88],
+        ["Dev", null],
+        ["Esha", 65],
+        ["Faisal", 90],
+        ["Marked", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A1",
+      "expectedValue": 4,
+      "mustUse": ["COUNT"],
+      "solution": "=COUNT(B2:B7)",
+      "explain": "**4**: Anil, Chitra, Esha and Faisal. “Absent” is text and Dev's cell is empty, and COUNT skips both. COUNTA would say 5 because it counts the word “Absent”.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel calculates.",
+        "missingFunction": "A mark is a number. Which function counts only numbers?",
+        "wrongValue": "Count only the cells that hold a mark. “Absent” is not a mark."
+      },
+      "clues": ["Only the numbers are marks."]
+    }
+  ]
+}

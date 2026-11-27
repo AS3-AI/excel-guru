@@ -1,0 +1,420 @@
+{
+  "id": "final-exam",
+  "module": "projects",
+  "title": "Final Exam & Certificate",
+  "goal": "Show you can combine shortcuts, formulas, lookups, dynamic arrays and good judgement about pivots, cleaning and AI across the whole course.",
+  "difficulty": 3,
+  "requiredCorrect": 15,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "shortcut",
+      "mode": "chord",
+      "topic": "Question 1 of 15 · Start here",
+      "prompt": "You're on the first sale, ==C2==. Select every sale down to the last row without touching the mouse.",
+      "keys": {
+        "win": "Ctrl+Shift+ArrowDown",
+        "mac": "Shift+Cmd+ArrowDown"
+      },
+      "grid": [
+        ["Rep", "City", "Sales"],
+        ["Asha", "Pune", 4200],
+        ["Ben", "Delhi", 6100],
+        ["Chitra", "Pune", 3500],
+        ["Dev", "Mumbai", 7800],
+        ["Esha", "Delhi", 2900],
+        ["Farhan", "Pune", 5400]
+      ],
+      "activeCell": "C2",
+      "postcondition": {
+        "selection": "C2:C7"
+      },
+      "clues": ["Use the shortcut that selects as it jumps to the end of the data."]
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "Question 2 of 15 · Start here",
+      "prompt": "The manager only wants **Q1 and Q3** sales, across all three stores. Put that combined total in ==B5==.",
+      "grid": [
+        ["Store", "Q1", "Q2", "Q3", "Q4"],
+        ["Pune", 120, 90, 110, 140],
+        ["Delhi", 100, 95, 130, 85],
+        ["Kochi", 80, 70, 70, 90],
+        ["Q1 + Q3", null, null, null, null]
+      ],
+      "targetCell": "B5",
+      "activeCell": "A5",
+      "yellowCells": ["B5"],
+      "expectedValue": 610,
+      "mustUse": ["SUM"],
+      "solution": "=SUM(B2:B4,D2:D4)",
+      "explain": "**610**: Q1 is 300 and Q3 is 310. One SUM took both columns, with a comma between the two ranges, and skipped Q2 and Q4.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "Add up the numbers with SUM.",
+        "wrongValue": "Only the Q1 column and the Q3 column for the three stores, not Q2 or Q4."
+      },
+      "clues": ["Two ranges can live in one function, separated by a comma."]
+    },
+    {
+      "id": "s3",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Question 3 of 15 · Everyday essentials",
+      "prompt": "You're in the Price column. Put the most expensive item at the top, keeping every row together. (On a Mac, use the Sort button on the Data tab.)",
+      "keys": {
+        "win": ["Alt", "A", "S", "D"],
+        "mac": null
+      },
+      "grid": [
+        ["Item", "Seller", "Price"],
+        ["Kettle", "Ritu", 1250],
+        ["Toaster", "Sam", 980],
+        ["Mixer", "Tina", 3499],
+        ["Iron", "Uma", 1599],
+        ["Fan", "Vik", 2150]
+      ],
+      "activeCell": "C3",
+      "postcondition": {
+        "grid": [
+          ["Item", "Seller", "Price"],
+          ["Mixer", "Tina", 3499],
+          ["Fan", "Vik", 2150],
+          ["Iron", "Uma", 1599],
+          ["Kettle", "Ritu", 1250],
+          ["Toaster", "Sam", 980]
+        ],
+        "selection": "C2"
+      },
+      "clues": ["Biggest first means descending."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "Question 4 of 15 · Formula foundations",
+      "prompt": "Five colleagues split the lunch bill. In ==B8==, show **Dev's share** of the total as a decimal rounded to **3 places**.",
+      "grid": [
+        ["Name", "Bill"],
+        ["Asha", 420],
+        ["Dev", 380],
+        ["Chitra", 650],
+        ["Ben", 290],
+        ["Esha", 560],
+        [null, null],
+        ["Dev's share", null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "yellowCells": ["B8"],
+      "expectedValue": 0.165,
+      "mustUse": ["ROUND"],
+      "solution": "=ROUND(B3/SUM(B2:B6),3)",
+      "explain": "**0.165**: Dev's 380 out of a 2300 total is 0.16521…, and rounding to 3 places leaves 0.165. Without ROUND you'd see a long, untidy decimal.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "/"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "The answer must be rounded to 3 decimal places.",
+        "wrongValue": "Dev's bill divided by the **whole** total, then rounded to 3 places: three digits after the point."
+      },
+      "clues": ["Divide, then round the result."]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Question 5 of 15 · Formulas that decide",
+      "prompt": "Reps earn a **1000** bonus when their sales are **at least 5000** and their rating is **at least 4**. Otherwise they get nothing. Work out Meera's bonus in ==D2==.",
+      "grid": [
+        ["Rep", "Sales", "Rating", "Bonus"],
+        ["Meera", 5000, 4, null],
+        ["Dev", 6000, 3, null]
+      ],
+      "targetCell": "D2",
+      "activeCell": "A2",
+      "yellowCells": ["D2"],
+      "expectedValue": 1000,
+      "mustUse": ["IF", "AND"],
+      "mustReference": ["B2", "C2"],
+      "solution": "=IF(AND(B2>=5000,C2>=4),1000,0)",
+      "explain": "**1000**: Meera sits exactly on both limits, and “at least” counts the limit itself. Using `>` instead of `>=` would have wrongly sent her home with 0.",
+      "mobileButtons": ["=", "(", ")", ",", ">"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "A decision with two conditions that must both be true.",
+        "wrongValue": "Meera's numbers are exactly on the limits. “At least” includes the limit itself."
+      },
+      "clues": ["Both tests must pass."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "Question 6 of 15 · Formulas that decide",
+      "prompt": "How many orders from **Delhi** were worth **500 or more**? Answer in ==E2==.",
+      "grid": [
+        ["Order", "City", "Amount", null, "Delhi, 500+"],
+        [1001, "Delhi", 800, null, null],
+        [1002, "Pune", 500, null, null],
+        [1003, "Delhi", 500, null, null],
+        [1004, "Delhi", 300, null, null],
+        [1005, "Pune", 900, null, null],
+        [1006, "Delhi", 1200, null, null],
+        [1007, "Pune", 250, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "yellowCells": ["E2"],
+      "expectedValue": 3,
+      "mustUse": ["COUNTIFS"],
+      "solution": "=COUNTIFS(B2:B8,\"Delhi\",C2:C8,\">=500\")",
+      "explain": "**3**: Delhi's 800, 500 and 1200. Delhi has 4 orders and the whole list has 5 orders of 500+, so both conditions were needed.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "Count rows that meet two conditions at once.",
+        "wrongValue": "Delhi **and** 500 or more. Remember an order of exactly 500 counts."
+      },
+      "clues": ["One pair of range and condition for the city, another for the amount."]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "Question 7 of 15 · Text & dates",
+      "prompt": "Every staff ID ends with the city name. In ==B2==, show just the city from the ID in `A2`.",
+      "grid": [
+        ["Staff ID", "City"],
+        ["MH-7310-Mumbai", null],
+        ["KA-2041-Pune", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "yellowCells": ["B2"],
+      "expectedValue": "Mumbai",
+      "mustReference": ["A2"],
+      "solution": "=TEXTAFTER(A2,\"-\",2)",
+      "explain": "**Mumbai**: the city is whatever follows the second dash. Taking a fixed number of characters from the right would work for `Pune` but break for `Mumbai`.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "-"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingReference": "Work from the ID in `A2`.",
+        "wrongValue": "Only the city name, with nothing else: no code and no dashes."
+      },
+      "clues": ["Everything after the second `-`."]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Question 8 of 15 · Text & dates",
+      "prompt": "An order was placed on Monday 5 January and is due on Tuesday 20 January. How many **working days** (Monday to Friday) is that, counting both days? Answer in ==C2==.",
+      "grid": [
+        ["Placed", "Due", "Working days"],
+        ["=DATE(2026,1,5)", "=DATE(2026,1,20)", null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "A2",
+      "yellowCells": ["C2"],
+      "expectedValue": 12,
+      "mustUse": ["NETWORKDAYS"],
+      "solution": "=NETWORKDAYS(A2,B2)",
+      "explain": "**12**: the 16 calendar days contain two full weekends (4 days), leaving 12 working days. Subtracting the dates would have said 15.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "Excel has a function that skips Saturdays and Sundays for you.",
+        "wrongValue": "Weekends don't count, and both the first and last day are included."
+      },
+      "clues": ["Look for a function with “workdays” in its name."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "Question 9 of 15 · Lookups",
+      "prompt": "The customer asked for the item in `D2`. In ==E2==, show its price from the list, or the words **Not stocked** if it isn't on the list.",
+      "grid": [
+        ["Item", "Price", null, "Asked for", "Price"],
+        ["Tea", 20, null, "Pastry", null],
+        ["Samosa", 15, null, null, null],
+        ["Coffee", 30, null, null, null],
+        ["Cake", 120, null, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "yellowCells": ["E2"],
+      "expectedValue": "Not stocked",
+      "mustUse": ["XLOOKUP"],
+      "mustReference": ["D2"],
+      "solution": "=XLOOKUP(D2,A2:A5,B2:B5,\"Not stocked\")",
+      "explain": "**Not stocked**: Pastry isn't in the list, so instead of `#N/A` the lookup returned your own message. Change `D2` to Cake and the same formula gives 120.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "Use a lookup, and give it a message to show when nothing is found.",
+        "missingReference": "Look up the item typed in `D2`, don't type the word yourself.",
+        "wrongValue": "Pastry isn't on the list, so the cell should show the words **Not stocked**."
+      },
+      "clues": ["The lookup's fourth argument is what to show when nothing matches."]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Question 10 of 15 · Lookups",
+      "prompt": "Find the sales for the product in `B6` in the month in `B7`. Answer in ==B8==, with a formula that still works if either choice changes.",
+      "grid": [
+        ["Product", "Jan", "Feb", "Mar"],
+        ["Tea", 120, 140, 160],
+        ["Coffee", 90, 110, 130],
+        ["Snacks", 60, 70, 80],
+        [null, null, null, null],
+        ["Product", "Coffee", null, null],
+        ["Month", "Feb", null, null],
+        ["Sales", null, null, null]
+      ],
+      "targetCell": "B8",
+      "activeCell": "A8",
+      "yellowCells": ["B8"],
+      "expectedValue": 110,
+      "mustUse": ["INDEX", "MATCH"],
+      "mustReference": ["B6", "B7"],
+      "solution": "=INDEX(B2:D4,MATCH(B6,A2:A4,0),MATCH(B7,B1:D1,0))",
+      "explain": "**110**: Coffee is the 2nd row and Feb the 2nd column of the table, and INDEX returned the cell where they cross. Change `B6` or `B7` and it follows.",
+      "mobileButtons": ["=", "(", ")", ":", ","],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "A two-way lookup: find the row, find the column, then fetch the cell where they cross.",
+        "missingReference": "Use the product in `B6` and the month in `B7`, not typed words.",
+        "wrongValue": "Coffee's row and Feb's column cross at one cell: 110."
+      },
+      "clues": ["Two MATCHes inside one INDEX."]
+    },
+    {
+      "id": "s11",
+      "type": "select",
+      "topic": "Question 11 of 15 · Visual & interactive",
+      "prompt": "A conditional-formatting rule applied to `A2:C5` is:\n\n`=AND($C2=\"No\",$B2<$F$1)`\n\n`F1` holds today's date. Select the cells that turn red.",
+      "grid": [
+        ["Invoice", "Due", "Paid", null, "Today", "=DATE(2026,3,15)"],
+        [101, "=DATE(2026,3,10)", "Yes", null, null, null],
+        [102, "=DATE(2026,3,15)", "No", null, null, null],
+        [103, "=DATE(2026,3,12)", "No", null, null, null],
+        [104, "=DATE(2026,3,20)", "No", null, null, null]
+      ],
+      "highlightCells": ["A2:C5"],
+      "activeCell": "A1",
+      "target": "A4:C4",
+      "wrongFeedback": "Only invoice 103 is unpaid **and** due before 15 March. Invoice 101 is paid, 102 is due today (not before it) and 104 isn't due yet.",
+      "clues": ["Both parts of the AND must be true for a row. Check the dates carefully."]
+    },
+    {
+      "id": "s12",
+      "type": "formula",
+      "topic": "Question 12 of 15 · PivotTables",
+      "prompt": "A PivotTable is built from this data: Region down the side, Month across the top, **Sum of Sales** in the middle. What number will it show for **West** in **Feb**? Answer in ==E2==.",
+      "grid": [
+        ["Region", "Month", "Sales", null, "West, Feb"],
+        ["West", "Jan", 400, null, null],
+        ["West", "Feb", 300, null, null],
+        ["East", "Feb", 450, null, null],
+        ["West", "Feb", 200, null, null],
+        ["East", "Jan", 150, null, null],
+        ["West", "Mar", 250, null, null],
+        ["East", "Mar", 350, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "yellowCells": ["E2"],
+      "expectedValue": 500,
+      "mustUse": ["SUMIFS"],
+      "mustReference": ["C2:C8"],
+      "solution": "=SUMIFS(C2:C8,A2:A8,\"West\",B2:B8,\"Feb\")",
+      "explain": "**500**: West has two Feb rows, 300 and 200, and a pivot adds up every row in a cell. Feb across all regions would be 950 and all of West would be 1150.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\""],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "A pivot adds up every row that fits both the row and column label.",
+        "missingReference": "Add up the Sales column, `C2:C8`.",
+        "wrongValue": "West **and** Feb, adding every matching row, not just the first."
+      },
+      "clues": ["Sum the Sales where Region is West and Month is Feb."]
+    },
+    {
+      "id": "s13",
+      "type": "formula",
+      "topic": "Question 13 of 15 · Modern Excel",
+      "prompt": "With **one** formula starting in ==E2==, list the names of everyone in **Pune** who scored **70 or more**.",
+      "grid": [
+        ["Name", "City", "Score", null, "Pune, 70+"],
+        ["Asha", "Pune", 82, null, null],
+        ["Ben", "Delhi", 91, null, null],
+        ["Chitra", "Pune", 70, null, null],
+        ["Dev", "Pune", 64, null, null],
+        ["Esha", "Delhi", 55, null, null],
+        ["Farhan", "Pune", 88, null, null],
+        ["Gita", "Mumbai", 72, null, null]
+      ],
+      "targetCell": "E2",
+      "activeCell": "D2",
+      "yellowCells": ["E2"],
+      "expectedValue": "Asha",
+      "mustUse": ["FILTER"],
+      "solution": "=FILTER(A2:A8,(B2:B8=\"Pune\")*(C2:C8>=70))",
+      "explain": "**Asha, Chitra and Farhan** spilled down `E2:E4`. Chitra scored exactly 70, so `>=` keeps her; Dev is in Pune but scored 64, and Ben scored 91 in Delhi.",
+      "mobileButtons": ["=", "(", ")", ":", ",", "\"", ">", "*"],
+      "wrongFeedback": {
+        "notFormula": "Formulas start with `=`. Type it again, beginning with `=`.",
+        "parseError": "Excel can't read that. Check every bracket, comma and quote mark.",
+        "missingFunction": "You want a **list** of names that meet two conditions, from one formula.",
+        "wrongValue": "Pune **and** a score of 70 or more (70 counts). The list should be three names."
+      },
+      "clues": ["Multiply two tests together to require both."]
+    },
+    {
+      "id": "s14",
+      "type": "mcq",
+      "topic": "Question 14 of 15 · Clean & analyse data",
+      "prompt": "A messy export arrives from the same system every month: same columns, different rows. You clean it by hand each time (trim names, fix dates, delete blank rows) and it takes 40 minutes.\n\nWhat's the best way to save that time?",
+      "options": [
+        "Overtype last month's file",
+        "Flash Fill on every column",
+        "Record the steps in Power Query"
+      ],
+      "answer": 2,
+      "explain": "Power Query records each cleaning step once. Next month you drop in the new file and click **Refresh**, and every step replays on the new rows. Flash Fill works one column at a time and doesn't re-run itself.",
+      "wrongFeedback": [
+        "Overtyping means re-doing the cleaning and risks mixing old and new numbers.",
+        "Flash Fill guesses a pattern for one column, and you'd have to repeat it every month.",
+        null
+      ],
+      "clues": ["Which tool remembers a whole list of steps?"]
+    },
+    {
+      "id": "s15",
+      "type": "mcq",
+      "topic": "Question 15 of 15 · Excel + AI",
+      "prompt": "You ask an AI assistant for the total sales of Pune, and it says **12,450**. It didn't explain how it got that. You're about to put the number in a report.\n\nWhat's the smartest next step?",
+      "options": [
+        "Use it: the AI saw the data",
+        "Check it with your own SUMIFS",
+        "Ask the AI if it's sure"
+      ],
+      "answer": 1,
+      "explain": "AI answers can sound confident and still be wrong, so confirm with something you control: your own formula, or adding a few rows by hand. Also keep private customer details out of public chatbots in the first place.",
+      "wrongFeedback": [
+        "The AI may have misread the data or guessed. Never put an unchecked number in a report.",
+        null,
+        "The AI will usually say yes. Asking it to grade its own answer isn't a real check."
+      ],
+      "clues": ["How could you get the same number without the AI?"]
+    }
+  ]
+}

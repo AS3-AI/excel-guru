@@ -1,0 +1,332 @@
+{
+  "id": "left-right-mid",
+  "module": "text-dates",
+  "title": "LEFT, RIGHT, MID & LEN",
+  "goal": "Pull the first letters, last digits or middle part out of any code with LEFT, RIGHT and MID, count characters with LEN, and know why digits cut out this way are text until VALUE converts them.",
+  "difficulty": 1,
+  "requiredCorrect": 10,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "One code, three facts",
+      "text": "Order IDs like ==A2== pack three facts into one cell: the **city**, the **year** and a **number**. Typing each piece out by hand is slow and full of typos.\n\nExcel can cut pieces out of text for you. `=LEFT(A2,3)` reads as “take the first 3 characters of A2”.\n\nPress **Play** to watch one being built. Then you'll write the cutters yourself.",
+      "grid": [
+        ["Order ID", "City", "Year", "No."],
+        ["PUN-2026-0412", "=LEFT(A2,3)", "=MID(A2,5,4)", "=RIGHT(A2,4)"],
+        ["DEL-2026-0087", "=LEFT(A3,3)", "=MID(A3,5,4)", "=RIGHT(A3,4)"],
+        ["MUM-2025-1530", "=LEFT(A4,3)", "=MID(A4,5,4)", "=RIGHT(A4,4)"],
+        ["BLR-2025-0206", "=LEFT(A5,3)", "=MID(A5,5,4)", "=RIGHT(A5,4)"]
+      ],
+      "activeCell": "B2",
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "formula-build",
+        "targetCell": "B2",
+        "frames": [
+          {
+            "label": "Click the cell for the answer",
+            "draft": "",
+            "focusCell": "B2"
+          },
+          {
+            "label": "Type =LEFT(",
+            "draft": "=LEFT(",
+            "focusCell": "B2"
+          },
+          {
+            "label": "Click the text to cut: A2",
+            "draft": "=LEFT(A2",
+            "focusCell": "B2",
+            "highlightCells": ["A2"]
+          },
+          {
+            "label": "Add a comma and how many characters: 3",
+            "draft": "=LEFT(A2,3)",
+            "focusCell": "B2"
+          },
+          {
+            "label": "Press Enter",
+            "key": "Enter",
+            "draft": "=LEFT(A2,3)",
+            "resultCell": "B2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "LEFT: from the start",
+      "prompt": "The first three letters of each order ID are the city. **LEFT** takes characters from the **left** end of the text.\n\nClick ==B2==, type `=LEFT(A2,3)` and press [[Enter]]. The 3 is how many characters to take.",
+      "grid": [
+        ["Order ID", "City"],
+        ["CHE-2026-0951", null],
+        ["HYD-2026-0318", null],
+        ["JAI-2025-0044", null],
+        ["KOL-2025-0733", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "CHE",
+      "mustUse": ["LEFT"],
+      "solution": "=LEFT(A2,3)",
+      "explain": "**CHE.** LEFT looked at `A2`, counted 3 characters from the left (C, H, E) and stopped. Copy the formula down and every row gets its city.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=` so Excel knows it's a formula: `=LEFT(A2,3)`.",
+        "parseError": "Check the brackets and comma: `=LEFT(A2,3)`.",
+        "wrongValue": "You should get **CHE**: the first 3 characters of `A2`. Try `=LEFT(A2,3)`.",
+        "missingFunction": "Use `LEFT`: `=LEFT(A2,3)`."
+      },
+      "clues": [
+        "`=LEFT(` then the cell, a comma, and how many characters.",
+        "The number is 3 because city codes are 3 letters."
+      ]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "RIGHT: from the end",
+      "prompt": "Addresses end with a six-digit **PIN code**, but the street and city before it are different lengths. So count from the **right** instead, with **RIGHT**.\n\nIn ==C2==, pull out Asha's PIN code.",
+      "grid": [
+        ["Customer", "Address", "PIN"],
+        ["Asha", "12 Park Rd, Pune 411001", null],
+        ["Ben", "7 MG Road, Delhi 110001", null],
+        ["Chitra", "45 Lake St, Mumbai 400050", null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "B2",
+      "yellowCells": ["C2"],
+      "expectedValue": "411001",
+      "mustUse": ["RIGHT"],
+      "solution": "=RIGHT(B2,6)",
+      "explain": "**411001.** The addresses are all different lengths, but the PIN is always the last 6 characters, so RIGHT works on every row. Notice the answer sits on the **left** of the cell: RIGHT gives back **text**, even when it looks like a number.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=RIGHT(B2,6)`.",
+        "parseError": "Check the brackets and comma: `=RIGHT(B2,6)`.",
+        "wrongValue": "A PIN code has **6** digits. Take the last 6 characters of `B2`: `=RIGHT(B2,6)`. (If you got a number on the right of the cell, you converted it: this step wants the plain text.)",
+        "missingFunction": "Use `RIGHT` to take characters from the end."
+      },
+      "clues": ["Same shape as LEFT: `=RIGHT(text, how many)`.", "A PIN code is 6 digits long."]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "MID: from the middle",
+      "prompt": "The **year** hides in the middle of the order ID, so neither LEFT nor RIGHT can reach it. **MID** takes three things: the text, **where to start**, and **how many** characters.\n\nIn ==B2==, pull out the year of `SUR-2024-0771`. Count along: S is 1, U is 2, R is 3, the dash is 4, so the year starts at 5.",
+      "grid": [
+        ["Order ID", "Year"],
+        ["SUR-2024-0771", null],
+        ["NAG-2026-0215", null],
+        ["LKO-2025-0640", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "2024",
+      "mustUse": ["MID"],
+      "solution": "=MID(A2,5,4)",
+      "explain": "**2024.** MID started at character 5 (the first digit of the year) and took 4 characters. Start at 4 and you'd get “-202”, dash included.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=MID(A2,5,4)`.",
+        "parseError": "MID needs three parts split by commas: `=MID(A2,5,4)`.",
+        "wrongValue": "Count to the first digit of the year: S1 U2 R3 -4 **2** is 5. Then take 4 characters: `=MID(A2,5,4)`.",
+        "missingFunction": "Use `MID`: the year isn't at either end."
+      },
+      "clues": [
+        "`=MID(text, start, how many)`: start is 5, length is 4.",
+        "If your answer starts with a dash, you began one character too early."
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "LEN: count characters",
+      "prompt": "**LEN** counts every character in a cell. It doesn't care whether they're letters, digits or spaces.\n\nIn ==C2==, count the characters in Asha's phone number.",
+      "grid": [
+        ["Name", "Phone", "Length"],
+        ["Asha", "98765 43210", null],
+        ["Ben", "9876543210", null],
+        ["Chitra", "98765-43210", null]
+      ],
+      "targetCell": "C2",
+      "activeCell": "B2",
+      "highlightCells": ["B2"],
+      "yellowCells": ["C2"],
+      "expectedValue": 11,
+      "mustUse": ["LEN"],
+      "solution": "=LEN(B2)",
+      "explain": "**11.** Ten digits plus the **space** in the middle. Spaces and dashes count as characters, which is why `B3` (no space) would give 10.",
+      "mobileButtons": ["=", "(", ")"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=LEN(B2)`.",
+        "parseError": "`LEN` takes just one thing: `=LEN(B2)`.",
+        "wrongValue": "Count the characters in `B2`, spaces included: `=LEN(B2)`.",
+        "missingFunction": "Use `LEN` to count characters."
+      },
+      "clues": ["`=LEN(B2)`: just the cell, nothing else.", "Does the space count? Excel says yes."]
+    },
+    {
+      "id": "s6",
+      "type": "formula",
+      "topic": "LEN to check data",
+      "prompt": "Every order ID should be exactly **13** characters. LEN is a quick way to spot a mistyped one.\n\nIn ==B2==, show **OK** when the ID is 13 characters long, otherwise **Check**.",
+      "grid": [
+        ["Order ID", "Status"],
+        ["DEL-2026-087", null],
+        ["MUM-2025-1530", null],
+        ["BLR-2025-0206", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "Check",
+      "mustUse": ["LEN", "IF"],
+      "solution": "=IF(LEN(A2)=13,\"OK\",\"Check\")",
+      "explain": "**Check.** `DEL-2026-087` is only 12 characters: someone dropped a digit. Copy the formula down and every short or long ID gets flagged.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "="],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Text answers need straight quotes: `\"OK\"` and `\"Check\"`.",
+        "wrongValue": "Compare the length with 13: `=IF(LEN(A2)=13,\"OK\",\"Check\")`. This ID is one short.",
+        "missingFunction": "Use `LEN` for the length and `IF` for the answer."
+      },
+      "clues": [
+        "`IF(test, if yes, if no)`: the test is `LEN(A2)=13`.",
+        "The first ID is missing a digit."
+      ]
+    },
+    {
+      "id": "s7",
+      "type": "mcq",
+      "topic": "Predict: text or number?",
+      "prompt": "These PIN codes were pulled out with `=RIGHT(B2,6)`. They look like numbers, but they sit on the **left** of their cells.\n\nBefore you try it: what will `=COUNT(C2:C4)` show? (COUNT counts only real numbers.)",
+      "grid": [
+        ["Customer", "Address", "PIN"],
+        ["Asha", "12 Park Rd, Pune 411001", "=RIGHT(B2,6)"],
+        ["Ben", "7 MG Road, Delhi 110001", "=RIGHT(B3,6)"],
+        ["Chitra", "45 Lake St, Mumbai 400050", "=RIGHT(B4,6)"]
+      ],
+      "highlightCells": ["C2:C4"],
+      "yellowCells": ["C2:C4"],
+      "options": ["`3`", "`0`", "`411001`"],
+      "answer": 1,
+      "explain": "**0.** RIGHT, LEFT and MID always hand back **text**, even when the pieces are digits. The left-aligned PIN codes were your clue. Next, prove it.",
+      "wrongFeedback": [
+        "That would be right if they were real numbers. Look at how they're aligned.",
+        null,
+        "COUNT counts how many numbers there are, not what they are."
+      ],
+      "clues": ["Numbers sit on the right of a cell. Where do these sit?"]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "Prove it",
+      "prompt": "Time to check. In ==C6==, type `=COUNT(C2:C4)` and see how many numbers Excel finds in the PIN column.",
+      "grid": [
+        ["Customer", "Address", "PIN"],
+        ["Asha", "12 Park Rd, Pune 411001", "=RIGHT(B2,6)"],
+        ["Ben", "7 MG Road, Delhi 110001", "=RIGHT(B3,6)"],
+        ["Chitra", "45 Lake St, Mumbai 400050", "=RIGHT(B4,6)"],
+        [null, null, null],
+        ["Numbers found", null, null]
+      ],
+      "targetCell": "C6",
+      "activeCell": "B6",
+      "highlightCells": ["C2:C4"],
+      "yellowCells": ["C6"],
+      "expectedValue": 0,
+      "mustUse": ["COUNT"],
+      "solution": "=COUNT(C2:C4)",
+      "explain": "**0.** Three PIN codes, zero numbers. Text can't be added, compared or looked up like a number. That's the trap with every LEFT, RIGHT or MID result made of digits.",
+      "mobileButtons": ["=", "(", ")", ":"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=COUNT(C2:C4)`.",
+        "parseError": "Check the brackets and colon: `=COUNT(C2:C4)`.",
+        "wrongValue": "Count the PIN cells `C2` to `C4`: `=COUNT(C2:C4)`.",
+        "missingFunction": "Use `COUNT`, which counts only real numbers."
+      },
+      "clues": ["`=COUNT(C2:C4)`.", "The answer will surprise you."]
+    },
+    {
+      "id": "s9",
+      "type": "formula",
+      "topic": "VALUE: text to number",
+      "prompt": "**VALUE** turns text that looks like a number into a real number.\n\nBen's and Chitra's PINs are already fixed. In ==C2==, wrap Asha's RIGHT in **VALUE** so it sits on the right too.",
+      "grid": [
+        ["Customer", "Address", "PIN"],
+        ["Asha", "12 Park Rd, Pune 411001", "=RIGHT(B2,6)"],
+        ["Ben", "7 MG Road, Delhi 110001", "=VALUE(RIGHT(B3,6))"],
+        ["Chitra", "45 Lake St, Mumbai 400050", "=VALUE(RIGHT(B4,6))"]
+      ],
+      "targetCell": "C2",
+      "activeCell": "B2",
+      "highlightCells": ["C3:C4"],
+      "yellowCells": ["C2"],
+      "expectedValue": 411001,
+      "mustUse": ["VALUE", "RIGHT"],
+      "solution": "=VALUE(RIGHT(B2,6))",
+      "explain": "**411001**, now a real number on the right of the cell. Put the cutter **inside** VALUE: first RIGHT cuts the text, then VALUE converts it. (One more trap: a code like `0412` loses its leading zero as a number, so only convert when you need to calculate.)",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Close both brackets: `=VALUE(RIGHT(B2,6))`.",
+        "wrongValue": "Keep the RIGHT and wrap it: `=VALUE(RIGHT(B2,6))`.",
+        "missingFunction": "Wrap your RIGHT in `VALUE(...)`."
+      },
+      "clues": ["`=VALUE(` then your old formula, then `)`.", "Look at how `C3` was done."]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Count carefully",
+      "prompt": "In `PUN-2026-0412`, which formula pulls out the last part, `0412`, using **MID**?\n\nCount every character, dashes included: P1 U2 N3 -4 2(5) 0(6) 2(7) 6(8) -(9) 0(10).",
+      "grid": [["Order ID"], ["PUN-2026-0412"]],
+      "highlightCells": ["A2"],
+      "yellowCells": ["A2"],
+      "options": ["`=MID(A2,9,4)`", "`=MID(A2,10,4)`", "`=MID(A2,11,4)`"],
+      "answer": 1,
+      "explain": "The last part starts at character **10**, the first digit of 0412. Always count dashes: they're characters too. (For the end of a code, `RIGHT(A2,4)` is easier. MID shines in the middle.)",
+      "wrongFeedback": [
+        "Position 9 is the second dash, so you'd get “-041”.",
+        null,
+        "Position 11 is the `4`, and only three characters are left, so you'd get “412”."
+      ],
+      "clues": ["Which character is number 10? Count on your fingers."]
+    },
+    {
+      "id": "s11",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nCourier IDs look like `BLR-2026-0912`. The warehouse wants the **sequence number** at the end as a **real number** it can add up. Put it in ==B2==.",
+      "grid": [
+        ["Courier ID", "Sequence"],
+        ["BLR-2026-0912", null],
+        ["PUN-2026-0007", null],
+        ["DEL-2025-1204", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A1",
+      "expectedValue": 912,
+      "solution": "=VALUE(RIGHT(A2,4))",
+      "explain": "**912.** You cut the last 4 characters, then converted them so `0912` becomes the number 912. Cutting then converting is the standard recipe for any code with digits in it.",
+      "mobileButtons": ["=", "(", ")", ","],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check your brackets are all closed.",
+        "wrongValue": "Take the last 4 characters of the ID, then make sure Excel sees a number, not text (a number sits on the right of its cell)."
+      },
+      "clues": ["First cut out the last 4 characters.", "Then turn that text into a real number."]
+    }
+  ]
+}

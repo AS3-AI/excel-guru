@@ -1,0 +1,300 @@
+{
+  "id": "find-search",
+  "module": "text-dates",
+  "title": "FIND & SEARCH",
+  "goal": "Find where a character sits with FIND and SEARCH, know when capitals matter, and combine them with LEFT and MID to cut text up to a space or an @.",
+  "difficulty": 2,
+  "requiredCorrect": 9,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Where is it?",
+      "text": "LEFT needs you to say **how many** characters. But first names are different lengths: Om is 2, Ravindra is 8. You can't type one number that works for every row.\n\n**FIND** tells you **where** a character sits. `=FIND(\" \",A2)` answers “at which position is the first space?”. For Asha Mehta that's **5**. The first name is then everything before it.\n\nPress **Play** to watch FIND being built.",
+      "grid": [
+        ["Full name", "Space at", "First name"],
+        ["Asha Mehta", "=FIND(\" \",A2)", "=LEFT(A2,B2-1)"],
+        ["Ravindra Nair", "=FIND(\" \",A3)", "=LEFT(A3,B3-1)"],
+        ["Om Patel", "=FIND(\" \",A4)", "=LEFT(A4,B4-1)"],
+        ["Priyanka Rao", "=FIND(\" \",A5)", "=LEFT(A5,B5-1)"]
+      ],
+      "activeCell": "B2",
+      "showFormulaBar": true,
+      "animation": {
+        "kind": "formula-build",
+        "targetCell": "B2",
+        "frames": [
+          {
+            "label": "Click the cell for the answer",
+            "draft": "",
+            "focusCell": "B2"
+          },
+          {
+            "label": "Type =FIND( then the character to look for in quotes",
+            "draft": "=FIND(\" \"",
+            "focusCell": "B2"
+          },
+          {
+            "label": "Add a comma and click the text to search: A2",
+            "draft": "=FIND(\" \",A2",
+            "focusCell": "B2",
+            "highlightCells": ["A2"]
+          },
+          {
+            "label": "Close the bracket",
+            "draft": "=FIND(\" \",A2)",
+            "focusCell": "B2"
+          },
+          {
+            "label": "Press Enter: the space is character 5",
+            "key": "Enter",
+            "draft": "=FIND(\" \",A2)",
+            "resultCell": "B2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "s2",
+      "type": "formula",
+      "topic": "FIND: a position",
+      "prompt": "Let's ask Excel where the space is.\n\nIn ==B2==, type `=FIND(\" \",A2)`. The space goes **inside quotes**, and it's the thing you're looking for. `A2` is where you look.",
+      "grid": [
+        ["Full name", "Space at"],
+        ["Kavya Reddy", null],
+        ["Jay Shah", null],
+        ["Meenakshi Iyer", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": 6,
+      "mustUse": ["FIND"],
+      "solution": "=FIND(\" \",A2)",
+      "explain": "**6.** K-a-v-y-a is five letters, so the space is character 6. FIND always counts from the start of the cell and gives you a position, not the text itself.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "-", "+"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`: `=FIND(\" \",A2)`.",
+        "parseError": "The space needs quotes around it: `\" \"`, then a comma, then the cell.",
+        "wrongValue": "Count Kavya's letters, then the space: it's character 6. Type `=FIND(\" \",A2)`.",
+        "missingFunction": "Use `FIND` here. (SEARCH is coming up next.)"
+      },
+      "clues": [
+        "`=FIND(what to look for, where to look)`.",
+        "Type a space between the two quote marks."
+      ]
+    },
+    {
+      "id": "s3",
+      "type": "formula",
+      "topic": "FIND + LEFT",
+      "prompt": "Now the payoff. If the space is at position 6, the first name is the **5 characters before** it: position minus 1.\n\nIn ==B2==, get Zubair's first name by putting FIND **inside** LEFT: `=LEFT(A2,FIND(\" \",A2)-1)`.",
+      "grid": [
+        ["Full name", "First name"],
+        ["Zubair Khan", null],
+        ["Lakshmi Pillai", null],
+        ["Om Patel", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "Zubair",
+      "mustUse": ["LEFT", "FIND"],
+      "solution": "=LEFT(A2,FIND(\" \",A2)-1)",
+      "explain": "**Zubair.** FIND said the space is at 7, the `-1` stops one short of it, and LEFT took the 6 letters. Without `-1` you'd get “Zubair ” with a stray space on the end. Copy it down and it works for Om and Lakshmi too.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "-", "+"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check your brackets: `=LEFT(A2,FIND(\" \",A2)-1)`.",
+        "wrongValue": "Use FIND for the how-many part and subtract 1 so the space isn't included: `=LEFT(A2,FIND(\" \",A2)-1)`.",
+        "missingFunction": "Combine `LEFT` and `FIND`."
+      },
+      "clues": [
+        "FIND goes where LEFT expects a number.",
+        "Subtract 1 so the space itself isn't taken."
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "formula",
+      "topic": "FIND + MID",
+      "prompt": "For the **last** name, you start just **after** the space and run to the end. That's a job for MID: start at `FIND(...)+1`, and for length give any number bigger than you'll need, like 50.\n\nIn ==B2==, get Anjali's last name.",
+      "grid": [
+        ["Full name", "Last name"],
+        ["Anjali Deshmukh", null],
+        ["Om Patel", null],
+        ["Roshni Menon", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "Deshmukh",
+      "mustUse": ["FIND"],
+      "solution": "=MID(A2,FIND(\" \",A2)+1,50)",
+      "explain": "**Deshmukh.** The space is at 7, so MID starts at 8. Asking for 50 characters isn't a problem: MID simply stops at the end of the text.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "-", "+"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "MID needs three parts: `=MID(A2,FIND(\" \",A2)+1,50)`.",
+        "wrongValue": "Start one character **after** the space: `=MID(A2,FIND(\" \",A2)+1,50)`.",
+        "missingFunction": "Use FIND to locate the space, then MID (or RIGHT) to take what follows."
+      },
+      "clues": [
+        "Where does the last name start? One after the space.",
+        "A length of 50 is safely too big, and that's fine."
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "formula",
+      "topic": "Up to the @",
+      "prompt": "FIND isn't only for spaces. Any character works.\n\nEvery email address has the **username** before the `@`. In ==B2==, pull out the username from the first address.",
+      "grid": [
+        ["Email", "Username"],
+        ["kavya.s@shop.in", null],
+        ["rohan_m@mailbox.com", null],
+        ["sana@cafe.co", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": "kavya.s",
+      "mustUse": ["FIND", "LEFT"],
+      "solution": "=LEFT(A2,FIND(\"@\",A2)-1)",
+      "explain": "**kavya.s.** The `@` is at position 8, so LEFT took the 7 characters before it. The same recipe works whether the username is 4 characters or 14. (Newer Excel has an even shorter way, coming in the next lessons.)",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "-", "+"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check your brackets and quotes: `=LEFT(A2,FIND(\"@\",A2)-1)`.",
+        "wrongValue": "Find the `@`, then take everything before it: one less than its position.",
+        "missingFunction": "Use FIND to locate the `@`."
+      },
+      "clues": [
+        "It's the same recipe as the first names, with a different character.",
+        "Look for `\"@\"` instead of `\" \"`."
+      ]
+    },
+    {
+      "id": "s6",
+      "type": "mcq",
+      "topic": "Predict: FIND vs SEARCH",
+      "prompt": "**SEARCH** works like FIND, with one difference: FIND is **case-sensitive** (capitals must match) and SEARCH is not.\n\nThis stock code has `bag` in lowercase first and `BAG` in capitals second. What do `=FIND(\"BAG\",A2)` and `=SEARCH(\"BAG\",A2)` return?",
+      "grid": [["Stock code"], ["bag-BAG-07"]],
+      "yellowCells": ["A2"],
+      "options": ["Both return `1`", "`FIND` 5, `SEARCH` 1", "`FIND` 1, `SEARCH` 5"],
+      "answer": 1,
+      "explain": "FIND skips the lowercase `bag` (not a match for capitals) and lands on **5**. SEARCH doesn't care about case, so it stops at the very first one: **1**. Now prove it.",
+      "wrongFeedback": [
+        "Only SEARCH would give 1 for both. FIND insists on matching capitals.",
+        null,
+        "It's the other way round: FIND is the strict one, so it has to keep looking."
+      ],
+      "clues": ["Which of the two is pickier about capitals?"]
+    },
+    {
+      "id": "s7",
+      "type": "formula",
+      "topic": "FIND is strict",
+      "prompt": "Try it yourself. In ==B2==, use FIND to locate the capital **TEA** in the label.",
+      "grid": [
+        ["Label", "Position"],
+        ["tea TEA 100g", null],
+        ["TEA tea 250g", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": 5,
+      "mustUse": ["FIND"],
+      "solution": "=FIND(\"TEA\",A2)",
+      "explain": "**5.** The lowercase `tea` at the start doesn't count, so FIND went on to the capitals. If the text can't be found at all, FIND shows `#VALUE!`.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "-", "+"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Put TEA in quotes: `=FIND(\"TEA\",A2)`.",
+        "wrongValue": "FIND only matches the capitals `TEA`. That's at position 5 here. (Got 1? That's SEARCH's answer.)",
+        "missingFunction": "Use `FIND` for the case-sensitive version."
+      },
+      "clues": ["`=FIND(\"TEA\",A2)`.", "The capital TEA starts after `tea ` (4 characters)."]
+    },
+    {
+      "id": "s8",
+      "type": "formula",
+      "topic": "SEARCH is relaxed",
+      "prompt": "People type in any case, so you often want the relaxed version. In ==B2==, use **SEARCH** to find `tea` (lowercase) in the product name, even though it's written `TEA`.",
+      "grid": [
+        ["Product", "Position"],
+        ["Masala TEA 250g", null],
+        ["Green Tea 100g", null],
+        ["Cold coffee", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A2",
+      "highlightCells": ["A2"],
+      "yellowCells": ["B2"],
+      "expectedValue": 8,
+      "mustUse": ["SEARCH"],
+      "solution": "=SEARCH(\"tea\",A2)",
+      "explain": "**8.** SEARCH ignored the case and found TEA after “Masala ” (7 characters). FIND would show `#VALUE!` here because no lowercase `tea` exists. SEARCH also allows wildcards like `*`, which FIND doesn't.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "-", "+"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Put the word in quotes: `=SEARCH(\"tea\",A2)`.",
+        "wrongValue": "Use SEARCH with `\"tea\"` and the product cell. “Masala ” is 7 characters, so TEA starts at 8.",
+        "missingFunction": "Use `SEARCH`: FIND would be too strict for lowercase `tea`."
+      },
+      "clues": [
+        "Same arguments as FIND: what to look for, then where.",
+        "If you got an error, you used FIND."
+      ]
+    },
+    {
+      "id": "s9",
+      "type": "mcq",
+      "topic": "The classic slip",
+      "prompt": "You want Asha's first name from `Asha Mehta`, and you write:\n\n`=LEFT(A2,FIND(\" \",A2))`\n\nWhat do you get? (Look closely at the end.)",
+      "grid": [["Full name"], ["Asha Mehta"]],
+      "yellowCells": ["A2"],
+      "options": ["`Asha`, no stray space", "`Asha` followed by a space", "`Asha M`"],
+      "answer": 1,
+      "explain": "FIND returns 5, the position of the space, so LEFT takes 5 characters: A-s-h-a **and the space**. It looks right, but the trailing space will break lookups later. Use `FIND(\" \",A2)-1`.",
+      "wrongFeedback": [
+        "The `-1` is what removes the space. Without it, the space comes along.",
+        null,
+        "LEFT only takes 5 characters here, and the 5th is the space, not the M."
+      ],
+      "clues": ["How many characters does LEFT take: 4 or 5?"]
+    },
+    {
+      "id": "s10",
+      "type": "formula",
+      "topic": "Challenge",
+      "prompt": "Last one, from memory.\n\nA school register lists students as `Joshi, Meera`: surname, comma, space, first name. In ==B2==, show just the **first name**.",
+      "grid": [
+        ["Student", "First name"],
+        ["Joshi, Meera", null],
+        ["Iyer, Kavitha", null],
+        ["Bose, Ravi", null]
+      ],
+      "targetCell": "B2",
+      "activeCell": "A1",
+      "expectedValue": "Meera",
+      "solution": "=MID(A2,FIND(\",\",A2)+2,50)",
+      "explain": "**Meera.** The comma is at 6, and the first name starts **2** later: one for the comma and one for the space. Start only 1 after and you'd get “ Meera” with a leading space.",
+      "mobileButtons": ["=", "(", ")", ",", "\"", "-", "+"],
+      "wrongFeedback": {
+        "notFormula": "Start with `=`.",
+        "parseError": "Check your brackets and quotes.",
+        "wrongValue": "Find the comma, then start after both the comma **and** the space. Watch for a stray leading space."
+      },
+      "clues": ["Find the comma first.", "The first name starts 2 characters after the comma."]
+    }
+  ]
+}

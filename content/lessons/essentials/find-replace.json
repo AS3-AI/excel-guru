@@ -1,0 +1,310 @@
+{
+  "id": "find-replace",
+  "module": "essentials",
+  "title": "Find & Replace, Go To Special",
+  "goal": "Find text inside cells, replace it without wrecking other cells, jump to just the blank cells with Go To Special, and fill every blank at once.",
+  "difficulty": 2,
+  "requiredCorrect": 11,
+  "isIntro": false,
+  "video": null,
+  "steps": [
+    {
+      "id": "s1",
+      "type": "info",
+      "topic": "Search, change, fill",
+      "text": "This order list was typed by five different people. Look at it: **Bangalore** and **Bengaluru** are both in the City column, and the **Region** column has gaps because the export only printed it once per group.\n\nFixing 3,000 rows by eye would take a day. **Find**, **Replace** and **Go To Special** do it in seconds, and this lesson shows you how.",
+      "grid": [
+        ["Order", "City", "Region"],
+        [1001, "Bangalore", "South"],
+        [1002, "Bengaluru", null],
+        [1003, "Bangalore", null],
+        [1004, "Pune", "West"],
+        [1005, "Pune", null],
+        [1006, "Bengaluru", null]
+      ],
+      "yellowCells": ["C3", "C4", "C6", "C7"],
+      "activeCell": "A1"
+    },
+    {
+      "id": "s2",
+      "type": "mcq",
+      "topic": "The two keys",
+      "prompt": "You need to **find** every “Pune” in a long sheet, and later **replace** a wrong spelling everywhere. Which keys open those two boxes in Excel?",
+      "options": [
+        "`Ctrl+F` finds, `Ctrl+H` replaces",
+        "`Ctrl+R` finds, `Ctrl+F` replaces",
+        "`Ctrl+H` finds, `Ctrl+P` replaces"
+      ],
+      "answer": 0,
+      "explain": "[[Ctrl]] + [[F]] opens **Find** and [[Ctrl]] + [[H]] opens the same box on its **Replace** tab. Both are also under **Home → Find & Select**, and on a Mac, Find is [[Cmd]] + [[F]]. We won't press them in this lesson, because your web browser also uses them (page search and history).",
+      "wrongFeedback": [
+        null,
+        "[[Ctrl]] + [[R]] is **Fill Right**, which you met in AutoFill. It doesn't search anything.",
+        "[[Ctrl]] + [[P]] is **Print**. Replace lives on [[Ctrl]] + [[H]]."
+      ],
+      "clues": ["F for Find. Replace is the other letter you usually see next to it: H."]
+    },
+    {
+      "id": "s3",
+      "type": "entry",
+      "topic": "Find looks inside cells",
+      "prompt": "In Excel you'd press [[Ctrl]] + [[F]], type **Pune** and click **Find All**. By default Excel lists every cell that **contains** those letters, in any capitals.\n\nPlay Find All yourself: count the cells in the City column it would list, then type that number in ==D2== and press [[Enter]].",
+      "grid": [
+        ["Order", "City", null, "Pune found"],
+        [2001, "Pune", null, null],
+        [2002, "Delhi", null, null],
+        [2003, "Pune West", null, null],
+        [2004, "Mumbai", null, null],
+        [2005, "pune", null, null],
+        [2006, "Kochi", null, null],
+        [2007, "Hadapsar Pune", null, null]
+      ],
+      "activeCell": "A1",
+      "yellowCells": ["D2"],
+      "highlightCells": ["B2:B8"],
+      "expect": { "D2": 4 },
+      "explain": "Four cells: `Pune`, `Pune West`, `pune` and `Hadapsar Pune`. Tick **Match entire cell contents** in the Options and only 2 would be left; add **Match case** and only 1.",
+      "wrongFeedback": {
+        "wrongValue": "Find matches letters **inside** a cell, not just whole cells, and it ignores capitals. Count again."
+      },
+      "clues": ["Does “Pune West” contain the letters P-u-n-e? Does “pune”?"]
+    },
+    {
+      "id": "s4",
+      "type": "mcq",
+      "topic": "Predict: Replace All",
+      "prompt": "Some people typed **Del** instead of **Delhi**. You open Replace, put “Del” in **Find what**, “Delhi” in **Replace with**, and click **Replace All**.\n\nWhat will `B3`, which already says `Delhi`, show afterwards?",
+      "grid": [
+        ["Order", "City"],
+        [3001, "Del"],
+        [3002, "Delhi"],
+        [3003, "Del"],
+        [3004, "Mumbai"]
+      ],
+      "activeCell": "B3",
+      "highlightCells": ["B3"],
+      "options": [
+        "`Delhi`, because it was already right",
+        "`Delhihi`",
+        "`Delhi`, and Excel warns you"
+      ],
+      "answer": 1,
+      "explain": "“Del” is also the start of “Delhi”, so Excel swaps that part too and you get **Delhihi**. Tick **Match entire cell contents** so that only cells that are exactly “Del” change.",
+      "wrongFeedback": [
+        "Excel doesn't know which cells are “already right”. It swaps every place it finds “Del”.",
+        null,
+        "Excel never warns you. It just reports how many replacements it made."
+      ],
+      "clues": ["Does the word “Delhi” contain the letters D-e-l?"]
+    },
+    {
+      "id": "s5",
+      "type": "select",
+      "topic": "Replace only where you mean",
+      "prompt": "Absent students show **N/A** in Score and you want a plain **0** there. But the Remark column also uses N/A for “no remark”, and that must stay.\n\nReplace works **inside your selection** and nowhere else. Select just the five Score cells, ==B2== to ==B6==, then press [[Enter]].",
+      "grid": [
+        ["Student", "Score", "Remark"],
+        ["Aarav", 82, "Good"],
+        ["Bhavna", "N/A", "Absent"],
+        ["Chen", 91, "N/A"],
+        ["Divya", "N/A", "Absent"],
+        ["Ethan", 67, "Retest"]
+      ],
+      "yellowCells": ["B2:B6"],
+      "target": "B2:B6",
+      "wrongFeedback": "Select only the five Score cells, `B2` down to `B6`. The Remark column must stay out of it, or its N/A would change too.",
+      "clues": ["Leave out the heading and column C."]
+    },
+    {
+      "id": "s6",
+      "type": "select",
+      "topic": "Go To Special: pick the area",
+      "prompt": "Now the empty cells. Some students missed a test and the marks were left blank. **Go To Special** searches the cells you've selected, so select the marks first.\n\nDrag from ==B2== to ==D7== (leave the names and headings out), then press [[Enter]].",
+      "grid": [
+        ["Student", "Test 1", "Test 2", "Test 3"],
+        ["Isha", 18, 15, 20],
+        ["Jai", 12, null, 14],
+        ["Kabir", null, null, 17],
+        ["Lata", 19, 16, null],
+        ["Mohan", 14, 13, 15],
+        ["Nina", 16, null, 18]
+      ],
+      "yellowCells": ["B2:D7"],
+      "target": "B2:D7",
+      "wrongFeedback": "Drag across all the marks: from `B2` (Isha's Test 1) to `D7` (Nina's Test 3). Names and headings stay out.",
+      "clues": ["The Name Box shows `6R x 3C` when you have the right block."]
+    },
+    {
+      "id": "s7",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Jump to blanks: F5, Alt + S, K",
+      "prompt": "The marks are selected. Now tap these in turn: [[F5]] opens **Go To**, [[Alt]] + [[S]] clicks **Special**, [[K]] picks **Blanks**, then [[Enter]].\n\nExcel selects only the five empty cells (shown in yellow) and puts the cursor in the first, `C3`.\n\nOn a Mac, press [[Control]] + [[G]], then click **Special**.",
+      "keys": { "win": ["F5", "Alt+S", "K", "Enter"], "mac": null },
+      "grid": [
+        ["Student", "Test 1", "Test 2", "Test 3"],
+        ["Isha", 18, 15, 20],
+        ["Jai", 12, null, 14],
+        ["Kabir", null, null, 17],
+        ["Lata", 19, 16, null],
+        ["Mohan", 14, 13, 15],
+        ["Nina", 16, null, 18]
+      ],
+      "activeCell": "B2:D7",
+      "yellowCells": ["C3", "B4", "C4", "D5", "C7"],
+      "postcondition": {
+        "grid": [
+          ["Student", "Test 1", "Test 2", "Test 3"],
+          ["Isha", 18, 15, 20],
+          ["Jai", 12, null, 14],
+          ["Kabir", null, null, 17],
+          ["Lata", 19, 16, null],
+          ["Mohan", 14, 13, 15],
+          ["Nina", 16, null, 18]
+        ],
+        "selection": "C3"
+      },
+      "clues": ["F5, then Alt + S together, then K, then Enter."]
+    },
+    {
+      "id": "s8",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Fill every blank: Ctrl + Enter",
+      "prompt": "The five blanks are still selected, with the cursor in `C3`. Missed tests should count as **0**.\n\nType **0**, then hold [[Ctrl]] and press [[Enter]]. Plain Enter would fill only `C3`; with [[Ctrl]] the 0 goes into **every** selected cell at once.",
+      "keys": { "win": ["0", "Ctrl+Enter"], "mac": null },
+      "grid": [
+        ["Student", "Test 1", "Test 2", "Test 3"],
+        ["Isha", 18, 15, 20],
+        ["Jai", 12, null, 14],
+        ["Kabir", null, null, 17],
+        ["Lata", 19, 16, null],
+        ["Mohan", 14, 13, 15],
+        ["Nina", 16, null, 18]
+      ],
+      "activeCell": "C3",
+      "yellowCells": ["C3", "B4", "C4", "D5", "C7"],
+      "postcondition": {
+        "grid": [
+          ["Student", "Test 1", "Test 2", "Test 3"],
+          ["Isha", 18, 15, 20],
+          ["Jai", 12, 0, 14],
+          ["Kabir", 0, 0, 17],
+          ["Lata", 19, 16, 0],
+          ["Mohan", 14, 13, 15],
+          ["Nina", 16, 0, 18]
+        ],
+        "selection": "C3"
+      },
+      "clues": ["Type the digit, then Ctrl + Enter."]
+    },
+    {
+      "id": "s9",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Fill blanks from the cell above",
+      "prompt": "This export wrote the **Region** once per group. Sort it or filter it and those rows lose their region.\n\nThe three blank cells in column A are selected, cursor in `A3`. Make each one copy the cell above: type [[=]], press [[↑]] to point at the cell above, then press [[Ctrl]] + [[Enter]].",
+      "keys": { "win": ["=", "ArrowUp", "Ctrl+Enter"], "mac": null },
+      "grid": [
+        ["Region", "Rep", "Sales"],
+        ["North", "Aman", 120],
+        [null, "Bela", 95],
+        [null, "Chetan", 140],
+        ["South", "Divya", 110],
+        [null, "Eshan", 85]
+      ],
+      "activeCell": "A3",
+      "yellowCells": ["A3", "A4", "A6"],
+      "postcondition": {
+        "grid": [
+          ["Region", "Rep", "Sales"],
+          ["North", "Aman", 120],
+          ["=A2", "Bela", 95],
+          ["=A3", "Chetan", 140],
+          ["South", "Divya", 110],
+          ["=A5", "Eshan", 85]
+        ],
+        "selection": "A3"
+      },
+      "clues": ["Equals, up arrow, then Ctrl + Enter. Each blank points at the cell above it."]
+    },
+    {
+      "id": "s10",
+      "type": "mcq",
+      "topic": "Beyond blanks",
+      "prompt": "Someone typed `90` over the formula in `D2`; the other totals are still formulas. You select `D2:D4` and want Excel to pick out only the **typed number**.\n\nWhich option in Go To Special do you choose?",
+      "grid": [
+        ["Item", "Q1", "Q2", "Total"],
+        ["Pens", 40, 50, 90],
+        ["Files", 30, 20, "=B3+C3"],
+        ["Tape", 25, 15, "=B4+C4"]
+      ],
+      "highlightCells": ["D2:D4"],
+      "options": ["Blanks", "Constants", "Formulas"],
+      "answer": 1,
+      "explain": "**Constants** selects typed-in numbers and text, `D2` here. **Formulas** is the opposite, and if you tick only **Errors** under it you can jump to every `#DIV/0!` or `#N/A` in one go.",
+      "wrongFeedback": [
+        "No cell in the Total column is empty.",
+        null,
+        "Formulas would select `D3` and `D4`, the good ones. You want the odd one out."
+      ],
+      "clues": ["A typed number is a fixed value, not a formula."]
+    },
+    {
+      "id": "s11",
+      "type": "mcq",
+      "topic": "After the fill",
+      "prompt": "In the Region list, the blanks you filled are now formulas like `=A2`. Before you sort the list or email it, what's the safe move?",
+      "grid": [
+        ["Region", "Rep", "Sales"],
+        ["North", "Aman", 120],
+        ["=A2", "Bela", 95],
+        ["=A3", "Chetan", 140],
+        ["South", "Divya", 110],
+        ["=A5", "Eshan", 85]
+      ],
+      "showFormulaBar": true,
+      "activeCell": "A3",
+      "options": [
+        "Leave them: formulas are fine",
+        "Copy the column and **Paste Special → Values** over it",
+        "Delete the Region column"
+      ],
+      "answer": 1,
+      "explain": "`=A2` depends on the row above it, so after a sort it points at the wrong row. Pasting **values** turns each into plain text: [[Ctrl]] + [[Alt]] + [[V]], then [[V]], then [[Enter]], as in Copy, Paste & Paste Special.",
+      "wrongFeedback": [
+        "Sort the list and `=A2` will still point at whatever is now above it, so regions get mixed up.",
+        null,
+        "You'd lose the very information you just filled in."
+      ],
+      "clues": ["You want the names to stay, but stop depending on other cells."]
+    },
+    {
+      "id": "s12",
+      "type": "shortcut",
+      "mode": "sequence",
+      "topic": "Challenge",
+      "prompt": "Nothing arrived on some days, so the stock sheet has gaps. The stock numbers `B2:D5` are selected.\n\nWith the keyboard only, select just the empty cells and fill every one of them with **0**.",
+      "keys": { "win": ["F5", "Alt+S", "K", "Enter", "0", "Ctrl+Enter"], "mac": null },
+      "grid": [
+        ["Item", "Mon", "Tue", "Wed"],
+        ["Tea", 12, null, 9],
+        ["Coffee", null, 14, 11],
+        ["Milk", 8, 7, null],
+        ["Sugar", null, null, 5]
+      ],
+      "activeCell": "B2:D5",
+      "postcondition": {
+        "grid": [
+          ["Item", "Mon", "Tue", "Wed"],
+          ["Tea", 12, 0, 9],
+          ["Coffee", 0, 14, 11],
+          ["Milk", 8, 7, 0],
+          ["Sugar", 0, 0, 5]
+        ],
+        "selection": "C2"
+      },
+      "clues": ["Go To, Special, Blanks, OK. Then type the number and finish with Ctrl + Enter."]
+    }
+  ]
+}
